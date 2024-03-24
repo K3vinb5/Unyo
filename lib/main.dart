@@ -1,14 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nime/screens/home_screen.dart';
+import 'package:flutter_nime/screens/screens.dart';
+import 'package:flutter_nime/widgets/floatting_menu.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  List<Widget> screens = [const AnimeScreen(), const HomeScreen(), const MangaScreen()];
+  late Widget currentScreen;
+  int currentScreenIndex = 1;
+  @override
+  void initState() {
+    super.initState();
+    currentScreen = screens[1];
+  }
+
+  void setScreen(int screenIndex){
+    if (screenIndex != currentScreenIndex){
+      setState(() {
+        currentScreen = screens[screenIndex];
+        currentScreenIndex = screenIndex;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,8 +41,16 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: HomeScreen(),
+      home: Scaffold(
+        body: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            currentScreen,
+            FloattingMenu(
+              setScreen: setScreen,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nime/models/models.dart';
-import 'package:flutter_nime/screens/anime_screen.dart';
+import 'package:flutter_nime/screens/anime_details_screen.dart';
 import 'package:flutter_nime/widgets/widgets.dart';
 
 class AnimeWidgetList extends StatefulWidget {
@@ -16,7 +16,7 @@ class AnimeWidgetList extends StatefulWidget {
 class _AnimeWidgetListState extends State<AnimeWidgetList> {
 
   late List<AnimeModel> animeList;
-  late AnimeScreen animeScreen;
+  late AnimeDetailsScreen animeScreen;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
   }
 
   void openAnime(AnimeModel currentAnime){
-    animeScreen = AnimeScreen(currentAnime: currentAnime);
+    animeScreen = AnimeDetailsScreen(currentAnime: currentAnime);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => animeScreen),

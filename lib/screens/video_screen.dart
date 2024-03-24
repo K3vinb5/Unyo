@@ -36,7 +36,15 @@ class _VideoScreenState extends State<VideoScreen> {
             Video(controller: controller),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(onPressed: (){Navigator.pop(context);}, child: const Text("Go Back"),),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: const ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.indigo),
+                ),
+                child: const Text("Go Back"),
+              ),
             ),
           ],
         ),
