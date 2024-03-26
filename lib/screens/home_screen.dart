@@ -133,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
                           child: AnimeWidgetList(
+                            tag: "home-details",
                             title: "Continue Watching",
                             animeList: watchingList!,
                             textColor: Colors.white,
@@ -144,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
                           child: AnimeWidgetList(
+                            tag: "home-details",
                             title: "Why don't you see what you planned! :P",
                             animeList: planningList!,
                             textColor: Colors.white,
@@ -155,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
                           child: AnimeWidgetList(
+                            tag: "home-details",
                             title: "Why don't you resume your animes!",
                             animeList: pausedList!,
                             textColor: Colors.white,

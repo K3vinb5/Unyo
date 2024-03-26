@@ -9,9 +9,10 @@ import 'package:image_gradient/image_gradient.dart';
 import '../api/consumet_api.dart';
 
 class AnimeDetailsScreen extends StatefulWidget {
-  const AnimeDetailsScreen({super.key, required this.currentAnime});
+  const AnimeDetailsScreen({super.key, required this.currentAnime, required this.tag});
 
   final AnimeModel currentAnime;
+  final String tag;
 
   @override
   State<AnimeDetailsScreen> createState() => _AnimeDetailsScreenState();
@@ -63,13 +64,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         top: 16.0, left: 16.0),
-                                    child: AnimeWidget(
-                                      title: widget.currentAnime.title,
-                                      coverImage:
-                                          widget.currentAnime.coverImage,
-                                      score: null,
-                                      onTap: () {},
-                                      textColor: Colors.white,
+                                    child: Hero(
+                                      tag: "${widget.tag}-${widget.currentAnime.id}",
+                                      child: AnimeWidget(
+                                        title: widget.currentAnime.title,
+                                        coverImage:
+                                            widget.currentAnime.coverImage,
+                                        score: null,
+                                        onTap: () {},
+                                        textColor: Colors.white,
+                                      ),
                                     ),
                                   ),
                                   Padding(

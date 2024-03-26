@@ -6,13 +6,20 @@ import '../api/anilist_api.dart';
 
 class AnimeWidgetList extends StatefulWidget {
   const AnimeWidgetList(
-      {super.key, required this.title, required this.animeList, required this.textColor, required this.loadMore, this.loadMoreFunction});
+      {super.key,
+      required this.title,
+      required this.animeList,
+      required this.textColor,
+      required this.loadMore,
+      required this.tag,
+      this.loadMoreFunction});
 
   final String title;
   final List<AnimeModel> animeList;
   final Color textColor;
   final bool loadMore;
   final Future<List<AnimeModel>> Function(int, int)? loadMoreFunction;
+  final String tag;
 
   @override
   State<AnimeWidgetList> createState() => _AnimeWidgetListState();
@@ -22,6 +29,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
   late List<AnimeModel> animeList;
   late AnimeDetailsScreen animeScreen;
   int currentPage = 2;
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +47,10 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
   }
 
   void openAnime(AnimeModel currentAnime) {
-    animeScreen = AnimeDetailsScreen(currentAnime: currentAnime);
+    animeScreen = AnimeDetailsScreen(
+      currentAnime: currentAnime,
+      tag: widget.tag,
+    );
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => animeScreen),
@@ -74,30 +85,34 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
               scrollDirection: Axis.horizontal,
               children: [
                 ...animeList.map((animeModel) {
-                  return AnimeWidget(
-                    title: animeModel.title,
-                    score: animeModel.averageScore,
-                    coverImage: animeModel.coverImage,
-                    onTap: () {
-                      openAnime(animeModel);
-                    },
-                    textColor: widget.textColor,
+                  return Hero(
+                    tag: "${widget.tag}-${animeModel.id}",
+                    child: AnimeWidget(
+                      title: animeModel.title,
+                      score: animeModel.averageScore,
+                      coverImage: animeModel.coverImage,
+                      onTap: () {
+                        openAnime(animeModel);
+                      },
+                      textColor: widget.textColor,
+                    ),
                   );
                 }),
                 //load More
                 widget.loadMore
                     ? AnimeWidget(
-                  title: "Load More",
-                  score: -1,
-                  coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
-                  onTap: () async {
-                    var newTrendingList = await widget.loadMoreFunction!(currentPage++, 20);
-                    setState(() {
-                      animeList += newTrendingList;
-                    });
-                  },
-                  textColor: widget.textColor,
-                )
+                        title: "Load More",
+                        score: -1,
+                        coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
+                        onTap: () async {
+                          var newTrendingList =
+                              await widget.loadMoreFunction!(currentPage++, 20);
+                          setState(() {
+                            animeList += newTrendingList;
+                          });
+                        },
+                        textColor: widget.textColor,
+                      )
                     : const SizedBox(),
               ],
             ),

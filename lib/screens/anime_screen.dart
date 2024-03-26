@@ -34,6 +34,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         AnimeWidgetList(
+          tag: "anime-details",
           title: "Trending",
           animeList: trendingAnimeList,
           textColor: Colors.black,

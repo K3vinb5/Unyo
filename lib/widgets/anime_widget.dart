@@ -20,63 +20,66 @@ class AnimeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: InkWell(
-        onTap: onTap,
-        child: SizedBox(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.28,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width * 0.1,
-          child: Column(
-            children: [
-              Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Container(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height * 0.28,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                            coverImage == null ? uknown : coverImage!),
-                        fit: BoxFit.fill,
+    return Material(
+      color: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox(
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * 0.28,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width * 0.1,
+            child: Column(
+              children: [
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Container(
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height * 0.28,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        image: DecorationImage(
+                          image: NetworkImage(
+                              coverImage == null ? uknown : coverImage!),
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.only(bottom: 18.0, right: 8.0),
-                      child: score != null
-                          ? CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Text(
-                          score == null ? "" : score!.toString(),
-                          style: const TextStyle(
-                            color: Colors.black,
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 18.0, right: 8.0),
+                        child: score != null
+                            ? CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: Text(
+                            score == null ? "" : score!.toString(),
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                      )
-                          : const SizedBox(),
-                  ),
-                ],
-              ),
-              Text(
-                title == null ? "" : title!,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: textColor,
+                        )
+                            : const SizedBox(),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                Text(
+                  title == null ? "" : title!,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: textColor,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
