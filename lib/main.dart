@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nime/screens/screens.dart';
-import 'package:flutter_nime/widgets/floatting_menu.dart';
+
+String? authorizationToken;
 
 void main() {
+  authorizationToken = Uri.parse(Uri.base.toString().replaceFirst("/#", "?"))
+      .queryParameters['access_token'];
   runApp(const MyApp());
 }
 
@@ -14,22 +17,22 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-  List<Widget> screens = [const AnimeScreen(), const HomeScreen(), const MangaScreen()];
-  late Widget currentScreen;
+  Map<int, String> routeNames = {
+    0: "animeScreen",
+    1: "homeScren",
+    2: "mangaScreen",
+  };
   int currentScreenIndex = 1;
+
   @override
   void initState() {
     super.initState();
-    currentScreen = screens[1];
   }
 
-  void setScreen(int screenIndex){
-    if (screenIndex != currentScreenIndex){
-      setState(() {
-        currentScreen = screens[screenIndex];
-        currentScreenIndex = screenIndex;
-      });
+  void setScreen(int screenIndex) {
+    if (screenIndex != currentScreenIndex) {
+      Navigator.popAndPushNamed(context, routeNames[screenIndex]!);
+      currentScreenIndex = screenIndex;
     }
   }
 
@@ -41,17 +44,15 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Scaffold(
-        body: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            currentScreen,
-            FloattingMenu(
-              setScreen: setScreen,
-            ),
-          ],
-        ),
+      home: const Scaffold(
+        extendBody: true,
+        body: HomeScreen(),
       ),
+      routes: {
+        "animeScreen": (context) => const AnimeScreen(),
+        "homeScreen": (context) => const HomeScreen(),
+        "mangaScreen": (context) => const MangaScreen(),
+      },
     );
   }
 }

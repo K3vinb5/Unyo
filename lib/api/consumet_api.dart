@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 const String consumetEndPoint = "http://kevin-is-awesome.mooo.com:3000";
 
 Future<String> getAnimeConsumetId(String query) async{
-  print("${consumetEndPoint}/anime/gogoanime/${Uri.parse(query)}?page=1");
-  var url = Uri.parse("${consumetEndPoint}/anime/gogoanime/${query}?page=1");
+  print("$consumetEndPoint/anime/gogoanime/${Uri.parse(query)}?page=1");
+  var url = Uri.parse("$consumetEndPoint/anime/gogoanime/$query?page=1");
   var response = await http.get(url);
 
   if (response.statusCode != 200){
@@ -20,8 +20,8 @@ Future<String> getAnimeConsumetId(String query) async{
 }
 
 Future<String> getAnimeConsumetStream(String consumetId, int episode) async{
-  print("${consumetEndPoint}/anime/gogoanime/watch/${consumetId}-episode-${episode}");
-  var url = Uri.parse("${consumetEndPoint}/anime/gogoanime/watch/${consumetId}-episode-${episode}");
+  print("$consumetEndPoint/anime/gogoanime/watch/$consumetId-episode-$episode");
+  var url = Uri.parse("$consumetEndPoint/anime/gogoanime/watch/$consumetId-episode-$episode");
   var response = await http.get(url);
 
   if (response.statusCode != 200){

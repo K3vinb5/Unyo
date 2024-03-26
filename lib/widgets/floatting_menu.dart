@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 class FloattingMenu extends StatefulWidget {
   const FloattingMenu({super.key, required this.setScreen});
 
-  final void Function(int) setScreen;
+  final void Function(int, BuildContext) setScreen;
 
   @override
   State<FloattingMenu> createState() => _FloattingMenuState();
@@ -48,7 +48,7 @@ class _FloattingMenuState extends State<FloattingMenu> {
                 onTap: () {
                   setState(() {
                     updateMenuItems(index);
-                    widget.setScreen(index);
+                    widget.setScreen(index, context);
                   });
                 },
                 textOrIcon: element,

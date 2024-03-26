@@ -16,7 +16,12 @@ class EpisodeButton extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.only(left: 18.0),
-            child: Text("Episode ${number}"),
+            child: Text(
+              "Episode $number",
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),

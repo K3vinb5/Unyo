@@ -40,6 +40,9 @@ dependencies:
   media_kit_libs_audio: ^1.0.4
   media_kit_libs_video: ^1.0.4
   media_kit_video: ^1.2.4
+  url_launcher: ^6.2.5
+  image_gradient: ^0.0.2
+  dot_navigation_bar: ^1.0.2
 
 dev_dependencies:
   flutter_test:
