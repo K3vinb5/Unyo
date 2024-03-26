@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:image_gradient/image_gradient.dart';
+import 'package:localstorage/localstorage.dart';
 import '../api/anilist_api.dart';
 import 'package:flutter_nime/widgets/widgets.dart';
 import 'package:flutter_nime/models/models.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.usertoken});
+
+  final String? usertoken;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -15,20 +18,35 @@ class _HomeScreenState extends State<HomeScreen> {
   String? bannerImageUrl;
   String? avatarImageUrl;
   String? userName;
+  String? userToken;
   int? userId;
   TextEditingController controller = TextEditingController();
 
   List<AnimeModel>? watchingList;
   List<AnimeModel>? planningList;
   List<AnimeModel>? pausedList;
+  final LocalStorage storage = new LocalStorage('flutter_nime');
+
+  String? getName() {
+    var returnValue = storage.getItem("name");
+    return returnValue;
+  }
 
   @override
   void initState() {
     super.initState();
+    //userToken = widget.usertoken;
+    if (getName() != null){
+      setState(() {
+        userName = getName();
+      });
+    }
   }
 
   void getUserInfo(String user) async {
-    //TODO dehardcode username
+    if (getName() == null){
+      storage.setItem("name", user);
+    }
     userName = user;
     var userInfo = await getUserId(user);
     userId = userInfo;
@@ -104,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 builder: (context) {
                                                   return AlertDialog(
                                                     title:
-                                                        const Text("Paste the link"),
+                                                        const Text("What is your Anilist name"),
                                                     actions: [
                                                       Column(
                                                         mainAxisAlignment:
@@ -148,7 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               ElevatedButton(
                                                                 onPressed: () {
                                                                   Navigator.pop(context);
+                                                                  //getUserToken();
                                                                   getUserInfo(controller.text);
+                                                                  print("name ${getName()}");
                                                                 },
                                                                 child: const Text("Confirm"),
                                                               ),
@@ -201,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: const Text("What is you anilist name?"),
+                                title: const Text("What is you Anilist name?"),
                                 actions: [
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -240,7 +260,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ElevatedButton(
                                             onPressed: () {
                                               Navigator.pop(context);
+                                              //getUserToken();
                                               getUserInfo(controller.text);
+                                              print("name ${getName()}");
                                             },
                                             child: const Text("Confirm"),
                                           ),

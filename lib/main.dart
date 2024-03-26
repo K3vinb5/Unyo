@@ -1,11 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nime/screens/screens.dart';
+import 'package:localstorage/localstorage.dart';
 
 String? authorizationToken;
+final LocalStorage storage = new LocalStorage('flutter_nime');
+
+void _saveToStorage(String key, String value) {
+  storage.setItem(key, value);
+}
+
+String? _isSaved() {
+  var returnValue = storage.getItem("has_saved");
+  return returnValue;
+}
+
+String? getName(){
+  var returnValue = storage.getItem("name");
+  return returnValue;
+}
+
+String _retrieveFromStorage() {
+  return storage.getItem("auth_token");
+}
 
 void main() {
-  authorizationToken = Uri.parse(Uri.base.toString().replaceFirst("/#", "?"))
-      .queryParameters['access_token'];
+  if (_isSaved() == "true") {
+  //ja esta guardado
+    authorizationToken = _retrieveFromStorage();
+  } else {
+    authorizationToken = Uri.parse(Uri.base.toString().replaceFirst("/#", "?")).queryParameters['access_token'];
+    if (authorizationToken != null) {
+      if(authorizationToken!.length > 10){
+        _saveToStorage("auth_token", authorizationToken!);
+        _saveToStorage("has_saved", "true");
+      }
+    }else{
+      _saveToStorage("has_saved", "false");
+    }
+  }
+
+  print("token $authorizationToken");
+
+
   runApp(const MyApp());
 }
 

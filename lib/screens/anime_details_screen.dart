@@ -150,26 +150,33 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 2,
+                      child: Column(
+                        children: [
+                          Text(
+                            widget.currentAnime.title ?? "",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              widget.currentAnime.description
+                                      ?.replaceAll("<br>", "\n").replaceAll("<i>", "").replaceAll("</i>", "") ??
+                                  "",
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    userAnimeModel != null
-                        ? Column(
-                            children: [
-                              Text(
-                                widget.currentAnime.title!,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                widget.currentAnime.description!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          )
-                        : const SizedBox(),
                   ],
                 ),
                 Column(
@@ -185,9 +192,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         itemCount: widget.currentAnime.episodes,
                         itemBuilder: (context, index) {
                           return EpisodeButton(
-                            number: index,
+                            number: index + 1,
                             onTap: () {
-                              openVideo(widget.currentAnime.title!, index);
+                              openVideo(widget.currentAnime.title!, index + 1);
                             },
                           );
                         },

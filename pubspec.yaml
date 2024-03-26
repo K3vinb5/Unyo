@@ -43,6 +43,7 @@ dependencies:
   url_launcher: ^6.2.5
   image_gradient: ^0.0.2
   dot_navigation_bar: ^1.0.2
+  localstorage: ^4.0.1+4
 
 dev_dependencies:
   flutter_test:
