@@ -21,9 +21,13 @@ class _AnimeButtonState extends State<AnimeButton> {
   }
 
   void getBanner() async {
-    while (bannerImageUrl == null){
-      bannerImageUrl = await getRandomAnimeBanner();
+    String? newUrl;
+    while (newUrl == null){
+      newUrl = await getRandomAnimeBanner();
     }
+    setState(() {
+      bannerImageUrl = newUrl;
+    });
   }
 
   @override

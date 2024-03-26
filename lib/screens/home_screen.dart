@@ -15,6 +15,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String? bannerImageUrl;
   String? avatarImageUrl;
   String? userName;
+  int? userId;
+  TextEditingController controller = TextEditingController();
 
   List<AnimeModel>? watchingList;
   List<AnimeModel>? planningList;
@@ -23,17 +25,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    getUserInfo("Kiwib5");
   }
 
   void getUserInfo(String user) async {
     //TODO dehardcode username
     userName = user;
+    var userInfo = await getUserId(user);
+    userId = userInfo;
     String newbannerUrl = await getUserbannerImageUrl(userName!);
     String newavatarUrl = await getUserAvatarImageUrl(userName!);
-    List<AnimeModel> newWatchingAnimeList = await getUserAnimeLists(859862, "Watching");
-    List<AnimeModel> newPlanningAnimeList = await getUserAnimeLists(859862, "Planning");
-    List<AnimeModel> newPausedAnimeList = await getUserAnimeLists(859862, "Paused");
+    List<AnimeModel> newWatchingAnimeList =
+        await getUserAnimeLists(userId!, "Watching");
+    List<AnimeModel> newPlanningAnimeList =
+        await getUserAnimeLists(userId!, "Planning");
+    List<AnimeModel> newPausedAnimeList =
+        await getUserAnimeLists(userId!, "Paused");
     setState(() {
       bannerImageUrl = newbannerUrl;
       avatarImageUrl = newavatarUrl;
@@ -46,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.transparent,
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
@@ -85,6 +92,83 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fontSize: 22,
                                       ),
                                     ),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title:
+                                                        const Text("Paste the link"),
+                                                    actions: [
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              const SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                              Container(
+                                                                width: 300,
+                                                                height: 50,
+                                                                child:
+                                                                    TextField(
+                                                                  controller:
+                                                                      controller,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 50,
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(context);
+                                                                },
+                                                                child: const Text("Cancel"),
+                                                              ),
+                                                              const SizedBox(width: 20,),
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(context);
+                                                                  getUserInfo(controller.text);
+                                                                },
+                                                                child: const Text("Confirm"),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.person,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               )
@@ -104,71 +188,160 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          Padding(
-            padding:
-                EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.1),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      AnimeButton(
-                        text: "Animes",
-                        onTap: () {
-                          Navigator.popAndPushNamed(context, "animeScreen");
+          userName == null
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 100,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("What is you anilist name?"),
+                                actions: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Container(
+                                            width: 300,
+                                            height: 50,
+                                            child: TextField(
+                                              controller: controller,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 50,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("Cancel"),
+                                          ),
+                                          const SizedBox(width: 20,),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              getUserInfo(controller.text);
+                                            },
+                                            child: const Text("Confirm"),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
-                      ),
-                      AnimeButton(
-                        text: "Mangas",
-                        onTap: () {
-                          Navigator.popAndPushNamed(context, "mangaScreen");
-                        },
-                      ),
-                    ],
+                        style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.black12),
+                        ),
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Please Login to Anilist  ",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Icon(
+                              Icons.person,
+                              color: Colors.white,
+                            ),
+                          ],
+                        )),
+                  ],
+                )
+              : Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.width * 0.1),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            AnimeButton(
+                              text: "Animes",
+                              onTap: () {
+                                Navigator.popAndPushNamed(
+                                    context, "animeScreen");
+                              },
+                            ),
+                            AnimeButton(
+                              text: "Mangas",
+                              onTap: () {
+                                Navigator.popAndPushNamed(
+                                    context, "mangaScreen");
+                              },
+                            ),
+                          ],
+                        ),
+                        watchingList != null
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 10),
+                                child: AnimeWidgetList(
+                                  tag: "home-details",
+                                  title: "Continue Watching",
+                                  animeList: watchingList!,
+                                  textColor: Colors.white,
+                                  loadMore: false,
+                                ),
+                              )
+                            : const SizedBox(),
+                        planningList != null
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 10),
+                                child: AnimeWidgetList(
+                                  tag: "home-details",
+                                  title:
+                                      "Why don't you see what you planned! :P",
+                                  animeList: planningList!,
+                                  textColor: Colors.white,
+                                  loadMore: false,
+                                ),
+                              )
+                            : const SizedBox(),
+                        pausedList != null
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 10),
+                                child: AnimeWidgetList(
+                                  tag: "home-details",
+                                  title: "Why don't you resume your animes!",
+                                  animeList: pausedList!,
+                                  textColor: Colors.white,
+                                  loadMore: false,
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
                   ),
-                  watchingList != null
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-                          child: AnimeWidgetList(
-                            tag: "home-details",
-                            title: "Continue Watching",
-                            animeList: watchingList!,
-                            textColor: Colors.white,
-                            loadMore: false,
-                          ),
-                        )
-                      : const SizedBox(),
-                  planningList != null
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-                          child: AnimeWidgetList(
-                            tag: "home-details",
-                            title: "Why don't you see what you planned! :P",
-                            animeList: planningList!,
-                            textColor: Colors.white,
-                            loadMore: false,
-                          ),
-                        )
-                      : const SizedBox(),
-                  pausedList != null
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-                          child: AnimeWidgetList(
-                            tag: "home-details",
-                            title: "Why don't you resume your animes!",
-                            animeList: pausedList!,
-                            textColor: Colors.white,
-                            loadMore: false,
-                          ),
-                        )
-                      : const SizedBox(),
-                ],
-              ),
-            ),
-          ),
+                ),
         ],
       ),
     );

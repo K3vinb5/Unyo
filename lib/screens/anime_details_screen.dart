@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_nime/api/anilist_api.dart';
 import 'package:flutter_nime/models/models.dart';
 import 'package:flutter_nime/screens/video_screen.dart';
 import 'package:flutter_nime/widgets/episode_button.dart';
@@ -9,7 +10,8 @@ import 'package:image_gradient/image_gradient.dart';
 import '../api/consumet_api.dart';
 
 class AnimeDetailsScreen extends StatefulWidget {
-  const AnimeDetailsScreen({super.key, required this.currentAnime, required this.tag});
+  const AnimeDetailsScreen(
+      {super.key, required this.currentAnime, required this.tag});
 
   final AnimeModel currentAnime;
   final String tag;
@@ -20,6 +22,21 @@ class AnimeDetailsScreen extends StatefulWidget {
 
 class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late VideoScreen videoScreen;
+  UserAnimeModel? userAnimeModel;
+
+  @override
+  void initState() {
+    super.initState();
+    setUserAnimeModel();
+  }
+
+  void setUserAnimeModel() async {
+    UserAnimeModel newUserAnimeModel =
+        await getUserAnimeInfo(widget.currentAnime.id);
+    setState(() {
+      userAnimeModel = newUserAnimeModel;
+    });
+  }
 
   void openVideo(String animeTitle, int animeEpisode) async {
     String consumetId = await getAnimeConsumetId(animeTitle);
@@ -36,6 +53,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.transparent,
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
@@ -65,7 +83,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                     padding: const EdgeInsets.only(
                                         top: 16.0, left: 16.0),
                                     child: Hero(
-                                      tag: "${widget.tag}-${widget.currentAnime.id}",
+                                      tag:
+                                          "${widget.tag}-${widget.currentAnime.id}",
                                       child: AnimeWidget(
                                         title: widget.currentAnime.title,
                                         coverImage:
@@ -119,41 +138,64 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
           ),
           Padding(
             padding:
-                EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.1),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 2,
-                      )
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox (
-                        width: MediaQuery.of(context).size.width / 2,
-                        height: MediaQuery.of(context).size.height,
-                        child: ListView.builder(
-                          itemBuilder: (context, index) {
-                            return EpisodeButton(
-                              number: index,
-                              onTap: () {
-                                openVideo(widget.currentAnime.title!, index);
-                              },
-                            );
-                          },
-                        ),
+                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.27,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2,
+                    ),
+                    userAnimeModel != null
+                        ? Column(
+                            children: [
+                              Text(
+                                widget.currentAnime.title!,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                widget.currentAnime.description!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.27,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2,
+                      height: MediaQuery.of(context).size.height * 0.63,
+                      child: ListView.builder(
+                        itemCount: widget.currentAnime.episodes,
+                        itemBuilder: (context, index) {
+                          return EpisodeButton(
+                            number: index,
+                            onTap: () {
+                              openVideo(widget.currentAnime.title!, index);
+                            },
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
