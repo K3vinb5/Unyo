@@ -41,8 +41,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   void openVideo(String animeTitle, int animeEpisode) async {
     String consumetId = await getAnimeConsumetId(animeTitle);
     if (consumetId == "") return; //case error
-    String consumetStream =
-        await getAnimeConsumetStream(consumetId, animeEpisode);
+    String consumetStream = await getAnimeConsumetStream(consumetId, animeEpisode);
     videoScreen = VideoScreen(stream: consumetStream);
     Navigator.push(
       context,

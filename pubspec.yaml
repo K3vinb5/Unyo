@@ -36,14 +36,13 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   http: ^1.2.1
-  media_kit: ^1.1.10+1
-  media_kit_libs_audio: ^1.0.4
-  media_kit_libs_video: ^1.0.4
-  media_kit_video: ^1.2.4
   url_launcher: ^6.2.5
   image_gradient: ^0.0.2
-  dot_navigation_bar: ^1.0.2
   localstorage: ^4.0.1+4
+  video_player: ^2.8.3
+  fvp: ^0.15.0
+  window_manager: ^0.3.8
+  smooth_video_progress: ^0.0.4
 
 dev_dependencies:
   flutter_test:

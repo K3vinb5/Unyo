@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   Navigator.pop(context);
                                                                   //getUserToken();
                                                                   getUserInfo(controller.text);
-                                                                  print("name ${getName()}");
+                                                                  //Navigator.pushNamed(context, "loginScreen");
                                                                 },
                                                                 child: const Text("Confirm"),
                                                               ),

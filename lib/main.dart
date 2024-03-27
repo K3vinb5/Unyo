@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nime/screens/screens.dart';
+import 'package:fvp/fvp.dart' as fvp;
 import 'package:localstorage/localstorage.dart';
 
 String? authorizationToken;
@@ -41,7 +42,7 @@ void main() {
 
   print("token $authorizationToken");
 
-
+  fvp.registerWith();
   runApp(const MyApp());
 }
 
@@ -88,6 +89,7 @@ class _MyAppState extends State<MyApp> {
         "animeScreen": (context) => const AnimeScreen(),
         "homeScreen": (context) => const HomeScreen(),
         "mangaScreen": (context) => const MangaScreen(),
+        //"loginScreen": (context) => const WebViewScreen(),
       },
     );
   }

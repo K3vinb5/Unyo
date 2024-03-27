@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nime/api/anilist_api.dart';
 import 'package:flutter_nime/models/anime_model.dart';
-import 'package:flutter_nime/screens/video_screen.dart';
 import 'package:flutter_nime/widgets/widgets.dart';
 
 class AnimeScreen extends StatefulWidget {
@@ -13,7 +12,6 @@ class AnimeScreen extends StatefulWidget {
 
 class _AnimeScreenState extends State<AnimeScreen> {
   late List<AnimeModel> trendingAnimeList = [];
-  late VideoScreen videoScreen;
 
   @override
   void initState() {
