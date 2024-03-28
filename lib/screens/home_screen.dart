@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shelf/shelf.dart' as shelf;
+import 'package:shelf/shelf_io.dart' as shelfio;
+import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
-import 'package:localstorage/localstorage.dart';
 import '../api/anilist_api.dart';
 import 'package:flutter_nime/widgets/widgets.dart';
 import 'package:flutter_nime/models/models.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+String? accessToken;
+String? refreshToken;
+String? accessCode;
+bool receivedValid = false;
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.usertoken});
+  const HomeScreen({super.key});
 
-  final String? usertoken;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,36 +28,74 @@ class _HomeScreenState extends State<HomeScreen> {
   String? userName;
   String? userToken;
   int? userId;
-  TextEditingController controller = TextEditingController();
+  late SharedPreferences prefs;
+  late HttpServer server;
+
+  Future<void> _startServer() async {
+    handler(shelf.Request request) async {
+      // Extract access token from request URL
+      if (!receivedValid){
+        receivedValid = true;
+        var uri = request.requestedUri;
+        accessCode = request.requestedUri.queryParameters['code'];
+        receivedValid = true;
+        print('Access Code: $accessCode');
+        List<String> codes = await getUserAccessToken(accessCode!);
+        accessToken = codes[0];
+        print("AccessToken: $accessToken");
+        getUserInfo();
+        await prefs.setString("access_token", accessToken!);
+      }else{
+        //TODO showDialog
+      }
+      // Return a response to close the connection
+      return shelf.Response.ok('Authorization successful. You can close this window.');
+    }
+    // Start the local web server
+    server = await shelfio.serve(handler, 'localhost', 9999);
+    print('Local server running on port ${server.port}');
+  }
+
+  void setSharedPreferences() async{
+    prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("access_token") == null){
+      _startServer();
+    }else{
+      accessToken = prefs.getString("access_token");
+      getUserInfo();
+    }
+  }
 
   List<AnimeModel>? watchingList;
   List<AnimeModel>? planningList;
   List<AnimeModel>? pausedList;
-  final LocalStorage storage = new LocalStorage('flutter_nime');
+  final String clientId = '17550';
+  final String redirectUri = 'http://localhost:9999/auth';
 
-  String? getName() {
-    var returnValue = storage.getItem("name");
-    return returnValue;
+  Future<void> login() async {
+    if (accessToken == null){
+
+      final String authUrl =
+          'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code';
+
+      if (await canLaunchUrl(Uri.parse(authUrl))) {
+        await launchUrl(Uri.parse(authUrl));
+      } else {
+        throw 'Could not launch $authUrl';
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    //userToken = widget.usertoken;
-    if (getName() != null){
-      setState(() {
-        userName = getName();
-      });
-    }
+    setSharedPreferences();
   }
 
-  void getUserInfo(String user) async {
-    if (getName() == null){
-      storage.setItem("name", user);
-    }
-    userName = user;
-    var userInfo = await getUserId(user);
-    userId = userInfo;
+  void getUserInfo() async {
+    List<String> userNameAndId = await getUserNameAndId(accessToken!);
+    userName = userNameAndId[0];
+    userId = int.parse(userNameAndId[1]);
     String newbannerUrl = await getUserbannerImageUrl(userName!);
     String newavatarUrl = await getUserAvatarImageUrl(userName!);
     List<AnimeModel> newWatchingAnimeList =
@@ -117,69 +163,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           IconButton(
                                             onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title:
-                                                        const Text("What is your Anilist name"),
-                                                    actions: [
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              const SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              Container(
-                                                                width: 300,
-                                                                height: 50,
-                                                                child:
-                                                                    TextField(
-                                                                  controller:
-                                                                      controller,
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 50,
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              ElevatedButton(
-                                                                onPressed: () {
-                                                                  Navigator.pop(context);
-                                                                },
-                                                                child: const Text("Cancel"),
-                                                              ),
-                                                              const SizedBox(width: 20,),
-                                                              ElevatedButton(
-                                                                onPressed: () {
-                                                                  Navigator.pop(context);
-                                                                  //getUserToken();
-                                                                  getUserInfo(controller.text);
-                                                                  //Navigator.pushNamed(context, "loginScreen");
-                                                                },
-                                                                child: const Text("Confirm"),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
                                             },
                                             icon: const Icon(
                                               Icons.person,
@@ -217,75 +200,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text("What is you Anilist name?"),
-                                actions: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          Container(
-                                            width: 300,
-                                            height: 50,
-                                            child: TextField(
-                                              controller: controller,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 50,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text("Cancel"),
-                                          ),
-                                          const SizedBox(width: 20,),
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              //getUserToken();
-                                              getUserInfo(controller.text);
-                                              print("name ${getName()}");
-                                            },
-                                            child: const Text("Confirm"),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          login();
+                          //getUserInfo();
                         },
                         style: const ButtonStyle(
                           backgroundColor:
                               MaterialStatePropertyAll(Colors.black12),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Text(
-                              "Please Login to Anilist  ",
+                              accessToken == null ? "Please Login to Anilist  " : "Please Wait...  ",
                               style: TextStyle(color: Colors.white),
                             ),
-                            Icon(
+                            const Icon(
                               Icons.person,
                               color: Colors.white,
                             ),

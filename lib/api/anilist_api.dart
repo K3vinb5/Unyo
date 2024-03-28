@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter_nime/main.dart';
 import 'package:flutter_nime/models/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
@@ -257,27 +258,51 @@ Future<List<AnimeModel>> getUserAnimeLists(int userId, String listName) async {
   return animeModelList;
 }
 
-Future<int> getUserId(String name) async {
-  var url = Uri.parse(anilistEndpoint);
+Future<List<String>> getUserAccessToken(String code) async{
+  var url = Uri.parse("https://anilist.co/api/v2/oauth/token");
   Map<String, dynamic> query = {
-    "query": "query(\$name:String){User(name: \$name){id,}}",
-    "variables": {"name": name},
+    "grant_type": "authorization_code",
+    "client_id": 17550,
+    "client_secret": "xI8KTZlKm2F3kHXLko1ArQ21bKap4MojgDTk6Ukx",
+    "redirect_uri": "http://localhost:9999/auth", // http://example.com/callback
+    "code": code,
   };
   var response = await http.post(
     url,
-    headers: {"Content-Type": "application/json"},
+    headers: {
+      "Content-Type": "application/json",
+      "Accept" : "application/json",
+    },
+    body: json.encode(query),
+  );
+  print(response.body);
+  Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+  return [jsonResponse["access_token"], jsonResponse["refresh_token"]];
+}
+
+Future<List<String>> getUserNameAndId(String access_token) async {
+  var url = Uri.parse(anilistEndpoint);
+  Map<String, dynamic> query = {
+    "query": "query {Viewer{name id}}",
+  };
+  var response = await http.post(
+    url,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization" : "Bearer $access_token"
+    },
     body: json.encode(query),
   );
   Map<String, dynamic> jsonResponse = json.decode(response.body);
-  return jsonResponse["data"]["User"]["id"];
+  return [jsonResponse["data"]["Viewer"]["name"], jsonResponse["data"]["Viewer"]["id"].toString()];
 }
-
 
 Future<UserAnimeModel> getUserAnimeInfo(int mediaId) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query":
-    "query(\$mediaId:Int){Media(id:\$mediaId){id title{userPreferred}coverImage{large}bannerImage type status(version:2)episodes chapters volumes isFavourite mediaListEntry{id mediaId status score advancedScores progress progressVolumes repeat priority private hiddenFromStatusLists customLists notes updatedAt startedAt{year month day}completedAt{year month day}user{id name}}}}",
+        "query(\$mediaId:Int){Media(id:\$mediaId){id title{userPreferred}coverImage{large}bannerImage type status(version:2)episodes chapters volumes isFavourite mediaListEntry{id mediaId status score advancedScores progress progressVolumes repeat priority private hiddenFromStatusLists customLists notes updatedAt startedAt{year month day}completedAt{year month day}user{id name}}}}",
     "variables": {
       "variables": {
         "mediaId": mediaId,
@@ -290,8 +315,8 @@ Future<UserAnimeModel> getUserAnimeInfo(int mediaId) async {
     body: json.encode(query),
   );
   Map<String, dynamic> jsonResponse = json.decode(response.body);
-  Map<String,
-      dynamic> mediaListEntry = jsonResponse["data"]["Media"]["mediaListEntry"];
+  Map<String, dynamic> mediaListEntry =
+      jsonResponse["data"]["Media"]["mediaListEntry"];
   return UserAnimeModel(
     score: mediaListEntry["score"],
     progress: mediaListEntry["progress"],
