@@ -29,6 +29,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late int currentSearch;
   int currentSource = 0;
   late Map<int, Function> setDropDowns;
+  String? randomAnimeBanner;
 
   @override
   void initState() {
@@ -47,12 +48,19 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       },
     };
     updateSource(0);
+    setRandomBanner();
   }
 
   void setUserAnimeModel() async {
     //UserAnimeModel newUserAnimeModel =
     //await getUserAnimeInfo(widget.currentAnime.id);
     setState(() {});
+  }
+
+  void setRandomBanner() async{
+    while (randomAnimeBanner == null){
+      randomAnimeBanner = await getRandomAnimeBanner();
+    }
   }
 
   void setSearches(Future<List<String>> Function(String) getIds) async {
@@ -75,19 +83,24 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     if (currentSource == 0) {
       consumetStream = await getAnimeConsumetGogoAnimeStream(
           animeTitle, animeEpisode, context);
-      videoScreen = VideoScreen(stream: consumetStream,);
-
+      videoScreen = VideoScreen(
+        stream: consumetStream,
+      );
     } else if (currentSource == 1) {
       List<String> streamCaption =
           await getAnimeConsumetZoroStream(animeTitle, animeEpisode, context);
 
       consumetStream = streamCaption[0];
-      videoScreen = VideoScreen(stream: consumetStream, captions: streamCaption[1],);
+      videoScreen = VideoScreen(
+        stream: consumetStream,
+        captions: streamCaption[1],
+      );
     } else {
       consumetStream = await getAnimeConsumetGogoAnimeStream(
           animeTitle, animeEpisode, context);
-      videoScreen = VideoScreen(stream: consumetStream,);
-
+      videoScreen = VideoScreen(
+        stream: consumetStream,
+      );
     }
     Navigator.push(
       context,
@@ -159,71 +172,66 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
         children: [
           Column(
             children: [
-              widget.currentAnime.bannerImage != null
-                  ? Stack(
-                      children: [
-                        ImageGradient.linear(
-                          image: Image.network(
-                            widget.currentAnime.bannerImage!,
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.35,
-                            fit: BoxFit.fill,
-                          ),
-                          colors: const [Colors.white, Colors.black87],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                        widget.currentAnime.coverImage != null
-                            ? Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 16.0, left: 16.0),
-                                    child: Hero(
-                                      tag:
-                                          "${widget.tag}-${widget.currentAnime.id}",
-                                      child: AnimeWidget(
-                                        title: widget.currentAnime.title,
-                                        coverImage:
-                                            widget.currentAnime.coverImage,
-                                        score: null,
-                                        onTap: () {},
-                                        textColor: Colors.white,
+              Stack(
+                children: [
+                  ImageGradient.linear(
+                    image: Image.network(
+                      widget.currentAnime.bannerImage ?? randomAnimeBanner!,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      fit: BoxFit.fill,
+                    ),
+                    colors: const [Colors.white, Colors.black87],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  widget.currentAnime.coverImage != null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 16.0, left: 16.0),
+                              child: Hero(
+                                tag: "${widget.tag}-${widget.currentAnime.id}",
+                                child: AnimeWidget(
+                                  title: widget.currentAnime.title,
+                                  coverImage: widget.currentAnime.coverImage,
+                                  score: null,
+                                  onTap: () {},
+                                  textColor: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 16.0, right: 16.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.arrow_back,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      "Go Back",
+                                      style: TextStyle(
+                                        color: Colors.white,
                                       ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 16.0, right: 16.0),
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Row(
-                                        children: [
-                                          Icon(
-                                            Icons.arrow_back,
-                                            color: Colors.white,
-                                          ),
-                                          Text(
-                                            "Go Back",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox(),
-                      ],
-                    )
-                  : const SizedBox(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : const SizedBox(),
+                ],
+              ),
               Expanded(
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -250,7 +258,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 2,
-                      child: Column(
+                      height: MediaQuery.of(context).size.height * 0.63,
+                      child: ListView(
                         children: [
                           Row(
                             children: [
@@ -326,12 +335,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           const SizedBox(
                             height: 10,
                           ),
-                          Text(
-                            widget.currentAnime.title ?? "",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              widget.currentAnime.title ?? "",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           const SizedBox(
