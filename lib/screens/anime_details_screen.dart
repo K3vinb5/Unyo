@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_nime/api/anilist_api.dart';
 import 'package:flutter_nime/models/models.dart';
 import 'package:flutter_nime/screens/video_screen.dart';
-import 'package:flutter_nime/widgets/episode_button.dart';
 import 'package:flutter_nime/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
@@ -29,7 +27,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late int currentSearch;
   int currentSource = 0;
   late Map<int, Function> setDropDowns;
-  String? randomAnimeBanner;
 
   @override
   void initState() {
@@ -48,7 +45,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       },
     };
     updateSource(0);
-    setRandomBanner();
   }
 
   void setUserAnimeModel() async {
@@ -57,11 +53,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     setState(() {});
   }
 
-  void setRandomBanner() async{
-    while (randomAnimeBanner == null){
-      randomAnimeBanner = await getRandomAnimeBanner();
-    }
-  }
 
   void setSearches(Future<List<String>> Function(String) getIds) async {
     List<String> newSearches = await getIds(widget.currentAnime.title!);
@@ -176,10 +167,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 children: [
                   ImageGradient.linear(
                     image: Image.network(
-                      widget.currentAnime.bannerImage ?? randomAnimeBanner!,
+                      widget.currentAnime.bannerImage ?? widget.currentAnime.coverImage!,
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.35,
-                      fit: BoxFit.fill,
+                      fit: widget.currentAnime.bannerImage != null ? BoxFit.fill : BoxFit.cover,
                     ),
                     colors: const [Colors.white, Colors.black87],
                     begin: Alignment.topCenter,
@@ -196,7 +187,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               child: Hero(
                                 tag: "${widget.tag}-${widget.currentAnime.id}",
                                 child: AnimeWidget(
-                                  title: widget.currentAnime.title,
+                                  title: "",
                                   coverImage: widget.currentAnime.coverImage,
                                   score: null,
                                   onTap: () {},
@@ -204,26 +195,31 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 16.0, right: 16.0),
-                              child: ElevatedButton(
-                                onPressed: () {
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: InkWell(
+                                onTap: () {
                                   Navigator.pop(context);
                                 },
-                                child: const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.arrow_back,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      "Go Back",
-                                      style: TextStyle(
+                                child: const Padding(
+                                  padding:  EdgeInsets.all(8.0),
+                                  child:  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.arrow_back,
                                         color: Colors.white,
                                       ),
-                                    ),
-                                  ],
+                                      Text(
+                                        "  Home Screen",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -328,7 +324,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 onPressed: () {
                                   openDialog(context);
                                 },
-                                child: const Text("Wrong Anime?"),
+                                child: const Text("Wrong Title?"),
                               ),
                             ],
                           ),
@@ -373,7 +369,20 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.27,
+                      height: MediaQuery.of(context).size.height * 0.22,
+                    ),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Episodes:",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 21,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 2,

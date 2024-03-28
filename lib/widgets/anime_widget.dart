@@ -23,19 +23,17 @@ class AnimeWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric( horizontal: 8.0),
         child: InkWell(
           onTap: onTap,
           child: SizedBox(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.28,
             width: MediaQuery
                 .of(context)
                 .size
                 .width * 0.1,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Stack(
                   alignment: Alignment.bottomRight,
@@ -45,7 +43,6 @@ class AnimeWidget extends StatelessWidget {
                           .of(context)
                           .size
                           .height * 0.28,
-                      width: 200,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         image: DecorationImage(

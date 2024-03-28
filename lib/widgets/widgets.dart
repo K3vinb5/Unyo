@@ -4,3 +4,6 @@ export 'episode_button.dart';
 export 'floatting_menu.dart';
 export 'menu_button.dart';
 export 'anime_button.dart';
+export 'anime_list_component_widget.dart';
+export 'styled_dropdown.dart';
+export 'page_banner_widget.dart';

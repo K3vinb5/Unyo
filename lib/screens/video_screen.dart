@@ -296,7 +296,6 @@ class _ControlsOverlay extends StatelessWidget {
 
 class _VideoProgressSlider extends StatelessWidget {
   const _VideoProgressSlider({
-    super.key,
     required this.position,
     required this.duration,
     required this.controller,

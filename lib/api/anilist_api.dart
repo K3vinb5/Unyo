@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_nime/main.dart';
 import 'package:flutter_nime/models/models.dart';
+import 'package:flutter_nime/screens/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -103,16 +104,17 @@ Future<List<AnimeModel>> getAnimeModelListSeasonPopular(
   }
 }
 
-Future<List<AnimeModel>> getAnimeModelListSearch(
-    int page, String search, int n) async {
+Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort, String season, String format, String year, int n) async {
   Map<String, dynamic> query = {
-    "query":
-        "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id title{userPreferred}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
-    "variables": {
-      "page": page,
-      "type": "ANIME",
-      "sort": "SEARCH_MATCH",
-      "search": search,
+    "query" : "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id title{userPreferred}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
+    "variables" : {
+      "page":1,
+      "type":"ANIME",
+      if (sort == "Select Sorting") "sort": "SEARCH_MATCH" else "sort" : sort.toUpperCase(),
+      if( format != "Select Format") "format" : format.toUpperCase(),
+      if (season != "Select Season") "season": season.toUpperCase(),
+      if (year != "Select Year") "seasonYear": int.parse(year),
+      "search": search
     }
   };
   var url = Uri.parse(anilistEndpoint);
@@ -127,7 +129,7 @@ Future<List<AnimeModel>> getAnimeModelListSearch(
   } else {
     List<dynamic> media = jsonDecode(response.body)["data"]["Page"]["media"];
     List<AnimeModel> list = [];
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < media.length; i++) {
       Map<String, dynamic> json = media[i];
       list.add(AnimeModel(
         id: json["id"],
@@ -258,7 +260,7 @@ Future<List<AnimeModel>> getUserAnimeLists(int userId, String listName) async {
   return animeModelList;
 }
 
-Future<List<String>> getUserAccessToken(String code) async{
+Future<List<String>> getUserAccessToken(String code) async {
   var url = Uri.parse("https://anilist.co/api/v2/oauth/token");
   Map<String, dynamic> query = {
     "grant_type": "authorization_code",
@@ -271,7 +273,7 @@ Future<List<String>> getUserAccessToken(String code) async{
     url,
     headers: {
       "Content-Type": "application/json",
-      "Accept" : "application/json",
+      "Accept": "application/json",
     },
     body: json.encode(query),
   );
@@ -290,12 +292,15 @@ Future<List<String>> getUserNameAndId(String access_token) async {
     url,
     headers: {
       "Content-Type": "application/json",
-      "Authorization" : "Bearer $access_token"
+      "Authorization": "Bearer $access_token"
     },
     body: json.encode(query),
   );
   Map<String, dynamic> jsonResponse = json.decode(response.body);
-  return [jsonResponse["data"]["Viewer"]["name"], jsonResponse["data"]["Viewer"]["id"].toString()];
+  return [
+    jsonResponse["data"]["Viewer"]["name"],
+    jsonResponse["data"]["Viewer"]["id"].toString()
+  ];
 }
 
 Future<UserAnimeModel> getUserAnimeInfo(int mediaId) async {
@@ -311,7 +316,10 @@ Future<UserAnimeModel> getUserAnimeInfo(int mediaId) async {
   };
   var response = await http.post(
     url,
-    headers: {"Content-Type": "application/json"},
+    headers: {
+      "Authorization" : "Bearer $accessToken",
+      "Content-Type": "application/json",
+    },
     body: json.encode(query),
   );
   Map<String, dynamic> jsonResponse = json.decode(response.body);
