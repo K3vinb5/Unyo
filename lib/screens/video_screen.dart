@@ -1,6 +1,7 @@
 import 'dart:async';
-
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
 import 'package:video_player/video_player.dart';
@@ -9,9 +10,10 @@ import 'package:window_manager/window_manager.dart';
 bool fullScreen = false;
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen({super.key, required this.stream});
+  const VideoScreen({super.key, required this.stream, this.captions});
 
   final String stream;
+  final String? captions;
 
   @override
   _VideoScreenState createState() => _VideoScreenState();
@@ -22,12 +24,17 @@ class _VideoScreenState extends State<VideoScreen> {
   Timer? _hideControlsTimer;
   bool _showControls = true;
   bool paused = false;
+  String? captions;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.stream);
-
+    _controller = VideoPlayerController.network(
+      widget.stream,
+      closedCaptionFile:
+          widget.captions != null ? loadCaptions(widget.captions!) : null,
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    );
     _controller.addListener(() {
       setState(() {});
     });
@@ -44,11 +51,61 @@ class _VideoScreenState extends State<VideoScreen> {
     super.dispose();
   }
 
-  void _toggleControlsVisibility() {
-    setState(() {
-      _showControls = !_showControls;
-    });
-    _resetHideControlsTimer();
+  String replaceSecond(String original, String pattern, String replacement) {
+    int firstIndex = original.indexOf(pattern);
+    if (firstIndex != -1) {
+      int secondIndex = original.indexOf(pattern, firstIndex + 1);
+      if (secondIndex != -1) {
+        return original.replaceFirst(pattern, replacement, secondIndex);
+      }
+    }
+    return original;
+  }
+
+  /*String replaceSecondAndGreater(String original, String pattern, String replacement) {
+    int index = -1;
+    int count = 0;
+
+    while (true) {
+      index = original.indexOf(pattern, index + 1);
+      if (index == -1) {
+        break;
+      }
+      count++;
+      if (count >= 2) {
+        original = original.replaceFirst(pattern, replacement, index);
+      }
+    }
+
+    return original;
+  }*/
+
+  String formatCaptions(String captions) {
+    // Split the captions into pieces based on empty lines
+    List<String> pieces = captions.split('\n\n');
+    List<String> formattedPieces = [];
+    for(int i = 0; i < pieces.length; i++){
+      formattedPieces.add(replaceSecond(pieces[i], "\n", " "));
+    }
+    // Join the formatted pieces back together with empty lines
+    String formattedCaptions = formattedPieces.join('\n\n');
+
+    return formattedCaptions;
+  }
+
+  Future<ClosedCaptionFile> loadCaptions(String url) async {
+    var httpClient = HttpClient();
+    try {
+      var request = await httpClient.getUrl(Uri.parse(url));
+      var response = await request.close();
+      var bytes = await consolidateHttpClientResponseBytes(response);
+      String content = String.fromCharCodes(bytes);
+      return WebVTTCaptionFile(formatCaptions(content));
+    } catch (error) {
+      print("Error downloading captions");
+    }
+    print("Empty");
+    return WebVTTCaptionFile("");
   }
 
   void _resetHideControlsTimer() {
@@ -77,8 +134,14 @@ class _VideoScreenState extends State<VideoScreen> {
                   onHover: (event) {
                     _resetHideControlsTimer();
                   },
-                  cursor: _showControls ? SystemMouseCursors.basic : SystemMouseCursors.none,
+                  cursor: _showControls
+                      ? SystemMouseCursors.basic
+                      : SystemMouseCursors.none,
                   child: VideoPlayer(_controller),
+                ),
+                ClosedCaption(
+                  text: _controller.value.caption.text,
+
                 ),
                 AnimatedOpacity(
                   opacity: _showControls ? 1.0 : 0.0,
@@ -133,7 +196,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     Navigator.pop(context);
                   }
                 },
-                color : Colors.white,
+                color: Colors.white,
               ),
             ),
           ],

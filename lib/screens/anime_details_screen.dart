@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_nime/api/anilist_api.dart';
 import 'package:flutter_nime/models/models.dart';
 import 'package:flutter_nime/screens/video_screen.dart';
 import 'package:flutter_nime/widgets/episode_button.dart';
 import 'package:flutter_nime/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
+import 'package:collection/collection.dart';
 
 import '../api/consumet_api.dart';
 
@@ -23,29 +25,128 @@ class AnimeDetailsScreen extends StatefulWidget {
 class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late VideoScreen videoScreen;
   UserAnimeModel? userAnimeModel;
+  List<String> searches = [];
+  late int currentSearch;
+  int currentSource = 0;
+  late Map<int, Function> setDropDowns;
 
   @override
   void initState() {
     super.initState();
-    setUserAnimeModel();
+    setDropDowns = {
+      0: () {
+        //gogoanime
+        setSearches(getAnimeConsumetGogoAnimeIds);
+      },
+      1: () {
+        //zoro
+        setSearches(getAnimeConsumetZoroIds);
+      },
+      2: () {
+        //animepahe
+      },
+    };
+    updateSource(0);
   }
 
   void setUserAnimeModel() async {
-    UserAnimeModel newUserAnimeModel =
-        await getUserAnimeInfo(widget.currentAnime.id);
+    //UserAnimeModel newUserAnimeModel =
+    //await getUserAnimeInfo(widget.currentAnime.id);
+    setState(() {});
+  }
+
+  void setSearches(Future<List<String>> Function(String) getIds) async {
+    List<String> newSearches = await getIds(widget.currentAnime.title!);
     setState(() {
-      userAnimeModel = newUserAnimeModel;
+      searches = newSearches;
+    });
+  }
+
+  void updateSource(int newSource) {
+    setState(() {
+      currentSource = newSource;
+      currentSearch = 0;
+      setDropDowns[newSource]!();
     });
   }
 
   void openVideo(String animeTitle, int animeEpisode) async {
-    String consumetId = await getAnimeConsumetId(animeTitle);
-    if (consumetId == "") return; //case error
-    String consumetStream = await getAnimeConsumetStream(consumetId, animeEpisode);
-    videoScreen = VideoScreen(stream: consumetStream);
+    late String consumetStream;
+    if (currentSource == 0) {
+      consumetStream = await getAnimeConsumetGogoAnimeStream(
+          animeTitle, animeEpisode, context);
+      videoScreen = VideoScreen(stream: consumetStream,);
+
+    } else if (currentSource == 1) {
+      List<String> streamCaption =
+          await getAnimeConsumetZoroStream(animeTitle, animeEpisode, context);
+
+      consumetStream = streamCaption[0];
+      videoScreen = VideoScreen(stream: consumetStream, captions: streamCaption[1],);
+    } else {
+      consumetStream = await getAnimeConsumetGogoAnimeStream(
+          animeTitle, animeEpisode, context);
+      videoScreen = VideoScreen(stream: consumetStream,);
+
+    }
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => videoScreen),
+    );
+  }
+
+  void openDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Select Title"),
+          actions: [
+            Column(
+              children: [
+                const Text("Please select new title"),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    DropdownMenu(
+                      onSelected: (value) {
+                        currentSearch = value!;
+                      },
+                      dropdownMenuEntries: [
+                        ...searches.mapIndexed(
+                          (index, title) {
+                            return DropdownMenuEntry(
+                              value: index,
+                              label: title,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("Confirm"),
+                    ),
+                  ],
+                ),
+              ],
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -151,6 +252,80 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                       width: MediaQuery.of(context).size.width / 2,
                       child: Column(
                         children: [
+                          Row(
+                            children: [
+                              //TODO dropdowns
+                              const SizedBox(
+                                width: 16,
+                              ),
+                              DropdownButton(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
+                                iconDisabledColor: Colors.white,
+                                value: currentSource,
+                                dropdownColor: Colors.black,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
+                                items: [
+                                  DropdownMenuItem(
+                                    value: 0,
+                                    onTap: () {
+                                      updateSource(0);
+                                    },
+                                    child: const Text(
+                                      "GogoAnime",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 1,
+                                    onTap: () {
+                                      updateSource(1);
+                                    },
+                                    child: const Text(
+                                      "Zoro",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 2,
+                                    onTap: () {
+                                      updateSource(2);
+                                    },
+                                    child: const Text(
+                                      "AnimePahe",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (index) {},
+                              ),
+                              const SizedBox(
+                                width: 16.0,
+                              ),
+                              ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                    Color.fromARGB(255, 37, 37, 37),
+                                  ),
+                                  foregroundColor: MaterialStatePropertyAll(
+                                    Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  openDialog(context);
+                                },
+                                child: const Text("Wrong Anime?"),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           Text(
                             widget.currentAnime.title ?? "",
                             style: const TextStyle(
@@ -163,10 +338,13 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                             height: 10,
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Text(
                               widget.currentAnime.description
-                                      ?.replaceAll("<br>", "\n").replaceAll("<i>", "").replaceAll("</i>", "") ??
+                                      ?.replaceAll("<br>", "\n")
+                                      .replaceAll("<i>", "")
+                                      .replaceAll("</i>", "") ??
                                   "",
                               style: const TextStyle(
                                 color: Colors.white,
@@ -193,7 +371,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           return EpisodeButton(
                             number: index + 1,
                             onTap: () {
-                              openVideo(widget.currentAnime.title!, index + 1);
+                              openVideo(searches[currentSearch], index + 1);
                             },
                           );
                         },
