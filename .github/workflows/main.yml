@@ -31,9 +31,13 @@ jobs:
       run: flutter analyze
 
     - name: Build app
-      run: flutter build ${matrix.os == 'windows-latest' ? 'windows' : 'linux'}
-      if: matrix.os != 'macos-latest'
+      run: flutter build windows --release
+      if: matrix.os == 'windows-latest'
 
+    - name: Build macOS app
+      run: flutter build linux --release
+      if: matrix.os == 'ubuntu-latest'
+      
     - name: Build macOS app
       run: flutter build macos --release
       if: matrix.os == 'macos-latest'
