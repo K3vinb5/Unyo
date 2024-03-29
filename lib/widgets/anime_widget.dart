@@ -23,14 +23,11 @@ class AnimeWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Padding(
-        padding: const EdgeInsets.symmetric( horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: InkWell(
           onTap: onTap,
           child: SizedBox(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width * 0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -39,10 +36,7 @@ class AnimeWidget extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   children: [
                     Container(
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.28,
+                      height: MediaQuery.of(context).size.height * 0.28,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         image: DecorationImage(
@@ -52,20 +46,30 @@ class AnimeWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                        padding: const EdgeInsets.only(bottom: 18.0, right: 8.0),
-                        child: score != null
-                            ? CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: Text(
-                            score == null ? "" : score!.toString(),
-                            style: const TextStyle(
-                              color: Colors.black,
+                    score != null
+                        ? Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.only(bottomRight: Radius.circular(20), topLeft: Radius.circular(50)),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              score == null ? "" : "  ${(score! / 10)}",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        )
-                            : const SizedBox(),
-                    ),
+                            const Icon(Icons.star, color: Colors.black, size: 15,),
+                          ],
+                        ),
+                      ),
+                    )
+                        : const SizedBox(),
                   ],
                 ),
                 Text(

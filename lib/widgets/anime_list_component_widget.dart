@@ -2,9 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nime/models/anime_model.dart';
 import 'package:image_gradient/image_gradient.dart';
+import 'package:flutter_nime/screens/screens.dart';
 
 class AnimeListComponentWidget extends StatelessWidget {
-  const AnimeListComponentWidget(
+   AnimeListComponentWidget(
       {super.key,
       required this.animeModel,
       required this.width,
@@ -18,6 +19,18 @@ class AnimeListComponentWidget extends StatelessWidget {
   final AnimeModel animeModel;
   final double horizontalPadding;
   final double verticalPadding;
+  late AnimeDetailsScreen animeScreen;
+
+  void openAnime(AnimeModel currentAnime, BuildContext context) {
+    animeScreen = AnimeDetailsScreen(
+      currentAnime: currentAnime,
+      tag: "",
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => animeScreen),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +58,7 @@ class AnimeListComponentWidget extends StatelessWidget {
             ),
           ),
           child: InkWell(
-            onTap: (){
-              //TODO finish onTap
-            },
+            onTap: (){openAnime(animeModel, context);},
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

@@ -69,7 +69,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
                     widget.title,
                     style: TextStyle(
@@ -106,8 +106,8 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                   //load More
                   widget.loadMore
                       ? AnimeWidget(
-                          title: "Load More",
-                          score: -1,
+                          title: "",
+                          score: null,
                           coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
                           onTap: () async {
                             var newTrendingList =

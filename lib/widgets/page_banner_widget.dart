@@ -37,25 +37,28 @@ class PageBannerWidget extends StatelessWidget {
                 onTap: () {},
                 textColor: Colors.white,
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    animeModel.title!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+              Padding(
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.06, left: 25),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      animeModel.title!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 21,
+                      ),
                     ),
-                  ),
-                  Text(
-                    animeModel.status!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      animeModel.status!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               )
             ],
           ),

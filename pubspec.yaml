@@ -44,6 +44,7 @@ dependencies:
   smooth_video_progress: ^0.0.4
   shelf: ^1.4.1
   shared_preferences: ^2.2.2
+  keep_screen_on: ^3.0.0
 
 dev_dependencies:
   flutter_test:
