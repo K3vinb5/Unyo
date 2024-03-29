@@ -61,6 +61,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/${{ matrix.os == 'macos-latest' ? 'macos/Build/Products/Release/' : matrix.os == 'windows-latest' ? 'windows/runner/Release/' : 'linux/' }}
-        asset_name: ${matrix.os == 'macos-latest' ? 'your_app_macos.zip' : matrix.os == 'windows-latest' ? 'your_app_windows.zip' : 'your_app_linux.zip' }
+        asset_path: ${{ format('{0}/{1}', github.workspace, env.asset_path[runner.os]) }}
+        asset_name: your_app_{{ contains(matrix.os, 'macos-latest') && 'macos.zip' || contains(matrix.os, 'windows-latest') && 'windows.zip' || 'linux.zip' }}
         asset_content_type: application/zip
