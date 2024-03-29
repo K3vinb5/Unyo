@@ -123,6 +123,7 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.black,
       child: Center(
         child: Stack(
           alignment: Alignment.topLeft,

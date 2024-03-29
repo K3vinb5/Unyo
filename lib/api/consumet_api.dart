@@ -6,81 +6,49 @@ import 'package:collection/collection.dart';
 
 const String consumetEndPoint = "http://kevin-is-awesome.mooo.com:3000";
 
-Future<String> getAnimeConsumetGogoAnimeId(String query) async {
-  //print("$consumetEndPoint/anime/gogoanime/${Uri.parse(query)}?page=1");
+Future<List<List<String>>> getAnimeConsumetGogoAnimeIds(String query) async{
+  List<String> titles = [];
+  List<String> ids = [];
   var url = Uri.parse("$consumetEndPoint/anime/gogoanime/$query?page=1");
   print(url);
   var response = await http.get(url);
   if (response.statusCode != 200) {
     print("ERROR CONSUMET_ID: ${response.body}");
-    return "";
-  }
-
-  List<dynamic> results = jsonDecode(response.body)["results"];
-  Map<String, dynamic> first = results[0];
-
-  return first["id"];
-}
-
-Future<List<String>> getAnimeConsumetGogoAnimeIds(String query) async{
-  List<String> returnList = [];
-  var url = Uri.parse("$consumetEndPoint/anime/gogoanime/$query?page=1");
-  print(url);
-  var response = await http.get(url);
-  if (response.statusCode != 200) {
-    print("ERROR CONSUMET_ID: ${response.body}");
-    return returnList;
+    return [];
   }
 
   List<dynamic> results = jsonDecode(response.body)["results"];
 
   for(int i = 0; i < results.length ; i++){
-    returnList.add(results[i]["title"]);
+    titles.add(results[i]["title"]);
+    ids.add(results[i]["id"]); //TODO verify
   }
-  return returnList;
+  return [titles, ids];
 }
 
-//ZORO
-Future<String> getAnimeConsumetZoroId(String query) async {
-  //print("$consumetEndPoint/anime/gogoanime/${Uri.parse(query)}?page=1");
+Future<List<List<String>>> getAnimeConsumetZoroIds(String query) async{
+  List<String> titles = [];
+  List<String> ids = [];
   var url = Uri.parse("$consumetEndPoint/anime/zoro/$query?page=1");
   print(url);
   var response = await http.get(url);
   if (response.statusCode != 200) {
     print("ERROR CONSUMET_ID: ${response.body}");
-    return "";
-  }
-
-  List<dynamic> results = jsonDecode(response.body)["results"];
-  Map<String, dynamic> first = results[0];
-
-  return first["id"];
-}
-
-Future<List<String>> getAnimeConsumetZoroIds(String query) async{
-  List<String> returnList = [];
-  var url = Uri.parse("$consumetEndPoint/anime/zoro/$query?page=1");
-  print(url);
-  var response = await http.get(url);
-  if (response.statusCode != 200) {
-    print("ERROR CONSUMET_ID: ${response.body}");
-    return returnList;
+    return [];
   }
 
   List<dynamic> results = jsonDecode(response.body)["results"];
 
   for(int i = 0; i < results.length ; i++){
-    returnList.add(results[i]["title"]);
+    titles.add(results[i]["title"]);
+    ids.add(results[i]["id"]);
   }
-  return returnList;
+  return [titles, ids];
 }
 
 
 //STREAMS
-Future<List<String>> getAnimeConsumetZoroStream(String animeTitle, int episode, BuildContext context) async{
-  final Completer<String> completer = Completer<String>();
-  String consumetId =
-  await getAnimeConsumetZoroId(animeTitle.toLowerCase());
+Future<List<String>> getAnimeConsumetZoroStream(String consumetId, int episode, BuildContext context) async{
 
   var infoUrl = Uri.parse(
       "$consumetEndPoint/anime/zoro/info?id=$consumetId");
@@ -92,7 +60,7 @@ Future<List<String>> getAnimeConsumetZoroStream(String animeTitle, int episode, 
     //TODO dialog
   }
 
-  String episodeId = jsonDecode(infoResponse.body)["episodes"][episode]["id"];
+  String episodeId = jsonDecode(infoResponse.body)["episodes"][episode - 1]["id"];
 
   var streamUrl = Uri.parse(
       "$consumetEndPoint/anime/zoro/watch?episodeId=$episodeId");
@@ -115,10 +83,8 @@ Future<List<String>> getAnimeConsumetZoroStream(String animeTitle, int episode, 
 }
 
 Future<String> getAnimeConsumetGogoAnimeStream(
-    String animeTitle, int episode, BuildContext context) async {
+    String consumetId, int episode, BuildContext context) async {
   final Completer<String> completer = Completer<String>();
-  String consumetId =
-      await getAnimeConsumetGogoAnimeId(animeTitle.toLowerCase());
 
   var urlStream = Uri.parse(
       "$consumetEndPoint/anime/gogoanime/watch/$consumetId-episode-$episode");

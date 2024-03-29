@@ -24,6 +24,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late VideoScreen videoScreen;
   UserAnimeModel? userAnimeModel;
   List<String> searches = [];
+  List<String> searchesId = [];
   late int currentSearch;
   int currentSource = 0;
   late Map<int, Function> setDropDowns;
@@ -54,10 +55,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
 
-  void setSearches(Future<List<String>> Function(String) getIds) async {
-    List<String> newSearches = await getIds(widget.currentAnime.title!);
+  void setSearches(Future<List<List<String>>> Function(String) getIds) async {
+    List<List<String>> newSearches = await getIds(widget.currentAnime.title!);
     setState(() {
-      searches = newSearches;
+      searches = newSearches[0];
+      searchesId = newSearches[1];
     });
   }
 
@@ -69,17 +71,15 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     });
   }
 
-  void openVideo(String animeTitle, int animeEpisode) async {
+  void openVideo(String consumetId, int animeEpisode) async {
     late String consumetStream;
     if (currentSource == 0) {
-      consumetStream = await getAnimeConsumetGogoAnimeStream(
-          animeTitle, animeEpisode, context);
+      consumetStream = await getAnimeConsumetGogoAnimeStream(consumetId, animeEpisode, context);
       videoScreen = VideoScreen(
         stream: consumetStream,
       );
     } else if (currentSource == 1) {
-      List<String> streamCaption =
-          await getAnimeConsumetZoroStream(animeTitle, animeEpisode, context);
+      List<String> streamCaption = await getAnimeConsumetZoroStream(consumetId, animeEpisode, context);
 
       consumetStream = streamCaption[0];
       videoScreen = VideoScreen(
@@ -88,7 +88,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       );
     } else {
       consumetStream = await getAnimeConsumetGogoAnimeStream(
-          animeTitle, animeEpisode, context);
+          consumetId, animeEpisode, context);
       videoScreen = VideoScreen(
         stream: consumetStream,
       );
@@ -393,7 +393,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           return EpisodeButton(
                             number: index + 1,
                             onTap: () {
-                              openVideo(searches[currentSearch], index + 1);
+                              openVideo(searchesId[currentSearch], index + 1);
                             },
                           );
                         },

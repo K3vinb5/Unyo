@@ -14,6 +14,7 @@ class AnimeScreen extends StatefulWidget {
 }
 
 class _AnimeScreenState extends State<AnimeScreen>{
+  List<AnimeModel> recentlyReleased = [];
   List<AnimeModel> trendingAnimeList = [];
   List<AnimeModel> seasonPopularAnimeList = [];
   List<AnimeModel> searchAnimeList = [];
@@ -46,6 +47,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
   String? randomAnimeBanner;
   final PageController pageController = PageController();
   int currentPage = 0;
+  bool pageLeftToRight = true;
   late Timer pageTimer;
   ScrollController scrollController = ScrollController();
   bool bannerInfoVisible = true;
@@ -73,11 +75,22 @@ class _AnimeScreenState extends State<AnimeScreen>{
     pageTimer = Timer.periodic(
       const Duration(seconds: 7),
       (Timer timer) {
-        if (currentPage < seasonPopularAnimeList.length) {
-          currentPage++;
-        } else {
-          currentPage = 0;
+        if (pageLeftToRight){
+          if (currentPage < seasonPopularAnimeList.length) {
+            currentPage++;
+          } else {
+            pageLeftToRight = false;
+            currentPage--;
+          }
+        }else{
+          if (currentPage > 0) {
+            currentPage--;
+          } else {
+            pageLeftToRight = true;
+            currentPage++;
+          }
         }
+
         pageController.animateToPage(
           currentPage,
           duration: const Duration(milliseconds: 1100),
@@ -127,8 +140,10 @@ class _AnimeScreenState extends State<AnimeScreen>{
   void initAnimeList() async {
     var newTrendingList = await getAnimeModelListTrending(1, 20);
     var newSeasonPopularList = await getAnimeModelListSeasonPopular(
-        1, 40, DateTime.now().year, getCurrentSeason());
+        1, 20, DateTime.now().year, getCurrentSeason());
+    var newRecentlyReleaseList = await getAnimeModelListRecentlyReleased(1, 20);
     setState(() {
+      recentlyReleased = newRecentlyReleaseList;
       trendingAnimeList = newTrendingList;
       seasonPopularAnimeList = newSeasonPopularList;
     });
@@ -143,7 +158,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
 
   void resetSearchTimer(String search) {
     searchTimer.cancel();
-    searchTimer = Timer(const Duration(seconds: 2), () async {
+    searchTimer = Timer(const Duration(seconds: 8), () async {
       var newSearchAnimeList = await getAnimeModelListSearch(
           search, currentSortBy, currentSeason, currentFormat, currentYear, 40);
       setState(() {
@@ -160,6 +175,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
        returnList.add(Row(
          children: [
            AnimeListComponentWidget(
+             tag: "search-list-$i",
              verticalPadding: 10.0,
              horizontalPadding: 16.0,
              animeModel: searchAnimeList[i],
@@ -170,7 +186,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
              height: MediaQuery.of(context)
                  .size
                  .height *
-                 0.1,
+                 0.22,
            ),
          ],
        )
@@ -180,6 +196,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
            Row(
              children: [
                AnimeListComponentWidget(
+                 tag: "search-list-$i",
                  verticalPadding: 10.0,
                  horizontalPadding: 16.0,
                  animeModel: searchAnimeList[i],
@@ -190,9 +207,10 @@ class _AnimeScreenState extends State<AnimeScreen>{
                  height: MediaQuery.of(context)
                      .size
                      .height *
-                     0.1,
+                     0.22,
                ),
                AnimeListComponentWidget(
+                 tag: "search-list-${(i+1)}",
                  verticalPadding: 10.0,
                  horizontalPadding: 16.0,
                  animeModel: searchAnimeList[i + 1],
@@ -203,7 +221,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
                  height: MediaQuery.of(context)
                      .size
                      .height *
-                     0.1,
+                     0.22,
                )
              ],
            )
@@ -316,6 +334,14 @@ class _AnimeScreenState extends State<AnimeScreen>{
                     ),
                     AnimeWidgetList(
                       tag: "anime-details-list1",
+                      title: "Recently Released",
+                      animeList: recentlyReleased,
+                      textColor: Colors.white,
+                      loadMore: true,
+                      loadMoreFunction: getAnimeModelListRecentlyReleased,
+                    ),
+                    AnimeWidgetList(
+                      tag: "anime-details-list2",
                       title: "Trending",
                       animeList: trendingAnimeList,
                       textColor: Colors.white,
@@ -323,7 +349,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
                       loadMoreFunction: getAnimeModelListTrending,
                     ),
                     AnimeWidgetList(
-                      tag: "anime-details-list2",
+                      tag: "anime-details-list3",
                       title: "Season Popular",
                       animeList: seasonPopularAnimeList,
                       textColor: Colors.white,
@@ -352,7 +378,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
                       color: Colors.grey,
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.15,
+                      height: MediaQuery.of(context).size.height * 0.05,
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,9 +535,9 @@ class _AnimeScreenState extends State<AnimeScreen>{
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
-                                  height: 200,
-                                ), //TODO TEMP
+                                SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.5,
+                                ),
                               ],
                             ),
                           ),
@@ -567,11 +593,10 @@ class _AnimeScreenState extends State<AnimeScreen>{
                               ),
                               SizedBox(
                                 height:
-                                    MediaQuery.of(context).size.height * 0.35 +
-                                        200,
+                                    MediaQuery.of(context).size.height * 0.8,
                                 child: ListView(
                                   children: [
-                                    if (searchAnimeList.isNotEmpty) ...formattedSearchResults(searchAnimeList) else ...formattedSearchResults(seasonPopularAnimeList),
+                                    if (searchAnimeList.isNotEmpty || textFieldController.text != "") ...formattedSearchResults(searchAnimeList) else ...formattedSearchResults(seasonPopularAnimeList),
                                   ],
                                 ),
                               ),

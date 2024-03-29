@@ -56,6 +56,47 @@ Future<List<AnimeModel>> getAnimeModelListTrending(int page, int n) async {
   }
 }
 
+Future<List<AnimeModel>> getAnimeModelListRecentlyReleased(
+    int page, int n) async {
+  Map<String, dynamic> query = {
+    "query":
+        "query{ Page(page: $page, perPage: $n) { airingSchedules (sort: TIME_DESC, notYetAired: false) {episode media { id title { userPreferred } coverImage { large } bannerImage startDate { year month day } endDate { year month day } type description status averageScore episodes duration}}}}"
+  };
+
+  var url = Uri.parse(anilistEndpoint);
+  var response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: json.encode(query),
+  );
+  if (response.statusCode != 200) {
+    print("ERROR:\n${response.statusCode}");
+    return [];
+  } else {
+    List<dynamic> media =
+        jsonDecode(response.body)["data"]["Page"]["airingSchedules"];
+    List<AnimeModel> list = [];
+    for (int i = 0; i < media.length; i++) {
+      var currentMedia = media[i]["media"];
+      list.add(AnimeModel(
+        id: currentMedia["id"],
+        title: currentMedia["title"]["userPreferred"],
+        coverImage: currentMedia["coverImage"]["large"],
+        bannerImage: currentMedia["bannerImage"],
+        startDate: "${currentMedia["startDate"]["day"]}/${currentMedia["startDate"]["month"]}/${currentMedia["startDate"]["year"]}",
+        endDate: "${currentMedia["endDate"]["day"]}/${currentMedia["endDate"]["month"]}/${currentMedia["endDate"]["year"]}",
+        type: currentMedia["type"],
+        status: currentMedia["status"],
+        averageScore: currentMedia["averageScore"],
+        episodes: currentMedia["episodes"],
+        duration: currentMedia["duration"],
+        description: currentMedia["description"],
+      ));
+    }
+    return list;
+  }
+}
+
 Future<List<AnimeModel>> getAnimeModelListSeasonPopular(
     int page, int n, int year, String season) async {
   Map<String, dynamic> query = {
@@ -104,14 +145,19 @@ Future<List<AnimeModel>> getAnimeModelListSeasonPopular(
   }
 }
 
-Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort, String season, String format, String year, int n) async {
+Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort,
+    String season, String format, String year, int n) async {
   Map<String, dynamic> query = {
-    "query" : "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id title{userPreferred}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
-    "variables" : {
-      "page":1,
-      "type":"ANIME",
-      if (sort == "Select Sorting") "sort": "SEARCH_MATCH" else "sort" : sort.toUpperCase(),
-      if( format != "Select Format") "format" : format.toUpperCase(),
+    "query":
+        "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id title{userPreferred}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
+    "variables": {
+      "page": 1,
+      "type": "ANIME",
+      if (sort == "Select Sorting")
+        "sort": "SEARCH_MATCH"
+      else
+        "sort": sort.toUpperCase(),
+      if (format != "Select Format") "format": format.toUpperCase(),
       if (season != "Select Season") "season": season.toUpperCase(),
       if (year != "Select Year") "seasonYear": int.parse(year),
       "search": search
@@ -317,7 +363,7 @@ Future<UserAnimeModel> getUserAnimeInfo(int mediaId) async {
   var response = await http.post(
     url,
     headers: {
-      "Authorization" : "Bearer $accessToken",
+      "Authorization": "Bearer $accessToken",
       "Content-Type": "application/json",
     },
     body: json.encode(query),

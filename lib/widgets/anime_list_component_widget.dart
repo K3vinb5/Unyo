@@ -1,18 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nime/models/anime_model.dart';
+import 'package:flutter_nime/widgets/anime_widget.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:flutter_nime/screens/screens.dart';
 
 class AnimeListComponentWidget extends StatelessWidget {
-   AnimeListComponentWidget(
-      {super.key,
-      required this.animeModel,
-      required this.width,
-      required this.height,
-      required this.horizontalPadding,
-      required this.verticalPadding,
-      });
+  AnimeListComponentWidget({
+    super.key,
+    required this.animeModel,
+    required this.width,
+    required this.height,
+    required this.horizontalPadding,
+    required this.verticalPadding,
+    required this.tag,
+  });
 
   final double width;
   final double height;
@@ -20,11 +22,12 @@ class AnimeListComponentWidget extends StatelessWidget {
   final double horizontalPadding;
   final double verticalPadding;
   late AnimeDetailsScreen animeScreen;
+  final String tag;
 
   void openAnime(AnimeModel currentAnime, BuildContext context) {
     animeScreen = AnimeDetailsScreen(
       currentAnime: currentAnime,
-      tag: "",
+      tag: tag,
     );
     Navigator.push(
       context,
@@ -37,7 +40,8 @@ class AnimeListComponentWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+        padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding, vertical: verticalPadding),
         child: Container(
           width: width,
           height: height,
@@ -58,31 +62,40 @@ class AnimeListComponentWidget extends StatelessWidget {
             ),
           ),
           child: InkWell(
-            onTap: (){openAnime(animeModel, context);},
+            onTap: () {
+              openAnime(animeModel, context);
+            },
             child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 26.0),
-                        child: Text(
-                          animeModel.title!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
-                            overflow: TextOverflow.fade,
-                          ),
-                        ),
-                      ),
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Hero(
+                  tag: "$tag-${animeModel.id}",
+                  child: AnimeWidget(
+                    title: "",
+                    score: animeModel.averageScore,
+                    coverImage: animeModel.coverImage!,
+                    onTap: (){},
+                    textColor: Colors.white,
+                    width: height * 0.55,
+                    height: height * 0.8,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    animeModel.title!,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                      overflow: TextOverflow.fade,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }

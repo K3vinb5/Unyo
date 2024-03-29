@@ -8,6 +8,8 @@ class AnimeWidget extends StatelessWidget {
     required this.coverImage,
     required this.onTap,
     required this.textColor,
+    this.width,
+    this.height,
   });
 
   final String? title;
@@ -17,6 +19,8 @@ class AnimeWidget extends StatelessWidget {
   final String uknown =
       "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg";
   final Color textColor;
+  final double? width;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,7 @@ class AnimeWidget extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.1,
+            width: width ?? MediaQuery.of(context).size.width * 0.1,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -36,7 +40,8 @@ class AnimeWidget extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   children: [
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.28,
+                      height:
+                          height ?? MediaQuery.of(context).size.height * 0.28,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         image: DecorationImage(
@@ -47,28 +52,38 @@ class AnimeWidget extends StatelessWidget {
                       ),
                     ),
                     score != null
-                        ? Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.only(bottomRight: Radius.circular(20), topLeft: Radius.circular(50)),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              score == null ? "" : "  ${(score! / 10)}",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
+                        ? Opacity(
+                            opacity: 0.8,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(20),
+                                    topLeft: Radius.circular(50)),
+                              ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      score == null ? "" : "  ${(score! / 10)}",
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.star,
+                                      color: Colors.black,
+                                      size: 15,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            const Icon(Icons.star, color: Colors.black, size: 15,),
-                          ],
-                        ),
-                      ),
-                    )
+                          )
                         : const SizedBox(),
                   ],
                 ),
