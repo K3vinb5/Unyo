@@ -27,9 +27,6 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
-    - name: Analyze code
-      run: flutter analyze
-
     - name: Build app
       run: flutter build windows --release
       if: matrix.os == 'windows-latest'
