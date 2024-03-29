@@ -81,7 +81,7 @@ Future<List<String>> getAnimeConsumetZoroStream(String consumetId, int episode, 
   }
   return [urls[0]["url"], captions[englishCaptions]["url"]];
 }
-
+//
 Future<String> getAnimeConsumetGogoAnimeStream(
     String consumetId, int episode, BuildContext context) async {
   final Completer<String> completer = Completer<String>();
