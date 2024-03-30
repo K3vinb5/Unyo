@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_nime/api/anilist_api.dart';
@@ -27,7 +30,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   List<String> searchesId = [];
   late int currentSearch;
   int currentSource = 0;
+  int currentEpisode = 0;
   late Map<int, Function> setDropDowns;
+  late double progress;
+  List<String> statuses = ["PLANNING", "CURRENT", "COMPLETED", "REPEATING", "PAUSED", "DROPPED"];
 
   @override
   void initState() {
@@ -46,18 +52,26 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       },
     };
     updateSource(0);
+    setUserAnimeModel();
   }
 
   void setUserAnimeModel() async {
-    //UserAnimeModel newUserAnimeModel =
-    //await getUserAnimeInfo(widget.currentAnime.id);
-    setState(() {});
+    UserAnimeModel newUserAnimeModel = await getUserAnimeInfo(widget.currentAnime.id);
+    setState(() {
+      userAnimeModel = newUserAnimeModel;
+    });
+    progress = userAnimeModel?.progress?.toDouble() ?? 0.0;
+    statuses.removeWhere((element) => element == userAnimeModel?.status);
+    statuses = [userAnimeModel?.status ?? "",...statuses];
   }
-
 
   void setSearches(Future<List<List<String>>> Function(String) getIds) async {
     List<List<String>> newSearches = await getIds(widget.currentAnime.title!);
+    int newCurrentEpisode = widget.currentAnime.status == "RELEASING"
+        ? await getAnimeCurrentEpisode(widget.currentAnime.id)
+        : widget.currentAnime.episodes!;
     setState(() {
+      currentEpisode = newCurrentEpisode;
       searches = newSearches[0];
       searchesId = newSearches[1];
     });
@@ -74,12 +88,14 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   void openVideo(String consumetId, int animeEpisode) async {
     late String consumetStream;
     if (currentSource == 0) {
-      consumetStream = await getAnimeConsumetGogoAnimeStream(consumetId, animeEpisode, context);
+      consumetStream = await getAnimeConsumetGogoAnimeStream(
+          consumetId, animeEpisode, context);
       videoScreen = VideoScreen(
         stream: consumetStream,
       );
     } else if (currentSource == 1) {
-      List<String> streamCaption = await getAnimeConsumetZoroStream(consumetId, animeEpisode, context);
+      List<String> streamCaption =
+          await getAnimeConsumetZoroStream(consumetId, animeEpisode, context);
 
       consumetStream = streamCaption[0];
       videoScreen = VideoScreen(
@@ -154,6 +170,87 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     );
   }
 
+  void openAnimeInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("List Editor", style: TextStyle(color: Colors.white),),
+          backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Status", style: TextStyle(color: Colors.white),),
+                    StyledDropDown(
+                      items: [
+                        ...statuses.map((status) => Text(status)),
+                      ],
+                      horizontalPadding: 10,
+                      onTap: (index) {},
+                      width: MediaQuery.of(context).size.width * 0.4,
+                    ),
+                    const SizedBox(height: 40,),
+                    const Text("Progress", style: TextStyle(color: Colors.white),),
+                    Row(
+                      children: [
+                        Text(progress.toInt().toString(), style: TextStyle(color: Colors.white),),
+                        Expanded(
+                          child: Slider(
+                            activeColor: Colors.grey,
+                            min: 0,
+                            max: widget.currentAnime.episodes?.toDouble() ?? currentEpisode.toDouble(),
+                            value: progress,
+                            onChanged: (value) {
+                              setState(() {
+                                progress = value; // Update the progress variable when slider value changes
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40,),
+                    const Text("Score", style: TextStyle(color: Colors.white),),
+                    StyledDropDown(
+                      items: const [],
+                      horizontalPadding: 10,
+                      onTap: (index) {},
+                      width: MediaQuery.of(context).size.width * 0.4,
+                    ),
+                    const SizedBox(height: 40,),
+                    const Text("Start/End Date", style: TextStyle(color: Colors.white),),
+                    Row(
+                      children: [
+                        StyledDropDown(
+                          items: const [],
+                          horizontalPadding: 10,
+                          onTap: (index) {},
+                          width: MediaQuery.of(context).size.width * 0.2,
+                        ),
+                        const SizedBox(width: 20,),
+                        StyledDropDown(
+                          items: const [],
+                          horizontalPadding: 10,
+                          onTap: (index) {},
+                          width: MediaQuery.of(context).size.width * 0.2,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -167,10 +264,13 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 children: [
                   ImageGradient.linear(
                     image: Image.network(
-                      widget.currentAnime.bannerImage ?? widget.currentAnime.coverImage!,
+                      widget.currentAnime.bannerImage ??
+                          widget.currentAnime.coverImage!,
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.35,
-                      fit: widget.currentAnime.bannerImage != null ? BoxFit.fill : BoxFit.cover,
+                      fit: widget.currentAnime.bannerImage != null
+                          ? BoxFit.fill
+                          : BoxFit.cover,
                     ),
                     colors: const [Colors.white, Colors.black87],
                     begin: Alignment.topCenter,
@@ -185,12 +285,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               padding:
                                   const EdgeInsets.only(top: 16.0, left: 16.0),
                               child: Hero(
-                                tag: "${widget.tag}-${widget.currentAnime.id}",
+                                tag: widget.tag,
                                 child: AnimeWidget(
                                   title: "",
                                   coverImage: widget.currentAnime.coverImage,
                                   score: null,
-                                  onTap: () {},
+                                  onTap: null,
                                   textColor: Colors.white,
                                 ),
                               ),
@@ -202,8 +302,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   Navigator.pop(context);
                                 },
                                 child: const Padding(
-                                  padding:  EdgeInsets.all(8.0),
-                                  child:  Row(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -326,6 +426,21 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 },
                                 child: const Text("Wrong Title?"),
                               ),
+                              const SizedBox(width: 16.0,),
+                              ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                    Color.fromARGB(255, 37, 37, 37),
+                                  ),
+                                  foregroundColor: MaterialStatePropertyAll(
+                                    Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  openAnimeInfoDialog(context);
+                                },
+                                child: const Text("Update Entry"),
+                              ),
                             ],
                           ),
                           const SizedBox(
@@ -388,10 +503,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                       width: MediaQuery.of(context).size.width / 2,
                       height: MediaQuery.of(context).size.height * 0.63,
                       child: ListView.builder(
-                        itemCount: widget.currentAnime.episodes,
+                        itemCount:
+                            widget.currentAnime.episodes ?? currentEpisode,
                         itemBuilder: (context, index) {
                           return EpisodeButton(
-                            number: index + 1,
+                            episodeNumber: index + 1,
+                            latestEpisode: currentEpisode,
                             onTap: () {
                               openVideo(searchesId[currentSearch], index + 1);
                             },

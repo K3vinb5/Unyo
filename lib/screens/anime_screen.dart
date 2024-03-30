@@ -43,7 +43,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
   String currentSeason = "Select Season";
   String currentYear = "Select Year";
   TextEditingController textFieldController = TextEditingController();
-  Timer searchTimer = Timer(const Duration(seconds: 2), () {});
+  Timer searchTimer = Timer(const Duration(milliseconds: 500), () {});
   String? randomAnimeBanner;
   final PageController pageController = PageController();
   int currentPage = 0;

@@ -24,7 +24,7 @@ class AnimeListComponentWidget extends StatelessWidget {
   late AnimeDetailsScreen animeScreen;
   final String tag;
 
-  void openAnime(AnimeModel currentAnime, BuildContext context) {
+  void openAnime(AnimeModel currentAnime, String tag, BuildContext context) {
     animeScreen = AnimeDetailsScreen(
       currentAnime: currentAnime,
       tag: tag,
@@ -63,13 +63,13 @@ class AnimeListComponentWidget extends StatelessWidget {
           ),
           child: InkWell(
             onTap: () {
-              openAnime(animeModel, context);
+              openAnime(animeModel, tag, context);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Hero(
-                  tag: "$tag-${animeModel.id}",
+                  tag: tag,
                   child: AnimeWidget(
                     title: "",
                     score: animeModel.averageScore,

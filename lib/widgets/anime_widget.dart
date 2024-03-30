@@ -10,17 +10,21 @@ class AnimeWidget extends StatelessWidget {
     required this.textColor,
     this.width,
     this.height,
+    this.currentEpisode,
+    this.totalEpisodes,
   });
 
   final String? title;
   final int? score;
   final String? coverImage;
-  final void Function() onTap;
+  final void Function()? onTap;
   final String uknown =
       "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg";
   final Color textColor;
   final double? width;
   final double? height;
+  final int? currentEpisode;
+  final int? totalEpisodes;
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +96,24 @@ class AnimeWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: textColor,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                /*Text(
+                  totalEpisodes != null
+                      ? (currentEpisode != null
+                          ? "$currentEpisode / $totalEpisodes"
+                          : "~ / $totalEpisodes")
+                      : (currentEpisode != null
+                          ? "$currentEpisode / ~"
+                          : ""),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 8,
+                  ),
+                ),*/
               ],
             ),
           ),

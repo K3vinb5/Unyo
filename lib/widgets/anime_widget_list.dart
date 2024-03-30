@@ -3,6 +3,7 @@ import 'package:flutter_nime/models/models.dart';
 import 'package:flutter_nime/screens/anime_details_screen.dart';
 import 'package:flutter_nime/widgets/widgets.dart';
 import '../api/anilist_api.dart';
+import 'package:collection/collection.dart';
 
 class AnimeWidgetList extends StatefulWidget {
   const AnimeWidgetList(
@@ -12,7 +13,8 @@ class AnimeWidgetList extends StatefulWidget {
       required this.textColor,
       required this.loadMore,
       required this.tag,
-      this.loadMoreFunction});
+      this.loadMoreFunction,
+      });
 
   final String title;
   final List<AnimeModel> animeList;
@@ -46,10 +48,10 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
     }
   }
 
-  void openAnime(AnimeModel currentAnime) {
+  void openAnime(AnimeModel currentAnime, String tag) {
     animeScreen = AnimeDetailsScreen(
       currentAnime: currentAnime,
-      tag: widget.tag,
+      tag: tag,
     );
     Navigator.push(
       context,
@@ -89,17 +91,19 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  ...animeList.map((animeModel) {
+                  ...animeList.mapIndexed((index, animeModel) {
                     return Hero(
-                      tag: "${widget.tag}-${animeModel.id}",
+                      tag: "${widget.tag}-$index",
                       child: AnimeWidget(
                         title: animeModel.title,
                         score: animeModel.averageScore,
                         coverImage: animeModel.coverImage,
                         onTap: () {
-                          openAnime(animeModel);
+                          openAnime(animeModel, "${widget.tag}-$index");
                         },
                         textColor: widget.textColor,
+                        currentEpisode: animeModel.currentEpisode,
+                        totalEpisodes: animeModel.episodes,
                       ),
                     );
                   }),

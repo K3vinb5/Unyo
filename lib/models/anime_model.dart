@@ -12,6 +12,7 @@ class AnimeModel {
       required this.episodes,
       required this.duration,
       required this.description,
+      this.currentEpisode,
       });
 
   int id;
@@ -25,6 +26,7 @@ class AnimeModel {
   String? description;
   int? averageScore;
   int? episodes;
+  int? currentEpisode;
   int? duration;
 
   @override

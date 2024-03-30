@@ -25,10 +25,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String? bannerImageUrl;
   String? avatarImageUrl;
   String? userName;
-  String? userToken;
   int? userId;
   late SharedPreferences prefs;
   late HttpServer server;
+  List<AnimeModel>? watchingList;
+  List<AnimeModel>? planningList;
+  List<AnimeModel>? pausedList;
+  final String clientId = '17550';
+  final String redirectUri = 'http://localhost:9999/auth';
 
   Future<void> _startServer() async {
     handler(shelf.Request request) async {
@@ -71,12 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
       getUserInfo();
     }
   }
-
-  List<AnimeModel>? watchingList;
-  List<AnimeModel>? planningList;
-  List<AnimeModel>? pausedList;
-  final String clientId = '17550';
-  final String redirectUri = 'http://localhost:9999/auth';
 
   Future<void> login() async {
     if (accessToken == null) {
@@ -177,7 +175,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  prefs.clear();
+                                  setState(() {
+                                    bannerImageUrl = null;
+                                    avatarImageUrl = null;
+                                    watchingList = null;
+                                    planningList = null;
+                                    pausedList = null;
+                                    userName = null;
+                                    userId = null;
+                                    accessToken = null;
+                                    refreshToken = null;
+                                  });
+                                  setSharedPreferences();
+                                },
                                 icon: const Icon(
                                   Icons.person,
                                   color: Colors.white,
@@ -273,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   )
                       : const Text(
-                    "Login found!\nLoading, please wait...",
+                    "Login found! Loading, please wait...",
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold
@@ -281,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   watchingList != null
                       ? AnimeWidgetList(
-                        tag: "home-details",
+                        tag: "home-details-list1",
                         title: "Continue Watching",
                         animeList: watchingList!,
                         textColor: Colors.white,
@@ -290,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : const SizedBox(),
                   planningList != null
                       ? AnimeWidgetList(
-                        tag: "home-details",
+                        tag: "home-details-list2",
                         title:
                         "Why don't you see what you planned! :P",
                         animeList: planningList!,
@@ -300,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : const SizedBox(),
                   pausedList != null
                       ? AnimeWidgetList(
-                        tag: "home-details",
+                        tag: "home-details-list3",
                         title: "Why don't you resume your animes!",
                         animeList: pausedList!,
                         textColor: Colors.white,
