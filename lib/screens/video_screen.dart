@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
@@ -43,11 +43,7 @@ class _VideoScreenState extends State<VideoScreen> {
     _controller.initialize().then((_) => setState(() {}));
     _controller.play();
     _resetHideControlsTimer();
-    if (Platform.isAndroid || Platform.isIOS) {
-      KeepScreenOn.turnOn();
-    } else {
-      //TODO
-    }
+    interactScreen(true);
   }
 
   @override
@@ -68,23 +64,9 @@ class _VideoScreenState extends State<VideoScreen> {
     return original;
   }
 
-  /*String replaceSecondAndGreater(String original, String pattern, String replacement) {
-    int index = -1;
-    int count = 0;
-
-    while (true) {
-      index = original.indexOf(pattern, index + 1);
-      if (index == -1) {
-        break;
-      }
-      count++;
-      if (count >= 2) {
-        original = original.replaceFirst(pattern, replacement, index);
-      }
-    }
-
-    return original;
-  }*/
+  void interactScreen(bool keepOn) async {
+    await DesktopKeepScreenOn.setPreventSleep(keepOn);
+  }
 
   String formatCaptions(String captions) {
     // Split the captions into pieces based on empty lines
@@ -199,11 +181,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 onPressed: () {
                   if (!fullScreen) {
                     _controller.dispose();
-                    if (Platform.isAndroid || Platform.isIOS) {
-                      KeepScreenOn.turnOff();
-                    } else {
-                      //TODO
-                    }
+                    interactScreen(false);
                     Navigator.pop(context);
                   }
                 },
@@ -220,85 +198,79 @@ class _VideoScreenState extends State<VideoScreen> {
 class _ControlsOverlay extends StatelessWidget {
   const _ControlsOverlay({required this.controller, required this.onTap});
 
-  static const List<Duration> _exampleCaptionOffsets = <Duration>[
-    Duration(seconds: -10),
-    Duration(seconds: -3),
-    Duration(seconds: -1, milliseconds: -500),
-    Duration(milliseconds: -250),
-    Duration.zero,
-    Duration(milliseconds: 250),
-    Duration(seconds: 1, milliseconds: 500),
-    Duration(seconds: 3),
-    Duration(seconds: 10),
-  ];
-  static const List<double> _examplePlaybackRates = <double>[
-    0.25,
-    0.5,
-    1.0,
-    1.5,
-    2.0,
-    3.0,
-    5.0,
-    10.0,
-  ];
   final VideoPlayerController controller;
   final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: <Widget>[
+      children: [
+        GestureDetector(
+          onTap: () {
+            if (controller.value.isPlaying) {
+              onTap();
+              controller.pause();
+            }
+          },
+        ),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 50),
-          reverseDuration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 300),
+          reverseDuration: const Duration(milliseconds: 800),
           child: controller.value.isPlaying
               ? const SizedBox.shrink()
               : Container(
                   color: Colors.black26,
-                  child: const Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 100.0,
-                      semanticLabel: 'Play',
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (!controller.value.isPlaying) {
+                              controller.seekTo( Duration(milliseconds: controller.value.position.inMilliseconds - 15000),);
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.fast_rewind_rounded,
+                            color: Colors.white,
+                            size: 80,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (!controller.value.isPlaying) {
+                              onTap();
+                              controller.play();
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.play_arrow_rounded,
+                            color: Colors.white,
+                            size: 100.0,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (!controller.value.isPlaying) {
+                              controller.seekTo( Duration(milliseconds: controller.value.position.inMilliseconds + 15000),);
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.fast_forward_rounded,
+                            color: Colors.white,
+                            size: 80,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-        ),
-        GestureDetector(
-          onTap: () {
-            onTap();
-            controller.value.isPlaying ? controller.pause() : controller.play();
-          },
-        ),
-        Align(
-          alignment: Alignment.topRight,
-          child: PopupMenuButton<double>(
-            initialValue: controller.value.playbackSpeed,
-            tooltip: 'Playback speed',
-            onSelected: (double speed) {
-              controller.setPlaybackSpeed(speed);
-            },
-            itemBuilder: (BuildContext context) {
-              return <PopupMenuItem<double>>[
-                for (final double speed in _examplePlaybackRates)
-                  PopupMenuItem<double>(
-                    value: speed,
-                    child: Text('${speed}x'),
-                  )
-              ];
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                // Using less vertical padding as the text is also longer
-                // horizontally, so it feels like it would need more spacing
-                // horizontally (matching the aspect ratio of the video).
-                vertical: 12,
-                horizontal: 16,
-              ),
-              child: Text('${controller.value.playbackSpeed}x'),
-            ),
-          ),
         ),
       ],
     );
@@ -335,11 +307,13 @@ class _VideoProgressSlider extends StatelessWidget {
         height: height, // Adjust this value as needed
         child: Row(
           children: [
-            const SizedBox(width: 12,),
+            const SizedBox(
+              width: 12,
+            ),
             ValueListenableBuilder(
               builder: (context, value, child) {
                 return Text(
-                  controller.value.position.toString().substring(0,7),
+                  controller.value.position.toString().substring(0, 7),
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 );
               },

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class EpisodeButton extends StatelessWidget {
-  const EpisodeButton({super.key, required this.episodeNumber, required this.onTap, required this.latestEpisode});
+  const EpisodeButton({super.key, required this.episodeNumber, required this.onTap, required this.latestEpisode, required this.latestEpisodeWatched});
 
   final num episodeNumber;
   final int latestEpisode;
+  final num latestEpisodeWatched;
   final void Function() onTap;
 
   @override
@@ -33,13 +34,26 @@ class EpisodeButton extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                Text(
-                  latestEpisode >= episodeNumber ? "Released" : "Not yet released" ,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: latestEpisode >= episodeNumber ? FontWeight.bold : FontWeight.normal,
-                    fontSize: 12,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    latestEpisodeWatched >= episodeNumber ?
+                    const Icon(
+                      Icons.check_rounded,
+                      color: Colors.grey,
+                    )
+                    : const SizedBox.shrink(),
+                    const SizedBox(width: 20,),
+                    Text(
+                      latestEpisode >= episodeNumber ? "Released" : "Not yet released" ,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: latestEpisode >= episodeNumber ? FontWeight.bold : FontWeight.normal,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

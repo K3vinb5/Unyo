@@ -203,9 +203,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             builder: (context, setState) {
               return SizedBox(
                 width: MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * 0.6,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     const Text(
                       "Status",
@@ -359,21 +360,49 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 15,),
-                    ElevatedButton(
-                      style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(
-                          Color.fromARGB(255, 37, 37, 37),
-                        ),
-                        foregroundColor: MaterialStatePropertyAll(
-                          Colors.white,
-                        ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                    Color.fromARGB(255, 37, 37, 37),
+                                  ),
+                                  minimumSize: MaterialStatePropertyAll(Magnifier.kDefaultMagnifierSize),
+                                  foregroundColor: MaterialStatePropertyAll(
+                                    Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setUserAnimeInfo(widget.currentAnime.id, query);
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("Confirm"),
+                              ),
+                              const SizedBox(width: 20,),
+                              ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                    Color.fromARGB(255, 37, 37, 37),
+                                  ),
+                                  minimumSize: MaterialStatePropertyAll(Magnifier.kDefaultMagnifierSize),
+                                  foregroundColor: MaterialStatePropertyAll(
+                                    Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("Cancel"),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        setUserAnimeInfo(widget.currentAnime.id, query);
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Confirm"),
                     ),
                   ],
                 ),
@@ -650,6 +679,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           return EpisodeButton(
                             episodeNumber: index + 1,
                             latestEpisode: currentEpisode,
+                            latestEpisodeWatched: userAnimeModel?.progress ?? 1,
                             onTap: () {
                               openVideo(searchesId[currentSearch], index + 1);
                             },

@@ -222,9 +222,10 @@ Future<String> getRandomAnimeBanner(int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query":
-        "query (\$seasonYear: Int){Media(seasonYear: \$seasonYear){bannerImage}}",
+        "query(\$page:Int, \$perPage:Int){ Page(page: \$page, perPage: \$perPage) { media(type: ANIME) { bannerImage } } }",
     "variables": {
-      "seasonYear": Random().nextInt(2024 - 2000 + 1) + 2000,
+      "peraPage": 50,
+      "page" : Random().nextInt(395),
     }
   };
   var response = await http.post(
@@ -232,13 +233,23 @@ Future<String> getRandomAnimeBanner(int attempt) async {
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  Map<String, dynamic> jsonResponse = json.decode(response.body);
-  if(jsonResponse["data"]["Media"]["bannerImage"] == null){
-    //TODO FIX
-    String returnString = await getRandomAnimeBanner(attempt++);
-    return returnString;
+  int index = Random().nextInt(50);
+  while(attempt < 10){
+    Map<String, dynamic> jsonResponse = json.decode(response.body);
+    if(response.statusCode == 500){
+      attempt++;
+      continue;
+    }
+    if(jsonResponse["data"]["Page"]["media"][index]["bannerImage"] == null){
+      index = Random().nextInt(50);
+      attempt++;
+      continue;
+    }else{
+      return jsonResponse["data"]["Page"]["media"][index]["bannerImage"];
+    }
   }
-  return jsonResponse["data"]["Media"]["bannerImage"];
+  
+  return getRandomAnimeBanner(0);
 }
 
 getUserToken() async {
