@@ -4,7 +4,7 @@ An open-source desktop app (mobile may be coming later) with integrated [anilist
 
 ## Fast Demonstration
 
-<video controls src="readme-assets/Peek 2024-04-02 22-05.mp4" title="Title"></video>
+https://github.com/K3vinb5/flutter_nime/assets/115191440/b8747626-0a7b-4b41-9640-7e7d5184eed0
 
 ## Features
 
