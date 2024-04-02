@@ -20,7 +20,7 @@ class AnimeWidgetList extends StatefulWidget {
   final List<AnimeModel> animeList;
   final Color textColor;
   final bool loadMore;
-  final Future<List<AnimeModel>> Function(int, int)? loadMoreFunction;
+  final Future<List<AnimeModel>> Function(int, int, int)? loadMoreFunction;
   final String tag;
 
   @override
@@ -87,7 +87,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
               height: MediaQuery
                   .of(context)
                   .size
-                  .height * 0.32,
+                  .height * 0.35,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
@@ -102,8 +102,11 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                           openAnime(animeModel, "${widget.tag}-$index");
                         },
                         textColor: widget.textColor,
-                        currentEpisode: animeModel.currentEpisode,
-                        totalEpisodes: animeModel.episodes,
+                        height: MediaQuery.of(context).size.height * 0.28,
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        year: animeModel.startDate,
+                        format: animeModel.format,
+                        status: animeModel.status,
                       ),
                     );
                   }),
@@ -115,12 +118,17 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                           coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
                           onTap: () async {
                             var newTrendingList =
-                                await widget.loadMoreFunction!(currentPage++, 20);
+                                await widget.loadMoreFunction!(currentPage++, 20, 0);
                             setState(() {
                               animeList += newTrendingList;
                             });
                           },
                           textColor: widget.textColor,
+                          height: MediaQuery.of(context).size.height * 0.28,
+                          width: MediaQuery.of(context).size.width * 0.1,
+                          status: null,
+                          format: null,
+                          year: null,
                         )
                       : const SizedBox(),
                 ],

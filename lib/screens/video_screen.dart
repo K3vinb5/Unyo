@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
@@ -42,6 +43,11 @@ class _VideoScreenState extends State<VideoScreen> {
     _controller.initialize().then((_) => setState(() {}));
     _controller.play();
     _resetHideControlsTimer();
+    if (Platform.isAndroid || Platform.isIOS) {
+      KeepScreenOn.turnOn();
+    } else {
+      //TODO
+    }
   }
 
   @override
@@ -84,7 +90,7 @@ class _VideoScreenState extends State<VideoScreen> {
     // Split the captions into pieces based on empty lines
     List<String> pieces = captions.split('\n\n');
     List<String> formattedPieces = [];
-    for(int i = 0; i < pieces.length; i++){
+    for (int i = 0; i < pieces.length; i++) {
       formattedPieces.add(replaceSecond(pieces[i], "\n", " "));
     }
     // Join the formatted pieces back together with empty lines
@@ -142,7 +148,6 @@ class _VideoScreenState extends State<VideoScreen> {
                 ),
                 ClosedCaption(
                   text: _controller.value.caption.text,
-
                 ),
                 AnimatedOpacity(
                   opacity: _showControls ? 1.0 : 0.0,
@@ -194,6 +199,11 @@ class _VideoScreenState extends State<VideoScreen> {
                 onPressed: () {
                   if (!fullScreen) {
                     _controller.dispose();
+                    if (Platform.isAndroid || Platform.isIOS) {
+                      KeepScreenOn.turnOff();
+                    } else {
+                      //TODO
+                    }
                     Navigator.pop(context);
                   }
                 },
@@ -325,6 +335,16 @@ class _VideoProgressSlider extends StatelessWidget {
         height: height, // Adjust this value as needed
         child: Row(
           children: [
+            const SizedBox(width: 12,),
+            ValueListenableBuilder(
+              builder: (context, value, child) {
+                return Text(
+                  controller.value.position.toString().substring(0,7),
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                );
+              },
+              valueListenable: controller,
+            ),
             Expanded(
               child: Slider(
                 min: 0,

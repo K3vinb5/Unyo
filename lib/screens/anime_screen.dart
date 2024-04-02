@@ -17,6 +17,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
   List<AnimeModel> recentlyReleased = [];
   List<AnimeModel> trendingAnimeList = [];
   List<AnimeModel> seasonPopularAnimeList = [];
+  List<AnimeModel> pageBannerAnimeList = [];
   List<AnimeModel> searchAnimeList = [];
   List<String> sortBy = [
     "Select Sorting",
@@ -63,9 +64,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
 
   void getBanner() async {
     String? newUrl;
-    while (newUrl == null) {
-      newUrl = await getRandomAnimeBanner();
-    }
+    newUrl = await getRandomAnimeBanner(0);
     setState(() {
       randomAnimeBanner = newUrl;
     });
@@ -138,14 +137,17 @@ class _AnimeScreenState extends State<AnimeScreen>{
   }
 
   void initAnimeList() async {
-    var newTrendingList = await getAnimeModelListTrending(1, 20);
+    var newTrendingList = await getAnimeModelListTrending(1, 20, 0);
     var newSeasonPopularList = await getAnimeModelListSeasonPopular(
-        1, 20, DateTime.now().year, getCurrentSeason());
-    var newRecentlyReleaseList = await getAnimeModelListRecentlyReleased(1, 20);
+        1, 20, DateTime.now().year, getCurrentSeason(), 0);
+    var newRecentlyReleaseList = await getAnimeModelListRecentlyReleased(1, 20, 0);
+    List<AnimeModel> newPageBannerAnimeList = List.from(newSeasonPopularList);
+    newPageBannerAnimeList.removeWhere((animeModel) => animeModel.bannerImage == null);
     setState(() {
       recentlyReleased = newRecentlyReleaseList;
       trendingAnimeList = newTrendingList;
       seasonPopularAnimeList = newSeasonPopularList;
+      pageBannerAnimeList = newPageBannerAnimeList;
     });
   }
 
@@ -248,11 +250,12 @@ class _AnimeScreenState extends State<AnimeScreen>{
                       controller: pageController,
                       scrollDirection: Axis.horizontal,
                       children: [
-                        ...seasonPopularAnimeList.map(
+                        ...pageBannerAnimeList.map(
                           (animeModel) {
                             return PageBannerWidget(
                               animeModel: animeModel,
                               width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.35,
                             );
                           },
                         ),
@@ -354,9 +357,9 @@ class _AnimeScreenState extends State<AnimeScreen>{
                       animeList: seasonPopularAnimeList,
                       textColor: Colors.white,
                       loadMore: true,
-                      loadMoreFunction: (int page, int n) {
+                      loadMoreFunction: (int page, int n, int attempt) {
                         return getAnimeModelListSeasonPopular(
-                            page, n, DateTime.now().year, getCurrentSeason());
+                            page, n, DateTime.now().year, getCurrentSeason(), attempt);
                       },
                     ),
                     SizedBox(

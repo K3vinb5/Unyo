@@ -5,11 +5,15 @@ class UserAnimeModel{
     required this.repeat,
     required this.priority,
     required this.status,
+    required this.startDate,
+    required this.endDate,
   });
 
-  int? score;
-  int? progress;
+  num? score;
+  num? progress;
   int? repeat;
   int? priority;
   String? status;
+  String? startDate;
+  String? endDate;
 }

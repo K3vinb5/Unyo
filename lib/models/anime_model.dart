@@ -12,6 +12,7 @@ class AnimeModel {
       required this.episodes,
       required this.duration,
       required this.description,
+      required this.format,
       this.currentEpisode,
       });
 
@@ -24,6 +25,7 @@ class AnimeModel {
   String? type;
   String? status;
   String? description;
+  String? format;
   int? averageScore;
   int? episodes;
   int? currentEpisode;

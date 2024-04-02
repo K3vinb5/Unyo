@@ -33,7 +33,18 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   int currentEpisode = 0;
   late Map<int, Function> setDropDowns;
   late double progress;
-  List<String> statuses = ["PLANNING", "CURRENT", "COMPLETED", "REPEATING", "PAUSED", "DROPPED"];
+  late double score;
+  late String startDate;
+  late String endDate;
+  List<String> statuses = [
+    "PLANNING",
+    "CURRENT",
+    "COMPLETED",
+    "REPEATING",
+    "PAUSED",
+    "DROPPED"
+  ];
+  Map<String, String> query = {};
 
   @override
   void initState() {
@@ -56,13 +67,21 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void setUserAnimeModel() async {
-    UserAnimeModel newUserAnimeModel = await getUserAnimeInfo(widget.currentAnime.id);
+    UserAnimeModel newUserAnimeModel =
+        await getUserAnimeInfo(widget.currentAnime.id);
     setState(() {
       userAnimeModel = newUserAnimeModel;
     });
     progress = userAnimeModel?.progress?.toDouble() ?? 0.0;
+    score = userAnimeModel?.score?.toDouble() ?? 0.0;
+    endDate = userAnimeModel?.endDate?.replaceAll("null", "~") ?? "~/~/~";
+    startDate = userAnimeModel?.startDate ?? "~/~/~";
     statuses.removeWhere((element) => element == userAnimeModel?.status);
-    statuses = [userAnimeModel?.status ?? "",...statuses];
+    if (userAnimeModel?.status != ""){
+      query["score"] = score.toString();
+      query["progress"] = progress.toString();
+    }
+    statuses = [userAnimeModel?.status == "" ? "NOT SET" : userAnimeModel?.status ?? "", ...statuses];
   }
 
   void setSearches(Future<List<List<String>>> Function(String) getIds) async {
@@ -175,7 +194,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("List Editor", style: TextStyle(color: Colors.white),),
+          title: const Text(
+            "List Editor",
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
           content: StatefulBuilder(
             builder: (context, setState) {
@@ -185,61 +207,173 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Status", style: TextStyle(color: Colors.white),),
+                    const Text(
+                      "Status",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     StyledDropDown(
                       items: [
                         ...statuses.map((status) => Text(status)),
                       ],
                       horizontalPadding: 10,
-                      onTap: (index) {},
+                      onTap: (index) {
+                        query.remove("status");
+                        query.addAll({"status": statuses[index]});
+                      },
                       width: MediaQuery.of(context).size.width * 0.4,
                     ),
-                    const SizedBox(height: 40,),
-                    const Text("Progress", style: TextStyle(color: Colors.white),),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    const Text(
+                      "Progress",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     Row(
                       children: [
-                        Text(progress.toInt().toString(), style: TextStyle(color: Colors.white),),
+                        Text(
+                          progress.toInt().toString(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
                         Expanded(
                           child: Slider(
                             activeColor: Colors.grey,
                             min: 0,
-                            max: widget.currentAnime.episodes?.toDouble() ?? currentEpisode.toDouble(),
+                            max: widget.currentAnime.episodes?.toDouble() ??
+                                currentEpisode.toDouble(),
                             value: progress,
                             onChanged: (value) {
                               setState(() {
-                                progress = value; // Update the progress variable when slider value changes
+                                progress =
+                                    value; // Update the progress variable when slider value changes
                               });
+                            },
+                            onChangeEnd: (value) {
+                              query.remove("progress");
+                              print(progress.toInt().toString());
+                              query.addAll({"progress": progress.toInt().toString()});
                             },
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 40,),
-                    const Text("Score", style: TextStyle(color: Colors.white),),
-                    StyledDropDown(
-                      items: const [],
-                      horizontalPadding: 10,
-                      onTap: (index) {},
-                      width: MediaQuery.of(context).size.width * 0.4,
+                    const SizedBox(
+                      height: 15,
                     ),
-                    const SizedBox(height: 40,),
-                    const Text("Start/End Date", style: TextStyle(color: Colors.white),),
+                    const Text(
+                      "Score",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     Row(
                       children: [
-                        StyledDropDown(
-                          items: const [],
-                          horizontalPadding: 10,
-                          onTap: (index) {},
-                          width: MediaQuery.of(context).size.width * 0.2,
+                        Text(
+                          score.toInt().toString(),
+                          style: TextStyle(color: Colors.white),
                         ),
-                        const SizedBox(width: 20,),
-                        StyledDropDown(
-                          items: const [],
-                          horizontalPadding: 10,
-                          onTap: (index) {},
-                          width: MediaQuery.of(context).size.width * 0.2,
+                        Expanded(
+                          child: Slider(
+                            activeColor: Colors.grey,
+                            min: 0,
+                            max: 10,
+                            value: score,
+                            onChanged: (value) {
+                              setState(() {
+                                score =
+                                    value; // Update the progress variable when slider value changes
+                              });
+                            },
+                            onChangeEnd: (value) {
+                              query.remove("score");
+                              query.addAll({"score": score.toString()});
+                            },
+                          ),
                         ),
                       ],
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    const Text(
+                      "Start / End Date",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () async {
+                            DateTime? chosenDateTime = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(1970, 1, 1),
+                              lastDate: DateTime.now(),
+                            );
+                            if (chosenDateTime != null) {
+                              setState(() {
+                                startDate =
+                                    "${chosenDateTime.day}/${chosenDateTime.month}/${chosenDateTime.year}";
+                              });
+                              query.remove("startDateDay");
+                              query.addAll({"startDateDay": chosenDateTime.day.toString()});
+                              query.remove("startDateMonth");
+                              query.addAll({"startDateMonth": chosenDateTime.month.toString()});
+                              query.remove("startDateYear");
+                              query.addAll({"startDateYear": chosenDateTime.year.toString()});
+                            }
+                          },
+                          icon: const Icon(Icons.calendar_month, color: Colors.grey),
+                        ),
+                        Text(
+                          startDate,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          endDate,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            DateTime? chosenDateTime = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(1970, 1, 1),
+                              lastDate: DateTime.now(),
+                            );
+                            if (chosenDateTime != null) {
+                              setState(() {
+                                endDate =
+                                    "${chosenDateTime.day}/${chosenDateTime.month}/${chosenDateTime.year}";
+                              });
+                              query.remove("endDateDay");
+                              query.addAll({"endDateDay": chosenDateTime.day.toString()});
+                              query.remove("endDateMonth");
+                              query.addAll({"endDateMonth": chosenDateTime.month.toString()});
+                              query.remove("endDateYear");
+                              query.addAll({"endDateYear": chosenDateTime.year.toString()});
+                            }
+                          },
+                          icon: const Icon(Icons.calendar_month, color: Colors.grey,),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15,),
+                    ElevatedButton(
+                      style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(
+                          Color.fromARGB(255, 37, 37, 37),
+                        ),
+                        foregroundColor: MaterialStatePropertyAll(
+                          Colors.white,
+                        ),
+                      ),
+                      onPressed: () {
+                        setUserAnimeInfo(widget.currentAnime.id, query);
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("Confirm"),
                     ),
                   ],
                 ),
@@ -292,6 +426,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   score: null,
                                   onTap: null,
                                   textColor: Colors.white,
+                                  height: MediaQuery.of(context).size.height * 0.28,
+                                  width: MediaQuery.of(context).size.width * 0.1,
+                                  status: widget.currentAnime.status,
+                                  year: null,
+                                  format: null,
                                 ),
                               ),
                             ),
@@ -426,7 +565,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 },
                                 child: const Text("Wrong Title?"),
                               ),
-                              const SizedBox(width: 16.0,),
+                              const SizedBox(
+                                width: 16.0,
+                              ),
                               ElevatedButton(
                                 style: const ButtonStyle(
                                   backgroundColor: MaterialStatePropertyAll(

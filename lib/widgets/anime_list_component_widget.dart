@@ -78,6 +78,9 @@ class AnimeListComponentWidget extends StatelessWidget {
                     textColor: Colors.white,
                     width: height * 0.55,
                     height: height * 0.8,
+                    status: animeModel.status,
+                    year: null,
+                    format: null,
                   ),
                 ),
                 Expanded(

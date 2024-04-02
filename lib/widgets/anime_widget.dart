@@ -8,10 +8,11 @@ class AnimeWidget extends StatelessWidget {
     required this.coverImage,
     required this.onTap,
     required this.textColor,
-    this.width,
-    this.height,
-    this.currentEpisode,
-    this.totalEpisodes,
+    required this.width,
+    required this.height,
+    required this.status,
+    required this.year,
+    required this.format,
   });
 
   final String? title;
@@ -21,10 +22,11 @@ class AnimeWidget extends StatelessWidget {
   final String uknown =
       "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg";
   final Color textColor;
-  final double? width;
-  final double? height;
-  final int? currentEpisode;
-  final int? totalEpisodes;
+  final double width;
+  final double height;
+  final String? status;
+  final String? format;
+  final String? year;
 
   @override
   Widget build(BuildContext context) {
@@ -32,20 +34,20 @@ class AnimeWidget extends StatelessWidget {
       color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: InkWell(
-          onTap: onTap,
-          child: SizedBox(
-            width: width ?? MediaQuery.of(context).size.width * 0.1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Stack(
+        child: SizedBox(
+          width: width,
+          height: height * 2,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              InkWell(
+                onTap: onTap,
+                child: Stack(
                   alignment: Alignment.bottomRight,
                   children: [
                     Container(
-                      height:
-                          height ?? MediaQuery.of(context).size.height * 0.28,
+                      height: height,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         image: DecorationImage(
@@ -89,33 +91,72 @@ class AnimeWidget extends StatelessWidget {
                             ),
                           )
                         : const SizedBox(),
+                    status != null && status == "RELEASING"
+                        ? const Padding(
+                            padding: EdgeInsets.only(bottom: 4.0, left: 4.0),
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.green,
+                                maxRadius: 7,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
                   ],
                 ),
-                Text(
-                  title == null ? "" : title!,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: textColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+              Text(
+                title == null ? "" : title!,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: textColor,
+                  fontWeight: FontWeight.bold,
                 ),
-                /*Text(
-                  totalEpisodes != null
-                      ? (currentEpisode != null
-                          ? "$currentEpisode / $totalEpisodes"
-                          : "~ / $totalEpisodes")
-                      : (currentEpisode != null
-                          ? "$currentEpisode / ~"
-                          : ""),
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: textColor,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 8,
-                  ),
-                ),*/
-              ],
-            ),
+              ),
+              format != null && year != null
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              color: Colors.grey,
+                              size: 17,
+                            ),
+                            Text(
+                              " ${year!.split("/")[2]}",
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              "${format!.replaceAll("_", " ")} ",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                overflow: TextOverflow.ellipsis,
+                                fontSize: format == "TV_SHORT" ? 11 : 14,
+                              ),
+                            ),
+                            const Icon(
+                              Icons.tv_rounded,
+                              color: Colors.grey,
+                              size: 17,
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : const SizedBox(),
+            ],
           ),
         ),
       ),
