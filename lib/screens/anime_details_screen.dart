@@ -68,7 +68,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
 
   void setUserAnimeModel() async {
     UserAnimeModel newUserAnimeModel =
-        await getUserAnimeInfo(widget.currentAnime.id);
+        await getUserAnimeInfo(widget.currentAnime.id, 0);
     setState(() {
       userAnimeModel = newUserAnimeModel;
     });

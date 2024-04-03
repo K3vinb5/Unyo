@@ -26,6 +26,7 @@ class _VideoScreenState extends State<VideoScreen> {
   bool _showControls = true;
   bool paused = false;
   String? captions;
+  bool soundIsHovered = false;
 
   @override
   void initState() {
@@ -62,6 +63,20 @@ class _VideoScreenState extends State<VideoScreen> {
       }
     }
     return original;
+  }
+
+  void onEnterSound() {
+    setState(() {
+      soundIsHovered = true;
+    });
+  }
+
+  void onExitSound() {
+      Timer(const Duration(seconds: 2), () {
+        setState(() {
+          soundIsHovered = false;
+        });
+      },);
   }
 
   void interactScreen(bool keepOn) async {
@@ -149,6 +164,33 @@ class _VideoScreenState extends State<VideoScreen> {
                           }
                         },
                       ),
+                      Padding(
+                        padding: EdgeInsets.only( left: MediaQuery.of(context).size.width - 140, bottom: 35),
+                        child: SizedBox(
+                          height: 100,
+                          child: AnimatedOpacity(
+                            opacity: soundIsHovered ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 500),
+                            child: Visibility(
+                              visible: soundIsHovered,
+                              maintainSize: false,
+                              maintainState: true,
+                              maintainAnimation: true,
+                              child: RotatedBox(
+                                quarterTurns: 3,
+                                child: Slider(
+                                  activeColor: Colors.white,
+                                  min: 0,
+                                  max: 1,
+                                  value: _controller.value.volume,
+                                  onChanged: (value) =>
+                                      _controller.setVolume(value),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       SmoothVideoProgress(
                         controller: _controller,
                         builder: (context, progress, duration, child) {
@@ -165,6 +207,8 @@ class _VideoScreenState extends State<VideoScreen> {
                             position: progress,
                             duration: duration,
                             swatch: Colors.red,
+                            onEnter: onEnterSound,
+                            onExit: onExitSound,
                           );
                         },
                       ),
@@ -227,7 +271,12 @@ class _ControlsOverlay extends StatelessWidget {
                         IconButton(
                           onPressed: () {
                             if (!controller.value.isPlaying) {
-                              controller.seekTo( Duration(milliseconds: controller.value.position.inMilliseconds - 15000),);
+                              controller.seekTo(
+                                Duration(
+                                    milliseconds: controller
+                                            .value.position.inMilliseconds -
+                                        15000),
+                              );
                             }
                           },
                           icon: const Icon(
@@ -258,7 +307,12 @@ class _ControlsOverlay extends StatelessWidget {
                         IconButton(
                           onPressed: () {
                             if (!controller.value.isPlaying) {
-                              controller.seekTo( Duration(milliseconds: controller.value.position.inMilliseconds + 15000),);
+                              controller.seekTo(
+                                Duration(
+                                    milliseconds: controller
+                                            .value.position.inMilliseconds +
+                                        15000),
+                              );
                             }
                           },
                           icon: const Icon(
@@ -285,6 +339,8 @@ class _VideoProgressSlider extends StatelessWidget {
     required this.swatch,
     required this.height,
     required this.switchFullScreen,
+    required this.onEnter,
+    required this.onExit,
   });
 
   final Duration position;
@@ -293,6 +349,8 @@ class _VideoProgressSlider extends StatelessWidget {
   final Color swatch;
   final double height;
   final void Function() switchFullScreen;
+  final void Function() onEnter;
+  final void Function() onExit;
 
   @override
   Widget build(BuildContext context) {
@@ -328,6 +386,20 @@ class _VideoProgressSlider extends StatelessWidget {
                     controller.seekTo(Duration(milliseconds: value.toInt())),
                 onChangeStart: (_) => controller.pause(),
                 onChangeEnd: (_) => controller.play(),
+              ),
+            ),
+            MouseRegion(
+              onEnter: (_) {
+                onEnter();
+              },
+              onExit: (_) {
+                onExit();
+              },
+              child: IconButton(
+                icon: const Icon(Icons.volume_up_rounded, color: Colors.white),
+                onPressed: () {
+                  //TODO mute / unmute
+                },
               ),
             ),
             Padding(

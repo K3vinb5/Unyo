@@ -72,13 +72,25 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(
-                    widget.title,
-                    style: TextStyle(
-                      fontSize: 23,
-                      fontWeight: FontWeight.bold,
-                      color: widget.textColor,
-                    ),
+                  child: Row(
+                    children: [
+                      Text(
+                        widget.title,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: widget.textColor,
+                        ),
+                      ),
+                      Text(
+                        "  ${animeList.length.toString()} entries",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

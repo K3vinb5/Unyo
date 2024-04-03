@@ -408,7 +408,7 @@ Future<List<String>> getUserNameAndId(String access_token) async {
   ];
 }
 
-Future<UserAnimeModel> getUserAnimeInfo(int mediaId) async {
+Future<UserAnimeModel> getUserAnimeInfo(int mediaId, int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query": "query{ Media(id: $mediaId){ mediaListEntry { score progress repeat priority status startedAt{day month year} completedAt{day month year} } } }",
@@ -421,6 +421,11 @@ Future<UserAnimeModel> getUserAnimeInfo(int mediaId) async {
     },
     body: json.encode(query),
   );
+  if (response.statusCode == 500){
+    if(attempt < 5){
+      return getUserAnimeInfo(mediaId, attempt++);
+    }
+  }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   if (jsonResponse["data"]["Media"]["mediaListEntry"] == null){
     return UserAnimeModel(
