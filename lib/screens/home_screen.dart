@@ -103,7 +103,12 @@ class _HomeScreenState extends State<HomeScreen> {
       await prefs.setString("userName", userName!);
       await prefs.setInt("userId", userId!);
     }
-    String newbannerUrl = await getUserbannerImageUrl(userName!, 0);
+    String newbannerUrl = "https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png";
+    try {
+      newbannerUrl = await getUserbannerImageUrl(userName!, 0);
+    } catch (error) { //If newBannerURL never returns a string use default avatar
+      print("could not fetch image");
+    }
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
     List<AnimeModel> newWatchingAnimeList =
         await getUserAnimeLists(userId!, "Watching", 0);

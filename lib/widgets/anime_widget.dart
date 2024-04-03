@@ -20,7 +20,7 @@ class AnimeWidget extends StatelessWidget {
   final String? coverImage;
   final void Function()? onTap;
   final String uknown =
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg";
+      "https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png";
   final Color textColor;
   final double width;
   final double height;
