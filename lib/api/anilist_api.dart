@@ -458,10 +458,47 @@ void setUserAnimeInfo(int mediaId, Map<String, String> receivedQuery) async {
     "variables" : {
       "mediaId" : mediaId,
       "status" : receivedQuery["status"],
-      "score" : receivedQuery["score"],
-      "progress" : receivedQuery["progress"],
+      "score" : double.parse(receivedQuery["score"]!),
+      "progress" : int.parse(receivedQuery["progress"]!),
       "startedAt" : {"day" : receivedQuery["startDateDay"], "month": receivedQuery["startDateMonth"], "year" : receivedQuery["startDateYear"]},
       "completedAt" : {"day" : receivedQuery["endDateDay"], "month" : receivedQuery["endDateMonth"], "year" : receivedQuery["endDateYear"]},
+    },
+  };
+  var response = await http.post(
+    url,
+    headers: {
+      "Authorization": "Bearer $accessToken",
+      "Content-Type": "application/json",
+    },
+    body: json.encode(query),
+  );
+  print(response.body);
+}
+
+void deleteUserAnime(int mediaId) async{
+  var url = Uri.parse(anilistEndpoint);
+
+  Map<String, dynamic> query1 = {
+    "query": "query(\$mediaId:Int){ MediaList(mediaId:\$mediaId){ id } }",
+    "variables" : {
+      "mediaId" : mediaId,
+    },
+  };
+  var response1 = await http.post(
+    url,
+    headers: {
+      "Authorization": "Bearer $accessToken",
+      "Content-Type": "application/json",
+    },
+    body: json.encode(query1),
+  );
+
+  int entryId = jsonDecode(response1.body)["data"]["MediaList"]["id"];
+
+  Map<String, dynamic> query = {
+    "query": "mutation (\$entryId: Int) {DeleteMediaListEntry(id: \$entryId){ deleted }}",
+    "variables" : {
+      "entryId" : entryId,
     },
   };
   var response = await http.post(

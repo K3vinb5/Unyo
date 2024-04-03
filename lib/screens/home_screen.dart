@@ -103,10 +103,12 @@ class _HomeScreenState extends State<HomeScreen> {
       await prefs.setString("userName", userName!);
       await prefs.setInt("userId", userId!);
     }
-    String newbannerUrl = "https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png";
+    String newbannerUrl =
+        "https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png";
     try {
       newbannerUrl = await getUserbannerImageUrl(userName!, 0);
-    } catch (error) { //If newBannerURL never returns a string use default avatar
+    } catch (error) {
+      //If newBannerURL never returns a string use default avatar
       print("could not fetch image");
     }
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
@@ -119,6 +121,20 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       bannerImageUrl = newbannerUrl;
       avatarImageUrl = newavatarUrl;
+      watchingList = newWatchingAnimeList;
+      planningList = newPlanningAnimeList;
+      pausedList = newPausedAnimeList;
+    });
+  }
+
+  void updateUserLists() async {
+    List<AnimeModel> newWatchingAnimeList =
+        await getUserAnimeLists(userId!, "Watching", 0);
+    List<AnimeModel> newPlanningAnimeList =
+        await getUserAnimeLists(userId!, "Planning", 0);
+    List<AnimeModel> newPausedAnimeList =
+        await getUserAnimeLists(userId!, "Paused", 0);
+    setState(() {
       watchingList = newWatchingAnimeList;
       planningList = newPlanningAnimeList;
       pausedList = newPausedAnimeList;
@@ -187,7 +203,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.white)),
-                                                    backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+                                                    backgroundColor:
+                                                        const Color.fromARGB(
+                                                            255, 44, 44, 44),
                                                     content: SizedBox(
                                                       width:
                                                           MediaQuery.of(context)
@@ -200,18 +218,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .height *
                                                               0.15,
                                                       child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
-                                                          const Text("Are you sure you want to log out?", style: TextStyle(color: Colors.white),),
+                                                          const Text(
+                                                            "Are you sure you want to log out?",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
                                                           Row(
                                                             crossAxisAlignment:
                                                                 CrossAxisAlignment
                                                                     .end,
-                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
                                                             children: [
                                                               ElevatedButton(
-                                                                style: const ButtonStyle(
-                                                                  backgroundColor: MaterialStatePropertyAll(Color.fromARGB(255, 37, 37, 37)),
+                                                                style:
+                                                                    const ButtonStyle(
+                                                                  backgroundColor:
+                                                                      MaterialStatePropertyAll(Color.fromARGB(
+                                                                          255,
+                                                                          37,
+                                                                          37,
+                                                                          37)),
                                                                 ),
                                                                 onPressed: () {
                                                                   Navigator.of(
@@ -219,31 +252,60 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       .pop();
                                                                 },
                                                                 child:
-                                                                    const Text("Cancel", style: TextStyle(color: Colors.white),),
+                                                                    const Text(
+                                                                  "Cancel",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
                                                               ),
-                                                              const SizedBox(width: 20,),
+                                                              const SizedBox(
+                                                                width: 20,
+                                                              ),
                                                               ElevatedButton(
-                                                                style: const ButtonStyle(
-                                                                  backgroundColor: MaterialStatePropertyAll(Color.fromARGB(255, 37, 37, 37)),
+                                                                style:
+                                                                    const ButtonStyle(
+                                                                  backgroundColor:
+                                                                      MaterialStatePropertyAll(Color.fromARGB(
+                                                                          255,
+                                                                          37,
+                                                                          37,
+                                                                          37)),
                                                                 ),
                                                                 onPressed: () {
                                                                   prefs.clear();
                                                                   setState(() {
-                                                                    bannerImageUrl = null;
-                                                                    avatarImageUrl = null;
-                                                                    watchingList = null;
-                                                                    planningList = null;
-                                                                    pausedList = null;
-                                                                    userName = null;
-                                                                    userId = null;
-                                                                    accessToken = null;
-                                                                    refreshToken = null;
+                                                                    bannerImageUrl =
+                                                                        null;
+                                                                    avatarImageUrl =
+                                                                        null;
+                                                                    watchingList =
+                                                                        null;
+                                                                    planningList =
+                                                                        null;
+                                                                    pausedList =
+                                                                        null;
+                                                                    userName =
+                                                                        null;
+                                                                    userId =
+                                                                        null;
+                                                                    accessToken =
+                                                                        null;
+                                                                    refreshToken =
+                                                                        null;
                                                                   });
                                                                   setSharedPreferences();
-                                                                  Navigator.of(context).pop();
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
                                                                 },
                                                                 child:
-                                                                    const Text("Confirm", style: TextStyle(color: Colors.white),),
+                                                                    const Text(
+                                                                  "Confirm",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
                                                               ),
                                                             ],
                                                           ),
@@ -332,13 +394,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                     text: "Animes",
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, "animeScreen");
+                                              context, "animeScreen")
+                                          .then((_) {
+                                        updateUserLists();
+                                      });
                                     },
                                   ),
                                   AnimeButton(
                                     text: "Mangas",
-                                    onTap: () {
-                                    },
+                                    onTap: () {},
                                   ),
                                 ],
                               )
@@ -355,6 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 animeList: watchingList!,
                                 textColor: Colors.white,
                                 loadMore: false,
+                                updateHomeScreenLists: updateUserLists,
                               )
                             : const SizedBox(),
                         planningList != null
@@ -364,6 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 animeList: planningList!,
                                 textColor: Colors.white,
                                 loadMore: false,
+                                updateHomeScreenLists: updateUserLists,
                               )
                             : const SizedBox(),
                         pausedList != null
@@ -373,6 +439,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 animeList: pausedList!,
                                 textColor: Colors.white,
                                 loadMore: false,
+                                updateHomeScreenLists: updateUserLists,
                               )
                             : const SizedBox(),
                       ],

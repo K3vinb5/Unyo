@@ -13,6 +13,7 @@ class AnimeWidgetList extends StatefulWidget {
       required this.textColor,
       required this.loadMore,
       required this.tag,
+      this.updateHomeScreenLists,
       this.loadMoreFunction,
       });
 
@@ -22,6 +23,7 @@ class AnimeWidgetList extends StatefulWidget {
   final bool loadMore;
   final Future<List<AnimeModel>> Function(int, int, int)? loadMoreFunction;
   final String tag;
+  final void Function()? updateHomeScreenLists;
 
   @override
   State<AnimeWidgetList> createState() => _AnimeWidgetListState();
@@ -56,7 +58,11 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => animeScreen),
-    );
+    ).then((_) {
+      if (widget.updateHomeScreenLists != null){
+        widget.updateHomeScreenLists!();
+      }
+    });
   }
 
   @override

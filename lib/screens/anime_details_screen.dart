@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -75,13 +73,14 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     progress = userAnimeModel?.progress?.toDouble() ?? 0.0;
     score = userAnimeModel?.score?.toDouble() ?? 0.0;
     endDate = userAnimeModel?.endDate?.replaceAll("null", "~") ?? "~/~/~";
-    startDate = userAnimeModel?.startDate ?? "~/~/~";
+    startDate = userAnimeModel?.startDate?.replaceAll("null", "~") ?? "~/~/~";
     statuses.removeWhere((element) => element == userAnimeModel?.status);
-    if (userAnimeModel?.status != ""){
-      query["score"] = score.toString();
-      query["progress"] = progress.toString();
-    }
-    statuses = [userAnimeModel?.status == "" ? "NOT SET" : userAnimeModel?.status ?? "", ...statuses];
+    query["score"] = score.toString();
+    query["progress"] = progress.toInt().toString();
+    statuses = [
+      userAnimeModel?.status == "" ? "NOT SET" : userAnimeModel?.status ?? "",
+      ...statuses
+    ];
   }
 
   void setSearches(Future<List<List<String>>> Function(String) getIds) async {
@@ -102,6 +101,66 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       currentSearch = 0;
       setDropDowns[newSource]!();
     });
+  }
+
+  void askForDeleteUserMedia() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Are you sure you wish to delete this media entry",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+          content: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.2,
+            width: MediaQuery.of(context).size.width * 0.1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    deleteUserAnime(widget.currentAnime.id);
+                    Navigator.of(context).pop();
+                  },
+                  style: const ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll(
+                      Color.fromARGB(255, 37, 37, 37),
+                    ),
+                    minimumSize: MaterialStatePropertyAll(
+                        Magnifier.kDefaultMagnifierSize),
+                    foregroundColor: MaterialStatePropertyAll(
+                      Colors.white,
+                    ),
+                  ),
+                  child: const Text("Confirm"),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: const ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll(
+                      Color.fromARGB(255, 37, 37, 37),
+                    ),
+                    minimumSize: MaterialStatePropertyAll(
+                        Magnifier.kDefaultMagnifierSize),
+                    foregroundColor: MaterialStatePropertyAll(
+                      Colors.white,
+                    ),
+                  ),
+                  child: const Text("Cancel"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void openVideo(String consumetId, int animeEpisode) async {
@@ -194,9 +253,21 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            "List Editor",
-            style: TextStyle(color: Colors.white),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const Text(
+                "List Editor",
+                style: TextStyle(color: Colors.white),
+              ),
+              IconButton(
+                onPressed: () {
+                  askForDeleteUserMedia();
+                },
+                icon: const Icon(Icons.delete, color: Colors.white),
+              )
+            ],
           ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
           content: StatefulBuilder(
@@ -221,8 +292,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                       ],
                       horizontalPadding: 10,
                       onTap: (index) {
+                        String newCurrentStatus = statuses[index];
+                        statuses.removeAt(index);
+                        statuses.insert(0, newCurrentStatus);
                         query.remove("status");
-                        query.addAll({"status": statuses[index]});
+                        query.addAll({"status": newCurrentStatus});
                       },
                       width: MediaQuery.of(context).size.width * 0.4,
                     ),
@@ -255,7 +329,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                             onChangeEnd: (value) {
                               query.remove("progress");
                               print(progress.toInt().toString());
-                              query.addAll({"progress": progress.toInt().toString()});
+                              query.addAll(
+                                  {"progress": progress.toInt().toString()});
                             },
                           ),
                         ),
@@ -316,14 +391,22 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                     "${chosenDateTime.day}/${chosenDateTime.month}/${chosenDateTime.year}";
                               });
                               query.remove("startDateDay");
-                              query.addAll({"startDateDay": chosenDateTime.day.toString()});
+                              query.addAll({
+                                "startDateDay": chosenDateTime.day.toString()
+                              });
                               query.remove("startDateMonth");
-                              query.addAll({"startDateMonth": chosenDateTime.month.toString()});
+                              query.addAll({
+                                "startDateMonth":
+                                    chosenDateTime.month.toString()
+                              });
                               query.remove("startDateYear");
-                              query.addAll({"startDateYear": chosenDateTime.year.toString()});
+                              query.addAll({
+                                "startDateYear": chosenDateTime.year.toString()
+                              });
                             }
                           },
-                          icon: const Icon(Icons.calendar_month, color: Colors.grey),
+                          icon: const Icon(Icons.calendar_month,
+                              color: Colors.grey),
                         ),
                         Text(
                           startDate,
@@ -349,14 +432,23 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                     "${chosenDateTime.day}/${chosenDateTime.month}/${chosenDateTime.year}";
                               });
                               query.remove("endDateDay");
-                              query.addAll({"endDateDay": chosenDateTime.day.toString()});
+                              query.addAll({
+                                "endDateDay": chosenDateTime.day.toString()
+                              });
                               query.remove("endDateMonth");
-                              query.addAll({"endDateMonth": chosenDateTime.month.toString()});
+                              query.addAll({
+                                "endDateMonth": chosenDateTime.month.toString()
+                              });
                               query.remove("endDateYear");
-                              query.addAll({"endDateYear": chosenDateTime.year.toString()});
+                              query.addAll({
+                                "endDateYear": chosenDateTime.year.toString()
+                              });
                             }
                           },
-                          icon: const Icon(Icons.calendar_month, color: Colors.grey,),
+                          icon: const Icon(
+                            Icons.calendar_month,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
@@ -372,24 +464,29 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   backgroundColor: MaterialStatePropertyAll(
                                     Color.fromARGB(255, 37, 37, 37),
                                   ),
-                                  minimumSize: MaterialStatePropertyAll(Magnifier.kDefaultMagnifierSize),
+                                  minimumSize: MaterialStatePropertyAll(
+                                      Magnifier.kDefaultMagnifierSize),
                                   foregroundColor: MaterialStatePropertyAll(
                                     Colors.white,
                                   ),
                                 ),
                                 onPressed: () {
-                                  setUserAnimeInfo(widget.currentAnime.id, query);
+                                  setUserAnimeInfo(
+                                      widget.currentAnime.id, query);
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text("Confirm"),
                               ),
-                              const SizedBox(width: 20,),
+                              const SizedBox(
+                                width: 20,
+                              ),
                               ElevatedButton(
                                 style: const ButtonStyle(
                                   backgroundColor: MaterialStatePropertyAll(
                                     Color.fromARGB(255, 37, 37, 37),
                                   ),
-                                  minimumSize: MaterialStatePropertyAll(Magnifier.kDefaultMagnifierSize),
+                                  minimumSize: MaterialStatePropertyAll(
+                                      Magnifier.kDefaultMagnifierSize),
                                   foregroundColor: MaterialStatePropertyAll(
                                     Colors.white,
                                   ),
@@ -455,8 +552,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   score: null,
                                   onTap: null,
                                   textColor: Colors.white,
-                                  height: MediaQuery.of(context).size.height * 0.28,
-                                  width: MediaQuery.of(context).size.width * 0.1,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.28,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
                                   status: widget.currentAnime.status,
                                   year: null,
                                   format: null,
