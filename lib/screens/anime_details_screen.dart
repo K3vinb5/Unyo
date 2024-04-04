@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -22,7 +24,6 @@ class AnimeDetailsScreen extends StatefulWidget {
 }
 
 class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
-
   late VideoScreen videoScreen;
   UserAnimeModel? userAnimeModel;
   List<String> searches = [];
@@ -63,6 +64,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     };
     updateSource(0);
     setUserAnimeModel();
+    setUserAnimeInfo(widget.currentAnime.id, query);
   }
 
   void setUserAnimeModel() async {
@@ -164,6 +166,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     );
   }
 
+  void updateEntry() {
+    progress++;
+    query.remove("progress");
+    query.addAll({"progress": progress.toInt().toString()});
+    setUserAnimeInfo(widget.currentAnime.id, query);
+    Timer(const Duration(milliseconds: 1500), () {
+      setUserAnimeModel();
+    },);
+  }
+
   void openVideo(String consumetId, int animeEpisode) async {
     late String consumetStream;
     if (currentSource == 0) {
@@ -171,6 +183,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
           consumetId, animeEpisode, context);
       videoScreen = VideoScreen(
         stream: consumetStream,
+        updateEntry: updateEntry,
       );
     } else if (currentSource == 1) {
       List<String> streamCaption =
@@ -180,12 +193,14 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       videoScreen = VideoScreen(
         stream: consumetStream,
         captions: streamCaption[1],
+        updateEntry: updateEntry,
       );
     } else {
       consumetStream = await getAnimeConsumetGogoAnimeStream(
           consumetId, animeEpisode, context);
       videoScreen = VideoScreen(
         stream: consumetStream,
+        updateEntry: updateEntry,
       );
     }
     Navigator.push(
@@ -245,6 +260,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             )
           ],
         );
+      },
+    );
+    Timer(
+      Duration(milliseconds: 500),
+      () {
+        setUserAnimeModel();
       },
     );
   }
@@ -474,6 +495,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 onPressed: () {
                                   setUserAnimeInfo(
                                       widget.currentAnime.id, query);
+                                  Timer(const Duration(milliseconds: 1500), () {
+                                    setUserAnimeModel();
+                                  },);
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text("Confirm"),

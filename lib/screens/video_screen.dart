@@ -11,10 +11,11 @@ import 'package:window_manager/window_manager.dart';
 bool fullScreen = false;
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen({super.key, required this.stream, this.captions});
+  const VideoScreen({super.key, required this.stream, required this.updateEntry, this.captions});
 
   final String stream;
   final String? captions;
+  final void Function() updateEntry;
 
   @override
   _VideoScreenState createState() => _VideoScreenState();
@@ -123,6 +124,10 @@ class _VideoScreenState extends State<VideoScreen> {
     }
   }
 
+  double calculatePercentage(){
+    return (_controller.value.position.inMilliseconds / _controller.value.duration.inMilliseconds);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -226,6 +231,10 @@ class _VideoScreenState extends State<VideoScreen> {
                   if (!fullScreen) {
                     _controller.dispose();
                     interactScreen(false);
+                    print(calculatePercentage());
+                    if(calculatePercentage() > 0.8){
+                      widget.updateEntry();
+                    }
                     Navigator.pop(context);
                   }
                 },
