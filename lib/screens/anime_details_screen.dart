@@ -171,9 +171,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     query.remove("progress");
     query.addAll({"progress": progress.toInt().toString()});
     setUserAnimeInfo(widget.currentAnime.id, query);
-    Timer(const Duration(milliseconds: 1500), () {
-      setUserAnimeModel();
-    },);
+    Timer(
+      const Duration(milliseconds: 1500),
+      () {
+        setUserAnimeModel();
+      },
+    );
   }
 
   void openVideo(String consumetId, int animeEpisode) async {
@@ -214,11 +217,14 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Select Title"),
+          title:
+              const Text("Select Title", style: TextStyle(color: Colors.white)),
+          backgroundColor: const Color.fromARGB(255, 44, 44, 44),
           actions: [
             Column(
               children: [
-                const Text("Please select new title"),
+                const Text("Please select new title",
+                    style: TextStyle(color: Colors.white)),
                 const SizedBox(
                   height: 30,
                 ),
@@ -226,6 +232,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     DropdownMenu(
+                      menuStyle: const MenuStyle(
+                        backgroundColor: MaterialStatePropertyAll(
+                          Color.fromARGB(255, 44, 44, 44),
+                        ),
+                      ),
                       onSelected: (value) {
                         currentSearch = value!;
                       },
@@ -233,6 +244,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         ...searches.mapIndexed(
                           (index, title) {
                             return DropdownMenuEntry(
+                              style: const ButtonStyle(
+                                foregroundColor: MaterialStatePropertyAll(Colors.white),
+                              ),
                               value: index,
                               label: title,
                             );
@@ -249,6 +263,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
+                      style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(
+                          Color.fromARGB(255, 37, 37, 37),
+                        ),
+                        minimumSize: MaterialStatePropertyAll(
+                            Magnifier.kDefaultMagnifierSize),
+                        foregroundColor: MaterialStatePropertyAll(
+                          Colors.white,
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -495,9 +519,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 onPressed: () {
                                   setUserAnimeInfo(
                                       widget.currentAnime.id, query);
-                                  Timer(const Duration(milliseconds: 1500), () {
-                                    setUserAnimeModel();
-                                  },);
+                                  Timer(
+                                    const Duration(milliseconds: 1500),
+                                    () {
+                                      setUserAnimeModel();
+                                    },
+                                  );
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text("Confirm"),

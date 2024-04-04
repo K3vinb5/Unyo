@@ -108,11 +108,12 @@ Future<String> getAnimeConsumetGogoAnimeStream(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text("1080p stream not found!"),
+        title: const Text("1080p stream not found!", style: TextStyle(color: Colors.white),),
+        backgroundColor: const Color.fromARGB(255, 44, 44, 44),
         actions: [
           Column(
             children: [
-              const Text("Please select a new stream quality"),
+              const Text("Please select a new stream quality", style: TextStyle(color: Colors.white),),
               const SizedBox(
                 height: 30,
               ),
@@ -123,10 +124,18 @@ Future<String> getAnimeConsumetGogoAnimeStream(
                     onSelected: (value) {
                       chosenValue = value!;
                     },
+                    menuStyle: const MenuStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                        Color.fromARGB(255, 44, 44, 44),
+                      ),
+                    ),
                     dropdownMenuEntries: [
                       ...urls.mapIndexed(
                         (index, json) {
                           return DropdownMenuEntry(
+                            style: const ButtonStyle(
+                              foregroundColor: MaterialStatePropertyAll(Colors.white),
+                            ),
                             value: index,
                             label: json["quality"],
                           );
@@ -143,6 +152,16 @@ Future<String> getAnimeConsumetGogoAnimeStream(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
+                    style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                        Color.fromARGB(255, 37, 37, 37),
+                      ),
+                      minimumSize: MaterialStatePropertyAll(
+                          Magnifier.kDefaultMagnifierSize),
+                      foregroundColor: MaterialStatePropertyAll(
+                        Colors.white,
+                      ),
+                    ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -152,6 +171,16 @@ Future<String> getAnimeConsumetGogoAnimeStream(
                     width: 20,
                   ),
                   ElevatedButton(
+                    style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                        Color.fromARGB(255, 37, 37, 37),
+                      ),
+                      minimumSize: MaterialStatePropertyAll(
+                          Magnifier.kDefaultMagnifierSize),
+                      foregroundColor: MaterialStatePropertyAll(
+                        Colors.white,
+                      ),
+                    ),
                     onPressed: () {
                       completer.complete(urls[chosenValue!]["url"]);
                       Navigator.of(context).pop();
