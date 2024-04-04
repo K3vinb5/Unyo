@@ -141,7 +141,7 @@ class _VideoScreenState extends State<VideoScreen> {
                   cursor: _showControls
                       ? SystemMouseCursors.basic
                       : SystemMouseCursors.none,
-                  child: VideoPlayer(_controller),
+                  child: AspectRatio(aspectRatio: 16 / 9, child: VideoPlayer(_controller)),
                 ),
                 ClosedCaption(
                   text: _controller.value.caption.text,

@@ -22,6 +22,7 @@ class AnimeDetailsScreen extends StatefulWidget {
 }
 
 class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
+
   late VideoScreen videoScreen;
   UserAnimeModel? userAnimeModel;
   List<String> searches = [];
