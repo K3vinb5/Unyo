@@ -39,7 +39,7 @@ class _AnimeButtonState extends State<AnimeButton> {
         width: MediaQuery
             .of(context)
             .size
-            .width * 0.12,
+            .width * 0.3,
         height: MediaQuery
             .of(context)
             .size
@@ -60,13 +60,26 @@ class _AnimeButtonState extends State<AnimeButton> {
             fit: BoxFit.fill,
           ),
         ),
-        child: Text(
-          widget.text,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              widget.text,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Container(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.08,
+              height: 2,
+              color: Colors.white,
+            ),
+          ],
         ),
       ),
     )

@@ -64,7 +64,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     };
     updateSource(0);
     setUserAnimeModel();
-    setUserAnimeInfo(widget.currentAnime.id, query);
   }
 
   void setUserAnimeModel() async {
@@ -166,17 +165,27 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     );
   }
 
-  void updateEntry() {
-    progress++;
-    query.remove("progress");
-    query.addAll({"progress": progress.toInt().toString()});
-    setUserAnimeInfo(widget.currentAnime.id, query);
-    Timer(
-      const Duration(milliseconds: 1500),
-      () {
-        setUserAnimeModel();
-      },
-    );
+  void updateEntry(int newProgress) {
+    print("Status: ${statuses[0]}");
+    if (statuses[0] != "COMPLETED") {
+      query.remove("status");
+      query.addAll({"status": "CURRENT"});
+      widget.currentAnime.status = "CURRENT";
+      statuses.swap(0, statuses.indexOf("CURRENT"));
+    }
+    if (statuses[0] == "CURRENT" || statuses[0] == "REPEATING") {
+      progress = newProgress.toDouble();
+      query.remove("progress");
+      query.addAll({"progress": progress.toInt().toString()});
+      setUserAnimeInfo(widget.currentAnime.id, query);
+      //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
+      Timer(
+        const Duration(milliseconds: 1000),
+        () {
+          setUserAnimeModel();
+        },
+      );
+    }
   }
 
   void openVideo(String consumetId, int animeEpisode) async {
@@ -186,7 +195,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
           consumetId, animeEpisode, context);
       videoScreen = VideoScreen(
         stream: consumetStream,
-        updateEntry: updateEntry,
+        updateEntry: () {
+          updateEntry(animeEpisode);
+        },
       );
     } else if (currentSource == 1) {
       List<String> streamCaption =
@@ -196,14 +207,18 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       videoScreen = VideoScreen(
         stream: consumetStream,
         captions: streamCaption[1],
-        updateEntry: updateEntry,
+        updateEntry: () {
+          updateEntry(animeEpisode);
+        },
       );
     } else {
       consumetStream = await getAnimeConsumetGogoAnimeStream(
           consumetId, animeEpisode, context);
       videoScreen = VideoScreen(
         stream: consumetStream,
-        updateEntry: updateEntry,
+        updateEntry: () {
+          updateEntry(animeEpisode);
+        },
       );
     }
     Navigator.push(
@@ -212,7 +227,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     );
   }
 
-  void openDialog(BuildContext context) {
+  void openWrongTitleDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
@@ -245,7 +260,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           (index, title) {
                             return DropdownMenuEntry(
                               style: const ButtonStyle(
-                                foregroundColor: MaterialStatePropertyAll(Colors.white),
+                                foregroundColor:
+                                    MaterialStatePropertyAll(Colors.white),
                               ),
                               value: index,
                               label: title,
@@ -741,7 +757,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  openDialog(context);
+                                  openWrongTitleDialog(context);
                                 },
                                 child: const Text("Wrong Title?"),
                               ),

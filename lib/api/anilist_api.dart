@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:flutter_nime/main.dart';
 import 'package:flutter_nime/models/models.dart';
 import 'package:flutter_nime/screens/home_screen.dart';
 import 'package:http/http.dart' as http;

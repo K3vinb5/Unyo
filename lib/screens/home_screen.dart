@@ -39,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
       // Extract access token from request URL
       if (!receivedValid) {
         receivedValid = true;
-        var uri = request.requestedUri;
         accessCode = request.requestedUri.queryParameters['code'];
         receivedValid = true;
         //print('Access Code: $accessCode');

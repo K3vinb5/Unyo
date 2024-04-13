@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nime/models/models.dart';
 import 'package:flutter_nime/screens/anime_details_screen.dart';
 import 'package:flutter_nime/widgets/widgets.dart';
-import '../api/anilist_api.dart';
 import 'package:collection/collection.dart';
 
 class AnimeWidgetList extends StatefulWidget {

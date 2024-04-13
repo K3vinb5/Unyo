@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
@@ -11,7 +14,11 @@ import 'package:window_manager/window_manager.dart';
 bool fullScreen = false;
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen({super.key, required this.stream, required this.updateEntry, this.captions});
+  const VideoScreen(
+      {super.key,
+      required this.stream,
+      required this.updateEntry,
+      this.captions});
 
   final String stream;
   final String? captions;
@@ -28,12 +35,14 @@ class _VideoScreenState extends State<VideoScreen> {
   bool paused = false;
   String? captions;
   bool soundIsHovered = false;
+  final FocusNode _screenFocusNode = FocusNode();
+  bool keyDelay = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
-      widget.stream,
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(widget.stream),
       closedCaptionFile:
           widget.captions != null ? loadCaptions(widget.captions!) : null,
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
@@ -46,6 +55,7 @@ class _VideoScreenState extends State<VideoScreen> {
     _controller.play();
     _resetHideControlsTimer();
     interactScreen(true);
+    _screenFocusNode.requestFocus();
   }
 
   @override
@@ -65,7 +75,17 @@ class _VideoScreenState extends State<VideoScreen> {
     }
     return original;
   }
-
+  
+  void controlsOverlayOnTap(){
+  _hideControlsTimer?.cancel();
+  paused = !paused;
+  if (paused) {
+  _showControls = true;
+  } else {
+  _resetHideControlsTimer();
+  }
+}
+  
   void onEnterSound() {
     setState(() {
       soundIsHovered = true;
@@ -73,11 +93,14 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   void onExitSound() {
-      Timer(const Duration(seconds: 2), () {
+    Timer(
+      const Duration(seconds: 2),
+      () {
         setState(() {
           soundIsHovered = false;
         });
-      },);
+      },
+    );
   }
 
   void interactScreen(bool keepOn) async {
@@ -124,125 +147,207 @@ class _VideoScreenState extends State<VideoScreen> {
     }
   }
 
-  double calculatePercentage(){
-    return (_controller.value.position.inMilliseconds / _controller.value.duration.inMilliseconds);
+  double calculatePercentage() {
+    return (_controller.value.position.inMilliseconds /
+        _controller.value.duration.inMilliseconds);
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.black,
-      child: Center(
-        child: Stack(
-          alignment: Alignment.topLeft,
-          children: [
-            Stack(
-              alignment: Alignment.bottomCenter,
-              children: <Widget>[
-                MouseRegion(
-                  onHover: (event) {
-                    _resetHideControlsTimer();
-                  },
-                  cursor: _showControls
-                      ? SystemMouseCursors.basic
-                      : SystemMouseCursors.none,
-                  child: AspectRatio(aspectRatio: 16 / 9, child: VideoPlayer(_controller)),
-                ),
-                ClosedCaption(
-                  text: _controller.value.caption.text,
-                ),
-                AnimatedOpacity(
-                  opacity: _showControls ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      _ControlsOverlay(
-                        controller: _controller,
-                        onTap: () {
-                          _hideControlsTimer?.cancel();
-                          paused = !paused;
-                          if (paused) {
-                            _showControls = true;
-                          } else {
-                            _resetHideControlsTimer();
-                          }
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only( left: MediaQuery.of(context).size.width - 140, bottom: 35),
-                        child: SizedBox(
-                          height: 100,
-                          child: AnimatedOpacity(
-                            opacity: soundIsHovered ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 500),
-                            child: Visibility(
-                              visible: soundIsHovered,
-                              maintainSize: false,
-                              maintainState: true,
-                              maintainAnimation: true,
-                              child: RotatedBox(
-                                quarterTurns: 3,
-                                child: Slider(
-                                  activeColor: Colors.white,
-                                  min: 0,
-                                  max: 1,
-                                  value: _controller.value.volume,
-                                  onChanged: (value) =>
-                                      _controller.setVolume(value),
+      child: KeyboardListener(
+        focusNode: _screenFocusNode,
+        onKeyEvent: (keyEnvent) {
+          if(keyDelay){
+            return;
+          }
+          keyDelay = true;
+          Timer(const Duration(milliseconds: 200), () {
+            keyDelay = false;
+          },);
+          //print("Logical: ${keyEnvent.logicalKey}");
+          switch(keyEnvent.logicalKey){
+            case LogicalKeyboardKey.space:
+              if (!_controller.value.isPlaying) {
+                controlsOverlayOnTap();
+                _controller.play();
+              }else{
+                controlsOverlayOnTap();
+                _controller.pause();
+              }
+              break;
+            case LogicalKeyboardKey.arrowLeft:
+              _controller.seekTo(
+                Duration(
+                    milliseconds: _controller
+                        .value.position.inMilliseconds -
+                        5000),
+              );
+
+              break;
+            case LogicalKeyboardKey.arrowRight:
+              _controller.seekTo(
+                Duration(
+                    milliseconds: _controller
+                        .value.position.inMilliseconds +
+                        5000),
+              );
+              break;
+            case LogicalKeyboardKey.arrowUp:
+              _controller.setVolume(min(_controller.value.volume + 0.1 ,1));
+              break;
+            case LogicalKeyboardKey.arrowDown:
+              _controller.setVolume(max(_controller.value.volume - 0.1 ,0));
+              break;
+            case LogicalKeyboardKey.keyL:
+              _controller.seekTo(
+                Duration(
+                    milliseconds: _controller
+                        .value.position.inMilliseconds +
+                        15000),
+              );
+              break;
+            case LogicalKeyboardKey.keyJ:
+              _controller.seekTo(
+                Duration(
+                    milliseconds: _controller
+                        .value.position.inMilliseconds -
+                        15000),
+              );
+              break;
+            case LogicalKeyboardKey.keyK:
+              if (!_controller.value.isPlaying) {
+                controlsOverlayOnTap();
+                _controller.play();
+              }else{
+                controlsOverlayOnTap();
+                _controller.pause();
+              }
+              break;
+            case LogicalKeyboardKey.escape:
+              _controller.dispose();
+              interactScreen(false);
+              print(calculatePercentage());
+              if (calculatePercentage() > 0.8) {
+                widget.updateEntry();
+              }
+              Navigator.pop(context);
+              break;
+            default:
+          }
+        },
+        child: Center(
+          child: Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: <Widget>[
+                  MouseRegion(
+                    onHover: (event) {
+                      _resetHideControlsTimer();
+                    },
+                    cursor: _showControls
+                        ? SystemMouseCursors.basic
+                        : SystemMouseCursors.none,
+                    child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: VideoPlayer(_controller)),
+                  ),
+                  ClosedCaption(
+                    text: _controller.value.caption.text,
+                  ),
+                  AnimatedOpacity(
+                    opacity: _showControls ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        _ControlsOverlay(
+                          controller: _controller,
+                          onTap: controlsOverlayOnTap,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width - 140,
+                              bottom: 35),
+                          child: SizedBox(
+                            height: 100,
+                            child: AnimatedOpacity(
+                              opacity: soundIsHovered ? 1.0 : 0.0,
+                              duration: const Duration(milliseconds: 500),
+                              child: Visibility(
+                                visible: soundIsHovered,
+                                maintainSize: false,
+                                maintainState: true,
+                                maintainAnimation: true,
+                                child: RotatedBox(
+                                  quarterTurns: 3,
+                                  child: Slider(
+                                    activeColor: Colors.white,
+                                    min: 0,
+                                    max: 1,
+                                    value: _controller.value.volume,
+                                    onChanged: (value) =>
+                                        _controller.setVolume(value),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      SmoothVideoProgress(
-                        controller: _controller,
-                        builder: (context, progress, duration, child) {
-                          return _VideoProgressSlider(
-                            controller: _controller,
-                            height: 40,
-                            switchFullScreen: () {
-                              setState(
-                                () {
-                                  fullScreen = !fullScreen;
-                                },
-                              );
-                            },
-                            position: progress,
-                            duration: duration,
-                            swatch: Colors.red,
-                            onEnter: onEnterSound,
-                            onExit: onExitSound,
-                          );
-                        },
-                      ),
-                    ],
+                        SmoothVideoProgress(
+                          controller: _controller,
+                          builder: (context, progress, duration, child) {
+                            return _VideoProgressSlider(
+                              controller: _controller,
+                              height: 40,
+                              switchFullScreen: () {
+                                setState(
+                                  () {
+                                    fullScreen = !fullScreen;
+                                  },
+                                );
+                              },
+                              position: progress,
+                              duration: duration,
+                              swatch: Colors.red,
+                              onEnter: onEnterSound,
+                              onExit: onExitSound,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              AnimatedOpacity(
+                opacity: !fullScreen ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: FocusScope(
+                  canRequestFocus: false,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      if (!fullScreen) {
+                        _controller.dispose();
+                        interactScreen(false);
+                        print(calculatePercentage());
+                        if (calculatePercentage() > 0.8) {
+                          widget.updateEntry();
+                        }
+                        Navigator.pop(context);
+                      }
+                    },
+                    color: Colors.white,
                   ),
                 ),
-              ],
-            ),
-            AnimatedOpacity(
-              opacity: !fullScreen ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 300),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  if (!fullScreen) {
-                    _controller.dispose();
-                    interactScreen(false);
-                    print(calculatePercentage());
-                    if(calculatePercentage() > 0.8){
-                      widget.updateEntry();
-                    }
-                    Navigator.pop(context);
-                  }
-                },
-                color: Colors.white,
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+      ),
       ),
     );
   }

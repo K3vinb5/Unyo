@@ -28,7 +28,7 @@ class PageBannerWidget extends StatelessWidget {
           end: Alignment.bottomCenter,
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 50.0),
+          padding: const EdgeInsets.only(left: 50.0, top: 20.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -36,7 +36,7 @@ class PageBannerWidget extends StatelessWidget {
                 title: "",
                 score: null,
                 coverImage: animeModel.coverImage!,
-                onTap: () {},
+                onTap: null,
                 textColor: Colors.white,
                 height: MediaQuery.of(context).size.height * 0.28,
                 width: MediaQuery.of(context).size.width * 0.1,
@@ -58,7 +58,7 @@ class PageBannerWidget extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      animeModel.status!,
+                      animeModel.status!.replaceAll("_", " "),
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

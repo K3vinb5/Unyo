@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nime/models/anime_model.dart';
 import 'package:flutter_nime/widgets/anime_widget.dart';
-import 'package:image_gradient/image_gradient.dart';
 import 'package:flutter_nime/screens/screens.dart';
 
 class AnimeListComponentWidget extends StatelessWidget {
