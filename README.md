@@ -1,10 +1,10 @@
-# FlutterNime
+# Unyo
 
 An open-source desktop app (mobile may be coming later) with integrated [anilist](https://anilist.co) support, where you can track your progress and watch your favorites shows.
 
 ## Fast Demonstration
 
-https://github.com/K3vinb5/flutter_nime/assets/115191440/b8747626-0a7b-4b41-9640-7e7d5184eed0
+https://github.com/K3vinb5/Unyo/assets/115191440/b8747626-0a7b-4b41-9640-7e7d5184eed0
 
 ## Features
 
