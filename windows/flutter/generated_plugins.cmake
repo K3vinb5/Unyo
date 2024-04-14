@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_keep_screen_on
+  flutter_webrtc
   fvp
   screen_retriever
   url_launcher_windows

@@ -45,6 +45,7 @@ dependencies:
   shelf: ^1.4.1
   shared_preferences: ^2.2.2
   desktop_keep_screen_on: ^0.0.1
+  peerdart: ^0.5.4
 
 dev_dependencies:
   flutter_test:
