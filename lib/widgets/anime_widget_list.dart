@@ -12,6 +12,8 @@ class AnimeWidgetList extends StatefulWidget {
       required this.textColor,
       required this.loadMore,
       required this.tag,
+      required this.width,
+      required this.height,
       this.updateHomeScreenLists,
       this.loadMoreFunction,
       });
@@ -23,6 +25,8 @@ class AnimeWidgetList extends StatefulWidget {
   final Future<List<AnimeModel>> Function(int, int, int)? loadMoreFunction;
   final String tag;
   final void Function()? updateHomeScreenLists;
+  final double width;
+  final double height;
 
   @override
   State<AnimeWidgetList> createState() => _AnimeWidgetListState();
@@ -101,10 +105,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
               ],
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.35,
+              height: widget.height * 0.35,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
@@ -119,8 +120,8 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                           openAnime(animeModel, "${widget.tag}-$index");
                         },
                         textColor: widget.textColor,
-                        height: MediaQuery.of(context).size.height * 0.28,
-                        width: MediaQuery.of(context).size.width * 0.1,
+                        height: widget.height * 0.28,
+                        width: widget.width * 0.1,
                         year: animeModel.startDate,
                         format: animeModel.format,
                         status: animeModel.status,
@@ -141,8 +142,8 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                             });
                           },
                           textColor: widget.textColor,
-                          height: MediaQuery.of(context).size.height * 0.28,
-                          width: MediaQuery.of(context).size.width * 0.1,
+                          height: widget.height * 0.28,
+                          width: widget.width * 0.1,
                           status: null,
                           format: null,
                           year: null,

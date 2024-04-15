@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nime/api/anilist_api.dart';
 
 class AnimeButton extends StatefulWidget {
-  const AnimeButton({super.key, required this.text, required this.onTap});
+  const AnimeButton({super.key, required this.text, required this.onTap, required this.width, required this.height});
 
   final String text;
   final void Function() onTap;
+  final double width;
+  final double height;
 
   @override
   State<AnimeButton> createState() => _AnimeButtonState();
@@ -36,14 +38,8 @@ class _AnimeButtonState extends State<AnimeButton> {
       child: Container(
         //TODO check percentages
         alignment: Alignment.center,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width * 0.3,
-        height: MediaQuery
-            .of(context)
-            .size
-            .height * 0.1,
+        width: widget.width * 0.3,
+        height: widget.height * 0.1,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Colors.transparent, Colors.black87],
@@ -72,10 +68,7 @@ class _AnimeButtonState extends State<AnimeButton> {
               ),
             ),
             Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width * 0.08,
+              width: widget.width * 0.08,
               height: 2,
               color: Colors.white,
             ),

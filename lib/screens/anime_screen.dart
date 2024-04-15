@@ -342,6 +342,8 @@ class _AnimeScreenState extends State<AnimeScreen>{
                       textColor: Colors.white,
                       loadMore: true,
                       loadMoreFunction: getAnimeModelListRecentlyReleased,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
                     ),
                     AnimeWidgetList(
                       tag: "anime-details-list2",
@@ -350,6 +352,8 @@ class _AnimeScreenState extends State<AnimeScreen>{
                       textColor: Colors.white,
                       loadMore: true,
                       loadMoreFunction: getAnimeModelListTrending,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
                     ),
                     AnimeWidgetList(
                       tag: "anime-details-list3",
@@ -361,6 +365,8 @@ class _AnimeScreenState extends State<AnimeScreen>{
                         return getAnimeModelListSeasonPopular(
                             page, n, DateTime.now().year, getCurrentSeason(), attempt);
                       },
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.07,

@@ -33,6 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
   List<AnimeModel>? pausedList;
   final String clientId = '17550';
   final String redirectUri = 'http://localhost:9999/auth';
+  double adjustedWidth = 0;
+  double adjustedHeight = 0;
+  double totalWidth = 0;
+  double totalHeight = 0;
 
   Future<void> _startServer() async {
     handler(shelf.Request request) async {
@@ -112,11 +116,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
     List<AnimeModel> newWatchingAnimeList =
-        await getUserAnimeLists(userId!, "Watching", 0);
+    await getUserAnimeLists(userId!, "Watching", 0);
     List<AnimeModel> newPlanningAnimeList =
-        await getUserAnimeLists(userId!, "Planning", 0);
+    await getUserAnimeLists(userId!, "Planning", 0);
     List<AnimeModel> newPausedAnimeList =
-        await getUserAnimeLists(userId!, "Paused", 0);
+    await getUserAnimeLists(userId!, "Paused", 0);
     setState(() {
       bannerImageUrl = newbannerUrl;
       avatarImageUrl = newavatarUrl;
@@ -128,11 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void updateUserLists() async {
     List<AnimeModel> newWatchingAnimeList =
-        await getUserAnimeLists(userId!, "Watching", 0);
+    await getUserAnimeLists(userId!, "Watching", 0);
     List<AnimeModel> newPlanningAnimeList =
-        await getUserAnimeLists(userId!, "Planning", 0);
+    await getUserAnimeLists(userId!, "Planning", 0);
     List<AnimeModel> newPausedAnimeList =
-        await getUserAnimeLists(userId!, "Paused", 0);
+    await getUserAnimeLists(userId!, "Paused", 0);
     setState(() {
       watchingList = newWatchingAnimeList;
       planningList = newPlanningAnimeList;
@@ -140,312 +144,345 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  double getAdjustedHeight(double value){
+    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778){
+      return value;
+    }else{
+      return value * ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
+    }
+  }
+
+  double getAdjustedWidth(double value){
+    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778){
+      return value;
+    }else{
+    return value * ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          Column(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
+          adjustedHeight = getAdjustedHeight(MediaQuery.of(context).size.height);
+          totalHeight = MediaQuery.of(context).size.height;
+          totalWidth = MediaQuery.of(context).size.width;
+          print("$adjustedWidth / $adjustedHeight");
+          return Stack(
+            alignment: Alignment.topCenter,
             children: [
-              bannerImageUrl != null
-                  ? Stack(
-                      children: [
-                        ImageGradient.linear(
-                          image: Image.network(
-                            bannerImageUrl!,
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.35,
-                            fit: BoxFit.fill,
-                          ),
-                          colors: const [Colors.white, Colors.black87],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
+              Column(
+                children: [
+                  bannerImageUrl != null
+                      ? Stack(
+                    children: [
+                      ImageGradient.linear(
+                        image: Image.network(
+                          bannerImageUrl!,
+                          width: totalWidth,
+                          height: totalHeight * 0.35,
+                          fit: BoxFit.fill,
                         ),
-                        avatarImageUrl != null
-                            ? Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  children: [
-                                    Image.network(
-                                      avatarImageUrl!,
-                                      scale: 1,
-                                    ),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                    Text(
-                                      userName!,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          const Text("Log out",
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                          IconButton(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: const Text(
-                                                        "Do you wanna log out?",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white)),
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                            255, 44, 44, 44),
-                                                    content: SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              0.15,
-                                                      height:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .height *
-                                                              0.15,
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          const Text(
-                                                            "Are you sure you want to log out?",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                          Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .end,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              ElevatedButton(
-                                                                style:
-                                                                    const ButtonStyle(
-                                                                  backgroundColor:
-                                                                      MaterialStatePropertyAll(Color.fromARGB(
-                                                                          255,
-                                                                          37,
-                                                                          37,
-                                                                          37)),
-                                                                ),
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                },
-                                                                child:
-                                                                    const Text(
-                                                                  "Cancel",
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white),
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 20,
-                                                              ),
-                                                              ElevatedButton(
-                                                                style:
-                                                                    const ButtonStyle(
-                                                                  backgroundColor:
-                                                                      MaterialStatePropertyAll(Color.fromARGB(
-                                                                          255,
-                                                                          37,
-                                                                          37,
-                                                                          37)),
-                                                                ),
-                                                                onPressed: () {
-                                                                  prefs.clear();
-                                                                  setState(() {
-                                                                    bannerImageUrl =
-                                                                        null;
-                                                                    avatarImageUrl =
-                                                                        null;
-                                                                    watchingList =
-                                                                        null;
-                                                                    planningList =
-                                                                        null;
-                                                                    pausedList =
-                                                                        null;
-                                                                    userName =
-                                                                        null;
-                                                                    userId =
-                                                                        null;
-                                                                    accessToken =
-                                                                        null;
-                                                                    refreshToken =
-                                                                        null;
-                                                                  });
-                                                                  setSharedPreferences();
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                },
-                                                                child:
-                                                                    const Text(
-                                                                  "Confirm",
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                        colors: const [Colors.white, Colors.black87],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      avatarImageUrl != null
+                          ? Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            Image.network(
+                              avatarImageUrl!,
+                              scale: 1,
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              userName!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                              ),
+                            ),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                children: [
+                                  const Text("Log out",
+                                      style: TextStyle(
+                                          color: Colors.white)),
+                                  IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                                "Do you wanna log out?",
+                                                style: TextStyle(
+                                                    color:
+                                                    Colors.white)),
+                                            backgroundColor:
+                                            const Color.fromARGB(
+                                                255, 44, 44, 44),
+                                            content: SizedBox(
+                                              width:
+                                              adjustedWidth *
+                                                  0.15,
+                                              height:
+                                              adjustedHeight *
+                                                  0.15,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                    "Are you sure you want to log out?",
+                                                    style: TextStyle(
+                                                        color: Colors
+                                                            .white),
+                                                  ),
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .end,
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .center,
+                                                    children: [
+                                                      ElevatedButton(
+                                                        style:
+                                                        const ButtonStyle(
+                                                          backgroundColor:
+                                                          MaterialStatePropertyAll(
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  37,
+                                                                  37,
+                                                                  37)),
+                                                        ),
+                                                        onPressed: () {
+                                                          Navigator.of(
+                                                              context)
+                                                              .pop();
+                                                        },
+                                                        child:
+                                                        const Text(
+                                                          "Cancel",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            icon: const Icon(
-                                              Icons.person,
-                                              color: Colors.white,
+                                                      const SizedBox(
+                                                        width: 20,
+                                                      ),
+                                                      ElevatedButton(
+                                                        style:
+                                                        const ButtonStyle(
+                                                          backgroundColor:
+                                                          MaterialStatePropertyAll(
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  37,
+                                                                  37,
+                                                                  37)),
+                                                        ),
+                                                        onPressed: () {
+                                                          prefs.clear();
+                                                          setState(() {
+                                                            bannerImageUrl =
+                                                            null;
+                                                            avatarImageUrl =
+                                                            null;
+                                                            watchingList =
+                                                            null;
+                                                            planningList =
+                                                            null;
+                                                            pausedList =
+                                                            null;
+                                                            userName =
+                                                            null;
+                                                            userId =
+                                                            null;
+                                                            accessToken =
+                                                            null;
+                                                            refreshToken =
+                                                            null;
+                                                          });
+                                                          setSharedPreferences();
+                                                          Navigator.of(
+                                                              context)
+                                                              .pop();
+                                                        },
+                                                        child:
+                                                        const Text(
+                                                          "Confirm",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
                                     ),
-                                  ],
-                                ),
-                              )
-                            : const SizedBox(),
-                      ],
-                    )
-                  : const SizedBox(),
-              Expanded(
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    border: Border.all(
-                      color: const Color.fromARGB(255, 34, 33, 34),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                          : const SizedBox(),
+                    ],
+                  )
+                      : const SizedBox(),
+                  Expanded(
+                    child: Container(
+                      width: totalWidth,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.black87,
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 34, 33, 34),
+                        ),
+                      ),
                     ),
+                  ),
+                ],
+              ),
+              userName == null
+                  ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 100,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        login();
+                        //getUserInfo();
+                      },
+                      style: const ButtonStyle(
+                        backgroundColor:
+                        MaterialStatePropertyAll(Colors.black12),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            accessToken == null
+                                ? "Please Login to Anilist  "
+                                : "Please Wait...  ",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          ),
+                        ],
+                      )),
+                ],
+              )
+                  : Padding(
+                padding: EdgeInsets.only(
+                    top: adjustedWidth * 0.1),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      watchingList != null
+                          ? Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceAround,
+                        children: [
+                          AnimeButton(
+                            text: "Animes",
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, "animeScreen")
+                                  .then((_) {
+                                updateUserLists();
+                              });
+                            },
+                            width: adjustedWidth,
+                            height: adjustedHeight,
+                          ),
+                          AnimeButton(
+                            text: "Mangas",
+                            onTap: () {},
+                            width: adjustedWidth,
+                            height: adjustedHeight,
+                          ),
+                        ],
+                      )
+                          : const Text(
+                        "Login found! Loading, please wait...",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      watchingList != null
+                          ? AnimeWidgetList(
+                        tag: "home-details-list1",
+                        title: "Continue Watching",
+                        animeList: watchingList!,
+                        textColor: Colors.white,
+                        loadMore: false,
+                        updateHomeScreenLists: updateUserLists,
+                        width: adjustedWidth,
+                        height: adjustedHeight,
+                      )
+                          : const SizedBox(),
+                      planningList != null
+                          ? AnimeWidgetList(
+                        tag: "home-details-list2",
+                        title: "Why don't you see what you planned! :P",
+                        animeList: planningList!,
+                        textColor: Colors.white,
+                        loadMore: false,
+                        updateHomeScreenLists: updateUserLists,
+                        width: adjustedWidth,
+                        height: adjustedHeight,
+                      )
+                          : const SizedBox(),
+                      pausedList != null
+                          ? AnimeWidgetList(
+                        tag: "home-details-list3",
+                        title: "Why don't you resume your animes!",
+                        animeList: pausedList!,
+                        textColor: Colors.white,
+                        loadMore: false,
+                        updateHomeScreenLists: updateUserLists,
+                        width: adjustedWidth,
+                        height: adjustedHeight,
+                      )
+                          : const SizedBox(),
+                    ],
                   ),
                 ),
               ),
             ],
-          ),
-          userName == null
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      height: 100,
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          login();
-                          //getUserInfo();
-                        },
-                        style: const ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.black12),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              accessToken == null
-                                  ? "Please Login to Anilist  "
-                                  : "Please Wait...  ",
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            const Icon(
-                              Icons.person,
-                              color: Colors.white,
-                            ),
-                          ],
-                        )),
-                  ],
-                )
-              : Padding(
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.width * 0.1),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        watchingList != null
-                            ? Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  AnimeButton(
-                                    text: "Animes",
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                              context, "animeScreen")
-                                          .then((_) {
-                                        updateUserLists();
-                                      });
-                                    },
-                                  ),
-                                  AnimeButton(
-                                    text: "Mangas",
-                                    onTap: () {},
-                                  ),
-                                ],
-                              )
-                            : const Text(
-                                "Login found! Loading, please wait...",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                        watchingList != null
-                            ? AnimeWidgetList(
-                                tag: "home-details-list1",
-                                title: "Continue Watching",
-                                animeList: watchingList!,
-                                textColor: Colors.white,
-                                loadMore: false,
-                                updateHomeScreenLists: updateUserLists,
-                              )
-                            : const SizedBox(),
-                        planningList != null
-                            ? AnimeWidgetList(
-                                tag: "home-details-list2",
-                                title: "Why don't you see what you planned! :P",
-                                animeList: planningList!,
-                                textColor: Colors.white,
-                                loadMore: false,
-                                updateHomeScreenLists: updateUserLists,
-                              )
-                            : const SizedBox(),
-                        pausedList != null
-                            ? AnimeWidgetList(
-                                tag: "home-details-list3",
-                                title: "Why don't you resume your animes!",
-                                animeList: pausedList!,
-                                textColor: Colors.white,
-                                loadMore: false,
-                                updateHomeScreenLists: updateUserLists,
-                              )
-                            : const SizedBox(),
-                      ],
-                    ),
-                  ),
-                ),
-        ],
+          );
+        },
       ),
     );
   }
