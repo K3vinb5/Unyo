@@ -64,7 +64,7 @@ jobs:
         with:
           type: 'zip'
           filename: Unyo-${{github.ref_name}}-windows.zip
-          directory: build/windows/runner/Release
+          directory: ${{ github.action_path }}/build/windows/runner/Release
       - name: Windows Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
