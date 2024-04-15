@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^2.2.2
   desktop_keep_screen_on: ^0.0.1
   peerdart: ^0.5.4
+  build_runner: ^2.4.9
 
 dev_dependencies:
   flutter_test:

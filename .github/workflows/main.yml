@@ -44,7 +44,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-          flutter-version: '2.10.0'
+          flutter-version: '3.19.5'
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
@@ -75,7 +75,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-          flutter-version: '2.10.0'
+          flutter-version: '3.19.5'
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
