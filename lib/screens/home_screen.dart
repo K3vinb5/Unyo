@@ -403,7 +403,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
                   : Padding(
                 padding: EdgeInsets.only(
-                    top: totalHeight * 0.15),
+                    top: totalHeight * 0.2),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Column(
