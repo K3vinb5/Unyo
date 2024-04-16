@@ -142,9 +142,9 @@ class _VideoScreenState extends State<VideoScreen> {
         if (data is Map<String, dynamic>) {
           if (data.containsKey("seekTo")) {
             _controller.seekTo(Duration(milliseconds: data["seekTo"]!.toInt()));
-            if (!_controller.value.isPlaying) {
+            /*if (!_controller.value.isPlaying) {
               _controller.play();
-            }
+            }*/
           }
 
           if (data.containsKey("connected")) {
@@ -156,16 +156,29 @@ class _VideoScreenState extends State<VideoScreen> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: const Text("Connection Successful"),
-                  content: Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Ok"),
-                      ),
-                    ],
+                  title: const Text("Connection Successful", style: TextStyle(color: Colors.white)),
+                  backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+                  content: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                              Color.fromARGB(255, 37, 37, 37),
+                            ),
+                            foregroundColor: MaterialStatePropertyAll(
+                              Colors.white,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("Ok", style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -214,16 +227,29 @@ class _VideoScreenState extends State<VideoScreen> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: const Text("Connection Successful"),
-                  content: Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Ok"),
-                      ),
-                    ],
+                  title: const Text("Connection Successful", style: TextStyle(color: Colors.white)),
+                  backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+                  content: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                              Color.fromARGB(255, 37, 37, 37),
+                            ),
+                            foregroundColor: MaterialStatePropertyAll(
+                              Colors.white,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("Ok", style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -834,8 +860,8 @@ class _VideoProgressSlider extends StatelessWidget {
                 },
                 onChangeStart: (_) => controller.pause(),
                 onChangeEnd: (_) {
-                  seekToPeer(value);
-                  controller.play();
+                  seekToPeer(controller.value.position.inMilliseconds.toDouble());
+                  //controller.play();
                 },
               ),
             ),
@@ -849,41 +875,74 @@ class _VideoProgressSlider extends StatelessWidget {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text("Watch 2gether"),
-                      content: Column(
-                        children: [
-                          SelectableText("Your Id\n$myPeerId"),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const Text("Please paste your buddys peerId"),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextField(
-                            controller: textFieldcontroller,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  connectToPeer(textFieldcontroller.text);
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Confirm"),
+                      title: const Text("Watch 2gether", style: TextStyle(color: Colors.white)),
+                      backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+                      content: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SelectableText("Your Id:\n$myPeerId", style: const TextStyle(color: Colors.white)),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const Text("Please paste your buddys peerId", style: TextStyle(color: Colors.white)),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            TextField(
+                              controller: textFieldcontroller,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ElevatedButton(
+                                        style: const ButtonStyle(
+                                          backgroundColor: MaterialStatePropertyAll(
+                                            Color.fromARGB(255, 37, 37, 37),
+                                          ),
+                                          foregroundColor: MaterialStatePropertyAll(
+                                            Colors.white,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          connectToPeer(textFieldcontroller.text);
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text("Confirm", style: TextStyle(color: Colors.white)),
+                                      ),
+                                      const SizedBox(width: 50,),
+                                      ElevatedButton(
+                                        style: const ButtonStyle(
+                                          backgroundColor: MaterialStatePropertyAll(
+                                            Color.fromARGB(255, 37, 37, 37),
+                                          ),
+                                          foregroundColor: MaterialStatePropertyAll(
+                                            Colors.white,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text("Cancel", style: TextStyle(color: Colors.white)),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Cancel"),
-                              ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },

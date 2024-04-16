@@ -5,11 +5,20 @@ import 'package:image_gradient/image_gradient.dart';
 
 class PageBannerWidget extends StatelessWidget {
   const PageBannerWidget(
-      {super.key, required this.animeModel, required this.width, required this.height});
+      {super.key,
+      required this.animeModel,
+      required this.width,
+      required this.height,
+      required this.adjustedWidth,
+      required this.adjustedHeight});
 
   final AnimeModel animeModel;
   final double width;
   final double height;
+  final double adjustedWidth;
+  final double adjustedHeight;
+  final double minimumWidth = 124.08;
+  final double minimumHeight = 195.44;
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +47,22 @@ class PageBannerWidget extends StatelessWidget {
                 coverImage: animeModel.coverImage!,
                 onTap: null,
                 textColor: Colors.white,
-                height: MediaQuery.of(context).size.height * 0.28,
-                width: MediaQuery.of(context).size.width * 0.1,
+                height: (adjustedHeight * 0.28) > minimumHeight
+                    ? (adjustedHeight * 0.28)
+                    : minimumHeight,
+                width: (adjustedWidth * 0.1) > minimumWidth
+                    ? (adjustedWidth * 0.1)
+                    : minimumWidth,
                 format: null,
                 year: null,
                 status: null,
               ),
               Padding(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.06, left: 25),
+                padding: EdgeInsets.only(
+                    bottom: (height - ((adjustedHeight * 0.28) > minimumHeight
+                        ? (adjustedHeight * 0.28)
+                        : minimumHeight)),
+                    left: 25),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,

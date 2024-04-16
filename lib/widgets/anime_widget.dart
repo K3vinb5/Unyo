@@ -143,7 +143,7 @@ class AnimeWidget extends StatelessWidget {
                               style: TextStyle(
                                 color: Colors.grey,
                                 overflow: TextOverflow.ellipsis,
-                                fontSize: format == "TV_SHORT" ? 11 : 14,
+                                fontSize: format == "TV_SHORT" ? 10 : 14,
                               ),
                             ),
                             const Icon(

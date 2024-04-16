@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
           adjustedHeight = getAdjustedHeight(MediaQuery.of(context).size.height);
           totalHeight = MediaQuery.of(context).size.height;
           totalWidth = MediaQuery.of(context).size.width;
-          print("$adjustedWidth / $adjustedHeight");
+          //print("$adjustedWidth / $adjustedHeight");
           return Stack(
             alignment: Alignment.topCenter,
             children: [
@@ -403,7 +403,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
                   : Padding(
                 padding: EdgeInsets.only(
-                    top: adjustedWidth * 0.1),
+                    top: totalHeight * 0.15),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Column(

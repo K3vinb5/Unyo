@@ -27,6 +27,9 @@ class AnimeWidgetList extends StatefulWidget {
   final void Function()? updateHomeScreenLists;
   final double width;
   final double height;
+  final double minimumWidth = 124.08;
+  final double minimumHeight = 195.44;
+  final double minimumListHeight = 244.3;
 
   @override
   State<AnimeWidgetList> createState() => _AnimeWidgetListState();
@@ -36,11 +39,15 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
   late List<AnimeModel> animeList;
   late AnimeDetailsScreen animeScreen;
   int currentPage = 2;
+  double calculatedWidth = 0;
+  double calculatedHeight = 0;
+  double calculatedListHeight = 0;
 
   @override
   void initState() {
     super.initState();
     animeList = widget.animeList;
+    print("${widget.width * 0.1} ${widget.height * 0.28}");
   }
 
   @override
@@ -72,88 +79,97 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+
+          calculatedWidth = widget.width * 0.1;
+          calculatedHeight = widget.height * 0.28;
+          calculatedListHeight = widget.height * 0.35;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
+            child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            widget.title,
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: widget.textColor,
+                            ),
+                          ),
+                          Text(
+                            "  ${animeList.length.toString()} entries",
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: calculatedListHeight > widget.minimumListHeight ? calculatedListHeight : widget.minimumListHeight,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
                     children: [
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: widget.textColor,
-                        ),
-                      ),
-                      Text(
-                        "  ${animeList.length.toString()} entries",
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.grey,
-                        ),
-                      ),
+                      ...animeList.mapIndexed((index, animeModel) {
+                        return Hero(
+                          tag: "${widget.tag}-$index",
+                          child: AnimeWidget(
+                            title: animeModel.title,
+                            score: animeModel.averageScore,
+                            coverImage: animeModel.coverImage,
+                            onTap: () {
+                              openAnime(animeModel, "${widget.tag}-$index");
+                            },
+                            textColor: widget.textColor,
+                            height: calculatedHeight > widget.minimumHeight ? calculatedHeight : widget.minimumHeight,
+                            width: calculatedWidth > widget.minimumWidth ? calculatedWidth : widget.minimumWidth,
+                            year: animeModel.startDate,
+                            format: animeModel.format,
+                            status: animeModel.status,
+                          ),
+                        );
+                      }),
+                      //load More
+                      widget.loadMore
+                          ? AnimeWidget(
+                        title: "",
+                        score: null,
+                        coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
+                        onTap: () async {
+                          var newTrendingList =
+                          await widget.loadMoreFunction!(currentPage++, 20, 0);
+                          setState(() {
+                            animeList += newTrendingList;
+                          });
+                        },
+                        textColor: widget.textColor,
+                        height: calculatedHeight > widget.minimumHeight ? calculatedHeight : widget.minimumHeight,
+                        width: calculatedWidth > widget.minimumWidth ? calculatedWidth : widget.minimumWidth,
+                        status: null,
+                        format: null,
+                        year: null,
+                      )
+                          : const SizedBox(),
                     ],
                   ),
                 ),
               ],
             ),
-            SizedBox(
-              height: widget.height * 0.35,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  ...animeList.mapIndexed((index, animeModel) {
-                    return Hero(
-                      tag: "${widget.tag}-$index",
-                      child: AnimeWidget(
-                        title: animeModel.title,
-                        score: animeModel.averageScore,
-                        coverImage: animeModel.coverImage,
-                        onTap: () {
-                          openAnime(animeModel, "${widget.tag}-$index");
-                        },
-                        textColor: widget.textColor,
-                        height: widget.height * 0.28,
-                        width: widget.width * 0.1,
-                        year: animeModel.startDate,
-                        format: animeModel.format,
-                        status: animeModel.status,
-                      ),
-                    );
-                  }),
-                  //load More
-                  widget.loadMore
-                      ? AnimeWidget(
-                          title: "",
-                          score: null,
-                          coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
-                          onTap: () async {
-                            var newTrendingList =
-                                await widget.loadMoreFunction!(currentPage++, 20, 0);
-                            setState(() {
-                              animeList += newTrendingList;
-                            });
-                          },
-                          textColor: widget.textColor,
-                          height: widget.height * 0.28,
-                          width: widget.width * 0.1,
-                          status: null,
-                          format: null,
-                          year: null,
-                        )
-                      : const SizedBox(),
-                ],
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
