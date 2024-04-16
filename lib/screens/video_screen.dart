@@ -118,11 +118,8 @@ class _VideoScreenState extends State<VideoScreen> {
     if (myPeerId != null) {
       return;
     }
-
-//    peer = Peer(options: PeerOptions(host: "http://kevin-is-awesome.mooo.com:9000", path: "/unyo"));
+    peer = Peer(options: PeerOptions(host: "http://kevin-is-awesome-mooo.com:9000", path: "/unyo"));
     
-    peer = Peer();
-
     peer.on("open").listen((id) {
       setState(() {
         myPeerId = peer.id;
