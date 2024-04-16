@@ -91,7 +91,11 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void connectToPeer(String receivedPeerId) {
     peerId = receivedPeerId;
-    conn = peer.connect(peerId!);
+    PeerConnectOption options = PeerConnectOption(
+      reliable: true,
+
+    );
+    conn = peer.connect(peerId!, options: options);
     peerConnected = true;
 
     conn.on("open").listen((event) {
@@ -118,8 +122,8 @@ class _VideoScreenState extends State<VideoScreen> {
     if (myPeerId != null) {
       return;
     }
-    peer = Peer();
-
+    peer = Peer(options: PeerOptions(host: "http://kevin-is-awesome.mooo.com:9000", path: "/unyo"));
+    print(peer.options.host);
     peer.on("open").listen((id) {
       setState(() {
         myPeerId = peer.id;
