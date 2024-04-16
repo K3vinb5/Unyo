@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nime/widgets/widgets.dart';
+import 'package:unyo/widgets/widgets.dart';
 import 'package:collection/collection.dart';
 
 class FloattingMenu extends StatefulWidget {

@@ -5,8 +5,8 @@ import 'package:shelf/shelf_io.dart' as shelfio;
 import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
 import '../api/anilist_api.dart';
-import 'package:flutter_nime/widgets/widgets.dart';
-import 'package:flutter_nime/models/models.dart';
+import 'package:unyo/widgets/widgets.dart';
+import 'package:unyo/models/models.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 String? accessToken;

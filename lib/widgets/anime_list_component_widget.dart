@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_nime/models/anime_model.dart';
-import 'package:flutter_nime/widgets/anime_widget.dart';
-import 'package:flutter_nime/screens/screens.dart';
+import 'package:unyo/models/anime_model.dart';
+import 'package:unyo/widgets/anime_widget.dart';
+import 'package:unyo/screens/screens.dart';
 
 class AnimeListComponentWidget extends StatelessWidget {
   AnimeListComponentWidget({

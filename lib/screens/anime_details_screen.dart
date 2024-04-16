@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_nime/api/anilist_api.dart';
-import 'package:flutter_nime/models/models.dart';
-import 'package:flutter_nime/screens/video_screen.dart';
-import 'package:flutter_nime/widgets/widgets.dart';
+import 'package:unyo/api/anilist_api.dart';
+import 'package:unyo/models/models.dart';
+import 'package:unyo/screens/video_screen.dart';
+import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
 

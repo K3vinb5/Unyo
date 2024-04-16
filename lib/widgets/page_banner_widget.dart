@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nime/models/models.dart';
-import 'package:flutter_nime/widgets/widgets.dart';
+import 'package:unyo/models/models.dart';
+import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
 
 class PageBannerWidget extends StatelessWidget {

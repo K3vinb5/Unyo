@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:flutter_nime/models/models.dart';
-import 'package:flutter_nime/screens/home_screen.dart';
+import 'package:unyo/models/models.dart';
+import 'package:unyo/screens/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
