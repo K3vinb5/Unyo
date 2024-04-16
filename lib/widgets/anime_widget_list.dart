@@ -47,7 +47,6 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
   void initState() {
     super.initState();
     animeList = widget.animeList;
-    print("${widget.width * 0.1} ${widget.height * 0.28}");
   }
 
   @override

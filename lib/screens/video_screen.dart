@@ -69,7 +69,8 @@ class _VideoScreenState extends State<VideoScreen> {
     _resetHideControlsTimer();
     interactScreen(true);
     _screenFocusNode.requestFocus();
-    Timer(const Duration(milliseconds: 200), () {
+    setClientPeerConnection();
+    /*Timer(const Duration(milliseconds: 200), () {
       int attempts = 0;
       setClientPeerConnection();
       sleep(const Duration(milliseconds: 1500));
@@ -79,7 +80,7 @@ class _VideoScreenState extends State<VideoScreen> {
         setClientPeerConnection();
         return;
       }
-    });
+    });*/
   }
 
   @override
@@ -115,16 +116,21 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   void setClientPeerConnection() {
-    if (myPeerId != null) {
-      return;
-    }
-    peer = Peer(options: PeerOptions(host: "http://kevin-is-awesome-mooo.com:9000", path: "/unyo"));
-    
+
+    peer = Peer(
+      options: PeerOptions(
+        host: "kevin-is-awesome.mooo.com",
+        port: 9000,
+        path: "/unyo/",
+        secure: false,
+      ),
+    );
+
     peer.on("open").listen((id) {
       setState(() {
         myPeerId = peer.id;
-        print("My Peer Id: $myPeerId");
       });
+      print("My Peer Id: $myPeerId");
     });
 
     peer.on("close").listen((id) {
@@ -156,7 +162,8 @@ class _VideoScreenState extends State<VideoScreen> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: const Text("Connection Successful", style: TextStyle(color: Colors.white)),
+                  title: const Text("Connection Successful",
+                      style: TextStyle(color: Colors.white)),
                   backgroundColor: const Color.fromARGB(255, 44, 44, 44),
                   content: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.5,
@@ -175,7 +182,8 @@ class _VideoScreenState extends State<VideoScreen> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text("Ok", style: TextStyle(color: Colors.white)),
+                          child: const Text("Ok",
+                              style: TextStyle(color: Colors.white)),
                         ),
                       ],
                     ),
@@ -227,7 +235,8 @@ class _VideoScreenState extends State<VideoScreen> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: const Text("Connection Successful", style: TextStyle(color: Colors.white)),
+                  title: const Text("Connection Successful",
+                      style: TextStyle(color: Colors.white)),
                   backgroundColor: const Color.fromARGB(255, 44, 44, 44),
                   content: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.5,
@@ -246,7 +255,8 @@ class _VideoScreenState extends State<VideoScreen> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text("Ok", style: TextStyle(color: Colors.white)),
+                          child: const Text("Ok",
+                              style: TextStyle(color: Colors.white)),
                         ),
                       ],
                     ),
@@ -358,7 +368,7 @@ class _VideoScreenState extends State<VideoScreen> {
     }
   }
 
-  void sendEscapeOrder(){
+  void sendEscapeOrder() {
     if (peerConnected) {
       conn = peer.connect(peerId!);
       conn.on("open").listen((_) {
@@ -860,7 +870,8 @@ class _VideoProgressSlider extends StatelessWidget {
                 },
                 onChangeStart: (_) => controller.pause(),
                 onChangeEnd: (_) {
-                  seekToPeer(controller.value.position.inMilliseconds.toDouble());
+                  seekToPeer(
+                      controller.value.position.inMilliseconds.toDouble());
                   //controller.play();
                 },
               ),
@@ -875,7 +886,8 @@ class _VideoProgressSlider extends StatelessWidget {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text("Watch 2gether", style: TextStyle(color: Colors.white)),
+                      title: const Text("Watch 2gether",
+                          style: TextStyle(color: Colors.white)),
                       backgroundColor: const Color.fromARGB(255, 44, 44, 44),
                       content: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.5,
@@ -883,11 +895,13 @@ class _VideoProgressSlider extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SelectableText("Your Id:\n$myPeerId", style: const TextStyle(color: Colors.white)),
+                            SelectableText("Your Id:\n$myPeerId",
+                                style: const TextStyle(color: Colors.white)),
                             const SizedBox(
                               height: 20,
                             ),
-                            const Text("Please paste your buddys peerId", style: TextStyle(color: Colors.white)),
+                            const Text("Please paste your buddys peerId",
+                                style: TextStyle(color: Colors.white)),
                             const SizedBox(
                               height: 20,
                             ),
@@ -908,33 +922,44 @@ class _VideoProgressSlider extends StatelessWidget {
                                     children: [
                                       ElevatedButton(
                                         style: const ButtonStyle(
-                                          backgroundColor: MaterialStatePropertyAll(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
                                             Color.fromARGB(255, 37, 37, 37),
                                           ),
-                                          foregroundColor: MaterialStatePropertyAll(
+                                          foregroundColor:
+                                              MaterialStatePropertyAll(
                                             Colors.white,
                                           ),
                                         ),
                                         onPressed: () {
-                                          connectToPeer(textFieldcontroller.text);
+                                          connectToPeer(
+                                              textFieldcontroller.text);
                                           Navigator.of(context).pop();
                                         },
-                                        child: const Text("Confirm", style: TextStyle(color: Colors.white)),
+                                        child: const Text("Confirm",
+                                            style:
+                                                TextStyle(color: Colors.white)),
                                       ),
-                                      const SizedBox(width: 50,),
+                                      const SizedBox(
+                                        width: 50,
+                                      ),
                                       ElevatedButton(
                                         style: const ButtonStyle(
-                                          backgroundColor: MaterialStatePropertyAll(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
                                             Color.fromARGB(255, 37, 37, 37),
                                           ),
-                                          foregroundColor: MaterialStatePropertyAll(
+                                          foregroundColor:
+                                              MaterialStatePropertyAll(
                                             Colors.white,
                                           ),
                                         ),
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: const Text("Cancel", style: TextStyle(color: Colors.white)),
+                                        child: const Text("Cancel",
+                                            style:
+                                                TextStyle(color: Colors.white)),
                                       ),
                                     ],
                                   ),
