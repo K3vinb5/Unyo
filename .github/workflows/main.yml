@@ -16,7 +16,7 @@ jobs:
           channel: 'stable'
           flutter-version: '3.19.5'
       - name: Install dependencies
-        run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+        run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev chromium-codecs-ffmpeg-extra
       - name: Install project dependencies
         run: flutter pub get
       #- name: Generate intermediates
