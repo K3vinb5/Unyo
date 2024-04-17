@@ -111,19 +111,21 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     });
   }
 
-  double getAdjustedHeight(double value){
-    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778){
+  double getAdjustedHeight(double value) {
+    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
       return value;
-    }else{
-      return value * ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
+    } else {
+      return value *
+          ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
     }
   }
 
-  double getAdjustedWidth(double value){
-    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778){
+  double getAdjustedWidth(double value) {
+    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
       return value;
-    }else{
-      return value * ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
+    } else {
+      return value *
+          ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
     }
   }
 
@@ -607,10 +609,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       color: Colors.transparent,
       child: LayoutBuilder(
         builder: (context, constraints) {
-
           adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
           totalWidth = MediaQuery.of(context).size.width;
-          adjustedHeight = getAdjustedHeight(MediaQuery.of(context).size.height);
+          adjustedHeight =
+              getAdjustedHeight(MediaQuery.of(context).size.height);
           totalHeight = MediaQuery.of(context).size.height;
 
           return Stack(
@@ -619,6 +621,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
               Column(
                 children: [
                   Stack(
+                    alignment: Alignment.topCenter,
                     children: [
                       ImageGradient.linear(
                         image: Image.network(
@@ -635,61 +638,71 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         end: Alignment.bottomCenter,
                       ),
                       widget.currentAnime.coverImage != null
-                          ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                            const EdgeInsets.only(top: 16.0, left: 16.0),
-                            child: Hero(
-                              tag: widget.tag,
-                              child: AnimeWidget(
-                                title: "",
-                                coverImage: widget.currentAnime.coverImage,
-                                score: null,
-                                onTap: null,
-                                textColor: Colors.white,
-                                height:
-                                (adjustedHeight * 0.28) > minimumHeight ? (adjustedHeight * 0.28) : minimumHeight,
-                                width:
-                                (adjustedWidth * 0.1) > minimumWidth ? (adjustedWidth * 0.1) : minimumWidth,
-                                status: widget.currentAnime.status,
-                                year: null,
-                                format: null,
-                              ),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.arrow_back,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      "  Home Screen",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
+                          ? SizedBox(
+                              height: totalHeight * 0.35,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 16.0, left: 16.0),
+                                    child: Hero(
+                                      tag: widget.tag,
+                                      child: AnimeWidget(
+                                        title: "",
+                                        coverImage:
+                                            widget.currentAnime.coverImage,
+                                        score: null,
+                                        onTap: null,
+                                        textColor: Colors.white,
+                                        height: (adjustedHeight * 0.28) >
+                                                minimumHeight
+                                            ? (adjustedHeight * 0.28)
+                                            : minimumHeight,
+                                        width:
+                                            (adjustedWidth * 0.1) > minimumWidth
+                                                ? (adjustedWidth * 0.1)
+                                                : minimumWidth,
+                                        status: widget.currentAnime.status,
+                                        year: null,
+                                        format: null,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.arrow_back,
+                                              color: Colors.white,
+                                            ),
+                                            Text(
+                                              "  Home Screen",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
-                        ],
-                      )
+                            )
                           : const SizedBox(),
                     ],
                   ),
@@ -706,8 +719,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 ],
               ),
               Padding(
-                padding:
-                EdgeInsets.only(top: totalHeight * 0.1),
+                padding: EdgeInsets.only(top: totalHeight * 0.1),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -814,8 +826,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 height: 10,
                               ),
                               Padding(
-                                padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
                                 child: Text(
                                   widget.currentAnime.title ?? "",
                                   style: const TextStyle(
@@ -829,13 +841,13 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 height: 10,
                               ),
                               Padding(
-                                padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
                                 child: Text(
                                   widget.currentAnime.description
-                                      ?.replaceAll("<br>", "\n")
-                                      .replaceAll("<i>", "")
-                                      .replaceAll("</i>", "") ??
+                                          ?.replaceAll("<br>", "\n")
+                                          .replaceAll("<i>", "")
+                                          .replaceAll("</i>", "") ??
                                       "",
                                   style: const TextStyle(
                                     color: Colors.white,
@@ -871,14 +883,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           height: totalHeight * 0.63,
                           child: ListView.builder(
                             itemCount:
-                            widget.currentAnime.episodes ?? currentEpisode,
+                                widget.currentAnime.episodes ?? currentEpisode,
                             itemBuilder: (context, index) {
                               return EpisodeButton(
                                 episodeNumber: index + 1,
                                 latestEpisode: currentEpisode,
-                                latestEpisodeWatched: userAnimeModel?.progress ?? 1,
+                                latestEpisodeWatched:
+                                    userAnimeModel?.progress ?? 1,
                                 onTap: () {
-                                  openVideo(searchesId[currentSearch], index + 1);
+                                  openVideo(
+                                      searchesId[currentSearch], index + 1);
                                 },
                               );
                             },
