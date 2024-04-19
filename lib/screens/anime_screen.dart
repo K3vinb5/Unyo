@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:unyo/api/anilist_api.dart';
 import 'package:unyo/models/anime_model.dart';
+import 'package:unyo/screens/scaffold_screen.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class AnimeScreen extends StatefulWidget {
@@ -326,7 +328,7 @@ class _AnimeScreenState extends State<AnimeScreen>{
                           alignment: Alignment.topRight,
                           child: InkWell(
                             onTap: () {
-                              Navigator.pop(context);
+                              goTo(1);
                             },
                             child: const Padding(
                               padding: EdgeInsets.all(16.0),

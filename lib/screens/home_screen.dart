@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelfio;
 import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
+import 'package:unyo/screens/scaffold_screen.dart';
 import '../api/anilist_api.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
@@ -163,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
@@ -417,11 +419,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           AnimeButton(
                             text: "Animes",
                             onTap: () {
-                              Navigator.pushNamed(
+                              /*Navigator.pushNamed(
                                   context, "animeScreen")
                                   .then((_) {
                                 updateUserLists();
-                              });
+                              });*/
+                              goTo(0);
                             },
                             width: adjustedWidth,
                             height: adjustedHeight,

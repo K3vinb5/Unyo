@@ -92,7 +92,11 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void connectToPeer(String receivedPeerId) {
     peerId = receivedPeerId;
-    conn = peer.connect(peerId!);
+    try{
+      conn = peer.connect(peerId!);
+    }catch(e){
+      print(e);
+    }
     peerConnected = true;
 
     conn.on("open").listen((event) {
@@ -118,12 +122,13 @@ class _VideoScreenState extends State<VideoScreen> {
   void setClientPeerConnection() {
 
     peer = Peer(
-      options: PeerOptions(
+      /*options: PeerOptions(
         host: "kevin-is-awesome.mooo.com",
-        port: 9000,
         path: "/unyo/",
-        secure: false,
-      ),
+        key: "unyo",
+        //port: 9000,
+        secure: true,
+      ),*/
     );
 
     peer.on("open").listen((id) {
@@ -274,6 +279,7 @@ class _VideoScreenState extends State<VideoScreen> {
               widget.updateEntry();
             }
             Navigator.pop(context);
+            peer.disconnect();
             break;
         }
       });
@@ -553,6 +559,7 @@ class _VideoScreenState extends State<VideoScreen> {
               if (calculatePercentage() > 0.8) {
                 widget.updateEntry();
               }
+              peer.disconnect();
               Navigator.pop(context);
               break;
             default:
@@ -684,6 +691,7 @@ class _VideoScreenState extends State<VideoScreen> {
                         if (calculatePercentage() > 0.8) {
                           widget.updateEntry();
                         }
+                        peer.disconnect();
                         Navigator.pop(context);
                       }
                     },
@@ -731,7 +739,7 @@ class _ControlsOverlay extends StatelessWidget {
         ),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
-          reverseDuration: const Duration(milliseconds: 800),
+          reverseDuration: const Duration(milliseconds: 300),
           child: controller.value.isPlaying
               ? const SizedBox.shrink()
               : Container(

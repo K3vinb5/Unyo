@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:collection/collection.dart';
 
-const String consumetEndPoint = "http://kevin-is-awesome.mooo.com:3000";
+const String consumetEndPoint = "https://kevin-is-awesome.mooo.com/consumet";
 
 Future<List<List<String>>> getAnimeConsumetGogoAnimeIds(String query) async{
   List<String> titles = [];

@@ -606,7 +606,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
@@ -633,7 +633,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               ? BoxFit.fill
                               : BoxFit.cover,
                         ),
-                        colors: const [Colors.white, Colors.black87],
+                        colors: const [Colors.white, Colors.black],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
@@ -711,8 +711,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                       width: totalWidth,
                       height: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.black87,
-                        border: Border.all(color: Colors.black87),
+                        color: Colors.black,
+                        border: Border.all(color: Colors.black),
                       ),
                     ),
                   ),
