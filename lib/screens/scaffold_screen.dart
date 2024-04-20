@@ -5,6 +5,7 @@ import 'package:unyo/widgets/widgets.dart';
 late StatefulNavigationShell publicNavigationShell;
 
 late void Function(int) goTo;
+late void Function(bool) floatingMenu;
 
 class ScaffoldScreen extends StatefulWidget {
   const ScaffoldScreen({super.key, required this.navigationShell});
@@ -16,7 +17,9 @@ class ScaffoldScreen extends StatefulWidget {
 }
 
 class _ScaffoldScreenState extends State<ScaffoldScreen> {
-  
+
+  bool menu = false;
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +28,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
     goTo = (index) {
       publicNavigationShell.goBranch(index);
     };
+    floatingMenu = (input) => menu = input;
   }
 
   void setScreen(BuildContext context, int index) {
@@ -44,14 +48,13 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: /*Stack(
+      body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
           widget.navigationShell,
-          FloattingMenu(setScreen: setScreen),
+          if (menu) FloattingMenu(setScreen: setScreen),
         ],
-      ),*/
-      widget.navigationShell,
+      ),
     );
   }
 }

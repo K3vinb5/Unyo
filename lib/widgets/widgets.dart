@@ -6,4 +6,5 @@ export 'menu_button.dart';
 export 'anime_button.dart';
 export 'anime_list_component_widget.dart';
 export 'styled_dropdown.dart';
+export 'styled_textfield.dart';
 export 'page_banner_widget.dart';

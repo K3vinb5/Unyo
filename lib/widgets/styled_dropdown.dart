@@ -32,7 +32,9 @@ class _StyledDropDownState extends State<StyledDropDown> {
       padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
       child: SizedBox(
         width: widget.width,
+        height: 48,
         child: DropdownButton(
+          padding: const EdgeInsets.only(left: 10),
           style: const TextStyle(
             color: Colors.white,
           ),

@@ -33,9 +33,9 @@ class _FloattingMenuState extends State<FloattingMenu> {
       padding: const EdgeInsets.only(bottom: 32.0),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.25,
-        height: MediaQuery.of(context).size.height * 0.06,
+        height: 50,
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 238, 238, 238),
+          color: const Color.fromARGB(220, 238, 238, 238),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
