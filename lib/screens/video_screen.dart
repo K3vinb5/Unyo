@@ -581,107 +581,105 @@ class _VideoScreenState extends State<VideoScreen> {
                 cursor: _showControls
                     ? SystemMouseCursors.basic
                     : SystemMouseCursors.none,
-                child: Center(
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: VideoPlayer(_controller),
-                      ),
-                      ClosedCaption(
-                        text: _controller.value.caption.text,
-                      ),
-                      AnimatedOpacity(
-                        opacity: _showControls ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 300),
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            _ControlsOverlay(
-                              controller: _controller,
-                              paused: paused,
-                              delayedPaused: delayedPaused,
-                              onTap: controlsOverlayOnTap,
-                              pausePeer: sendPauseVideoOrder,
-                              playPeer: sendPlayVideoOrder,
-                              peerPlus: sendFifteenPosOrder,
-                              peerMinus: sendFifteenMinOrder,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: MediaQuery.of(context).size.width - 140,
-                                  bottom: 35),
-                              child: SizedBox(
-                                height: 100,
-                                child: AnimatedOpacity(
-                                  opacity: soundIsHovered ? 1.0 : 0.0,
-                                  duration: const Duration(milliseconds: 500),
-                                  child: MouseRegion(
-                                    onEnter: (_) {
-                                      soundIsHoveredTimer.cancel();
-                                      soundIsHovered = true;
-                                    },
-                                    onExit: (_) {
-                                      soundIsHoveredTimer = Timer(
-                                        const Duration(milliseconds: 500),
-                                        () {
-                                          setState(() {
-                                            soundIsHovered = false;
-                                          });
-                                        },
-                                      );
-                                    },
-                                    child: Visibility(
-                                      visible: soundIsHovered,
-                                      maintainSize: false,
-                                      maintainState: true,
-                                      maintainAnimation: true,
-                                      child: RotatedBox(
-                                        quarterTurns: 3,
-                                        child: Slider(
-                                          activeColor: Colors.white,
-                                          min: 0,
-                                          max: 1,
-                                          value: _controller.value.volume,
-                                          onChanged: (value) =>
-                                              _controller.setVolume(value),
-                                        ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: VideoPlayer(_controller),
+                    ),
+                    ClosedCaption(
+                      text: _controller.value.caption.text,
+                    ),
+                    AnimatedOpacity(
+                      opacity: _showControls ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 300),
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          _ControlsOverlay(
+                            controller: _controller,
+                            paused: paused,
+                            delayedPaused: delayedPaused,
+                            onTap: controlsOverlayOnTap,
+                            pausePeer: sendPauseVideoOrder,
+                            playPeer: sendPlayVideoOrder,
+                            peerPlus: sendFifteenPosOrder,
+                            peerMinus: sendFifteenMinOrder,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: MediaQuery.of(context).size.width - 140,
+                                bottom: 35),
+                            child: SizedBox(
+                              height: 100,
+                              child: AnimatedOpacity(
+                                opacity: soundIsHovered ? 1.0 : 0.0,
+                                duration: const Duration(milliseconds: 500),
+                                child: MouseRegion(
+                                  onEnter: (_) {
+                                    soundIsHoveredTimer.cancel();
+                                    soundIsHovered = true;
+                                  },
+                                  onExit: (_) {
+                                    soundIsHoveredTimer = Timer(
+                                      const Duration(milliseconds: 500),
+                                      () {
+                                        setState(() {
+                                          soundIsHovered = false;
+                                        });
+                                      },
+                                    );
+                                  },
+                                  child: Visibility(
+                                    visible: soundIsHovered,
+                                    maintainSize: false,
+                                    maintainState: true,
+                                    maintainAnimation: true,
+                                    child: RotatedBox(
+                                      quarterTurns: 3,
+                                      child: Slider(
+                                        activeColor: Colors.white,
+                                        min: 0,
+                                        max: 1,
+                                        value: _controller.value.volume,
+                                        onChanged: (value) =>
+                                            _controller.setVolume(value),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                            SmoothVideoProgress(
-                              controller: _controller,
-                              builder: (context, progress, duration, child) {
-                                return _VideoProgressSlider(
-                                  controller: _controller,
-                                  height: 40,
-                                  switchFullScreen: () {
-                                    setState(
-                                      () {
-                                        fullScreen = !fullScreen;
-                                      },
-                                    );
-                                  },
-                                  position: progress,
-                                  duration: duration,
-                                  swatch: Colors.red,
-                                  onEnter: onEnterSound,
-                                  onExit: onExitSound,
-                                  connectToPeer: connectToPeer,
-                                  seekToPeer: sendSeekToOrder,
-                                  myPeerId: myPeerId ?? "peerId not set",
-                                );
-                              },
-                            ),
-                          ],
-                        ),
+                          ),
+                          SmoothVideoProgress(
+                            controller: _controller,
+                            builder: (context, progress, duration, child) {
+                              return _VideoProgressSlider(
+                                controller: _controller,
+                                height: 40,
+                                switchFullScreen: () {
+                                  setState(
+                                    () {
+                                      fullScreen = !fullScreen;
+                                    },
+                                  );
+                                },
+                                position: progress,
+                                duration: duration,
+                                swatch: Colors.red,
+                                onEnter: onEnterSound,
+                                onExit: onExitSound,
+                                connectToPeer: connectToPeer,
+                                seekToPeer: sendSeekToOrder,
+                                myPeerId: myPeerId ?? "peerId not set",
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               AnimatedOpacity(
