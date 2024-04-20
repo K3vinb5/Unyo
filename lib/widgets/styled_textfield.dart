@@ -5,7 +5,7 @@ class StyledTextField extends StatelessWidget {
       {super.key,
       required this.width,
       required this.controller,
-      required this.onChanged,
+      this.onChanged,
       required this.color,
       required this.hintColor,
       this.label,
@@ -13,7 +13,7 @@ class StyledTextField extends StatelessWidget {
 
   final double width;
   final TextEditingController controller;
-  final void Function(String) onChanged;
+  final void Function(String)? onChanged;
   final Color color;
   final Color hintColor;
   final String? label;
