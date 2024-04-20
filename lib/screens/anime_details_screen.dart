@@ -363,6 +363,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 height: totalHeight * 0.6,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     const Text(

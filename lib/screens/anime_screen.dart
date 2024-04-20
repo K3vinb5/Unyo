@@ -51,7 +51,6 @@ class _AnimeScreenState extends State<AnimeScreen> {
   int currentPage = 0;
   bool pageLeftToRight = true;
   late Timer pageTimer;
-  ScrollController scrollController = ScrollController();
   bool bannerInfoVisible = true;
   double adjustedWidth = 0;
   double adjustedHeight = 0;
@@ -61,13 +60,13 @@ class _AnimeScreenState extends State<AnimeScreen> {
   final double minimumHeight = 195.44;
   ScrollPhysics searchScrollPhysics = const NeverScrollableScrollPhysics();
   ScrollController searchScrollController = ScrollController();
-  ScrollPhysics pageScrollPhysics = const NeverScrollableScrollPhysics();
+  ScrollPhysics pageScrollPhysics = const AlwaysScrollableScrollPhysics();
   ScrollController pageScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    scrollController.addListener(setScrollListener);
+    pageScrollController.addListener(setScrollListener);
     initPage();
     initAnimeList();
     initYearsList();
@@ -127,27 +126,32 @@ class _AnimeScreenState extends State<AnimeScreen> {
       },
     );
     searchScrollController.addListener(() {
-      if (searchScrollController.offset == 0){
-        searchScrollPhysics = const NeverScrollableScrollPhysics();
-        pageScrollPhysics = const AlwaysScrollableScrollPhysics();
+      //print(searchScrollController.offset);
+      if (searchScrollController.offset < 10){
+        setState(() {
+          searchScrollPhysics = NeverScrollableScrollPhysics();
+          pageScrollPhysics = AlwaysScrollableScrollPhysics();
+        });
       }
     });
 
     pageScrollController.addListener((){
-      print(pageScrollController.offset);
-      if (pageScrollController.offset == 1){
-        searchScrollPhysics = const AlwaysScrollableScrollPhysics();
-        pageScrollPhysics = const NeverScrollableScrollPhysics();
+      //print(pageScrollController.offset);
+      if (pageScrollController.offset == pageScrollController.position.maxScrollExtent){
+        setState(() {
+          searchScrollPhysics = AlwaysScrollableScrollPhysics();
+          pageScrollPhysics = NeverScrollableScrollPhysics();
+        });
       }
     });
   }
 
   void setScrollListener() {
-    if (scrollController.offset > 200 && bannerInfoVisible) {
+    if (pageScrollController.offset > 200 && bannerInfoVisible) {
       setState(() {
         bannerInfoVisible = false;
       });
-    } else if (scrollController.offset <= 200 && !bannerInfoVisible) {
+    } else if (pageScrollController.offset <= 200 && !bannerInfoVisible) {
       setState(() {
         bannerInfoVisible = true;
       });
@@ -314,7 +318,8 @@ class _AnimeScreenState extends State<AnimeScreen> {
                     ],
                   ),
                   SingleChildScrollView(
-                    controller: scrollController,
+                    controller: pageScrollController,
+                    physics: pageScrollPhysics,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -505,47 +510,42 @@ class _AnimeScreenState extends State<AnimeScreen> {
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              SingleChildScrollView(
-                                physics: searchScrollPhysics,
-                                controller: searchScrollController,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal : 20.0),
-                                  child: SizedBox(
-                                    width: totalWidth,
-                                    height: totalHeight - 172,
-                                    child: GridView.builder(
-                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: _calculateCrossAxisCount(context, adjustedWidth * 0.1),
-                                        mainAxisExtent: totalHeight * 0.36,
-                                      ),
-                                      //padding: const EdgeInsets.all(10.0),
-                                      shrinkWrap: false,
-
-                                      itemCount: searchAnimeList.length, // Replace it with your actual list length
-                                      itemBuilder: (BuildContext context, int index) {
-                                        var animeModel = searchAnimeList[index];
-                                        double calculatedWidth = adjustedWidth * 0.1;
-                                        double calculatedHeight = adjustedHeight * 0.28;
-                                        return Hero(
-                                          tag: "${"grid-view"}-$index",
-                                          child: AnimeWidget(
-                                            title: animeModel.title,
-                                            score: animeModel.averageScore,
-                                            coverImage: animeModel.coverImage,
-                                            onTap: () {
-                                              openAnime(animeModel, "${"grid-view"}-$index");
-                                            },
-                                            textColor: Colors.white,
-                                            height: calculatedHeight > minimumHeight ? calculatedHeight : minimumHeight,
-                                            width: calculatedWidth > minimumWidth ? calculatedWidth : minimumWidth,
-                                            year: animeModel.startDate,
-                                            format: animeModel.format,
-                                            status: animeModel.status,
-                                          ),
-                                        );
-                                      },
-                                    ),
+                              SizedBox(
+                                width: totalWidth,
+                                height: totalHeight - 172,
+                                child: GridView.builder(
+                                  physics: searchScrollPhysics,
+                                  controller: searchScrollController,
+                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: _calculateCrossAxisCount(context, adjustedWidth * 0.1),
+                                    mainAxisExtent: totalHeight * 0.36,
                                   ),
+                                  padding: const EdgeInsets.symmetric(horizontal : 100.0),
+                                  shrinkWrap: false,
+
+                                  itemCount: searchAnimeList.length, // Replace it with your actual list length
+                                  itemBuilder: (BuildContext context, int index) {
+                                    var animeModel = searchAnimeList[index];
+                                    double calculatedWidth = adjustedWidth * 0.1;
+                                    double calculatedHeight = adjustedHeight * 0.28;
+                                    return Hero(
+                                      tag: "${"grid-view"}-$index",
+                                      child: AnimeWidget(
+                                        title: animeModel.title,
+                                        score: animeModel.averageScore,
+                                        coverImage: animeModel.coverImage,
+                                        onTap: () {
+                                          openAnime(animeModel, "${"grid-view"}-$index");
+                                        },
+                                        textColor: Colors.white,
+                                        height: calculatedHeight > minimumHeight ? calculatedHeight : minimumHeight,
+                                        width: calculatedWidth > minimumWidth ? calculatedWidth : minimumWidth,
+                                        year: animeModel.startDate,
+                                        format: animeModel.format,
+                                        status: animeModel.status,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ],

@@ -34,6 +34,7 @@ class _VideoScreenState extends State<VideoScreen> {
   Timer? _hideControlsTimer;
   bool _showControls = true;
   bool paused = false;
+  bool delayedPaused = false;
   String? captions;
 
   bool soundIsHovered = false;
@@ -92,9 +93,9 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void connectToPeer(String receivedPeerId) {
     peerId = receivedPeerId;
-    try{
+    try {
       conn = peer.connect(peerId!);
-    }catch(e){
+    } catch (e) {
       print(e);
     }
     peerConnected = true;
@@ -120,16 +121,15 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   void setClientPeerConnection() {
-
     peer = Peer(
-      /*options: PeerOptions(
+        /*options: PeerOptions(
         host: "kevin-is-awesome.mooo.com",
         path: "/unyo/",
         key: "unyo",
         //port: 9000,
         secure: true,
       ),*/
-    );
+        );
 
     peer.on("open").listen((id) {
       setState(() {
@@ -397,6 +397,8 @@ class _VideoScreenState extends State<VideoScreen> {
   void controlsOverlayOnTap() {
     _hideControlsTimer?.cancel();
     paused = !paused;
+    Timer(const Duration(milliseconds: 300),
+        () => delayedPaused = !delayedPaused);
     if (paused) {
       _showControls = true;
     } else {
@@ -454,15 +456,15 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   void _resetHideControlsTimer() {
-    if (!paused) {
-      _hideControlsTimer?.cancel();
-      _showControls = true;
-      _hideControlsTimer = Timer(const Duration(seconds: 4), () {
-        setState(() {
+    _hideControlsTimer?.cancel();
+    _showControls = true;
+    _hideControlsTimer = Timer(const Duration(seconds: 4), () {
+      setState(() {
+        if (!paused) {
           _showControls = false;
-        });
+        }
       });
-    }
+    });
   }
 
   double calculatePercentage() {
@@ -530,6 +532,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     milliseconds:
                         _controller.value.position.inMilliseconds + 15000),
               );
+              _resetHideControlsTimer();
               break;
             case LogicalKeyboardKey.keyJ:
               sendFifteenMinOrder();
@@ -538,8 +541,10 @@ class _VideoScreenState extends State<VideoScreen> {
                     milliseconds:
                         _controller.value.position.inMilliseconds - 15000),
               );
+              _resetHideControlsTimer();
               break;
             case LogicalKeyboardKey.keyK:
+              _resetHideControlsTimer();
               if (!_controller.value.isPlaying) {
                 controlsOverlayOnTap();
                 sendPlayVideoOrder();
@@ -569,111 +574,115 @@ class _VideoScreenState extends State<VideoScreen> {
           child: Stack(
             alignment: Alignment.topLeft,
             children: [
-              Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  MouseRegion(
-                    onHover: (event) {
-                      _resetHideControlsTimer();
-                    },
-                    cursor: _showControls
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.none,
-                    child: Center(
-                      child: AspectRatio(
-                          aspectRatio: 16 / 9, child: VideoPlayer(_controller)),
-                    ),
-                  ),
-                  ClosedCaption(
-                    text: _controller.value.caption.text,
-                  ),
-                  AnimatedOpacity(
-                    opacity: _showControls ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        _ControlsOverlay(
-                          controller: _controller,
-                          onTap: controlsOverlayOnTap,
-                          pausePeer: sendPauseVideoOrder,
-                          playPeer: sendPlayVideoOrder,
-                          peerPlus: sendFifteenPosOrder,
-                          peerMinus: sendFifteenMinOrder,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              left: MediaQuery.of(context).size.width - 140,
-                              bottom: 35),
-                          child: SizedBox(
-                            height: 100,
-                            child: AnimatedOpacity(
-                              opacity: soundIsHovered ? 1.0 : 0.0,
-                              duration: const Duration(milliseconds: 500),
-                              child: MouseRegion(
-                                onEnter: (_) {
-                                  soundIsHoveredTimer.cancel();
-                                  soundIsHovered = true;
-                                },
-                                onExit: (_) {
-                                  soundIsHoveredTimer = Timer(
-                                    const Duration(milliseconds: 500),
-                                    () {
-                                      setState(() {
-                                        soundIsHovered = false;
-                                      });
+              MouseRegion(
+                onHover: (event) {
+                  _resetHideControlsTimer();
+                },
+                cursor: _showControls
+                    ? SystemMouseCursors.basic
+                    : SystemMouseCursors.none,
+                child: Center(
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: VideoPlayer(_controller),
+                      ),
+                      ClosedCaption(
+                        text: _controller.value.caption.text,
+                      ),
+                      AnimatedOpacity(
+                        opacity: _showControls ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 300),
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            _ControlsOverlay(
+                              controller: _controller,
+                              paused: paused,
+                              delayedPaused: delayedPaused,
+                              onTap: controlsOverlayOnTap,
+                              pausePeer: sendPauseVideoOrder,
+                              playPeer: sendPlayVideoOrder,
+                              peerPlus: sendFifteenPosOrder,
+                              peerMinus: sendFifteenMinOrder,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  left: MediaQuery.of(context).size.width - 140,
+                                  bottom: 35),
+                              child: SizedBox(
+                                height: 100,
+                                child: AnimatedOpacity(
+                                  opacity: soundIsHovered ? 1.0 : 0.0,
+                                  duration: const Duration(milliseconds: 500),
+                                  child: MouseRegion(
+                                    onEnter: (_) {
+                                      soundIsHoveredTimer.cancel();
+                                      soundIsHovered = true;
                                     },
-                                  );
-                                },
-                                child: Visibility(
-                                  visible: soundIsHovered,
-                                  maintainSize: false,
-                                  maintainState: true,
-                                  maintainAnimation: true,
-                                  child: RotatedBox(
-                                    quarterTurns: 3,
-                                    child: Slider(
-                                      activeColor: Colors.white,
-                                      min: 0,
-                                      max: 1,
-                                      value: _controller.value.volume,
-                                      onChanged: (value) =>
-                                          _controller.setVolume(value),
+                                    onExit: (_) {
+                                      soundIsHoveredTimer = Timer(
+                                        const Duration(milliseconds: 500),
+                                        () {
+                                          setState(() {
+                                            soundIsHovered = false;
+                                          });
+                                        },
+                                      );
+                                    },
+                                    child: Visibility(
+                                      visible: soundIsHovered,
+                                      maintainSize: false,
+                                      maintainState: true,
+                                      maintainAnimation: true,
+                                      child: RotatedBox(
+                                        quarterTurns: 3,
+                                        child: Slider(
+                                          activeColor: Colors.white,
+                                          min: 0,
+                                          max: 1,
+                                          value: _controller.value.volume,
+                                          onChanged: (value) =>
+                                              _controller.setVolume(value),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        SmoothVideoProgress(
-                          controller: _controller,
-                          builder: (context, progress, duration, child) {
-                            return _VideoProgressSlider(
+                            SmoothVideoProgress(
                               controller: _controller,
-                              height: 40,
-                              switchFullScreen: () {
-                                setState(
-                                  () {
-                                    fullScreen = !fullScreen;
+                              builder: (context, progress, duration, child) {
+                                return _VideoProgressSlider(
+                                  controller: _controller,
+                                  height: 40,
+                                  switchFullScreen: () {
+                                    setState(
+                                      () {
+                                        fullScreen = !fullScreen;
+                                      },
+                                    );
                                   },
+                                  position: progress,
+                                  duration: duration,
+                                  swatch: Colors.red,
+                                  onEnter: onEnterSound,
+                                  onExit: onExitSound,
+                                  connectToPeer: connectToPeer,
+                                  seekToPeer: sendSeekToOrder,
+                                  myPeerId: myPeerId ?? "peerId not set",
                                 );
                               },
-                              position: progress,
-                              duration: duration,
-                              swatch: Colors.red,
-                              onEnter: onEnterSound,
-                              onExit: onExitSound,
-                              connectToPeer: connectToPeer,
-                              seekToPeer: sendSeekToOrder,
-                              myPeerId: myPeerId ?? "peerId not set",
-                            );
-                          },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
               AnimatedOpacity(
                 opacity: !fullScreen ? 1.0 : 0.0,
@@ -715,6 +724,8 @@ class _ControlsOverlay extends StatelessWidget {
     required this.playPeer,
     required this.peerPlus,
     required this.peerMinus,
+    required this.paused,
+    required this.delayedPaused,
   });
 
   final VideoPlayerController controller;
@@ -723,6 +734,8 @@ class _ControlsOverlay extends StatelessWidget {
   final void Function() playPeer;
   final void Function() peerPlus;
   final void Function() peerMinus;
+  final bool paused;
+  final bool delayedPaused;
 
   @override
   Widget build(BuildContext context) {
@@ -736,78 +749,81 @@ class _ControlsOverlay extends StatelessWidget {
               controller.pause();
             }
           },
-        ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          reverseDuration: const Duration(milliseconds: 300),
-          child: controller.value.isPlaying
-              ? const SizedBox.shrink()
-              : Container(
-                  color: Colors.black26,
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            if (!controller.value.isPlaying) {
-                              peerMinus();
-                              controller.seekTo(
-                                Duration(
-                                    milliseconds: controller
-                                            .value.position.inMilliseconds -
-                                        15000),
-                              );
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.fast_rewind_rounded,
-                            color: Colors.white,
-                            size: 80,
-                          ),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            opacity: controller.value.isPlaying ? 0 : 1,
+            child: Container(
+              color: Colors.black26,
+              child: Center(
+                child: IgnorePointer(
+                  ignoring: controller.value.isPlaying,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          if (!controller.value.isPlaying) {
+                            peerMinus();
+                            controller.seekTo(
+                              Duration(
+                                  milliseconds:
+                                      controller.value.position.inMilliseconds -
+                                          15000),
+                            );
+                            onTap();
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.fast_rewind_rounded,
+                          color: Colors.white,
+                          size: 80,
                         ),
-                        const SizedBox(
-                          width: 20,
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (!controller.value.isPlaying) {
+                            onTap();
+                            playPeer();
+                            controller.play();
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.play_arrow_rounded,
+                          color: Colors.white,
+                          size: 100.0,
                         ),
-                        IconButton(
-                          onPressed: () {
-                            if (!controller.value.isPlaying) {
-                              onTap();
-                              playPeer();
-                              controller.play();
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.play_arrow_rounded,
-                            color: Colors.white,
-                            size: 100.0,
-                          ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (!controller.value.isPlaying) {
+                            peerPlus();
+                            controller.seekTo(
+                              Duration(
+                                  milliseconds:
+                                      controller.value.position.inMilliseconds +
+                                          15000),
+                            );
+                            onTap();
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.fast_forward_rounded,
+                          color: Colors.white,
+                          size: 80,
                         ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            if (!controller.value.isPlaying) {
-                              peerPlus();
-                              controller.seekTo(
-                                Duration(
-                                    milliseconds: controller
-                                            .value.position.inMilliseconds +
-                                        15000),
-                              );
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.fast_forward_rounded,
-                            color: Colors.white,
-                            size: 80,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -876,11 +892,9 @@ class _VideoProgressSlider extends StatelessWidget {
                 onChanged: (value) {
                   controller.seekTo(Duration(milliseconds: value.toInt()));
                 },
-                onChangeStart: (_) => controller.pause(),
                 onChangeEnd: (_) {
                   seekToPeer(
                       controller.value.position.inMilliseconds.toDouble());
-                  //controller.play();
                 },
               ),
             ),
