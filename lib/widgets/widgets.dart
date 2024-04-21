@@ -8,3 +8,6 @@ export 'anime_list_component_widget.dart';
 export 'styled_dropdown.dart';
 export 'styled_textfield.dart';
 export 'page_banner_widget.dart';
+export 'window_buttons.dart';
+export 'video_progress_slider.dart';
+export 'controls_overlay.dart';

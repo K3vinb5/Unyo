@@ -5,6 +5,7 @@
 import FlutterMacOS
 import Foundation
 
+import bitsdojo_window_macos
 import desktop_keep_screen_on
 import flutter_webrtc
 import fvp
@@ -16,6 +17,7 @@ import video_player_avfoundation
 import window_manager
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  BitsdojoWindowPlugin.register(with: registry.registrar(forPlugin: "BitsdojoWindowPlugin"))
   DesktopKeepScreenOnPlugin.register(with: registry.registrar(forPlugin: "DesktopKeepScreenOnPlugin"))
   FlutterWebRTCPlugin.register(with: registry.registrar(forPlugin: "FlutterWebRTCPlugin"))
   FvpPlugin.register(with: registry.registrar(forPlugin: "FvpPlugin"))

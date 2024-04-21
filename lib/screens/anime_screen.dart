@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -130,7 +131,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
       if (searchScrollController.offset < 10){
         setState(() {
           searchScrollPhysics = NeverScrollableScrollPhysics();
-          pageScrollPhysics = AlwaysScrollableScrollPhysics();
+          //pageScrollPhysics = AlwaysScrollableScrollPhysics();
         });
       }
     });
@@ -140,7 +141,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
       if (pageScrollController.offset == pageScrollController.position.maxScrollExtent){
         setState(() {
           searchScrollPhysics = AlwaysScrollableScrollPhysics();
-          pageScrollPhysics = NeverScrollableScrollPhysics();
+          //pageScrollPhysics = NeverScrollableScrollPhysics();
         });
       }
     });
@@ -330,7 +331,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                               goTo(1);
                             },
                             child: const Padding(
-                              padding: EdgeInsets.all(16.0),
+                              padding: EdgeInsets.only(right: 16.0, top: 32.0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 mainAxisSize: MainAxisSize.min,
@@ -555,6 +556,16 @@ class _AnimeScreenState extends State<AnimeScreen> {
                     ),
                   ),
                 ],
+              ),
+              WindowTitleBarBox(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: MoveWindow(),
+                    ),
+                    const WindowButtons(),
+                  ],
+                ),
               ),
             ],
           );

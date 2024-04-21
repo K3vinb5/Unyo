@@ -1,3 +1,4 @@
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unyo/screens/screens.dart';
@@ -7,6 +8,13 @@ void main() {
   //needed for video player!!
   fvp.registerWith();
   runApp(const MyApp());
+  doWhenWindowReady(() {
+    appWindow.minSize = const Size(854, 480);
+    appWindow.size = const Size(1280, 720);
+    appWindow.title = "Unyo";
+    appWindow.position = const Offset(200, 200);
+    appWindow.show();
+  });
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -83,6 +91,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'Unyo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

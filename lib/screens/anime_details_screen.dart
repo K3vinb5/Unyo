@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -212,7 +213,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     }
   }
 
-  void openVideo(String consumetId, int animeEpisode) async {
+  void openVideo(String consumetId, int animeEpisode, String animeName) async {
     late String consumetStream;
     if (currentSource == 0) {
       consumetStream = await getAnimeConsumetGogoAnimeStream(
@@ -222,6 +223,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
         updateEntry: () {
           updateEntry(animeEpisode);
         },
+        title: "$animeName, Episode $animeEpisode",
       );
     } else if (currentSource == 1) {
       List<String> streamCaption =
@@ -234,6 +236,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
         updateEntry: () {
           updateEntry(animeEpisode);
         },
+        title: "$animeName, Episode $animeEpisode",
       );
     } else {
       consumetStream = await getAnimeConsumetGogoAnimeStream(
@@ -243,6 +246,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
         updateEntry: () {
           updateEntry(animeEpisode);
         },
+        title: "$animeName, Episode $animeEpisode",
       );
     }
     Navigator.push(
@@ -679,7 +683,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                         Navigator.pop(context);
                                       },
                                       child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
+                                        padding: EdgeInsets.only(right: 16.0, top: 32.0),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
@@ -893,7 +897,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                     userAnimeModel?.progress ?? 1,
                                 onTap: () {
                                   openVideo(
-                                      searchesId[currentSearch], index + 1);
+                                      searchesId[currentSearch], index + 1, widget.currentAnime.title ?? "");
                                 },
                               );
                             },
@@ -901,6 +905,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         ),
                       ],
                     ),
+                  ],
+                ),
+              ),
+              WindowTitleBarBox(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: MoveWindow(),
+                    ),
+                    const WindowButtons(),
                   ],
                 ),
               ),

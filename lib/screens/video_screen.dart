@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -11,6 +12,7 @@ import 'package:peerdart/peerdart.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:unyo/widgets/widgets.dart';
 
 bool fullScreen = false;
 
@@ -19,11 +21,14 @@ class VideoScreen extends StatefulWidget {
       {super.key,
       required this.stream,
       required this.updateEntry,
-      this.captions});
+      this.captions,
+      required this.title,
+      });
 
   final String stream;
   final String? captions;
   final void Function() updateEntry;
+  final String title;
 
   @override
   _VideoScreenState createState() => _VideoScreenState();
@@ -597,7 +602,7 @@ class _VideoScreenState extends State<VideoScreen> {
                       child: Stack(
                         alignment: Alignment.bottomCenter,
                         children: [
-                          _ControlsOverlay(
+                          ControlsOverlay(
                             controller: _controller,
                             paused: paused,
                             delayedPaused: delayedPaused,
@@ -655,7 +660,7 @@ class _VideoScreenState extends State<VideoScreen> {
                           SmoothVideoProgress(
                             controller: _controller,
                             builder: (context, progress, duration, child) {
-                              return _VideoProgressSlider(
+                              return VideoProgressSlider(
                                 controller: _controller,
                                 height: 40,
                                 switchFullScreen: () {
@@ -682,348 +687,56 @@ class _VideoScreenState extends State<VideoScreen> {
                   ],
                 ),
               ),
-              AnimatedOpacity(
-                opacity: !fullScreen ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                child: FocusScope(
-                  canRequestFocus: false,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      if (!fullScreen) {
-                        sendEscapeOrder();
-                        _controller.dispose();
-                        interactScreen(false);
-                        print(calculatePercentage());
-                        if (calculatePercentage() > 0.8) {
-                          widget.updateEntry();
-                        }
-                        peer.disconnect();
-                        Navigator.pop(context);
-                      }
-                    },
-                    color: Colors.white,
+              Row(
+                children: [
+                  AnimatedOpacity(
+                    opacity: _showControls ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: FocusScope(
+                      canRequestFocus: false,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () {
+                          if (!fullScreen) {
+                            sendEscapeOrder();
+                            _controller.dispose();
+                            interactScreen(false);
+                            print(calculatePercentage());
+                            if (calculatePercentage() > 0.8) {
+                              widget.updateEntry();
+                            }
+                            peer.disconnect();
+                            Navigator.pop(context);
+                          }
+                        },
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
+                  AnimatedOpacity(
+                    opacity: _showControls ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 6.0, top: 2.0),
+                      child: Text(widget.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 15)),
+                    ),
+                  )
+                ],
               ),
+              !fullScreen
+                  ? WindowTitleBarBox(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: MoveWindow(),
+                          ),
+                          const WindowButtons(),
+                        ],
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({
-    required this.controller,
-    required this.onTap,
-    required this.pausePeer,
-    required this.playPeer,
-    required this.peerPlus,
-    required this.peerMinus,
-    required this.paused,
-    required this.delayedPaused,
-  });
-
-  final VideoPlayerController controller;
-  final void Function() onTap;
-  final void Function() pausePeer;
-  final void Function() playPeer;
-  final void Function() peerPlus;
-  final void Function() peerMinus;
-  final bool paused;
-  final bool delayedPaused;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        GestureDetector(
-          onTap: () {
-            if (controller.value.isPlaying) {
-              onTap();
-              pausePeer();
-              controller.pause();
-            }
-          },
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 200),
-            opacity: controller.value.isPlaying ? 0 : 1,
-            child: Container(
-              color: Colors.black26,
-              child: Center(
-                child: IgnorePointer(
-                  ignoring: controller.value.isPlaying,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          if (!controller.value.isPlaying) {
-                            peerMinus();
-                            controller.seekTo(
-                              Duration(
-                                  milliseconds:
-                                      controller.value.position.inMilliseconds -
-                                          15000),
-                            );
-                            onTap();
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.fast_rewind_rounded,
-                          color: Colors.white,
-                          size: 80,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          if (!controller.value.isPlaying) {
-                            onTap();
-                            playPeer();
-                            controller.play();
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.play_arrow_rounded,
-                          color: Colors.white,
-                          size: 100.0,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          if (!controller.value.isPlaying) {
-                            peerPlus();
-                            controller.seekTo(
-                              Duration(
-                                  milliseconds:
-                                      controller.value.position.inMilliseconds +
-                                          15000),
-                            );
-                            onTap();
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.fast_forward_rounded,
-                          color: Colors.white,
-                          size: 80,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _VideoProgressSlider extends StatelessWidget {
-  _VideoProgressSlider({
-    required this.position,
-    required this.duration,
-    required this.controller,
-    required this.swatch,
-    required this.height,
-    required this.switchFullScreen,
-    required this.onEnter,
-    required this.onExit,
-    required this.connectToPeer,
-    required this.myPeerId,
-    required this.seekToPeer,
-  });
-
-  final Duration position;
-  final Duration duration;
-  final VideoPlayerController controller;
-  final Color swatch;
-  final double height;
-  final void Function() switchFullScreen;
-  final void Function() onEnter;
-  final void Function() onExit;
-
-  final String myPeerId;
-  final void Function(String) connectToPeer;
-  final void Function(double) seekToPeer;
-  final TextEditingController textFieldcontroller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    final max = duration.inMilliseconds.toDouble();
-    final value = position.inMilliseconds.clamp(0, max).toDouble();
-    return Theme(
-      data: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(seedColor: swatch),
-        useMaterial3: true,
-      ),
-      child: SizedBox(
-        height: height, // Adjust this value as needed
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 12,
-            ),
-            ValueListenableBuilder(
-              builder: (context, value, child) {
-                return Text(
-                  controller.value.position.toString().substring(0, 7),
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                );
-              },
-              valueListenable: controller,
-            ),
-            Expanded(
-              child: Slider(
-                min: 0,
-                max: max,
-                value: value,
-                onChanged: (value) {
-                  controller.seekTo(Duration(milliseconds: value.toInt()));
-                },
-                onChangeEnd: (_) {
-                  seekToPeer(
-                      controller.value.position.inMilliseconds.toDouble());
-                },
-              ),
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.people,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Watch 2gether",
-                          style: TextStyle(color: Colors.white)),
-                      backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-                      content: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        height: MediaQuery.of(context).size.height * 0.5,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SelectableText("Your Id:\n$myPeerId",
-                                style: const TextStyle(color: Colors.white)),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            const Text("Please paste your buddys peerId",
-                                style: TextStyle(color: Colors.white)),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextField(
-                              controller: textFieldcontroller,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      ElevatedButton(
-                                        style: const ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStatePropertyAll(
-                                            Color.fromARGB(255, 37, 37, 37),
-                                          ),
-                                          foregroundColor:
-                                              MaterialStatePropertyAll(
-                                            Colors.white,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          connectToPeer(
-                                              textFieldcontroller.text);
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text("Confirm",
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
-                                      const SizedBox(
-                                        width: 50,
-                                      ),
-                                      ElevatedButton(
-                                        style: const ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStatePropertyAll(
-                                            Color.fromARGB(255, 37, 37, 37),
-                                          ),
-                                          foregroundColor:
-                                              MaterialStatePropertyAll(
-                                            Colors.white,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text("Cancel",
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-            MouseRegion(
-              onEnter: (_) {
-                onEnter();
-              },
-              onExit: (_) {
-                onExit();
-              },
-              child: IconButton(
-                icon: const Icon(Icons.volume_up_rounded, color: Colors.white),
-                onPressed: () {
-                  //TODO mute / unmute
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: IconButton(
-                onPressed: () {
-                  fullScreen = !fullScreen;
-                  if (fullScreen) {
-                    WindowManager.instance.setFullScreen(true);
-                  } else {
-                    WindowManager.instance.setFullScreen(false);
-                  }
-                },
-                icon: const Icon(Icons.fullscreen),
-                color: Colors.white,
-              ),
-            ),
-          ],
         ),
       ),
     );
