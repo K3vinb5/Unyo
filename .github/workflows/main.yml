@@ -3,9 +3,10 @@ name: Flutter CI
 on: push
 
 jobs:
+
   build-and-release-linux:
     runs-on: ubuntu-latest
-
+    if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
 
@@ -33,7 +34,6 @@ jobs:
           directory: build/linux/x64/release/bundle
       - name: Linux Archive Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -48,15 +48,14 @@ jobs:
         run: ./appimagetool.AppImage Unyo.AppDir Unyo.AppImage
       - name: Linux AppImage Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/linux/x64/release/bundle/Unyo.AppImage
+          files: /home/runner/work/Unyo/Unyo/Unyo.AppImage
 
   build-and-release-windows:
     runs-on: windows-latest
-
+    if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
 
@@ -82,7 +81,6 @@ jobs:
           directory: build\windows\x64\runner\Release
       - name: Windows Archive Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -91,7 +89,6 @@ jobs:
         run: flutter pub run msix:create
       - name: Windows Msix Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -99,7 +96,7 @@ jobs:
 
   build-and-release-macos:
     runs-on: macos-latest
-
+    if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
 
@@ -125,7 +122,6 @@ jobs:
           directory: build/macos/Build/Products/Release
       - name: macOS Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
