@@ -71,8 +71,7 @@ icons_launcher:
 msix_config:
   display_name: Unyo
   publisher_display_name: K3vinb5
-  msix_version: 1.0.0.0
-  architecture: x64
+  install_certificate: false
   logo_path: ./assets/logo.png
 
 dev_dependencies:
@@ -85,7 +84,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
-  dmg: ^0.0.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

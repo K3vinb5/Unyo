@@ -273,14 +273,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.3"
-  dmg:
-    dependency: "direct dev"
-    description:
-      name: dmg
-      sha256: "3cec333d6508467b802235760a1f2128184169a4a6c055b53fce4a9e1d0ac626"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.5"
   event_bus:
     dependency: transitive
     description:

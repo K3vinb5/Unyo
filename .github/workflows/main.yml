@@ -16,7 +16,7 @@ jobs:
           channel: 'stable'
           flutter-version: '3.19.6'
       - name: Install dependencies
-        run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+        run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev locate
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
@@ -31,13 +31,28 @@ jobs:
           type: 'zip'
           filename: Unyo-${{github.ref_name}}-linux.zip
           directory: build/linux/x64/release/bundle
-      - name: Linux Release
+      - name: Linux Archive Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/linux/x64/release/bundle/Unyo-${{github.ref_name}}-linux.zip
+      - name: Copy AppDir
+        run: cp -r assets/Unyo.AppDir .
+      - name: Copy Compiled App
+        run: cp -r build/linux/x64/release/bundle/* Unyo.AppDir/.
+      - name: Copy appimagetool
+        run: cp assets/appimagetool.AppImage
+      - name: Execute appimagetool
+        run: ./appimagetool Unyo.AppDir Unyo.AppImage
+      - name: Linux AppImage Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/linux/x64/release/bundle/Unyo.AppImage
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -65,8 +80,6 @@ jobs:
           type: 'zip'
           filename: Unyo-${{github.ref_name}}-windows.zip
           directory: build\windows\x64\runner\Release
-      - name: Build Msix
-        run: flutter pub run msix:create
       - name: Windows Archive Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,6 +87,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/windows/x64/runner/Release/Unyo-${{github.ref_name}}-windows.zip
+      - name: Build Msix
+        run: flutter pub run msix:create
       - name: Windows Msix Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
