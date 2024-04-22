@@ -43,7 +43,7 @@ jobs:
       - name: Copy Compiled App
         run: cp -r build/linux/x64/release/bundle/* Unyo.AppDir/.
       - name: Copy appimagetool
-        run: cp assets/appimagetool.AppImage
+        run: cp assets/appimagetool.AppImage .
       - name: Execute appimagetool
         run: ./appimagetool Unyo.AppDir Unyo.AppImage
       - name: Linux AppImage Release
