@@ -65,13 +65,22 @@ jobs:
           type: 'zip'
           filename: Unyo-${{github.ref_name}}-windows.zip
           directory: build\windows\x64\runner\Release
-      - name: Windows Release
+      - name: Build Msix
+        run: flutter pub run msix:create
+      - name: Windows Archive Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/windows/x64/runner/Release/Unyo-${{github.ref_name}}-windows.zip
+      - name: Windows Msix Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/windows/x64/runner/Release/unyo.msix
 
   build-and-release-macos:
     runs-on: macos-latest

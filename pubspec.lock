@@ -177,6 +177,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  cli_util:
+    dependency: transitive
+    description:
+      name: cli_util
+      sha256: c05b7406fdabc7a49a3929d4af76bcaccbbffcbcdcf185b082e1ae07da323d19
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
   clock:
     dependency: transitive
     description:
@@ -201,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  console:
+    dependency: transitive
+    description:
+      name: console
+      sha256: e04e7824384c5b39389acdd6dc7d33f3efe6b232f6f16d7626f194f6a01ad69a
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   convert:
     dependency: transitive
     description:
@@ -257,6 +273,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.3"
+  dmg:
+    dependency: "direct dev"
+    description:
+      name: dmg
+      sha256: "3cec333d6508467b802235760a1f2128184169a4a6c055b53fce4a9e1d0ac626"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
   event_bus:
     dependency: transitive
     description:
@@ -340,10 +364,18 @@ packages:
     dependency: "direct main"
     description:
       name: fvp
-      sha256: "3ac70b4282489788b7746a029226c24477dbacbf0117a3b20c5daebd21a4c0d1"
+      sha256: e7239f98ccc59db95bb1a73832e720ceb96f4b44aca05bf6d017852e913ad2be
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.0"
+    version: "0.16.1"
+  get_it:
+    dependency: transitive
+    description:
+      name: get_it
+      sha256: d85128a5dae4ea777324730dc65edd9c9f43155c109d5cc0a69cab74139fbac1
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.7.0"
   glob:
     dependency: transitive
     description:
@@ -528,6 +560,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.2.1"
+  msix:
+    dependency: "direct main"
+    description:
+      name: msix
+      sha256: "519b183d15dc9f9c594f247e2d2339d855cf0eaacc30e19b128e14f3ecc62047"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.16.7"
   package_config:
     dependency: transitive
     description:
