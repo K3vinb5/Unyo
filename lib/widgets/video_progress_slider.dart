@@ -15,8 +15,8 @@ class VideoProgressSlider extends StatelessWidget {
     required this.onEnter,
     required this.onExit,
     required this.connectToPeer,
-    required this.myPeerId,
     required this.seekToPeer,
+    required this.topic,
   });
 
   final Duration position;
@@ -28,7 +28,7 @@ class VideoProgressSlider extends StatelessWidget {
   final void Function() onEnter;
   final void Function() onExit;
 
-  final String myPeerId;
+  final String topic;
   final void Function(String) connectToPeer;
   final void Function(double) seekToPeer;
   final TextEditingController textFieldcontroller = TextEditingController();
@@ -91,7 +91,7 @@ class VideoProgressSlider extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SelectableText("Your Id:\n$myPeerId",
+                            SelectableText("Your Id:\n$topic",
                                 style: const TextStyle(color: Colors.white)),
                             const SizedBox(
                               height: 20,

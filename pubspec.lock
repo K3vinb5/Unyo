@@ -161,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  charcode:
+    dependency: transitive
+    description:
+      name: charcode
+      sha256: fb98c0f6d12c920a02ee2d998da788bca066ca5f148492b7085ee23372b12306
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.1"
   checked_yaml:
     dependency: transitive
     description:
@@ -233,14 +241,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.6"
-  dart_webrtc:
-    dependency: transitive
-    description:
-      name: dart_webrtc
-      sha256: "6b101f3505865150a2b2383089b9d52c56608d1169ef5355d9e25f911afd969d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.2"
   dbus:
     dependency: transitive
     description:
@@ -257,14 +257,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.3"
-  events_emitter:
+  event_bus:
     dependency: transitive
     description:
-      name: events_emitter
-      sha256: a075477bdf9c8c0c31bb7c7b7bdd357b4486c34f30163119f96de4e7f54abeff
+      name: event_bus
+      sha256: "44baa799834f4c803921873e7446a2add0f3efa45e101a054b1f0ab9b95f8edc"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.2"
+    version: "2.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -328,14 +328,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_webrtc:
-    dependency: transitive
-    description:
-      name: flutter_webrtc
-      sha256: "2f17fb96e0c9c6ff75f6b1c36d94755461fc7f36a5c28386f5ee5a18b98688c8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.48+hotfix.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -528,6 +520,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  mqtt_client:
+    dependency: "direct main"
+    description:
+      name: mqtt_client
+      sha256: "001861aba553eaf419aab60b7956227af47a9d1e1efe0d2fcb3957d3fc30d110"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.2.1"
   package_config:
     dependency: transitive
     description:
@@ -544,30 +544,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
-  path_provider:
-    dependency: transitive
-    description:
-      name: path_provider
-      sha256: c9e7d3a4cd1410877472158bee69963a4579f78b68c65a2b7d40d1a7a88bb161
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.3"
-  path_provider_android:
-    dependency: transitive
-    description:
-      name: path_provider_android
-      sha256: a248d8146ee5983446bf03ed5ea8f6533129a12b11f12057ad1b4a67a2b3b41d
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.4"
-  path_provider_foundation:
-    dependency: transitive
-    description:
-      name: path_provider_foundation
-      sha256: "5a7999be66e000916500be4f15a3633ebceb8302719b47b9cc49ce924125350f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.2"
   path_provider_linux:
     dependency: transitive
     description:
@@ -592,14 +568,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
-  peerdart:
-    dependency: "direct main"
-    description:
-      name: peerdart
-      sha256: a6b066f1ca2c1b44c9ffb30539e94772b62ee199c75d7d277b24f4ef1497568b
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.4"
   petitparser:
     dependency: transitive
     description:
@@ -616,14 +584,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.4"
-  platform_detect:
-    dependency: transitive
-    description:
-      name: platform_detect
-      sha256: "08f4ee79c0e1c4858d37e06b22352a3ebdef5466b613749a3adb03e703d4f5b0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.11"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -664,14 +624,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
-  rxdart:
-    dependency: transitive
-    description:
-      name: rxdart
-      sha256: "0c7c0cedd93788d996e33041ffecda924cc54389199cde4e6a34b440f50044cb"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.27.7"
   screen_retriever:
     dependency: transitive
     description:
@@ -845,6 +797,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
+  universal_html:
+    dependency: transitive
+    description:
+      name: universal_html
+      sha256: "56536254004e24d9d8cfdb7dbbf09b74cf8df96729f38a2f5c238163e3d58971"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.4"
   universal_io:
     dependency: transitive
     description:
@@ -917,14 +877,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
-  uuid:
-    dependency: transitive
-    description:
-      name: uuid
-      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.7"
   vector_math:
     dependency: transitive
     description:
@@ -1005,14 +957,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.5"
-  webrtc_interface:
-    dependency: transitive
-    description:
-      name: webrtc_interface
-      sha256: abec3ab7956bd5ac539cf34a42fa0c82ea26675847c0966bb85160400eea9388
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
   win32:
     dependency: transitive
     description:

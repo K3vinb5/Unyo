@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,7 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:peerdart/peerdart.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
@@ -17,13 +20,13 @@ import 'package:unyo/widgets/widgets.dart';
 bool fullScreen = false;
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen(
-      {super.key,
-      required this.stream,
-      required this.updateEntry,
-      this.captions,
-      required this.title,
-      });
+  const VideoScreen({
+    super.key,
+    required this.stream,
+    required this.updateEntry,
+    this.captions,
+    required this.title,
+  });
 
   final String stream;
   final String? captions;
@@ -51,11 +54,10 @@ class _VideoScreenState extends State<VideoScreen> {
   final FocusNode _screenFocusNode = FocusNode();
   bool keyDelay = false;
 
-  late Peer peer;
-  late DataConnection conn;
-  bool peerConnected = false;
-  String? peerId;
-  String? myPeerId;
+  late MqttServerClient client;
+  late String topic;
+  late String myId;
+  bool connected = false;
 
   @override
   void initState() {
@@ -75,18 +77,7 @@ class _VideoScreenState extends State<VideoScreen> {
     _resetHideControlsTimer();
     interactScreen(true);
     _screenFocusNode.requestFocus();
-    setClientPeerConnection();
-    /*Timer(const Duration(milliseconds: 200), () {
-      int attempts = 0;
-      setClientPeerConnection();
-      sleep(const Duration(milliseconds: 1500));
-      if (myPeerId == null && attempts < 10) {
-        attempts++;
-        print("Error $attempts");
-        setClientPeerConnection();
-        return;
-      }
-    });*/
+    setClientMqttConnection(false);
   }
 
   @override
@@ -96,295 +87,317 @@ class _VideoScreenState extends State<VideoScreen> {
     super.dispose();
   }
 
-  void connectToPeer(String receivedPeerId) {
-    peerId = receivedPeerId;
-    try {
-      conn = peer.connect(peerId!);
-    } catch (e) {
-      print(e);
-    }
-    peerConnected = true;
-
-    conn.on("open").listen((event) {
-      setState(() {
-        peerConnected = true;
-      });
-    });
-    conn.on("close").listen((event) {
-      setState(() {
-        peerConnected = false;
-      });
-    });
-
-    conn.on("data").listen((data) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
-    });
-
-    conn.on("open").listen((_) {
-      conn.send({"connected": myPeerId});
-    });
+  void connectToPeer(String receivedTopic) {
+    client.unsubscribe(topic);
+    connected = false;
+    topic = receivedTopic;
+    setClientMqttConnection(true);
   }
 
-  void setClientPeerConnection() {
-    peer = Peer(
-        /*options: PeerOptions(
-        host: "kevin-is-awesome.mooo.com",
-        path: "/unyo/",
-        key: "unyo",
-        //port: 9000,
-        secure: true,
-      ),*/
-        );
+  void setClientMqttConnection(bool connection) async {
+    client = MqttServerClient('ws://kevin-is-awesome.mooo.com', '',
+        maxConnectionAttempts: 10);
 
-    peer.on("open").listen((id) {
-      setState(() {
-        myPeerId = peer.id;
-      });
-      print("My Peer Id: $myPeerId");
-    });
+    client.useWebSocket = true;
+    client.port = 9001;
+    client.websocketProtocols = MqttClientConstants.protocolsSingleDefault;
+    client.setProtocolV311();
+    client.keepAlivePeriod = 1800;
+    client.logging(on: false);
 
-    peer.on("close").listen((id) {
-      setState(() {
-        peerConnected = false;
-      });
-    });
+    client.onDisconnected = onDisconnected;
+    client.onConnected = onConnected;
+    if (!connection){
+      topic = generateRandomId();
+      myId = generateRandomId();
+    }
 
-    peer.on<DataConnection>("connection").listen((event) {
-      conn = event;
+    try {
+      await client.connect();
+    } on NoConnectionException catch (e) {
+      // Raised by the client when connection fails.
+      print('EXAMPLE::client exception - $e');
+      client.disconnect();
+      //TODO dialog
+    } on SocketException catch (e) {
+      // Raised by the socket layer
+      print('EXAMPLE::socket exception - $e');
+      client.disconnect();
+      //TODO dialog
+    }
 
-      conn.on("data").listen((data) {
-        print("received: $data");
+    /// Check we are connected
+    if (client.connectionStatus!.state != MqttConnectionState.connected) {
+      connected = false;
+      print(
+          'Client connection failed - disconnecting... status is ${client.connectionStatus}');
+      client.disconnect();
+      //TODO dialog
+      return;
+    } else if (connection){
+      connected = true;
+    }
 
-        if (data is Map<String, dynamic>) {
-          if (data.containsKey("seekTo")) {
-            _controller.seekTo(Duration(milliseconds: data["seekTo"]!.toInt()));
-            /*if (!_controller.value.isPlaying) {
-              _controller.play();
-            }*/
-          }
+    client.subscribe(topic, MqttQos.exactlyOnce); //qos 2
 
-          if (data.containsKey("connected")) {
-            peerConnected = true;
-            sendConfirmOrder(data["connected"]);
-            _controller.seekTo(const Duration(milliseconds: 0));
-            _controller.pause();
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text("Connection Successful",
-                      style: TextStyle(color: Colors.white)),
-                  backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-                  content: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.height * 0.5,
-                    child: Column(
-                      children: [
-                        ElevatedButton(
-                          style: const ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                              Color.fromARGB(255, 37, 37, 37),
-                            ),
-                            foregroundColor: MaterialStatePropertyAll(
-                              Colors.white,
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Ok",
-                              style: TextStyle(color: Colors.white)),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
-          }
+    client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+      final recMess = c![0].payload as MqttPublishMessage;
+      final messageStringAndId = MqttPublishPayload.bytesToStringAsString(recMess.payload.message).split("-");
+      if (messageStringAndId[0] == myId){
+        return;
+      }
+      final messageString = messageStringAndId[1];
+      print("Received: $messageString");
+
+      if (messageString.contains("seekTo")) {
+        _controller.seekTo(Duration(
+            milliseconds: double.parse(messageString.split(":")[1]).toInt()));
+        if (!_controller.value.isPlaying) {
+          _controller.play();
         }
-        switch (data) {
-          case "pause":
-            _controller.pause();
-            break;
-          case "play":
-            _controller.play();
-            break;
-          case "fifteenplus":
-            _controller.seekTo(
-              Duration(
-                  milliseconds:
-                      _controller.value.position.inMilliseconds + 15000),
-            );
-            break;
-          case "fifteenminus":
-            _controller.seekTo(
-              Duration(
-                  milliseconds:
-                      _controller.value.position.inMilliseconds - 15000),
-            );
-            break;
-          case "fiveplus":
-            _controller.seekTo(
-              Duration(
-                  milliseconds:
-                      _controller.value.position.inMilliseconds + 5000),
-            );
-            break;
-          case "fiveminus":
-            _controller.seekTo(
-              Duration(
-                  milliseconds:
-                      _controller.value.position.inMilliseconds - 5000),
-            );
-            break;
-          case "confirmed":
-            _controller.seekTo(const Duration(milliseconds: 0));
-            _controller.pause();
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text("Connection Successful",
-                      style: TextStyle(color: Colors.white)),
-                  backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-                  content: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.height * 0.5,
-                    child: Column(
-                      children: [
-                        ElevatedButton(
-                          style: const ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                              Color.fromARGB(255, 37, 37, 37),
-                            ),
-                            foregroundColor: MaterialStatePropertyAll(
-                              Colors.white,
-                            ),
+      }
+
+      switch (messageString) {
+        case "pause":
+          _controller.pause();
+          break;
+        case "play":
+          _controller.play();
+          break;
+        case "fifteenplus":
+          _controller.seekTo(
+            Duration(
+                milliseconds:
+                _controller.value.position.inMilliseconds + 15000),
+          );
+          break;
+        case "fifteenminus":
+          _controller.seekTo(
+            Duration(
+                milliseconds:
+                _controller.value.position.inMilliseconds - 15000),
+          );
+          break;
+        case "fiveplus":
+          _controller.seekTo(
+            Duration(
+                milliseconds:
+                _controller.value.position.inMilliseconds + 5000),
+          );
+          break;
+        case "fiveminus":
+          _controller.seekTo(
+            Duration(
+                milliseconds:
+                _controller.value.position.inMilliseconds - 5000),
+          );
+          break;
+        case "confirmed":
+          _controller.seekTo(const Duration(milliseconds: 0));
+          _controller.pause();
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Connection Successful",
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+                content: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        style: const ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                            Color.fromARGB(255, 37, 37, 37),
                           ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Ok",
-                              style: TextStyle(color: Colors.white)),
+                          foregroundColor: MaterialStatePropertyAll(
+                            Colors.white,
+                          ),
                         ),
-                      ],
-                    ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Ok",
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
                   ),
-                );
-              },
-            );
-            break;
-          case "escape":
-            WindowManager.instance.setFullScreen(false);
-            _controller.dispose();
-            interactScreen(false);
-            print(calculatePercentage());
-            if (calculatePercentage() > 0.8) {
-              widget.updateEntry();
-            }
-            Navigator.pop(context);
-            peer.disconnect();
-            break;
-        }
-      });
-
-      conn.on("close").listen((event) {
-        setState(() {
-          peerConnected = false;
-        });
-      });
-
-      peerConnected = true;
+                ),
+              );
+            },
+          );
+          break;
+        case "escape":
+          WindowManager.instance.setFullScreen(false);
+          _controller.dispose();
+          interactScreen(false);
+          print(calculatePercentage());
+          if (calculatePercentage() > 0.8) {
+            widget.updateEntry();
+          }
+          Navigator.pop(context);
+          client.disconnect();
+          break;
+        case "connected":
+          sendConfirmOrder();
+          _controller.seekTo(const Duration(milliseconds: 0));
+          _controller.pause();
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Connection Successful",
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+                content: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        style: const ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                            Color.fromARGB(255, 37, 37, 37),
+                          ),
+                          foregroundColor: MaterialStatePropertyAll(
+                            Colors.white,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Ok",
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+          break;
+      }
     });
+
+    if(connection){
+      sendConnectedOrder();
+    }
+
+  }
+
+  String generateRandomId() {
+    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random();
+    final idLength = 10; // You can adjust the length of the ID as needed
+    return String.fromCharCodes(
+      List.generate(
+        idLength,
+        (_) => characters.codeUnitAt(random.nextInt(characters.length)),
+      ),
+    );
+  }
+
+  //TODO temp
+  void onDisconnected() {
+    print('EXAMPLE::OnDisconnected client callback - Client disconnection');
+    if (client.connectionStatus!.disconnectionOrigin ==
+        MqttDisconnectionOrigin.solicited) {
+      print('Client disconnected succesfully');
+    }
+  }
+
+  /// The successful connect callback
+  void onConnected() {
+    print('Client connection was sucessful');
   }
 
   void sendPauseVideoOrder() {
-    print("$peerConnected pause");
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send("pause");
-      });
+    print("$connected pause");
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-pause");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
   void sendPlayVideoOrder() {
-    print("$peerConnected play");
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send("play");
-      });
+    print("$connected play");
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-play");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
   void sendFifteenPosOrder() {
-    print("$peerConnected play");
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send("fifteenplus");
-      });
+    print("$connected fifteenplus");
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-fifteenplus");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
   void sendFifteenMinOrder() {
-    print("$peerConnected play");
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send("fifteenminus");
-      });
+    print("$connected fifteenminus");
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-fifteenminus");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
   void sendFivePosOrder() {
-    print("$peerConnected play");
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send("fiveplus");
-      });
+    print("$connected fiveplus");
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-fiveplus");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
   void sendFiveMinOrder() {
-    print("$peerConnected play");
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send("fiveminus");
-      });
+    print("$connected fiveminus");
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-fiveminus");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
   void sendSeekToOrder(double time) {
-    print("$peerConnected play");
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send({"seekTo": time});
-      });
+    print("$connected seekTo");
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-seekTo:$time");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
-  void sendConfirmOrder(String receivedPeerId) {
-    peerId = receivedPeerId;
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send("confirmed");
-      });
+  void sendConfirmOrder() {
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-confirmed");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
   void sendEscapeOrder() {
-    if (peerConnected) {
-      conn = peer.connect(peerId!);
-      conn.on("open").listen((_) {
-        conn.send("escape");
-      });
+    print("$connected escape");
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-escape");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
+    }
+  }
+
+  void sendConnectedOrder() {
+    if (connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString("$myId-connected");
+      client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
     }
   }
 
@@ -540,7 +553,7 @@ class _VideoScreenState extends State<VideoScreen> {
               _resetHideControlsTimer();
               break;
             case LogicalKeyboardKey.keyJ:
-              sendFifteenMinOrder();
+              //sendFifteenMinOrder();
               _controller.seekTo(
                 Duration(
                     milliseconds:
@@ -569,7 +582,7 @@ class _VideoScreenState extends State<VideoScreen> {
               if (calculatePercentage() > 0.8) {
                 widget.updateEntry();
               }
-              peer.disconnect();
+              client.disconnect();
               Navigator.pop(context);
               break;
             default:
@@ -677,7 +690,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                 onExit: onExitSound,
                                 connectToPeer: connectToPeer,
                                 seekToPeer: sendSeekToOrder,
-                                myPeerId: myPeerId ?? "peerId not set",
+                                topic: topic,
                               );
                             },
                           ),
@@ -705,7 +718,7 @@ class _VideoScreenState extends State<VideoScreen> {
                             if (calculatePercentage() > 0.8) {
                               widget.updateEntry();
                             }
-                            peer.disconnect();
+                            client.disconnect();
                             Navigator.pop(context);
                           }
                         },
@@ -718,7 +731,11 @@ class _VideoScreenState extends State<VideoScreen> {
                     duration: const Duration(milliseconds: 300),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 6.0, top: 2.0),
-                      child: Text(widget.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 15)),
+                      child: Text(widget.title,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 15)),
                     ),
                   )
                 ],
