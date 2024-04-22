@@ -106,6 +106,8 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '3.19.5'
+      - name: Install dependencies
+        run: pip install dmgbuild
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
@@ -120,9 +122,17 @@ jobs:
           type: 'zip'
           filename: Unyo-${{github.ref_name}}-macos.zip
           directory: build/macos/Build/Products/Release
-      - name: macOS Release
+      - name: macOS Archive Release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/macos/Build/Products/Release/Unyo-${{github.ref_name}}-macos.zip
+      - name: Build Dmg
+        run: dart run dmg
+      - name: macOS Dmg Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/macos/Build/Products/Release/unyo.dmg
