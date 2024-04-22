@@ -25,7 +25,7 @@ jobs:
         run: flutter config --enable-linux-desktop
       - name: Build artifacts
         run: flutter build linux --release
-      - name: Archive Release
+      - name: Archive app
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
@@ -45,7 +45,7 @@ jobs:
       - name: Copy appimagetool
         run: cp assets/appimagetool.AppImage .
       - name: Execute appimagetool
-        run: ./appimagetool Unyo.AppDir Unyo.AppImage
+        run: ./appimagetool.AppImage Unyo.AppDir Unyo.AppImage
       - name: Linux AppImage Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,7 +74,7 @@ jobs:
         run: flutter config --enable-windows-desktop
       - name: Build artifacts
         run: flutter build windows --release
-      - name: Archive Release
+      - name: Archive App
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
@@ -117,7 +117,7 @@ jobs:
         run: flutter config --enable-macos-desktop
       - name: Build artifacts
         run: flutter build macos --release
-      - name: Archive Release
+      - name: Archive App
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
