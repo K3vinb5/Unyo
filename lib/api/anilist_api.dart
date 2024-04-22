@@ -387,6 +387,7 @@ Future<List<String>> getUserAccessToken(String code) async {
     },
     body: json.encode(query),
   );
+  print("Response: ${response.body}");
   Map<String, dynamic> jsonResponse = json.decode(response.body);
 
   return [jsonResponse["access_token"], jsonResponse["refresh_token"]];

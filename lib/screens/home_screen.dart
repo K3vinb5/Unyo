@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void manualLogin(String code) async {
     accessCode = code;
-    //print('Access Code: $accessCode');
+    print('Access Code: $accessCode');
     List<String> codes = await getUserAccessToken(accessCode!);
     accessToken = codes[0];
     refreshToken = codes[1];

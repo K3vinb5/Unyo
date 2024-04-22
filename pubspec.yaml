@@ -63,6 +63,9 @@ icons_launcher:
     linux:
       enable: true
       image_path: 'assets/logo.png'
+    android:
+      enable: true
+      image_path: 'assets/logo.png'
 
 dev_dependencies:
   flutter_test:

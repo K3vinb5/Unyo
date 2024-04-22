@@ -6,7 +6,7 @@ import 'package:fvp/fvp.dart' as fvp;
 
 void main() {
   //needed for video player on desktop!!
-  fvp.registerWith(options: {'platforms': ['windows', 'macos', 'linux']});
+  fvp.registerWith(options: {'platforms': ['windows', 'linux', 'macos']});
   runApp(const MyApp());
   doWhenWindowReady(() {
     appWindow.minSize = const Size(854, 480);
