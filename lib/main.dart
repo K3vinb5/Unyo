@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,13 +10,15 @@ void main() {
   //needed for video player on desktop!!
   fvp.registerWith(options: {'platforms': ['windows', 'linux', 'macos']});
   runApp(const MyApp());
-  doWhenWindowReady(() {
-    appWindow.minSize = const Size(854, 480);
-    appWindow.size = const Size(1280, 720);
-    appWindow.title = "Unyo";
-    appWindow.position = const Offset(200, 200);
-    appWindow.show();
-  });
+  if (!Platform.isAndroid || !Platform.isIOS){
+    doWhenWindowReady(() {
+      appWindow.minSize = const Size(854, 480);
+      appWindow.size = const Size(1280, 720);
+      appWindow.title = "Unyo";
+      appWindow.position = const Offset(200, 200);
+      appWindow.show();
+    });
+  }
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
