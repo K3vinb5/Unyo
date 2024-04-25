@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,17 +7,17 @@ import 'package:fvp/fvp.dart' as fvp;
 
 void main() {
   //needed for video player on desktop!!
-  fvp.registerWith(options: {'platforms': ['windows', 'linux', 'macos']});
+  fvp.registerWith(options: {
+    'platforms': ['windows', 'linux', 'macos']
+  });
   runApp(const MyApp());
-  if (!Platform.isAndroid || !Platform.isIOS){
-    doWhenWindowReady(() {
-      appWindow.minSize = const Size(854, 480);
-      appWindow.size = const Size(1280, 720);
-      appWindow.title = "Unyo";
-      appWindow.position = const Offset(200, 200);
-      appWindow.show();
-    });
-  }
+  doWhenWindowReady(() {
+    appWindow.position = const Offset(200, 200);
+    appWindow.minSize = const Size(854, 480);
+    appWindow.title = "Unyo";
+    appWindow.size = const Size(1280, 720);
+    appWindow.show();
+  });
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -28,7 +27,7 @@ final GlobalKey<NavigatorState> _homeNavigatorKey =
 final GlobalKey<NavigatorState> _animeScreen =
     GlobalKey<NavigatorState>(debugLabel: 'anime');
 final GlobalKey<NavigatorState> _mangaScreen =
-GlobalKey<NavigatorState>(debugLabel: 'manga');
+    GlobalKey<NavigatorState>(debugLabel: 'manga');
 
 final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -50,11 +49,10 @@ final GoRouter _router = GoRouter(
             GoRoute(
               path: '/anime',
               builder: (BuildContext context, GoRouterState state) =>
-              const AnimeScreen(),
+                  const AnimeScreen(),
             ),
           ],
         ),
-
         StatefulShellBranch(
           navigatorKey: _homeNavigatorKey,
           routes: <RouteBase>[
@@ -65,7 +63,6 @@ final GoRouter _router = GoRouter(
             ),
           ],
         ),
-
         StatefulShellBranch(
           navigatorKey: _mangaScreen,
           routes: <RouteBase>[

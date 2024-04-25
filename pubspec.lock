@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.4.1"
+  another_flutter_splash_screen:
+    dependency: "direct main"
+    description:
+      name: another_flutter_splash_screen
+      sha256: "99372a8c95839c7276f3399a637e8844f67fe1e7487036420a28a5a6abd7f179"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   archive:
     dependency: transitive
     description:
@@ -512,6 +520,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  loading_animation_widget:
+    dependency: "direct main"
+    description:
+      name: loading_animation_widget
+      sha256: ee3659035528d19145d50cf0107632bf647e7306c88b6a32f35f3bed63f6d728
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   logging:
     dependency: transitive
     description:

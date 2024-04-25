@@ -1,11 +1,14 @@
+import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelfio;
 import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
+import 'package:unyo/screens/login_screen.dart';
 import 'package:unyo/screens/scaffold_screen.dart';
 import '../api/anilist_api.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -34,13 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
   List<AnimeModel>? watchingList;
   List<AnimeModel>? planningList;
   List<AnimeModel>? pausedList;
-  final String clientId = '17550';
-  final String redirectUri = 'http://localhost:9999/auth';
   double adjustedWidth = 0;
   double adjustedHeight = 0;
   double totalWidth = 0;
   double totalHeight = 0;
-  TextEditingController manualLoginController = TextEditingController();
 
   Future<void> _startServer() async {
     handler(shelf.Request request) async {
@@ -74,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
     prefs = await SharedPreferences.getInstance();
     if (prefs.getString("accessToken") == null) {
       _startServer();
+      goToLogin();
     } else {
       accessToken = prefs.getString("accessToken");
       userName = prefs.getString("userName");
@@ -82,30 +83,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> login() async {
-    if (accessToken == null) {
-      final String authUrl =
-          'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code';
-
-      if (await canLaunchUrl(Uri.parse(authUrl))) {
-        await launchUrl(Uri.parse(authUrl));
-      } else {
-        throw 'Could not launch $authUrl';
-      }
-    }
-  }
-
-  void manualLogin(String code) async {
-    accessCode = code;
-    print('Access Code: $accessCode');
-    List<String> codes = await getUserAccessToken(accessCode!);
-    accessToken = codes[0];
-    refreshToken = codes[1];
-    //print("AccessToken: $accessToken");
-    getUserInfo();
-    await prefs.setString("accessCode", accessCode!);
-    await prefs.setString("refreshToken", refreshToken!);
-    await prefs.setString("accessToken", accessToken!);
+  void goToLogin() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => LoginPage(
+          updateUserInfo: getUserInfo,
+        ),
+      ),
+    );
   }
 
   @override
@@ -340,6 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       Navigator.of(
                                                                               context)
                                                                           .pop();
+                                                                      //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage(updateUserInfo: getUserInfo),));
                                                                     },
                                                                     child:
                                                                         const Text(
@@ -397,180 +383,45 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              userName == null
+              watchingList == null
                   ? Stack(
-                    children: [
-                      Column(
-                        children: [
-                          const SizedBox(
-                            height: 100,
+                      alignment: Alignment.center,
+                      children: [
+                        FlutterSplashScreen.fadeIn(
+                          backgroundColor:
+                              const Color.fromARGB(255, 44, 44, 44),
+                          animationCurve: Curves.decelerate,
+                          duration: const Duration(milliseconds: 5000),
+                          animationDuration: const Duration(milliseconds: 5000),
+                          childWidget: Center(
+                            child: Image.asset(
+                              "assets/logo.png",
+                              scale: 0.85,
+                            ),
                           ),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 200),
+                          child: LoadingAnimationWidget.inkDrop(
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: WindowTitleBarBox(
+                            child: Row(
                               children: [
-                                const SizedBox(
-                                  height: 100,
+                                Expanded(
+                                  child: MoveWindow(),
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    login();
-                                    //getUserInfo();
-                                  },
-                                  style: const ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStatePropertyAll(Colors.black12),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        accessToken == null
-                                            ? "Please Login to Anilist  "
-                                            : "Please Wait...  ",
-                                        style: const TextStyle(color: Colors.white),
-                                      ),
-                                      const Icon(
-                                        Icons.person,
-                                        color: Colors.white,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 20,
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    //login();
-                                    //getUserInfo();
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          backgroundColor:
-                                              const Color.fromARGB(255, 44, 44, 44),
-                                          title: const Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Text("Paste the Authentication Code",
-                                                  style:
-                                                      TextStyle(color: Colors.white)),
-                                            ],
-                                          ),
-                                          content: SizedBox(
-                                            width: adjustedWidth * 0.5,
-                                            height: adjustedHeight * 0.3,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                const SizedBox(
-                                                  height: 20,
-                                                ),
-                                                StyledTextField(
-                                                  width: 350,
-                                                  controller: manualLoginController,
-                                                  color: Colors.white,
-                                                  hintColor: Colors.grey,
-                                                  hint: "Paste your code here",
-                                                ),
-                                                const SizedBox(
-                                                  height: 20,
-                                                ),
-                                                Expanded(
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.end,
-                                                    mainAxisSize: MainAxisSize.max,
-                                                    children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment.end,
-                                                        children: [
-                                                          ElevatedButton(
-                                                            onPressed: () {
-                                                              Navigator.of(context)
-                                                                  .pop();
-                                                            },
-                                                            style: const ButtonStyle(
-                                                              backgroundColor:
-                                                                  MaterialStatePropertyAll(
-                                                                      Colors.black12),
-                                                            ),
-                                                            child: const Text(
-                                                              "Cancel",
-                                                              style: TextStyle(
-                                                                  color: Colors.white),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 20,
-                                                          ),
-                                                          ElevatedButton(
-                                                            onPressed: () async {
-                                                              manualLogin(
-                                                                  manualLoginController
-                                                                      .text);
-                                                              Navigator.of(context)
-                                                                  .pop();
-                                                            },
-                                                            style: const ButtonStyle(
-                                                              backgroundColor:
-                                                                  MaterialStatePropertyAll(
-                                                                      Colors.black12),
-                                                            ),
-                                                            child: const Text(
-                                                              "Confirm",
-                                                              style: TextStyle(
-                                                                  color: Colors.white),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  style: const ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStatePropertyAll(Colors.black12),
-                                  ),
-                                  child: const Row(
-                                    children: [
-                                      Text(
-                                        "Login Manually",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Icon(Icons.back_hand, color: Colors.white),
-                                    ],
-                                  ),
-                                ),
+                                const WindowButtons(),
                               ],
                             ),
-                        ],
-                      ),
-                      WindowTitleBarBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: MoveWindow(),
-                            ),
-                            const WindowButtons(),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
-                  )
+                      ],
+                    )
                   : Padding(
                       padding: EdgeInsets.only(top: totalHeight * 0.2),
                       child: SingleChildScrollView(

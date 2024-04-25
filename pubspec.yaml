@@ -51,6 +51,8 @@ dependencies:
   bitsdojo_window: ^0.1.6
   mqtt_client: ^10.2.1
   msix: ^3.16.7
+  another_flutter_splash_screen: ^1.2.0
+  loading_animation_widget: ^1.2.1
 
 icons_launcher:
   image_path: 'assets/logo.png'
@@ -98,8 +100,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/logo.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
