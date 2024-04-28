@@ -110,8 +110,8 @@ jobs:
         run: pip install dmgbuild
       - name: Install project dependencies
         run: flutter pub get
-      - name: Generate intermediates
-        run: flutter pub run build_runner build --delete-conflicting-outputs
+      #- name: Generate intermediates
+      #  run: flutter pub run build_runner build --delete-conflicting-outputs
       - name: Enable macOS build
         run: flutter config --enable-macos-desktop
       - name: Build artifacts
