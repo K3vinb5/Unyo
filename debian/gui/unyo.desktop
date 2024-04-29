@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Unyo
+Comment=Launch Unyo!
+Exec=unyo
+Icon=logo
+Terminal=false
+Type=Application
+Categories=Multimedia;

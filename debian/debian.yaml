@@ -1,0 +1,14 @@
+flutter_app:
+  command: unyo
+  arch: x64
+  parent: /usr/local/lib
+  nonInteractive: false
+
+control:
+  Package: unyo
+  Version: 0.2.0
+  Architecture: amd64
+  Priority: optional
+  Depends:
+  Maintainer:
+  Description: An anime app!

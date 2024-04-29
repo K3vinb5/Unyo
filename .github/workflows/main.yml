@@ -52,6 +52,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: /home/runner/work/Unyo/Unyo/Unyo.AppImage
+      - name: Build deb package
+        run: flutter_to_debian
+      - name: Linux Debain package Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/linux/x64/release/debian/unyo_0.2.0_amd64.deb
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -69,7 +77,7 @@ jobs:
         run: flutter pub get
       - name: Generate intermediates
         run: flutter pub run build_runner build --delete-conflicting-outputs
-      - name: Enable windows build
+      - name: Enable windows builwindowsd
         run: flutter config --enable-windows-desktop
       - name: Build artifacts
         run: flutter build windows --release

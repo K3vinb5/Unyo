@@ -73,7 +73,7 @@ icons_launcher:
 msix_config:
   display_name: Unyo
   publisher_display_name: K3vinb5
-  install_certificate: false
+  install_certificate: true
   logo_path: ./assets/logo.png
 
 dev_dependencies:
