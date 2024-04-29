@@ -52,6 +52,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: /home/runner/work/Unyo/Unyo/Unyo.AppImage
+      - name: Activate flutter_to_debian
+        run: dart pub global activate flutter_to_debian
       - name: Add Path
         run: export PATH="$PATH":"$HOME/.pub-cache/bin"
       - name: Build deb package
@@ -96,7 +98,7 @@ jobs:
         with:
           files: build/windows/x64/runner/Release/Unyo-${{github.ref_name}}-windows.zip
       - name: Build Msix
-        run: flutter pub run msix:create
+        run: flutter pub run msix:create -y
       - name: Windows Msix Release
         uses: softprops/action-gh-release@v1
         env:
