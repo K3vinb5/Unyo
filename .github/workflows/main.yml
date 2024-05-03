@@ -98,7 +98,7 @@ jobs:
         with:
           files: build/windows/x64/runner/Release/Unyo-${{github.ref_name}}-windows.zip
       - name: Build Msix
-        run: flutter pub run msix:create -y
+        run: flutter pub run msix:create --dontInstallCert
       - name: Windows Msix Release
         uses: softprops/action-gh-release@v1
         env:

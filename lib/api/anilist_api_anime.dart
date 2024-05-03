@@ -8,7 +8,6 @@ import 'package:url_launcher/url_launcher.dart';
 const String anilistEndpoint = "https://graphql.anilist.co";
 const String anilistEndPointGetToken =
     "https://anilist.co/api/v2/oauth/authorize?client_id=17550&response_type=token";
-late String token;
 
 Future<List<AnimeModel>> getAnimeModelListTrending(int page, int n, int attempt) async {
   Map<String, dynamic> query = {
@@ -413,7 +412,7 @@ Future<List<String>> getUserNameAndId(String access_token) async {
   ];
 }
 
-Future<UserAnimeModel> getUserAnimeInfo(int mediaId, int attempt) async {
+Future<UserMediaModel> getUserAnimeInfo(int mediaId, int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query": "query{ Media(id: $mediaId){ mediaListEntry { score progress repeat priority status startedAt{day month year} completedAt{day month year} } } }",
@@ -433,7 +432,7 @@ Future<UserAnimeModel> getUserAnimeInfo(int mediaId, int attempt) async {
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   if (jsonResponse["data"]["Media"]["mediaListEntry"] == null){
-    return UserAnimeModel(
+    return UserMediaModel(
       score: 0,
       progress: 0,
       repeat: 0,
@@ -445,7 +444,7 @@ Future<UserAnimeModel> getUserAnimeInfo(int mediaId, int attempt) async {
   }
   Map<String, dynamic> mediaListEntry =
       jsonResponse["data"]["Media"]["mediaListEntry"];
-  return UserAnimeModel(
+  return UserMediaModel(
     score: mediaListEntry["score"],
     progress: mediaListEntry["progress"],
     repeat: mediaListEntry["repeat"],
@@ -534,6 +533,4 @@ Future<int> getAnimeCurrentEpisode(int mediaId) async{
   return jsonResponse["data"]["AiringSchedule"]["episode"];
 }
 
-/*Future<Map<String,List<AnimeModel>>> getUserAnimeLists(){
-  //TODO
-}*/
+//MANGA SPECIFIC QUERIES

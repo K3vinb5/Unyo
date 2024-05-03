@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unyo/api/anilist_api.dart';
+import 'package:unyo/api/anilist_api_anime.dart';
 
 class AnimeButton extends StatefulWidget {
   const AnimeButton({super.key, required this.text, required this.onTap, required this.width, required this.height});

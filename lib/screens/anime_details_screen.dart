@@ -4,7 +4,7 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:unyo/api/anilist_api.dart';
+import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/video_screen.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -26,7 +26,7 @@ class AnimeDetailsScreen extends StatefulWidget {
 
 class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late VideoScreen videoScreen;
-  UserAnimeModel? userAnimeModel;
+  UserMediaModel? userAnimeModel;
   List<String> searches = [];
   List<String> searchesId = [];
   late int currentSearch;
@@ -74,7 +74,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void setUserAnimeModel() async {
-    UserAnimeModel newUserAnimeModel =
+    UserMediaModel newUserAnimeModel =
         await getUserAnimeInfo(widget.currentAnime.id, 0);
     setState(() {
       userAnimeModel = newUserAnimeModel;

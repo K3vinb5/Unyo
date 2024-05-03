@@ -10,10 +10,9 @@ import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:unyo/screens/login_screen.dart';
 import 'package:unyo/screens/scaffold_screen.dart';
-import '../api/anilist_api.dart';
+import '../api/anilist_api_anime.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 String? accessToken;
 String? refreshToken;
@@ -198,9 +197,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     padding: const EdgeInsets.all(16.0),
                                     child: Row(
                                       children: [
-                                        Image.network(
-                                          avatarImageUrl!,
-                                          scale: 1,
+                                        SizedBox(
+                                          height: 100,
+                                          width: 100,
+                                          child: Image.network(
+                                            avatarImageUrl!,
+                                            fit: BoxFit.fill,
+                                          ),
                                         ),
                                         const SizedBox(
                                           width: 20,

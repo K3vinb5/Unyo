@@ -1,5 +1,5 @@
-class UserAnimeModel{
-  UserAnimeModel({
+class UserMediaModel{
+  UserMediaModel({
     required this.score,
     required this.progress,
     required this.repeat,

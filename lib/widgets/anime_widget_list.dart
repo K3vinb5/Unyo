@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/anime_details_screen.dart';
@@ -31,6 +33,8 @@ class AnimeWidgetList extends StatefulWidget {
   final double minimumHeight = 195.44;
   final double minimumListHeight = 244.3;
 
+
+
   @override
   State<AnimeWidgetList> createState() => _AnimeWidgetListState();
 }
@@ -43,10 +47,17 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
   double calculatedHeight = 0;
   double calculatedListHeight = 0;
 
+  double maximumWidth = 0;
+  double maximumHeight = 0;
+  double maximumListHeight = 0;
+
   @override
   void initState() {
     super.initState();
     animeList = widget.animeList;
+    maximumListHeight = widget.minimumListHeight * 1.4;
+    maximumHeight = widget.minimumHeight * 1.4;
+    maximumWidth = widget.minimumWidth * 1.4;
   }
 
   @override
@@ -118,7 +129,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                   ],
                 ),
                 SizedBox(
-                  height: calculatedListHeight > widget.minimumListHeight ? calculatedListHeight : widget.minimumListHeight,
+                  height: min(max(calculatedListHeight, widget.minimumListHeight),maximumListHeight),
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
@@ -133,8 +144,8 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                               openAnime(animeModel, "${widget.tag}-$index");
                             },
                             textColor: widget.textColor,
-                            height: calculatedHeight > widget.minimumHeight ? calculatedHeight : widget.minimumHeight,
-                            width: calculatedWidth > widget.minimumWidth ? calculatedWidth : widget.minimumWidth,
+                            height: min(max(calculatedHeight, widget.minimumHeight),maximumHeight),
+                            width: min(max(calculatedWidth, widget.minimumWidth),maximumWidth),
                             year: animeModel.startDate,
                             format: animeModel.format,
                             status: animeModel.status,
@@ -155,8 +166,8 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                           });
                         },
                         textColor: widget.textColor,
-                        height: calculatedHeight > widget.minimumHeight ? calculatedHeight : widget.minimumHeight,
-                        width: calculatedWidth > widget.minimumWidth ? calculatedWidth : widget.minimumWidth,
+                        height: min(max(calculatedHeight, widget.minimumHeight), maximumHeight),
+                        width: min(max(calculatedWidth, widget.minimumWidth), maximumWidth),
                         status: null,
                         format: null,
                         year: null,
