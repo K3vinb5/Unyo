@@ -98,7 +98,7 @@ jobs:
         with:
           files: build/windows/x64/runner/Release/Unyo-${{github.ref_name}}-windows.zip
       - name: Build Msix
-        run: flutter pub run msix:create --dontInstallCert
+        run: flutter pub run msix:create
       - name: Windows Msix Release
         uses: softprops/action-gh-release@v1
         env:
@@ -107,7 +107,7 @@ jobs:
           files: build/windows/x64/runner/Release/unyo.msix
 
   build-and-release-macos:
-    runs-on: macos-latest
+    runs-on: macos-14
     if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
@@ -122,8 +122,8 @@ jobs:
         run: pip install dmgbuild
       - name: Install project dependencies
         run: flutter pub get
-      #- name: Generate intermediates
-      #  run: flutter pub run build_runner build --delete-conflicting-outputs
+      - name: Generate intermediates
+        run: flutter pub run build_runner build --delete-conflicting-outputs
       - name: Enable macOS build
         run: flutter config --enable-macos-desktop
       - name: Build artifacts
@@ -140,11 +140,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/macos/Build/Products/Release/Unyo-${{github.ref_name}}-macos.zip
-      #- name: Build Dmg
-      #  run: dart run dmg
-      #- name: macOS Dmg Release
-      #  uses: softprops/action-gh-release@v1
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  with:
-      #    files: build/macos/Build/Products/Release/unyo.dmg
+      - name: Package Macos App
+        run: |
+          brew install python-setuptools
+          npm install -g appdmg
+          mkdir -p build/${{ env.BUILD_VERSION }}
+          appdmg appdmg.json build/Unyo-macos-universal.dmg
+          flutter_distributor package --platform=macos --targets pkg --skip-clean
+          mv dist/**/unyo-*-macos.pkg build/Unyo-macos-universal.pkg
+      - name: Release Dmg
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: Unyo-${{github.ref_name}}-macos.zip
+          directory: build/Spotube-macos-universal.dmg

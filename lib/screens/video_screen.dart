@@ -152,9 +152,6 @@ class _VideoScreenState extends State<VideoScreen> {
       if (messageString.contains("seekTo")) {
         _controller.seekTo(Duration(
             milliseconds: double.parse(messageString.split(":")[1]).toInt()));
-        if (!_controller.value.isPlaying) {
-          _controller.play();
-        }
       }
 
       switch (messageString) {
