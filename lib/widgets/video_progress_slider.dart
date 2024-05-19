@@ -6,6 +6,7 @@ import '../screens/video_screen.dart';
 
 class VideoProgressSlider extends StatelessWidget {
   VideoProgressSlider({
+    super.key,
     required this.position,
     required this.duration,
     required this.controller,

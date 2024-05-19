@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/screens/screens.dart';

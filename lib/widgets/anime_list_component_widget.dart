@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/widgets/anime_widget.dart';

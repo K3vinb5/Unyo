@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -70,10 +69,7 @@ final GoRouter _router = GoRouter(
               path: '/manga',
               builder: (BuildContext context, GoRouterState state) =>
                   const MangaScreen(),
-              /*routes: [
-                We can have internal routes, will be needed for details and video
-              ],*/
-            ),
+           ),
           ],
         ),
       ],

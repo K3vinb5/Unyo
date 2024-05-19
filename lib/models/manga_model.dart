@@ -33,6 +33,6 @@ class MangaModel {
 
   @override
   String toString() {
-    return "$id $coverImage";
+    return "$id $title";
   }
 }

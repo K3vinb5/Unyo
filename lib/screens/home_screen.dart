@@ -1,7 +1,6 @@
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shelf/shelf.dart' as shelf;
@@ -452,7 +451,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       AnimeButton(
                                         text: "Mangas",
-                                        onTap: () {},
+                                        onTap: () {
+                                          goTo(2);
+                                        },
                                         width: adjustedWidth,
                                         height: adjustedHeight,
                                       ),

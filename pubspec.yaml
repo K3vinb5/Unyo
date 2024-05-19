@@ -53,6 +53,7 @@ dependencies:
   msix: ^3.16.7
   another_flutter_splash_screen: ^1.2.0
   loading_animation_widget: ^1.2.1
+  collection: ^1.18.0
 
 icons_launcher:
   image_path: 'assets/logo.png'

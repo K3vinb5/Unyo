@@ -11,3 +11,5 @@ export 'page_banner_widget.dart';
 export 'window_buttons.dart';
 export 'video_progress_slider.dart';
 export 'controls_overlay.dart';
+export 'manga_widget.dart';
+export 'manga_widget_list.dart';

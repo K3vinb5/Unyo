@@ -1,15 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
