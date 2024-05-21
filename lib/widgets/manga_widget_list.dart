@@ -68,12 +68,12 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
       });
     }
   }
-  // TODO fix
+
   void openManga(MangaModel currentManga, String tag) {
-    // mangaScreen = MangaDetailsScreen(
-    //   currentManga: currentManga,
-    //   tag: tag,
-    // );
+    mangaScreen = MangaDetailsScreen(
+      currentManga: currentManga,
+      tag: tag,
+    );
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => mangaScreen),

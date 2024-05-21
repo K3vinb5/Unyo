@@ -101,7 +101,7 @@ class _MangaScreenState extends State<MangaScreen> {
     var newTrendingList = await getMangaModelListTrending(1, 20, 0);
 
     List<MangaModel> newSeasonPopularList = 
-    await getMangaModelListSeasonPopular(1, DateTime.now().year, 0);
+    await getMangaModelListYearlyPopular(1, DateTime.now().year, 0, 20);
 
     // var newRecentlyReleaseList = await getMangaModelListRecentlyReleased(1, 20, 0);
 
@@ -294,14 +294,14 @@ class _MangaScreenState extends State<MangaScreen> {
                         ),
                         MangaWidgetList(
                           tag: "manga-details-list3",
-                          title: "Season Popular",
+                          title: "Yearly Popular",
                           mangaList: seasonPopularMangaList,
                           textColor: Colors.white,
                           loadMore: true,
                           loadMoreFunction: (int page, int n, int attempt) {
-                            return getMangaModelListSeasonPopular(
+                            return getMangaModelListYearlyPopular(
                                 page,
-                                // n,
+                                n,
                                 DateTime.now().year,
                                 // getCurrentSeason(),
                                 attempt);
