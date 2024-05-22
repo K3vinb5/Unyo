@@ -7,20 +7,23 @@ import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/api/anilist_api_manga.dart';
 
-class AnimeSearchScreen extends StatefulWidget {
-  const AnimeSearchScreen({super.key});
+class MediaSearchScreen extends StatefulWidget {
+  const MediaSearchScreen({super.key, required this.type});
+
+  final String type;
 
   @override
-  State<AnimeSearchScreen> createState() => _AnimeSearchScreenState();
+  State<MediaSearchScreen> createState() => _MediaSearchScreenState();
 }
 
-class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
+class _MediaSearchScreenState extends State<MediaSearchScreen> {
   double adjustedHeight = 0;
   double adjustedWidth = 0;
   double totalWidth = 0;
   double totalHeight = 0;
-  List<AnimeModel> searchAnimeList = [];
+  List<dynamic> searchMediaList = [];
   Timer searchTimer = Timer(const Duration(milliseconds: 500), () {});
   List<String> sortBy = [
     "Select Sorting",
@@ -71,11 +74,20 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
   void resetSearchTimer(String search) {
     searchTimer.cancel();
     searchTimer = Timer(const Duration(milliseconds: 500), () async {
-      var newSearchAnimeList = await getAnimeModelListSearch(
-          search, currentSortBy, currentSeason, currentFormat, currentYear, 50);
-      setState(() {
-        searchAnimeList = newSearchAnimeList;
-      });
+      //Calls anilist anilist api
+      if (widget.type == "ANIME") {
+        var newSearchMediaList = await getAnimeModelListSearch(search,
+            currentSortBy, currentSeason, currentFormat, currentYear, 50);
+        setState(() {
+          searchMediaList = newSearchMediaList;
+        });
+      } else {
+        var newSearchMediaList = await getMangaModelListSearch(search,
+            currentSortBy, currentSeason, currentFormat, currentYear, 50);
+        setState(() {
+          searchMediaList = newSearchMediaList;
+        });
+      }
     });
   }
 
@@ -110,8 +122,7 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    adjustedHeight =
-        getAdjustedHeight(MediaQuery.of(context).size.height);
+    adjustedHeight = getAdjustedHeight(MediaQuery.of(context).size.height);
     adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
     totalWidth = MediaQuery.of(context).size.width;
     totalHeight = MediaQuery.of(context).size.height;
@@ -133,7 +144,10 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
           Align(
             alignment: Alignment.topLeft,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white,),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -161,8 +175,7 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
                 height: 10,
               ),
               Row(
-                mainAxisAlignment:
-                MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   StyledTextField(
                     width: totalWidth * 0.22,
@@ -178,8 +191,7 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
                     width: totalWidth * 0.22,
                     onTap: (index) {
                       currentFormat = format[index];
-                      resetSearchTimer(
-                          textFieldController.text);
+                      resetSearchTimer(textFieldController.text);
                     },
                     horizontalPadding: 0,
                     items: const [
@@ -196,16 +208,14 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
                   SizedBox(
                     width: totalWidth * 0.26,
                     child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         StyledDropDown(
                           width: totalWidth * 0.12,
                           onTap: (index) {
                             currentSeason = season[index];
-                            resetSearchTimer(
-                                textFieldController.text);
+                            resetSearchTimer(textFieldController.text);
                           },
                           horizontalPadding: 0,
                           items: const [
@@ -220,13 +230,12 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
                           width: totalWidth * 0.12,
                           onTap: (index) {
                             currentYear = years[index];
-                            resetSearchTimer(
-                                textFieldController.text);
+                            resetSearchTimer(textFieldController.text);
                           },
                           horizontalPadding: 0,
                           items: [
                             ...years.map(
-                                  (year) {
+                              (year) {
                                 return Text("$year");
                               },
                             ),
@@ -238,8 +247,7 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
                   StyledDropDown(
                     onTap: (index) {
                       currentSortBy = sortBy[index];
-                      resetSearchTimer(
-                          textFieldController.text);
+                      resetSearchTimer(textFieldController.text);
                     },
                     width: totalWidth * 0.22,
                     horizontalPadding: 0,
@@ -264,7 +272,7 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
                     runSpacing: -(totalWidth * 0.1),
                     alignment: WrapAlignment.center,
                     children: [
-                      ...searchAnimeList.mapIndexed((index, animeModel) {
+                      ...searchMediaList.mapIndexed((index, animeModel) {
                         double calculatedWidth = adjustedWidth * 0.1;
                         double calculatedHeight = adjustedHeight * 0.28;
                         return Hero(
@@ -277,8 +285,10 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
                               openAnime(animeModel, "${"grid-view"}-$index");
                             },
                             textColor: Colors.white,
-                            height: min(max(calculatedHeight, minimumHeight), maximumHeight),
-                            width: min(max(calculatedWidth, minimumWidth), maximumWidth),
+                            height: min(max(calculatedHeight, minimumHeight),
+                                maximumHeight),
+                            width: min(max(calculatedWidth, minimumWidth),
+                                maximumWidth),
                             year: animeModel.startDate,
                             format: animeModel.format,
                             status: animeModel.status,

@@ -314,7 +314,7 @@ class _MangaScreenState extends State<MangaScreen> {
                           text: "Advanced Search",
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const AnimeSearchScreen(),
+                              builder: (context) => const MediaSearchScreen(type: "MANGA",),
                             ));
                           },
                           width: adjustedWidth,

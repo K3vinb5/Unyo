@@ -41,7 +41,7 @@ final GoRouter _router = GoRouter(
         // branches in a stateful way.
         return ScaffoldScreen(navigationShell: navigationShell);
       },
-      branches: <StatefulShellBranch>[
+      branches: [
         StatefulShellBranch(
           navigatorKey: _animeScreen,
           routes: <RouteBase>[

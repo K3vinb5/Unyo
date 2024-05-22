@@ -305,7 +305,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                         AnimeButton(
                           text: "Advanced Search",
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AnimeSearchScreen(),));
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const MediaSearchScreen(type: "ANIME",),));
                           },
                           width: adjustedWidth,
                           height: adjustedHeight,
