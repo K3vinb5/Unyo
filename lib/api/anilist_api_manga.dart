@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:unyo/screens/home_screen.dart';
 import 'package:unyo/models/models.dart';
 import 'package:http/http.dart' as http;
 
@@ -169,11 +170,11 @@ Future<List<MangaModel>> getMangaModelListRecentlyReleased(
     return list;
   }
 }
-//TODO fix
+//TODO fix for manga
 Future<int> getMangaCurrentChapter(int mediaId) async{
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
-    "query": "query{ AiringSchedule(mediaId: $mediaId, sort: TIME_DESC, notYetAired: false){ episode } }",
+    "query": "query{ Media(mediaId: $mediaId){ chapters } }",
   };
   var response = await http.post(
     url,
@@ -202,7 +203,7 @@ Future<UserMediaModel> getUserMangaInfo(int mediaId, int attempt) async {
   );
   if (response.statusCode == 500){
     if(attempt < 5){
-      return getUserAnimeInfo(mediaId, attempt++);
+      return getUserMangaInfo(mediaId, attempt++);
     }
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
@@ -229,7 +230,7 @@ Future<UserMediaModel> getUserMangaInfo(int mediaId, int attempt) async {
     endDate: "${mediaListEntry["completedAt"]["day"]}/${mediaListEntry["completedAt"]["month"]}/${mediaListEntry["completedAt"]["year"]}",
   );
 }
-
+// TODO fix
 void deleteUserManga(int mediaId) async{
   var url = Uri.parse(anilistEndpoint);
 
@@ -267,4 +268,26 @@ void deleteUserManga(int mediaId) async{
   print(response.body);
 }
 
-
+void setUserMangaInfo(int mediaId, Map<String, String> receivedQuery) async {
+  var url = Uri.parse(anilistEndpoint);
+  Map<String, dynamic> query = {
+    "query": "mutation (\$mediaId: Int, \$status: MediaListStatus, \$score: Float, \$progress: Int, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) { SaveMediaListEntry(mediaId: \$mediaId, status: \$status, score: \$score, progress: \$progress, startedAt: \$startedAt, completedAt: \$completedAt) { mediaId status score progress startedAt { year month day } completedAt { year month day } } } ",
+    "variables" : {
+      "mediaId" : mediaId,
+      "status" : receivedQuery["status"],
+      "score" : double.parse(receivedQuery["score"]!),
+      "progress" : int.parse(receivedQuery["progress"]!),
+      "startedAt" : {"day" : receivedQuery["startDateDay"], "month": receivedQuery["startDateMonth"], "year" : receivedQuery["startDateYear"]},
+      "completedAt" : {"day" : receivedQuery["endDateDay"], "month" : receivedQuery["endDateMonth"], "year" : receivedQuery["endDateYear"]},
+    },
+  };
+  var response = await http.post(
+    url,
+    headers: {
+      "Authorization": "Bearer $accessToken",
+      "Content-Type": "application/json",
+    },
+    body: json.encode(query),
+  );
+  print(response.body);
+}

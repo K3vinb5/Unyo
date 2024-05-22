@@ -1,4 +1,11 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
+import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:image_gradient/image_gradient.dart';
+import 'package:unyo/api/consumet_api.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -20,6 +27,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   UserMediaModel? userMangaModel;
   List<String> searches = [];
   List<String> searchesId = [];
+  List<String> chaptersId = [];
   late int currentSearch;
   int currentSource = 0;
   int currentEpisode = 0;
@@ -49,8 +57,9 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     super.initState();
     setDropDowns = {
       0: () {
-        //gogoanime
-        // setSearches(getAnimeConsumetGogoAnimeIds);
+        //mangahere
+        print("New source, searching...");
+        setSearches(getMangaMangaHereIds);
       },
       1: () {
         //zoro
@@ -61,10 +70,10 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       },
     };
     updateSource(0);
-    setUserAnimeModel();
+    setUserMangaModel();
   }
 
-  void setUserAnimeModel() async {
+  void setUserMangaModel() async {
     UserMediaModel newUserMangaModel =
         await getUserMangaInfo(widget.currentManga.id, 0);
     setState(() {
@@ -86,7 +95,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   void setSearches(Future<List<List<String>>> Function(String) getIds) async {
     List<List<String>> newSearches = await getIds(widget.currentManga.title!);
     int newCurrentEpisode = widget.currentManga.status == "RELEASING"
-        ? await getMangaCurrentChapter(widget.currentManga.id)
+        ? chaptersId.length
         : widget.currentManga.chapters!;
     setState(() {
       currentEpisode = newCurrentEpisode;
@@ -95,11 +104,30 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     });
   }
 
-  void updateSource(int newSource) {
+  void updateSource(int newSource) async {
+    Function setSearches = setDropDowns[newSource]!;
     setState(() {
       currentSource = newSource;
       currentSearch = 0;
-      setDropDowns[newSource]!();
+      //calls the function above
+      setSearches();
+    });
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (searchesId.isEmpty) {
+        updateSearch(currentSearch);
+      } else {
+        updateSearch(currentSearch);
+        timer.cancel();
+      }
+    });
+  }
+
+  void updateSearch(int currentSearch) async {
+    print("Update Search called, lenght is: ${searchesId.length}");
+    List<String> newChaptersId =
+        await getMangaMangaHereChapterIds(searchesId[currentSearch]);
+    setState(() {
+      chaptersId = newChaptersId;
     });
   }
 
@@ -146,8 +174,6 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                     backgroundColor: MaterialStatePropertyAll(
                       Color.fromARGB(255, 37, 37, 37),
                     ),
-                    minimumSize: MaterialStatePropertyAll(
-                        Magnifier.kDefaultMagnifierSize),
                     foregroundColor: MaterialStatePropertyAll(
                       Colors.white,
                     ),
@@ -165,8 +191,6 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                     backgroundColor: MaterialStatePropertyAll(
                       Color.fromARGB(255, 37, 37, 37),
                     ),
-                    minimumSize: MaterialStatePropertyAll(
-                        Magnifier.kDefaultMagnifierSize),
                     foregroundColor: MaterialStatePropertyAll(
                       Colors.white,
                     ),
@@ -182,7 +206,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   }
 
   void updateEntry(int newProgress) {
-    print("Status: ${statuses[0]}");
+    // print("Status: ${statuses[0]}");
     if (statuses[0] != "COMPLETED") {
       query.remove("status");
       query.addAll({"status": "CURRENT"});
@@ -193,56 +217,74 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       progress = newProgress.toDouble();
       query.remove("progress");
       query.addAll({"progress": progress.toInt().toString()});
-      setUserAnimeInfo(widget.currentManga.id, query);
+      setUserMangaInfo(widget.currentManga.id, query);
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
         const Duration(milliseconds: 1000),
         () {
-          setUserAnimeModel();
+          setUserMangaModel();
         },
       );
     }
   }
+//TODO fix for manga
+  // void openManga(String consumetId, int animeEpisode, String animeName) async {
+  //   late String consumetStream;
+  //   if (currentSource == 0) {
+  //     consumetStream = await getAnimeConsumetGogoAnimeStream(
+  //         consumetId, animeEpisode, context);
+  //     videoScreen = VideoScreen(
+  //       stream: consumetStream,
+  //       updateEntry: () {
+  //         updateEntry(animeEpisode);
+  //       },
+  //       title: "$animeName, Episode $animeEpisode",
+  //     );
+  //   } else if (currentSource == 1) {
+  //     List<String> streamCaption =
+  //         await getAnimeConsumetZoroStream(consumetId, animeEpisode, context);
+  //
+  //     consumetStream = streamCaption[0];
+  //     videoScreen = VideoScreen(
+  //       stream: consumetStream,
+  //       captions: streamCaption[1],
+  //       updateEntry: () {
+  //         updateEntry(animeEpisode);
+  //       },
+  //       title: "$animeName, Episode $animeEpisode",
+  //     );
+  //   } else {
+  //     consumetStream = await getAnimeConsumetGogoAnimeStream(
+  //         consumetId, animeEpisode, context);
+  //     videoScreen = VideoScreen(
+  //       stream: consumetStream,
+  //       updateEntry: () {
+  //         updateEntry(animeEpisode);
+  //       },
+  //       title: "$animeName, Episode $animeEpisode",
+  //     );
+  //   }
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => videoScreen),
+  //   );
+  // }
 
-  void openVideo(String consumetId, int animeEpisode, String animeName) async {
-    late String consumetStream;
-    if (currentSource == 0) {
-      consumetStream = await getAnimeConsumetGogoAnimeStream(
-          consumetId, animeEpisode, context);
-      videoScreen = VideoScreen(
-        stream: consumetStream,
-        updateEntry: () {
-          updateEntry(animeEpisode);
-        },
-        title: "$animeName, Episode $animeEpisode",
-      );
-    } else if (currentSource == 1) {
-      List<String> streamCaption =
-          await getAnimeConsumetZoroStream(consumetId, animeEpisode, context);
-
-      consumetStream = streamCaption[0];
-      videoScreen = VideoScreen(
-        stream: consumetStream,
-        captions: streamCaption[1],
-        updateEntry: () {
-          updateEntry(animeEpisode);
-        },
-        title: "$animeName, Episode $animeEpisode",
-      );
-    } else {
-      consumetStream = await getAnimeConsumetGogoAnimeStream(
-          consumetId, animeEpisode, context);
-      videoScreen = VideoScreen(
-        stream: consumetStream,
-        updateEntry: () {
-          updateEntry(animeEpisode);
-        },
-        title: "$animeName, Episode $animeEpisode",
-      );
-    }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => videoScreen),
+  void openManga(String chapterId, int chapterNum, String mangaName) async {
+    List<String> chapterPages = await getMangaMangaHereChapterPages(chapterId);
+    var url = Uri.parse(chapterPages[0]);
+    Map<String, String> headers = {"Referer": "http://www.mangahere.cc/"};
+    var response = await http.get(url, headers: headers);
+    Uint8List bytes = response.bodyBytes;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Column(
+            children: [Image.memory(bytes)],
+          ),
+        );
+      },
     );
   }
 
@@ -302,8 +344,6 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                         backgroundColor: MaterialStatePropertyAll(
                           Color.fromARGB(255, 37, 37, 37),
                         ),
-                        minimumSize: MaterialStatePropertyAll(
-                            Magnifier.kDefaultMagnifierSize),
                         foregroundColor: MaterialStatePropertyAll(
                           Colors.white,
                         ),
@@ -324,12 +364,12 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     Timer(
       const Duration(milliseconds: 500),
       () {
-        setUserAnimeModel();
+        setUserMangaModel();
       },
     );
   }
 
-  void openAnimeInfoDialog(BuildContext context) {
+  void openMangaInfoDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
@@ -399,8 +439,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           child: Slider(
                             activeColor: Colors.grey,
                             min: 0,
-                            max: widget.currentManga.episodes?.toDouble() ??
-                                currentEpisode.toDouble(),
+                            max: chaptersId.length.toDouble(),
                             value: progress,
                             onChanged: (value) {
                               setState(() {
@@ -410,7 +449,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                             },
                             onChangeEnd: (value) {
                               query.remove("progress");
-                              print(progress.toInt().toString());
+                              // print(progress.toInt().toString());
                               query.addAll(
                                   {"progress": progress.toInt().toString()});
                             },
@@ -429,7 +468,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                       children: [
                         Text(
                           score.toInt().toString(),
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                         Expanded(
                           child: Slider(
@@ -546,19 +585,17 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                   backgroundColor: MaterialStatePropertyAll(
                                     Color.fromARGB(255, 37, 37, 37),
                                   ),
-                                  minimumSize: MaterialStatePropertyAll(
-                                      Magnifier.kDefaultMagnifierSize),
                                   foregroundColor: MaterialStatePropertyAll(
                                     Colors.white,
                                   ),
                                 ),
                                 onPressed: () {
-                                  setUserAnimeInfo(
+                                  setUserMangaInfo(
                                       widget.currentManga.id, query);
                                   Timer(
                                     const Duration(milliseconds: 1500),
                                     () {
-                                      setUserAnimeModel();
+                                      setUserMangaModel();
                                     },
                                   );
                                   Navigator.of(context).pop();
@@ -573,8 +610,6 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                   backgroundColor: MaterialStatePropertyAll(
                                     Color.fromARGB(255, 37, 37, 37),
                                   ),
-                                  minimumSize: MaterialStatePropertyAll(
-                                      Magnifier.kDefaultMagnifierSize),
                                   foregroundColor: MaterialStatePropertyAll(
                                     Colors.white,
                                   ),
@@ -601,6 +636,316 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Material(
+      color: Colors.white,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
+          totalWidth = MediaQuery.of(context).size.width;
+          adjustedHeight =
+              getAdjustedHeight(MediaQuery.of(context).size.height);
+          totalHeight = MediaQuery.of(context).size.height;
+
+          return Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              Column(
+                children: [
+                  Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      ImageGradient.linear(
+                        image: Image.network(
+                          widget.currentManga.bannerImage ??
+                              widget.currentManga.coverImage!,
+                          width: totalWidth,
+                          height: totalHeight * 0.35,
+                          fit: widget.currentManga.bannerImage != null
+                              ? BoxFit.fill
+                              : BoxFit.cover,
+                        ),
+                        colors: const [Colors.white, Colors.black],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      widget.currentManga.coverImage != null
+                          ? SizedBox(
+                              height: totalHeight * 0.35,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 16.0, left: 16.0),
+                                    child: Hero(
+                                      tag: widget.tag,
+                                      child: AnimeWidget(
+                                        title: "",
+                                        coverImage:
+                                            widget.currentManga.coverImage,
+                                        score: null,
+                                        onTap: null,
+                                        textColor: Colors.white,
+                                        height: (adjustedHeight * 0.28) >
+                                                minimumHeight
+                                            ? (adjustedHeight * 0.28)
+                                            : minimumHeight,
+                                        width:
+                                            (adjustedWidth * 0.1) > minimumWidth
+                                                ? (adjustedWidth * 0.1)
+                                                : minimumWidth,
+                                        status: widget.currentManga.status,
+                                        year: null,
+                                        format: null,
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.only(
+                                            right: 16.0, top: 32.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.arrow_back,
+                                              color: Colors.white,
+                                            ),
+                                            Text(
+                                              "  Home Screen",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox(),
+                    ],
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: totalWidth,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        border: Border.all(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: totalHeight * 0.1),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: totalHeight * 0.27,
+                        ),
+                        SizedBox(
+                          width: totalWidth / 2,
+                          height: totalHeight * 0.63,
+                          child: ListView(
+                            children: [
+                              Row(
+                                children: [
+                                  //TODO dropdowns
+                                  const SizedBox(
+                                    width: 16,
+                                  ),
+                                  DropdownButton(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0),
+                                    iconDisabledColor: Colors.white,
+                                    value: currentSource,
+                                    dropdownColor: Colors.black,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                    items: [
+                                      DropdownMenuItem(
+                                        value: 0,
+                                        onTap: () {
+                                          updateSource(0);
+                                        },
+                                        child: const Text(
+                                          "MangaHere",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      //   DropdownMenuItem(
+                                      //     value: 1,
+                                      //     onTap: () {
+                                      //       updateSource(1);
+                                      //     },
+                                      //     child: const Text(
+                                      //       "Zoro",
+                                      //       style: TextStyle(
+                                      //           fontWeight: FontWeight.bold),
+                                      //     ),
+                                      //   ),
+                                      //   DropdownMenuItem(
+                                      //     value: 2,
+                                      //     onTap: () {
+                                      //       updateSource(2);
+                                      //     },
+                                      //     child: const Text(
+                                      //       "AnimePahe",
+                                      //       style: TextStyle(
+                                      //           fontWeight: FontWeight.bold),
+                                      //     ),
+                                      //   ),
+                                    ],
+                                    onChanged: (index) {},
+                                  ),
+                                  const SizedBox(
+                                    width: 16.0,
+                                  ),
+                                  ElevatedButton(
+                                    style: const ButtonStyle(
+                                      backgroundColor: MaterialStatePropertyAll(
+                                        Color.fromARGB(255, 37, 37, 37),
+                                      ),
+                                      foregroundColor: MaterialStatePropertyAll(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      openWrongTitleDialog(context);
+                                    },
+                                    child: const Text("Wrong Title?"),
+                                  ),
+                                  const SizedBox(
+                                    width: 16.0,
+                                  ),
+                                  ElevatedButton(
+                                    style: const ButtonStyle(
+                                      backgroundColor: MaterialStatePropertyAll(
+                                        Color.fromARGB(255, 37, 37, 37),
+                                      ),
+                                      foregroundColor: MaterialStatePropertyAll(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      openMangaInfoDialog(context);
+                                    },
+                                    child: const Text("Update Entry"),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Text(
+                                  widget.currentManga.title ?? "",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Text(
+                                  widget.currentManga.description
+                                          ?.replaceAll("<br>", "\n")
+                                          .replaceAll("<i>", "")
+                                          .replaceAll("</i>", "") ??
+                                      "",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: totalHeight * 0.22,
+                        ),
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Chapters:",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 21,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: totalWidth / 2,
+                          height: totalHeight * 0.63,
+                          child: ListView.builder(
+                            itemCount: chaptersId.length,
+                            itemBuilder: (context, index) {
+                              return ChapterButton(
+                                chapterNum: index + 1,
+                                progress: 0,
+                                onTap: () {
+                                  openManga(chaptersId[index], index + 1,
+                                      widget.currentManga.title ?? "");
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              WindowTitleBarBox(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: MoveWindow(),
+                    ),
+                    const WindowButtons(),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

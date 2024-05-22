@@ -13,3 +13,4 @@ export 'video_progress_slider.dart';
 export 'controls_overlay.dart';
 export 'manga_widget.dart';
 export 'manga_widget_list.dart';
+export 'chapter_button.dart';

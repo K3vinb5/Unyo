@@ -6,7 +6,7 @@ import 'package:collection/collection.dart';
 
 const String consumetEndPoint = "https://kevin-is-awesome.mooo.com/consumet";
 
-Future<List<List<String>>> getAnimeConsumetGogoAnimeIds(String query) async{
+Future<List<List<String>>> getAnimeConsumetGogoAnimeIds(String query) async {
   List<String> titles = [];
   List<String> ids = [];
   var url = Uri.parse("$consumetEndPoint/anime/gogoanime/$query?page=1");
@@ -19,14 +19,14 @@ Future<List<List<String>>> getAnimeConsumetGogoAnimeIds(String query) async{
 
   List<dynamic> results = jsonDecode(response.body)["results"];
 
-  for(int i = 0; i < results.length ; i++){
+  for (int i = 0; i < results.length; i++) {
     titles.add(results[i]["title"]);
-    ids.add(results[i]["id"]); //TODO verify
+    ids.add(results[i]["id"]);
   }
   return [titles, ids];
 }
 
-Future<List<List<String>>> getAnimeConsumetZoroIds(String query) async{
+Future<List<List<String>>> getAnimeConsumetZoroIds(String query) async {
   List<String> titles = [];
   List<String> ids = [];
   var url = Uri.parse("$consumetEndPoint/anime/zoro/$query?page=1");
@@ -39,19 +39,17 @@ Future<List<List<String>>> getAnimeConsumetZoroIds(String query) async{
 
   List<dynamic> results = jsonDecode(response.body)["results"];
 
-  for(int i = 0; i < results.length ; i++){
+  for (int i = 0; i < results.length; i++) {
     titles.add(results[i]["title"]);
     ids.add(results[i]["id"]);
   }
   return [titles, ids];
 }
 
-
 //STREAMS
-Future<List<String>> getAnimeConsumetZoroStream(String consumetId, int episode, BuildContext context) async{
-
-  var infoUrl = Uri.parse(
-      "$consumetEndPoint/anime/zoro/info?id=$consumetId");
+Future<List<String>> getAnimeConsumetZoroStream(
+    String consumetId, int episode, BuildContext context) async {
+  var infoUrl = Uri.parse("$consumetEndPoint/anime/zoro/info?id=$consumetId");
   print(infoUrl);
   var infoResponse = await http.get(infoUrl);
 
@@ -60,10 +58,11 @@ Future<List<String>> getAnimeConsumetZoroStream(String consumetId, int episode, 
     //TODO dialog
   }
 
-  String episodeId = jsonDecode(infoResponse.body)["episodes"][episode - 1]["id"];
+  String episodeId =
+      jsonDecode(infoResponse.body)["episodes"][episode - 1]["id"];
 
-  var streamUrl = Uri.parse(
-      "$consumetEndPoint/anime/zoro/watch?episodeId=$episodeId");
+  var streamUrl =
+      Uri.parse("$consumetEndPoint/anime/zoro/watch?episodeId=$episodeId");
   print(streamUrl);
   var streamResponse = await http.get(streamUrl);
 
@@ -74,13 +73,14 @@ Future<List<String>> getAnimeConsumetZoroStream(String consumetId, int episode, 
   List<dynamic> urls = jsonDecode(streamResponse.body)["sources"];
   List<dynamic> captions = jsonDecode(streamResponse.body)["subtitles"];
   int englishCaptions = 0;
-  for (int i = 0; i < captions.length; i++){
-    if (captions[i]["lang"] == "English"){
+  for (int i = 0; i < captions.length; i++) {
+    if (captions[i]["lang"] == "English") {
       englishCaptions = i;
     }
   }
   return [urls[0]["url"], captions[englishCaptions]["url"]];
 }
+
 //
 Future<String> getAnimeConsumetGogoAnimeStream(
     String consumetId, int episode, BuildContext context) async {
@@ -108,12 +108,18 @@ Future<String> getAnimeConsumetGogoAnimeStream(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text("1080p stream not found!", style: TextStyle(color: Colors.white),),
+        title: const Text(
+          "1080p stream not found!",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromARGB(255, 44, 44, 44),
         actions: [
           Column(
             children: [
-              const Text("Please select a new stream quality", style: TextStyle(color: Colors.white),),
+              const Text(
+                "Please select a new stream quality",
+                style: TextStyle(color: Colors.white),
+              ),
               const SizedBox(
                 height: 30,
               ),
@@ -134,7 +140,8 @@ Future<String> getAnimeConsumetGogoAnimeStream(
                         (index, json) {
                           return DropdownMenuEntry(
                             style: const ButtonStyle(
-                              foregroundColor: MaterialStatePropertyAll(Colors.white),
+                              foregroundColor:
+                                  MaterialStatePropertyAll(Colors.white),
                             ),
                             value: index,
                             label: json["quality"],
@@ -195,6 +202,64 @@ Future<String> getAnimeConsumetGogoAnimeStream(
       );
     },
   );
-  //TODO make user choose
   return completer.future; //default
+}
+
+Future<List<List<String>>> getMangaMangaHereIds(String query) async {
+  List<String> titles = [];
+  List<String> ids = [];
+  var url = Uri.parse("$consumetEndPoint/manga/mangahere/$query?page=1");
+  print(url);
+  var response = await http.get(url);
+  if (response.statusCode != 200) {
+    print("ERROR CONSUMET_ID: ${response.body}");
+    return [];
+  }
+
+  List<dynamic> results = jsonDecode(response.body)["results"];
+
+  for (int i = 0; i < results.length; i++) {
+    titles.add(results[i]["title"]);
+    ids.add(results[i]["id"]);
+  }
+
+  return [titles, ids];
+}
+
+Future<List<String>> getMangaMangaHereChapterIds(String mangaId) async{
+  List<String> chapterIds = [];
+  var url =
+      Uri.parse("$consumetEndPoint/manga/mangahere/info?id=$mangaId");
+  print(url);
+  var response = await http.get(url);
+  if (response.statusCode != 200) {
+    print("ERROR CONSUMET_ID: ${response.body}");
+    return [];
+  }
+  List<dynamic> results = jsonDecode(response.body)["chapters"];
+
+  for (var i = 0; i < results.length; i++) {
+    chapterIds.add(results[i]["id"]);
+  }
+  chapterIds = chapterIds.reversed.toList();
+  return chapterIds;
+}
+
+Future<List<String>> getMangaMangaHereChapterPages(String chapterId) async {
+  
+  List<String> pages = [];
+  var url =
+      Uri.parse("$consumetEndPoint/manga/mangahere/read?chapterId=$chapterId");
+  print(url);
+  var response = await http.get(url);
+  if (response.statusCode != 200) {
+    print("ERROR CONSUMET_ID: ${response.body}");
+    return [];
+  }
+  List<dynamic> results = jsonDecode(response.body);
+
+  for (var i = 0; i < results.length; i++) {
+    pages.add(results[i]["img"]);
+  }
+  return pages;
 }
