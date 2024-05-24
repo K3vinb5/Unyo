@@ -16,6 +16,8 @@ class ReadingScreen extends StatefulWidget {
 }
 
 class _ReadingScreenState extends State<ReadingScreen> {
+  final double barHeight = 50;
+
   int currentPage = 0;
   int totalPages = 0;
   late List<String> chapterPages;
@@ -33,6 +35,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
     chapterPages = await getMangaMangaHereChapterPages(widget.chapterId);
     setState(() {
       totalPages = chapterPages.length;
+      //kinda scuffed
       chapterBytes = List.filled(totalPages, null);
     });
     downloadChapterPages();
@@ -47,7 +50,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
       setState(() {
         chapterBytes[i] = bytes;
       });
-      print("Downloaded: $i");
     }
   }
 
@@ -55,6 +57,20 @@ class _ReadingScreenState extends State<ReadingScreen> {
     setState(() {
       currentPageOption = newPageOption;
     });
+  }
+
+  Widget listPages(bool leftToRight, width, height) {
+    switch (currentPageOption) {
+      case 0:
+        return singlePageList(leftToRight, width, height);
+      case 1:
+        // Needs reworking
+        return scrollingList();
+      // case 2:
+      //   break;
+      default:
+        return singlePageList(leftToRight, width, height);
+    }
   }
 
   Widget singlePageList(bool leftToRight, double width, double height) {
@@ -67,7 +83,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
           final position = renderBox.globalToLocal(event.position);
           if (position.dx < MediaQuery.of(context).size.width / 2) {
             // Clicked on the left side
-            print("Left Side of the screen");
             setState(() {
               if (currentPage > 0) {
                 currentPage--;
@@ -75,7 +90,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
             });
           } else {
             // Clicked on the right side
-            print("Right side of the screen");
             setState(() {
               if (currentPage < totalPages) {
                 currentPage++;
@@ -139,7 +153,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
               //TODO temp fixed height
               MangaOptionsBar(
                 width: totalWidth,
-                height: 50,
+                height: barHeight,
                 currentPage: currentPage,
                 totalPages: totalPages,
                 pageOption: currentPageOption,
@@ -148,7 +162,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
               SizedBox(
                 width: totalWidth,
                 height: usableHeight,
-                child: singlePageList(false, totalWidth, usableHeight),
+                child: listPages(false, totalWidth, usableHeight),
               ),
             ],
           ),

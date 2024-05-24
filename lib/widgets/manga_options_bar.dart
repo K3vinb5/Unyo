@@ -30,9 +30,9 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
 
   //TODO check icons
   List<List<dynamic>> pageButtonOptions = const [
-    ["Double Page", Icons.library_books],
-    ["Single Page", Icons.menu_book_rounded],
-    ["Long Strip", Icons.receipt_long],
+    ["Single Page", Icons.menu_book_rounded], // 0
+    ["Long Strip", Icons.receipt_long], // 1
+    ["Double Page", Icons.library_books], // 2
   ];
   late int currentPageOption;
 
