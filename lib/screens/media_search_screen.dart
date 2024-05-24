@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:unyo/api/consumet_api.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
@@ -108,6 +111,23 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
           ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
     }
   }
+
+  void openMangaDetails(MangaModel currentManga, String tag) {
+    var mangaScreen = MangaDetailsScreen(
+      currentManga: currentManga,
+      tag: tag,
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => mangaScreen),
+    )/*.then((_) {
+      if (widget.updateHomeScreenLists != null){
+        widget.updateHomeScreenLists!();
+      }
+    })*/;
+  }
+
+
 
   void openAnime(AnimeModel currentAnime, String tag) {
     var animeScreen = AnimeDetailsScreen(
@@ -272,26 +292,30 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                     runSpacing: -(totalWidth * 0.1),
                     alignment: WrapAlignment.center,
                     children: [
-                      ...searchMediaList.mapIndexed((index, animeModel) {
+                      ...searchMediaList.mapIndexed((index, mediaModel) {
                         double calculatedWidth = adjustedWidth * 0.1;
                         double calculatedHeight = adjustedHeight * 0.28;
                         return Hero(
                           tag: "${"grid-view"}-$index",
                           child: AnimeWidget(
-                            title: animeModel.title,
-                            score: animeModel.averageScore,
-                            coverImage: animeModel.coverImage,
+                            title: mediaModel.title,
+                            score: mediaModel.averageScore,
+                            coverImage: mediaModel.coverImage,
                             onTap: () {
-                              openAnime(animeModel, "${"grid-view"}-$index");
+                              if (widget.type == "ANIME"){
+                                openAnime(mediaModel, "grid-view-$index");
+                              }else{
+                                openMangaDetails(mediaModel, "grid-view-$index");
+                              }
                             },
                             textColor: Colors.white,
                             height: min(max(calculatedHeight, minimumHeight),
                                 maximumHeight),
                             width: min(max(calculatedWidth, minimumWidth),
                                 maximumWidth),
-                            year: animeModel.startDate,
-                            format: animeModel.format,
-                            status: animeModel.status,
+                            year: mediaModel.startDate,
+                            format: mediaModel.format,
+                            status: mediaModel.status,
                           ),
                         );
                       })

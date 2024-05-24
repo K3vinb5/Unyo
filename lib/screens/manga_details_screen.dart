@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
-import 'package:http/http.dart' as http;
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -271,21 +269,28 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   // }
 
   void openManga(String chapterId, int chapterNum, String mangaName) async {
-    List<String> chapterPages = await getMangaMangaHereChapterPages(chapterId);
-    var url = Uri.parse(chapterPages[0]);
-    Map<String, String> headers = {"Referer": "http://www.mangahere.cc/"};
-    var response = await http.get(url, headers: headers);
-    Uint8List bytes = response.bodyBytes;
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Column(
-            children: [Image.memory(bytes)],
-          ),
-        );
-      },
+    // var url = Uri.parse(chapterPages[0]);
+    // Map<String, String> headers = {"Referer": "http://www.mangahere.cc/"};
+    // var response = await http.get(url, headers: headers);
+    // Uint8List bytes = response.bodyBytes;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReadingScreen(
+          chapterId: chapterId,
+        ),
+      ),
     );
+    // showDialog(
+    //   context: context,
+    //   builder: (context) {
+    //     return AlertDialog(
+    //       content: Column(
+    //         children: [Image.memory(bytes)],
+    //       ),
+    //     );
+    //   },
+    // );
   }
 
   void openWrongTitleDialog(BuildContext context) {

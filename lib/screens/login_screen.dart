@@ -1,9 +1,9 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../api/anilist_api_anime.dart';
 import '../widgets/widgets.dart';
 import 'home_screen.dart';
 
@@ -22,14 +22,13 @@ class _LoginPageState extends State<LoginPage> {
   final String redirectUri = 'http://localhost:9999/auth';
   TextEditingController manualLoginController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
     setSharedPreferences();
   }
 
-  void setSharedPreferences() async{
+  void setSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
   }
 
@@ -47,8 +46,41 @@ class _LoginPageState extends State<LoginPage> {
 
   void manualLogin(String code) async {
     accessCode = code;
-    print('Access Code: $accessCode');
-    List<String> codes = await getUserAccessToken(accessCode!);
+    // print('Access Code: $accessCode');
+    print("Manual Login");
+    var url = "https://anilist.co/api/v2/oauth/token";
+    Map<String, dynamic> query = {
+      "grant_type": "authorization_code",
+      "client_id": 17550,
+      "client_secret": "xI8KTZlKm2F3kHXLko1ArQ21bKap4MojgDTk6Ukx",
+      "redirect_uri":
+          "http://localhost:9999/auth", // http://example.com/callback
+      "code": code,
+    };
+    var dio = Dio();
+    var response = await dio.post(
+      url,
+      data: json.encode(query),
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Referer": "https://anilist.co",
+          "Access-Control-Allow-Origin":
+              "*", // Required for CORS support to work
+          "Access-Control-Allow-Credentials":
+              true, // Required for cookies, authorization headers with HTTPS
+        },
+      ),
+    );
+    // print("Response: ${response.data}");
+    Map<String, dynamic> jsonResponse = json.decode(response.data);
+
+    List<String> codes = [
+      jsonResponse["access_token"],
+      jsonResponse["refresh_token"]
+    ];
+
     accessToken = codes[0];
     refreshToken = codes[1];
     widget.updateUserInfo();
@@ -58,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
     goToMainScreen();
   }
 
-  void goToMainScreen(){
+  void goToMainScreen() {
     print("Login Done");
     Navigator.of(context).pop();
   }
@@ -175,6 +207,9 @@ class _LoginPageState extends State<LoginPage> {
                                                 manualLogin(
                                                     manualLoginController.text);
                                                 Navigator.of(context).pop();
+                                                //temp
+                                                print(
+                                                    "Clicked, code: ${manualLoginController.text}");
                                               },
                                               style: const ButtonStyle(
                                                 backgroundColor:

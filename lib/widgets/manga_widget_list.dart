@@ -69,7 +69,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
     }
   }
 
-  void openManga(MangaModel currentManga, String tag) {
+  void openMangaDetails(MangaModel currentManga, String tag) {
     mangaScreen = MangaDetailsScreen(
       currentManga: currentManga,
       tag: tag,
@@ -140,7 +140,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
                             score: mangaModel.averageScore,
                             coverImage: mangaModel.coverImage,
                             onTap: () {
-                              openManga(mangaModel, "${widget.tag}-$index");
+                              openMangaDetails(mangaModel, "${widget.tag}-$index");
                             },
                             textColor: widget.textColor,
                             height: min(max(calculatedHeight, widget.minimumHeight),maximumHeight),
