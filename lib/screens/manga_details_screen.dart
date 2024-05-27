@@ -354,6 +354,9 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                         ),
                       ),
                       onPressed: () {
+                        setState(() {
+                          updateSearch(currentSearch);
+                        });
                         Navigator.of(context).pop();
                       },
                       child: const Text("Confirm"),

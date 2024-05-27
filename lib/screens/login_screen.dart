@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,9 +46,8 @@ class _LoginPageState extends State<LoginPage> {
 
   void manualLogin(String code) async {
     accessCode = code;
-    // print('Access Code: $accessCode');
-    print("Manual Login");
-    var url = "https://anilist.co/api/v2/oauth/token";
+    // var url = "https://anilist.co/api/v2/oauth/token";
+    var url = "https:kevin-is-awesome.mooo.com/unyo/getToken";
     Map<String, dynamic> query = {
       "grant_type": "authorization_code",
       "client_id": 17550,
@@ -57,24 +56,19 @@ class _LoginPageState extends State<LoginPage> {
           "http://localhost:9999/auth", // http://example.com/callback
       "code": code,
     };
-    var dio = Dio();
-    var response = await dio.post(
-      url,
-      data: json.encode(query),
-      options: Options(
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Referer": "https://anilist.co",
-          "Access-Control-Allow-Origin":
-              "*", // Required for CORS support to work
-          "Access-Control-Allow-Credentials":
-              true, // Required for cookies, authorization headers with HTTPS
-        },
-      ),
+    var uri = Uri.parse(url);
+    print("Uri: $uri");
+    var response = await http.post(
+      uri,
+      body: json.encode(query),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Referer": "https://anilist.co",
+      },
     );
-    // print("Response: ${response.data}");
-    Map<String, dynamic> jsonResponse = json.decode(response.data);
+    print("Response: ${response.statusCode}");
+    Map<String, dynamic> jsonResponse = json.decode(response.body);
 
     List<String> codes = [
       jsonResponse["access_token"],
