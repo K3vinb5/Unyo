@@ -117,9 +117,19 @@ class _ReadingScreenState extends State<ReadingScreen> {
   // Widget doublePageList(bool leftToRight) {
   //   return Column(
   //     children: [
-  //
+  //       Row(
+  //         children: [
+  //           ...chapterBytes.mapIndexed((index, element) {
+  //             return 
+  //           })
+  //         ],
+  //       ),
   //     ],
   //   );
+  // }
+
+  // List<Widget> doublePages(bool leftToRight){
+  //   for(int i = 0; i < chapterBytes.length; i++)
   // }
 
   Widget scrollingList() {
