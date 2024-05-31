@@ -114,23 +114,67 @@ class _ReadingScreenState extends State<ReadingScreen> {
     );
   }
 
-  // Widget doublePageList(bool leftToRight) {
-  //   return Column(
-  //     children: [
-  //       Row(
-  //         children: [
-  //           ...chapterBytes.mapIndexed((index, element) {
-  //             return 
-  //           })
-  //         ],
-  //       ),
-  //     ],
-  //   );
-  // }
+  Widget doublePageList(bool leftToRight, double width, double height) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Listener(
+        onPointerDown: (PointerDownEvent event) {
+          final RenderBox renderBox = context.findRenderObject() as RenderBox;
+          final position = renderBox.globalToLocal(event.position);
+          if (position.dx < MediaQuery.of(context).size.width / 2) {
+            // Clicked on the left side
+            setState(() {
+              if (currentPage > 0) {
+                currentPage--;
+              }
+            });
+          } else {
+            // Clicked on the right side
+            setState(() {
+              if (currentPage < totalPages) {
+                currentPage++;
+              }
+            });
+          }
+        },
+        child: Column(
+          children: [
+            chapterBytes[currentPage] != null
+                ? SizedBox(
+                    height: height,
+                    width: width,
+                    child: doublePages(leftToRight),
+                  )
+                : const SizedBox.shrink(),
+          ],
+        ),
+      ),
+    );
+  }
 
-  // List<Widget> doublePages(bool leftToRight){
-  //   for(int i = 0; i < chapterBytes.length; i++)
-  // }
+  Widget doublePages(bool leftToRight) {
+    if (currentPage == chapterBytes.length) {
+      //last chapter page
+      return Image.memory(
+        chapterBytes[currentPage]!,
+        fit: BoxFit.fitHeight,
+      );
+    }
+    //every other page
+    return Row(
+      children: [
+        Image.memory(
+          chapterBytes[currentPage]!,
+          fit: BoxFit.fitHeight,
+        ),
+        Image.memory(
+          chapterBytes[currentPage + 1]!,
+          fit: BoxFit.fitHeight,
+        ),
+      ],
+    );
+  }
 
   Widget scrollingList() {
     return SingleChildScrollView(
@@ -160,7 +204,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              //TODO temp fixed height
               MangaOptionsBar(
                 width: totalWidth,
                 height: barHeight,
