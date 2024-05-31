@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/screens/screens.dart';
+import 'package:unyo/widgets/styled_dropdown_menu.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class AnimeScreen extends StatefulWidget {
@@ -29,6 +31,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
   double totalWidth = 0;
   double totalHeight = 0;
   ScrollController pageScrollController = ScrollController();
+  TextEditingController quickSearchController = TextEditingController();
 
   @override
   void initState() {
@@ -91,7 +94,6 @@ class _AnimeScreenState extends State<AnimeScreen> {
         );
       },
     );
-
   }
 
   void setScrollListener() {
@@ -264,6 +266,29 @@ class _AnimeScreenState extends State<AnimeScreen> {
                         SizedBox(
                           height: totalHeight * 0.3,
                         ),
+                        //Acts as the beginning of screen
+                        AnimatedOpacity(
+                          opacity: bannerInfoVisible ? 1.0 : 0.0,
+                          duration: !bannerInfoVisible
+                              ? const Duration(milliseconds: 300)
+                              : const Duration(milliseconds: 1500),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              StyledDropDownMenu(
+                                width: 400,
+                                controller: quickSearchController,
+                                color: Colors.white,
+                                hintColor: Colors.grey,
+                                label: "Search...",
+                                labelColor: Colors.white,
+                              ),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                            ],
+                          ),
+                        ),
                         AnimeWidgetList(
                           tag: "anime-details-list1",
                           title: "Recently Released",
@@ -305,7 +330,11 @@ class _AnimeScreenState extends State<AnimeScreen> {
                         AnimeButton(
                           text: "Advanced Search",
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const MediaSearchScreen(type: "ANIME",),));
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const MediaSearchScreen(
+                                type: "ANIME",
+                              ),
+                            ));
                           },
                           width: adjustedWidth,
                           height: adjustedHeight,

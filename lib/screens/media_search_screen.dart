@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'package:http/http.dart' as http;
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:unyo/api/consumet_api.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';

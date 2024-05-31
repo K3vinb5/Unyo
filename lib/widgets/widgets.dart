@@ -15,3 +15,4 @@ export 'manga_widget.dart';
 export 'manga_widget_list.dart';
 export 'chapter_button.dart';
 export 'manga_options_bar.dart';
+export 'styled_dropdown_menu.dart';

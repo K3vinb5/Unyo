@@ -9,7 +9,9 @@ class StyledTextField extends StatelessWidget {
       required this.color,
       required this.hintColor,
       this.label,
-      required this.hint});
+      this.labelColor,
+      required this.hint
+      });
 
   final double width;
   final TextEditingController controller;
@@ -17,6 +19,7 @@ class StyledTextField extends StatelessWidget {
   final Color color;
   final Color hintColor;
   final String? label;
+  final Color? labelColor;
   final String hint;
 
   @override
@@ -42,6 +45,8 @@ class StyledTextField extends StatelessWidget {
           ),
           hintText: hint,
           labelText: label,
+          // labelStyle: const TextStyle(color: Colors.white),
+          floatingLabelStyle: TextStyle(color: labelColor ?? Colors.white), 
           hintStyle: TextStyle(
             color: hintColor,
           ),
