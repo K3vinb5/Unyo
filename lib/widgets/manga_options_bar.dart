@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class MangaOptionsBar extends StatefulWidget {
   const MangaOptionsBar({
@@ -28,13 +29,19 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
   late int currentPage;
   late int totalPages;
 
-  //TODO check icons
+  //TODO replace icons
   List<List<dynamic>> pageButtonOptions = const [
     ["Single Page", Icons.menu_book_rounded], // 0
-    ["Long Strip", Icons.receipt_long], // 1
-    ["Double Page", Icons.library_books], // 2
+    ["Double Page", Icons.library_books], // 1
+    ["Long Strip", Icons.receipt_long], // 2
   ];
   late int currentPageOption;
+  //TODO finish implementing
+  List<String> fittingButtonOptions = const [
+    "Fit Height",
+    "Fit Width",
+  ];
+  int currentFittingOption = 0;
 
   @override
   void initState() {
@@ -60,58 +67,120 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: widget.width,
       height: widget.height,
-      decoration: const BoxDecoration(color: Colors.grey),
-      child: Row(
+      child: Column(
         children: [
-          //Go Back
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(Icons.arrow_back),
-          ),
-          // Page counter
           Row(
             children: [
-              IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_left)),
-              const SizedBox(
-                width: 10,
-              ),
-              Text("$currentPage / $totalPages"),
-              const SizedBox(
-                width: 10,
-              ),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_right)),
-            ],
-          ),
-          // Seperator
-          const SizedBox(
-            width: 10,
-          ),
-          // PageButton
-          Row(
-            children: [
-              ElevatedButton(
+              //Go Back
+              IconButton(
                 onPressed: () {
-                  setState(() {
-                    currentPageOption++;
-                    if (currentPageOption > 2) {
-                      currentPageOption = 0;
-                    }
-                    widget.setNewPageOption(currentPageOption);
-                  });
+                  Navigator.of(context).pop();
                 },
-                child: Row(
-                  children: [
-                    Text("${pageButtonOptions[currentPageOption][0]}  "),
-                    Icon(pageButtonOptions[currentPageOption][1]),
-                  ],
-                ),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+              ),
+              // Page counter
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.arrow_left,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    "$currentPage / ${totalPages - 1}",
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.arrow_right, color: Colors.white),
+                  ),
+                ],
+              ),
+              // Seperator
+              const SizedBox(
+                width: 10,
+              ),
+              // PageButton
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        currentPageOption++;
+                        if (currentPageOption > 2) {
+                          currentPageOption = 0;
+                        }
+                        widget.setNewPageOption(currentPageOption);
+                      });
+                    },
+                    style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                        Color.fromARGB(255, 37, 37, 37),
+                      ),
+                      foregroundColor: MaterialStatePropertyAll(
+                        Colors.white,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Text("${pageButtonOptions[currentPageOption][0]}  "),
+                        Icon(pageButtonOptions[currentPageOption][1]),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        currentFittingOption++;
+                        if (currentFittingOption > 1) {
+                          currentFittingOption = 0;
+                        }
+                        // widget.setNewPageOption(currentPageOption);
+                      });
+                    },
+                    style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                        Color.fromARGB(255, 37, 37, 37),
+                      ),
+                      foregroundColor: MaterialStatePropertyAll(
+                        Colors.white,
+                      ),
+                    ),
+                    child: Row(
+                      // mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text("${fittingButtonOptions[currentFittingOption]}  "),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
+          ),
+          const Divider(
+            color: Colors.grey,
+            height: 5,
+            thickness: 2,
+            indent: 50,
+            endIndent: 50,
           ),
         ],
       ),

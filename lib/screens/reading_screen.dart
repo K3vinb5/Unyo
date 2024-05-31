@@ -41,6 +41,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
     downloadChapterPages();
   }
 
+  //Thos should not be moved to the consumet file since you want it to show pages as soon as it downloads them one at a time, instead of alll at once
   void downloadChapterPages() async {
     Map<String, String> headers = {"Referer": "http://www.mangahere.cc/"};
     for (int i = 0; i < totalPages; i++) {
@@ -51,6 +52,14 @@ class _ReadingScreenState extends State<ReadingScreen> {
         chapterBytes[i] = bytes;
       });
     }
+    //on first page download
+    // Image chapterImage = Image.memory(chapterBytes[0]!);
+    // if (chapterImage. > MediaQuery.of(context).size.height) {
+    //   print("bigger than height changinf to longsptrp viewing option");
+    //   setNewPageOption(2);
+    // } else {
+    //   print("smaller than height keeping current viewing option");
+    // }
   }
 
   void setNewPageOption(int newPageOption) {
@@ -59,21 +68,25 @@ class _ReadingScreenState extends State<ReadingScreen> {
     });
   }
 
+  ///Allows user to show the type of schema they want for displaying pages
   Widget listPages(bool leftToRight, width, height) {
     switch (currentPageOption) {
       case 0:
         return singlePageList(leftToRight, width, height);
       case 1:
+        return doublePageList(leftToRight, width, height);
+      case 2:
         // Needs reworking
         return scrollingList();
-      // case 2:
-      //   break;
       default:
         return singlePageList(leftToRight, width, height);
     }
   }
 
   Widget singlePageList(bool leftToRight, double width, double height) {
+    if (currentPage == totalPages - 1) {
+      currentPage--;
+    }
     return SizedBox(
       width: width,
       height: height,
@@ -91,7 +104,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
           } else {
             // Clicked on the right side
             setState(() {
-              if (currentPage < totalPages) {
+              if (currentPage < totalPages - 1) {
                 currentPage++;
               }
             });
@@ -125,14 +138,16 @@ class _ReadingScreenState extends State<ReadingScreen> {
           if (position.dx < MediaQuery.of(context).size.width / 2) {
             // Clicked on the left side
             setState(() {
-              if (currentPage > 0) {
-                currentPage--;
+              if (currentPage > 1) {
+                currentPage -= 2;
               }
             });
           } else {
             // Clicked on the right side
             setState(() {
-              if (currentPage < totalPages) {
+              if (currentPage < totalPages - 3) {
+                currentPage += 2;
+              } else if (currentPage < totalPages - 2) {
                 currentPage++;
               }
             });
@@ -144,7 +159,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 ? SizedBox(
                     height: height,
                     width: width,
-                    child: doublePages(leftToRight),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: doublePages(leftToRight),
+                      ),
+                    ),
                   )
                 : const SizedBox.shrink(),
           ],
@@ -163,10 +183,15 @@ class _ReadingScreenState extends State<ReadingScreen> {
     }
     //every other page
     return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.memory(
           chapterBytes[currentPage]!,
           fit: BoxFit.fitHeight,
+        ),
+        const SizedBox(
+          width: 5,
         ),
         Image.memory(
           chapterBytes[currentPage + 1]!,

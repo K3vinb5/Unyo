@@ -153,8 +153,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                     backgroundColor: MaterialStatePropertyAll(
                       Color.fromARGB(255, 37, 37, 37),
                     ),
-                    minimumSize: MaterialStatePropertyAll(
-                        Magnifier.kDefaultMagnifierSize),
                     foregroundColor: MaterialStatePropertyAll(
                       Colors.white,
                     ),
@@ -172,8 +170,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                     backgroundColor: MaterialStatePropertyAll(
                       Color.fromARGB(255, 37, 37, 37),
                     ),
-                    minimumSize: MaterialStatePropertyAll(
-                        Magnifier.kDefaultMagnifierSize),
                     foregroundColor: MaterialStatePropertyAll(
                       Colors.white,
                     ),
@@ -309,8 +305,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         backgroundColor: MaterialStatePropertyAll(
                           Color.fromARGB(255, 37, 37, 37),
                         ),
-                        minimumSize: MaterialStatePropertyAll(
-                            Magnifier.kDefaultMagnifierSize),
                         foregroundColor: MaterialStatePropertyAll(
                           Colors.white,
                         ),
@@ -553,8 +547,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   backgroundColor: MaterialStatePropertyAll(
                                     Color.fromARGB(255, 37, 37, 37),
                                   ),
-                                  minimumSize: MaterialStatePropertyAll(
-                                      Magnifier.kDefaultMagnifierSize),
                                   foregroundColor: MaterialStatePropertyAll(
                                     Colors.white,
                                   ),
@@ -580,8 +572,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   backgroundColor: MaterialStatePropertyAll(
                                     Color.fromARGB(255, 37, 37, 37),
                                   ),
-                                  minimumSize: MaterialStatePropertyAll(
-                                      Magnifier.kDefaultMagnifierSize),
                                   foregroundColor: MaterialStatePropertyAll(
                                     Colors.white,
                                   ),
