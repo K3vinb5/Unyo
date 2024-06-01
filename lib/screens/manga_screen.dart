@@ -29,6 +29,7 @@ class _MangaScreenState extends State<MangaScreen> {
   double totalWidth = 0;
   double totalHeight = 0;
   ScrollController pageScrollController = ScrollController();
+  TextEditingController quickSearchController = TextEditingController();
 
   @override
   void initState() {
@@ -100,13 +101,12 @@ class _MangaScreenState extends State<MangaScreen> {
   void initMangaList() async {
     var newTrendingList = await getMangaModelListTrending(1, 20, 0);
 
-    List<MangaModel> newSeasonPopularList = 
-    await getMangaModelListYearlyPopular(1, DateTime.now().year, 0, 20);
+    List<MangaModel> newSeasonPopularList =
+        await getMangaModelListYearlyPopular(1, DateTime.now().year, 0, 20);
 
     // var newRecentlyReleaseList = await getMangaModelListRecentlyReleased(1, 20, 0);
 
-    List<MangaModel> newPageBannerMangaList =
-        List.from(newSeasonPopularList);
+    List<MangaModel> newPageBannerMangaList = List.from(newSeasonPopularList);
 
     newPageBannerMangaList
         .removeWhere((mangaModel) => mangaModel.bannerImage == null);
@@ -272,6 +272,29 @@ class _MangaScreenState extends State<MangaScreen> {
                         SizedBox(
                           height: totalHeight * 0.3,
                         ),
+                        AnimatedOpacity(
+                          opacity: bannerInfoVisible ? 1.0 : 0.0,
+                          duration: !bannerInfoVisible
+                              ? const Duration(milliseconds: 300)
+                              : const Duration(milliseconds: 1500),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SearchingMangaMenu(
+                                width: 400,
+                                controller: quickSearchController,
+                                color: Colors.white,
+                                hintColor: Colors.grey,
+                                label: "Search...",
+                                labelColor: Colors.white,
+                              ),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+
                         /*MangaWidgetList(
                           tag: "manga-details-list1",
                           title: "Recently Released",
@@ -314,7 +337,9 @@ class _MangaScreenState extends State<MangaScreen> {
                           text: "Advanced Search",
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const MediaSearchScreen(type: "MANGA",),
+                              builder: (context) => const MediaSearchScreen(
+                                type: "MANGA",
+                              ),
                             ));
                           },
                           width: adjustedWidth,

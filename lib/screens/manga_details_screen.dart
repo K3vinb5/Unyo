@@ -225,54 +225,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       );
     }
   }
-//TODO fix for manga
-  // void openManga(String consumetId, int animeEpisode, String animeName) async {
-  //   late String consumetStream;
-  //   if (currentSource == 0) {
-  //     consumetStream = await getAnimeConsumetGogoAnimeStream(
-  //         consumetId, animeEpisode, context);
-  //     videoScreen = VideoScreen(
-  //       stream: consumetStream,
-  //       updateEntry: () {
-  //         updateEntry(animeEpisode);
-  //       },
-  //       title: "$animeName, Episode $animeEpisode",
-  //     );
-  //   } else if (currentSource == 1) {
-  //     List<String> streamCaption =
-  //         await getAnimeConsumetZoroStream(consumetId, animeEpisode, context);
-  //
-  //     consumetStream = streamCaption[0];
-  //     videoScreen = VideoScreen(
-  //       stream: consumetStream,
-  //       captions: streamCaption[1],
-  //       updateEntry: () {
-  //         updateEntry(animeEpisode);
-  //       },
-  //       title: "$animeName, Episode $animeEpisode",
-  //     );
-  //   } else {
-  //     consumetStream = await getAnimeConsumetGogoAnimeStream(
-  //         consumetId, animeEpisode, context);
-  //     videoScreen = VideoScreen(
-  //       stream: consumetStream,
-  //       updateEntry: () {
-  //         updateEntry(animeEpisode);
-  //       },
-  //       title: "$animeName, Episode $animeEpisode",
-  //     );
-  //   }
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => videoScreen),
-  //   );
-  // }
 
   void openManga(String chapterId, int chapterNum, String mangaName) async {
-    // var url = Uri.parse(chapterPages[0]);
-    // Map<String, String> headers = {"Referer": "http://www.mangahere.cc/"};
-    // var response = await http.get(url, headers: headers);
-    // Uint8List bytes = response.bodyBytes;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -281,16 +235,6 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
         ),
       ),
     );
-    // showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return AlertDialog(
-    //       content: Column(
-    //         children: [Image.memory(bytes)],
-    //       ),
-    //     );
-    //   },
-    // );
   }
 
   void openWrongTitleDialog(BuildContext context) {

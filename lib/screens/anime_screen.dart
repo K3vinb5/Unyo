@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/screens/screens.dart';
-import 'package:unyo/widgets/styled_dropdown_menu.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class AnimeScreen extends StatefulWidget {
@@ -275,7 +273,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              StyledDropDownMenu(
+                              SearchingAnimeMenu(
                                 width: 400,
                                 controller: quickSearchController,
                                 color: Colors.white,

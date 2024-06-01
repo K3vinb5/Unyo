@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
 
-class StyledDropDownMenu extends StatefulWidget {
-  const StyledDropDownMenu({
+class SearchingAnimeMenu extends StatefulWidget {
+  const SearchingAnimeMenu({
     super.key,
     required this.width,
     required this.controller,
@@ -24,10 +23,10 @@ class StyledDropDownMenu extends StatefulWidget {
   final Color? labelColor;
 
   @override
-  State<StyledDropDownMenu> createState() => _StyledDropDownMenuState();
+  State<SearchingAnimeMenu> createState() => _SearchingAnimeMenuState();
 }
 
-class _StyledDropDownMenuState extends State<StyledDropDownMenu> {
+class _SearchingAnimeMenuState extends State<SearchingAnimeMenu> {
   Timer searchTimer = Timer(const Duration(milliseconds: 500), () {});
   List<AnimeModel> listAnimeModels = [];
   List<DropdownMenuEntry<AnimeModel>> listEntries = [
