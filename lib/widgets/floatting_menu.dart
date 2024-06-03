@@ -3,10 +3,10 @@ import 'package:unyo/widgets/widgets.dart';
 import 'package:collection/collection.dart';
 
 class FloattingMenu extends StatefulWidget {
-  const FloattingMenu({super.key, required this.setScreen});
+  const FloattingMenu({super.key/*, required this.setScreen*/, required this.height});
 
-  final void Function(BuildContext, int) setScreen;
-
+  // final void Function(BuildContext, int) setScreen;
+  final double height;
   @override
   State<FloattingMenu> createState() => _FloattingMenuState();
 }
@@ -30,7 +30,7 @@ class _FloattingMenuState extends State<FloattingMenu> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32.0),
+      padding: EdgeInsets.only(bottom: /*32.0*/ 0.0, top: widget.height),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.25,
         height: 50,
@@ -48,7 +48,7 @@ class _FloattingMenuState extends State<FloattingMenu> {
                 onTap: () {
                   setState(() {
                     updateMenuItems(index);
-                    widget.setScreen(context, index);
+                    // widget.setScreen(context, index);
                   });
                 },
                 textOrIcon: element,

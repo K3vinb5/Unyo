@@ -79,8 +79,9 @@ Future<List<MangaModel>> getMangaModelListYearlyPopular(
     body: json.encode(query),
   );
   if (response.statusCode == 500) {
-    if(attempt < 5){
-      List<MangaModel> returnList = await getMangaModelListRecentlyReleased(page, year, attempt++);
+    if (attempt < 5) {
+      List<MangaModel> returnList =
+          await getMangaModelListRecentlyReleased(page, year, attempt++);
       return returnList;
     }
     return [];
@@ -111,8 +112,6 @@ Future<List<MangaModel>> getMangaModelListYearlyPopular(
     return list;
   }
 }
-
-
 
 //TODO fix for mangas
 Future<List<MangaModel>> getMangaModelListRecentlyReleased(
@@ -170,6 +169,66 @@ Future<List<MangaModel>> getMangaModelListRecentlyReleased(
     return list;
   }
 }
+
+Future<List<MangaModel>> getUserMangaLists(
+    int userId, String listName, int attempt) async {
+  var url = Uri.parse(anilistEndpoint);
+  Map<String, dynamic> query = {
+    "query":
+        "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
+    "variables": {
+      "userId": /*859862*/ userId,
+      "type": "MANGA",
+    }
+  };
+  var response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: json.encode(query),
+  );
+  if (response.statusCode == 500) {
+    print(response.body);
+    if (attempt < 5) {
+      List<MangaModel> returnList =
+          await getUserMangaLists(userId, listName, attempt++);
+      return returnList;
+    }
+    return [];
+  }
+  List<MangaModel> animeModelList = [];
+  Map<String, dynamic> jsonResponse = json.decode(response.body);
+  List<dynamic> animeLists =
+      jsonResponse["data"]["MediaListCollection"]["lists"];
+  for (int i = 0; i < animeLists.length; i++) {
+    if (animeLists[i]["name"] == listName) {
+      List<dynamic> wantedList = animeLists[i]["entries"];
+      for (int i = 0; i < wantedList.length; i++) {
+        animeModelList.add(
+          MangaModel(
+            id: wantedList[i]["media"]["id"],
+            title: wantedList[i]["media"]["title"]["userPreferred"],
+            coverImage: wantedList[i]["media"]["coverImage"]["large"],
+            bannerImage: wantedList[i]["media"]["bannerImage"],
+            startDate:
+                "${wantedList[i]["media"]["startDate"]["day"]}/${wantedList[i]["media"]["startDate"]["month"]}/${wantedList[i]["media"]["startDate"]["year"]}",
+            endDate: "",
+            //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
+            type: wantedList[i]["media"]["type"],
+            description: wantedList[i]["media"]["description"],
+            status: wantedList[i]["media"]["status"],
+            averageScore: wantedList[i]["media"]["averageScore"],
+            chapters: wantedList[i]["media"]["chapters"],
+            duration: wantedList[i]["media"]["episodes"],
+            format: wantedList[i]["media"]["format"],
+          ),
+        );
+      }
+      break;
+    }
+  }
+  return animeModelList;
+}
+
 // Future<int> getMangaCurrentChapter(int mediaId) async{
 //   var url = Uri.parse(anilistEndpoint);
 //   Map<String, dynamic> query = {
@@ -189,7 +248,8 @@ Future<List<MangaModel>> getMangaModelListRecentlyReleased(
 Future<UserMediaModel> getUserMangaInfo(int mediaId, int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
-    "query": "query{ Media(id: $mediaId){ mediaListEntry { score progress repeat priority status startedAt{day month year} completedAt{day month year} } } }",
+    "query":
+        "query{ Media(id: $mediaId){ mediaListEntry { score progress repeat priority status startedAt{day month year} completedAt{day month year} } } }",
   };
   var response = await http.post(
     url,
@@ -199,13 +259,13 @@ Future<UserMediaModel> getUserMangaInfo(int mediaId, int attempt) async {
     },
     body: json.encode(query),
   );
-  if (response.statusCode == 500){
-    if(attempt < 5){
+  if (response.statusCode == 500) {
+    if (attempt < 5) {
       return getUserMangaInfo(mediaId, attempt++);
     }
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
-  if (jsonResponse["data"]["Media"]["mediaListEntry"] == null){
+  if (jsonResponse["data"]["Media"]["mediaListEntry"] == null) {
     return UserMediaModel(
       score: 0,
       progress: 0,
@@ -224,17 +284,20 @@ Future<UserMediaModel> getUserMangaInfo(int mediaId, int attempt) async {
     repeat: mediaListEntry["repeat"],
     priority: mediaListEntry["priority"],
     status: mediaListEntry["status"],
-    startDate: "${mediaListEntry["startedAt"]["day"]}/${mediaListEntry["startedAt"]["month"]}/${mediaListEntry["startedAt"]["year"]}",
-    endDate: "${mediaListEntry["completedAt"]["day"]}/${mediaListEntry["completedAt"]["month"]}/${mediaListEntry["completedAt"]["year"]}",
+    startDate:
+        "${mediaListEntry["startedAt"]["day"]}/${mediaListEntry["startedAt"]["month"]}/${mediaListEntry["startedAt"]["year"]}",
+    endDate:
+        "${mediaListEntry["completedAt"]["day"]}/${mediaListEntry["completedAt"]["month"]}/${mediaListEntry["completedAt"]["year"]}",
   );
 }
-void deleteUserManga(int mediaId) async{
+
+void deleteUserManga(int mediaId) async {
   var url = Uri.parse(anilistEndpoint);
 
   Map<String, dynamic> query1 = {
     "query": "query(\$mediaId:Int){ MediaList(mediaId:\$mediaId){ id } }",
-    "variables" : {
-      "mediaId" : mediaId,
+    "variables": {
+      "mediaId": mediaId,
     },
   };
   var response1 = await http.post(
@@ -249,9 +312,10 @@ void deleteUserManga(int mediaId) async{
   int entryId = jsonDecode(response1.body)["data"]["MediaList"]["id"];
 
   Map<String, dynamic> query = {
-    "query": "mutation (\$entryId: Int) {DeleteMediaListEntry(id: \$entryId){ deleted }}",
-    "variables" : {
-      "entryId" : entryId,
+    "query":
+        "mutation (\$entryId: Int) {DeleteMediaListEntry(id: \$entryId){ deleted }}",
+    "variables": {
+      "entryId": entryId,
     },
   };
   var response = await http.post(
@@ -268,14 +332,23 @@ void deleteUserManga(int mediaId) async{
 void setUserMangaInfo(int mediaId, Map<String, String> receivedQuery) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
-    "query": "mutation (\$mediaId: Int, \$status: MediaListStatus, \$score: Float, \$progress: Int, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) { SaveMediaListEntry(mediaId: \$mediaId, status: \$status, score: \$score, progress: \$progress, startedAt: \$startedAt, completedAt: \$completedAt) { mediaId status score progress startedAt { year month day } completedAt { year month day } } } ",
-    "variables" : {
-      "mediaId" : mediaId,
-      "status" : receivedQuery["status"],
-      "score" : double.parse(receivedQuery["score"]!),
-      "progress" : int.parse(receivedQuery["progress"]!),
-      "startedAt" : {"day" : receivedQuery["startDateDay"], "month": receivedQuery["startDateMonth"], "year" : receivedQuery["startDateYear"]},
-      "completedAt" : {"day" : receivedQuery["endDateDay"], "month" : receivedQuery["endDateMonth"], "year" : receivedQuery["endDateYear"]},
+    "query":
+        "mutation (\$mediaId: Int, \$status: MediaListStatus, \$score: Float, \$progress: Int, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) { SaveMediaListEntry(mediaId: \$mediaId, status: \$status, score: \$score, progress: \$progress, startedAt: \$startedAt, completedAt: \$completedAt) { mediaId status score progress startedAt { year month day } completedAt { year month day } } } ",
+    "variables": {
+      "mediaId": mediaId,
+      "status": receivedQuery["status"],
+      "score": double.parse(receivedQuery["score"]!),
+      "progress": int.parse(receivedQuery["progress"]!),
+      "startedAt": {
+        "day": receivedQuery["startDateDay"],
+        "month": receivedQuery["startDateMonth"],
+        "year": receivedQuery["startDateYear"]
+      },
+      "completedAt": {
+        "day": receivedQuery["endDateDay"],
+        "month": receivedQuery["endDateMonth"],
+        "year": receivedQuery["endDateYear"]
+      },
     },
   };
   var response = await http.post(
@@ -341,7 +414,7 @@ Future<List<MangaModel>> getMangaModelListSearch(String search, String sort,
       ));
     }
     print(list.length);
-    if ((sort != "Select Sorting")){
+    if ((sort != "Select Sorting")) {
       return list.reversed.toList();
     }
     return list;

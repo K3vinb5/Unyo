@@ -1,4 +1,3 @@
-import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -53,7 +52,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
         alignment: Alignment.bottomCenter,
         children: [
           widget.navigationShell,
-          if (menu) FloattingMenu(setScreen: setScreen),
+          // if (menu) FloattingMenu(setScreen: setScreen),
         ],
       ),
     );

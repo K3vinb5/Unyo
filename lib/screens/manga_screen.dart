@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
+import 'package:unyo/screens/home_screen.dart';
 
 class MangaScreen extends StatefulWidget {
   const MangaScreen({super.key});
@@ -245,6 +246,9 @@ class _MangaScreenState extends State<MangaScreen> {
                           alignment: Alignment.topRight,
                           child: InkWell(
                             onTap: () {
+                              if (updateHomeScreenLists != null) {
+                                updateHomeScreenLists!();
+                              }
                               goTo(1);
                             },
                             child: const Padding(

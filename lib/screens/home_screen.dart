@@ -9,7 +9,8 @@ import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:unyo/screens/login_screen.dart';
 import 'package:unyo/screens/scaffold_screen.dart';
-import '../api/anilist_api_anime.dart';
+import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
 
@@ -17,6 +18,8 @@ String? accessToken;
 String? refreshToken;
 String? accessCode;
 bool receivedValid = false;
+
+void Function()? updateHomeScreenLists;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,8 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late SharedPreferences prefs;
   late HttpServer server;
   List<AnimeModel>? watchingList;
-  List<AnimeModel>? planningList;
-  List<AnimeModel>? pausedList;
+  List<MangaModel>? readingList;
   double adjustedWidth = 0;
   double adjustedHeight = 0;
   double totalWidth = 0;
@@ -65,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Start the local web server
     server = await shelfio.serve(handler, 'localhost', 9999);
-    print('Local server running on port ${server.port}');
+    // print('Local server running on port ${server.port}');
   }
 
   void setSharedPreferences() async {
@@ -95,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     setSharedPreferences();
+    updateHomeScreenLists = updateUserLists;
   }
 
   void getUserInfo() async {
@@ -115,30 +118,24 @@ class _HomeScreenState extends State<HomeScreen> {
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
     List<AnimeModel> newWatchingAnimeList =
         await getUserAnimeLists(userId!, "Watching", 0);
-    List<AnimeModel> newPlanningAnimeList =
-        await getUserAnimeLists(userId!, "Planning", 0);
-    List<AnimeModel> newPausedAnimeList =
-        await getUserAnimeLists(userId!, "Paused", 0);
+    List<MangaModel> newReadingMangaList =
+        await getUserMangaLists(userId!, "Reading", 0);
     setState(() {
       bannerImageUrl = newbannerUrl;
       avatarImageUrl = newavatarUrl;
       watchingList = newWatchingAnimeList;
-      planningList = newPlanningAnimeList;
-      pausedList = newPausedAnimeList;
+      readingList = newReadingMangaList;
     });
   }
 
   void updateUserLists() async {
     List<AnimeModel> newWatchingAnimeList =
         await getUserAnimeLists(userId!, "Watching", 0);
-    List<AnimeModel> newPlanningAnimeList =
-        await getUserAnimeLists(userId!, "Planning", 0);
-    List<AnimeModel> newPausedAnimeList =
-        await getUserAnimeLists(userId!, "Paused", 0);
+    List<MangaModel> newReadingMangaList =
+        await getUserMangaLists(userId!, "Reading", 0);
     setState(() {
       watchingList = newWatchingAnimeList;
-      planningList = newPlanningAnimeList;
-      pausedList = newPausedAnimeList;
+      readingList = newReadingMangaList;
     });
   }
 
@@ -304,15 +301,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           .clear();
                                                                       setState(
                                                                           () {
+                                                                        //TODO updateLists on logout, maybe extract method
                                                                         bannerImageUrl =
                                                                             null;
                                                                         avatarImageUrl =
                                                                             null;
                                                                         watchingList =
                                                                             null;
-                                                                        planningList =
-                                                                            null;
-                                                                        pausedList =
+                                                                        readingList =
                                                                             null;
                                                                         userName =
                                                                             null;
@@ -425,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     )
                   : Padding(
-                      padding: EdgeInsets.only(top: totalHeight * 0.2),
+                      padding: EdgeInsets.only(top: totalHeight * 0.25),
                       child: SingleChildScrollView(
                         scrollDirection: Axis.vertical,
                         child: Column(
@@ -439,6 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       AnimeButton(
                                         text: "Animes",
                                         onTap: () {
+                                          //TODO find another way to updateUsersLists
                                           /*Navigator.pushNamed(
                                   context, "animeScreen")
                                   .then((_) {
@@ -449,6 +446,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: adjustedWidth,
                                         height: adjustedHeight,
                                       ),
+                                      AnimeButton(
+                                          text: "User Stats",
+                                          onTap: () {},
+                                          width: adjustedWidth,
+                                          height: adjustedHeight),
                                       AnimeButton(
                                         text: "Mangas",
                                         onTap: () {
@@ -465,6 +467,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold),
                                   ),
+                            //NOTE pageStart
+                            // FloattingMenu(
+                            // height: totalHeight * 0.1,
+                            // ),
+                            const SizedBox(
+                              height: 30,
+                            ),
                             watchingList != null
                                 ? AnimeWidgetList(
                                     tag: "home-details-list1",
@@ -475,33 +484,49 @@ class _HomeScreenState extends State<HomeScreen> {
                                     updateHomeScreenLists: updateUserLists,
                                     width: adjustedWidth,
                                     height: adjustedHeight,
+                                    verticalPadding: 30,
                                   )
                                 : const SizedBox(),
-                            planningList != null
-                                ? AnimeWidgetList(
+                            readingList != null
+                                ? MangaWidgetList(
                                     tag: "home-details-list2",
-                                    title:
-                                        "Why don't you see what you planned! :P",
-                                    animeList: planningList!,
+                                    title: "Continue Reading",
+                                    mangaList: readingList!,
                                     textColor: Colors.white,
                                     loadMore: false,
                                     updateHomeScreenLists: updateUserLists,
                                     width: adjustedWidth,
                                     height: adjustedHeight,
+                                    verticalPadding: 30,
                                   )
                                 : const SizedBox(),
-                            pausedList != null
-                                ? AnimeWidgetList(
-                                    tag: "home-details-list3",
-                                    title: "Why don't you resume your animes!",
-                                    animeList: pausedList!,
-                                    textColor: Colors.white,
-                                    loadMore: false,
-                                    updateHomeScreenLists: updateUserLists,
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                AnimeButton(
+                                    text: "Anime List",
+                                    onTap: () {},
                                     width: adjustedWidth,
-                                    height: adjustedHeight,
-                                  )
-                                : const SizedBox(),
+                                    height: adjustedHeight),
+                                AnimeButton(
+                                    text: "Calendar",
+                                    onTap: () {},
+                                    width: adjustedWidth,
+                                    height: adjustedHeight),
+                                AnimeButton(
+                                    text: "Manga List",
+                                    onTap: () {},
+                                    width: adjustedWidth,
+                                    height: adjustedHeight),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 55,
+                            ),
+                            //NOTE pageEnd
                           ],
                         ),
                       ),

@@ -63,7 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/linux/x64/release/debian/unyo_0.2.0_amd64.deb
+          files: build/linux/x64/release/debian/unyo_${{github.ref_name}}_amd64.deb
 
   build-and-release-windows:
     runs-on: windows-latest

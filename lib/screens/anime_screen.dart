@@ -5,6 +5,7 @@ import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
+import 'package:unyo/screens/home_screen.dart';
 
 class AnimeScreen extends StatefulWidget {
   const AnimeScreen({super.key});
@@ -237,6 +238,9 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           alignment: Alignment.topRight,
                           child: InkWell(
                             onTap: () {
+                              if (updateHomeScreenLists != null) {
+                                updateHomeScreenLists!();
+                              }
                               goTo(1);
                             },
                             child: const Padding(

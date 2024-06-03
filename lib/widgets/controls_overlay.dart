@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class ControlsOverlay extends StatefulWidget {
-  const ControlsOverlay({
+  const ControlsOverlay({super.key, 
     required this.controller,
     required this.onTap,
     required this.pausePeer,

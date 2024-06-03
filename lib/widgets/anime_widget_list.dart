@@ -18,6 +18,8 @@ class AnimeWidgetList extends StatefulWidget {
       required this.height,
       this.updateHomeScreenLists,
       this.loadMoreFunction,
+      this.verticalPadding,
+      this.horizontalPadding,
       });
 
   final String title;
@@ -32,7 +34,8 @@ class AnimeWidgetList extends StatefulWidget {
   final double minimumWidth = 124.08;
   final double minimumHeight = 195.44;
   final double minimumListHeight = 244.3;
-
+  final double? verticalPadding;
+  final double? horizontalPadding;
 
 
   @override
@@ -97,7 +100,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
           calculatedListHeight = widget.height * 0.35;
 
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
+            padding: EdgeInsets.symmetric(vertical: widget.verticalPadding ?? 50, horizontal: widget.horizontalPadding ?? 10),
             child: Column(
               children: [
                 Row(

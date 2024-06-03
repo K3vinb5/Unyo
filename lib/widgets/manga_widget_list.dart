@@ -6,18 +6,20 @@ import 'package:unyo/widgets/widgets.dart';
 import 'package:collection/collection.dart';
 
 class MangaWidgetList extends StatefulWidget {
-  const MangaWidgetList(
-      {super.key,
-      required this.title,
-      required this.mangaList,
-      required this.textColor,
-      required this.loadMore,
-      required this.tag,
-      required this.width,
-      required this.height,
-      this.updateHomeScreenLists,
-      this.loadMoreFunction,
-      });
+  const MangaWidgetList({
+    super.key,
+    required this.title,
+    required this.mangaList,
+    required this.textColor,
+    required this.loadMore,
+    required this.tag,
+    required this.width,
+    required this.height,
+    this.updateHomeScreenLists,
+    this.loadMoreFunction,
+    this.verticalPadding,
+    this.horizontalPadding,
+  });
 
   final String title;
   final List<MangaModel> mangaList;
@@ -28,11 +30,11 @@ class MangaWidgetList extends StatefulWidget {
   final void Function()? updateHomeScreenLists;
   final double width;
   final double height;
+  final double? verticalPadding;
+  final double? horizontalPadding;
   final double minimumWidth = 124.08;
   final double minimumHeight = 195.44;
   final double minimumListHeight = 244.3;
-
-
 
   @override
   State<MangaWidgetList> createState() => _MangaWidgetListState();
@@ -78,7 +80,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
       context,
       MaterialPageRoute(builder: (context) => mangaScreen),
     ).then((_) {
-      if (widget.updateHomeScreenLists != null){
+      if (widget.updateHomeScreenLists != null) {
         widget.updateHomeScreenLists!();
       }
     });
@@ -90,13 +92,12 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
       color: Colors.transparent,
       child: LayoutBuilder(
         builder: (context, constraints) {
-
           calculatedWidth = widget.width * 0.1;
           calculatedHeight = widget.height * 0.28;
           calculatedListHeight = widget.height * 0.35;
 
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
+            padding: EdgeInsets.symmetric(vertical: widget.verticalPadding ?? 50, horizontal: widget.horizontalPadding ?? 10),
             child: Column(
               children: [
                 Row(
@@ -128,7 +129,9 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
                   ],
                 ),
                 SizedBox(
-                  height: min(max(calculatedListHeight, widget.minimumListHeight),maximumListHeight),
+                  height: min(
+                      max(calculatedListHeight, widget.minimumListHeight),
+                      maximumListHeight),
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
@@ -140,11 +143,16 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
                             score: mangaModel.averageScore,
                             coverImage: mangaModel.coverImage,
                             onTap: () {
-                              openMangaDetails(mangaModel, "${widget.tag}-$index");
+                              openMangaDetails(
+                                  mangaModel, "${widget.tag}-$index");
                             },
                             textColor: widget.textColor,
-                            height: min(max(calculatedHeight, widget.minimumHeight),maximumHeight),
-                            width: min(max(calculatedWidth, widget.minimumWidth),maximumWidth),
+                            height: min(
+                                max(calculatedHeight, widget.minimumHeight),
+                                maximumHeight),
+                            width: min(
+                                max(calculatedWidth, widget.minimumWidth),
+                                maximumWidth),
                             year: mangaModel.startDate,
                             format: mangaModel.format,
                             status: mangaModel.status,
@@ -154,23 +162,27 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
                       //load More
                       widget.loadMore
                           ? MangaWidget(
-                        title: "",
-                        score: null,
-                        coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
-                        onTap: () async {
-                          var newTrendingList =
-                          await widget.loadMoreFunction!(currentPage++, 20, 0);
-                          setState(() {
-                            mangaList += newTrendingList;
-                          });
-                        },
-                        textColor: widget.textColor,
-                        height: min(max(calculatedHeight, widget.minimumHeight), maximumHeight),
-                        width: min(max(calculatedWidth, widget.minimumWidth), maximumWidth),
-                        status: null,
-                        format: null,
-                        year: null,
-                      )
+                              title: "",
+                              score: null,
+                              coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
+                              onTap: () async {
+                                var newTrendingList = await widget
+                                    .loadMoreFunction!(currentPage++, 20, 0);
+                                setState(() {
+                                  mangaList += newTrendingList;
+                                });
+                              },
+                              textColor: widget.textColor,
+                              height: min(
+                                  max(calculatedHeight, widget.minimumHeight),
+                                  maximumHeight),
+                              width: min(
+                                  max(calculatedWidth, widget.minimumWidth),
+                                  maximumWidth),
+                              status: null,
+                              format: null,
+                              year: null,
+                            )
                           : const SizedBox(),
                     ],
                   ),

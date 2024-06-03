@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
@@ -30,7 +32,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late int currentSearch;
   int currentSource = 0;
   int currentEpisode = 0;
-  late Map<int, Function> setDropDowns;
+  late Map<int, Future<List<List<String>>> Function(String)>
+      dropDownSearchFunctions;
   late double progress;
   late double score;
   late String startDate;
@@ -51,24 +54,59 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   double totalWidth = 0;
   double totalHeight = 0;
 
+  // List<String> newSearches = [];
+  // List<String> newSearchesIds = [];
+  List<DropdownMenuEntry> wrongTitleEntries = [];
+  String oldWrongTitleSearch = "";
+  Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 500), () {});
+  void Function() wrongTitleSearchFunction = () {};
+  TextEditingController wrongTitleSearchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    setDropDowns = {
-      0: () {
-        //gogoanime
-        setSearches(getAnimeConsumetGogoAnimeIds);
-      },
-      1: () {
-        //zoro
-        setSearches(getAnimeConsumetZoroIds);
-      },
-      2: () {
-        //animepahe
-      },
+    dropDownSearchFunctions = {
+      0: getAnimeConsumetGogoAnimeIds,
+      1: getAnimeConsumetZoroIds,
+      2: getAnimeConsumetGogoAnimeIds,
     };
     updateSource(0);
     setUserAnimeModel();
+  }
+
+  void setWrongTitleSearch(void Function(void Function()) setDialogState) {
+    //reset listener
+    setDialogState(() {
+      wrongTitleEntries = [
+        ...searches.mapIndexed(
+          (index, title) {
+            return DropdownMenuEntry(
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.white),
+              ),
+              value: index,
+              label: title,
+            );
+          },
+        ),
+      ];
+      // newSearches = searches;
+      // newSearchesIds = searchesId;
+    });
+    wrongTitleSearchController.removeListener(wrongTitleSearchFunction);
+    wrongTitleSearchFunction = () {
+      wrongTitleSearchTimer.cancel();
+      wrongTitleSearchTimer = Timer(const Duration(milliseconds: 1000), () {
+        if (wrongTitleSearchController.text != oldWrongTitleSearch &&
+            wrongTitleSearchController.text != "") {
+          setSearches(getAnimeConsumetGogoAnimeIds,
+              query: wrongTitleSearchController.text,
+              setDialogState: setDialogState);
+        }
+        oldWrongTitleSearch = wrongTitleSearchController.text;
+      });
+    };
+    wrongTitleSearchController.addListener(wrongTitleSearchFunction);
   }
 
   void setUserAnimeModel() async {
@@ -90,23 +128,64 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     ];
   }
 
-  void setSearches(Future<List<List<String>>> Function(String) getIds) async {
-    List<List<String>> newSearches = await getIds(widget.currentAnime.title!);
+  void setSearches(Future<List<List<String>>> Function(String) getIds,
+      {String? query, void Function(void Function())? setDialogState}) async {
+    List<List<String>> newSearchesAndIds =
+        await getIds(query ?? widget.currentAnime.title!);
     int newCurrentEpisode = widget.currentAnime.status == "RELEASING"
         ? await getAnimeCurrentEpisode(widget.currentAnime.id)
         : widget.currentAnime.episodes!;
-    setState(() {
-      currentEpisode = newCurrentEpisode;
-      searches = newSearches[0];
-      searchesId = newSearches[1];
-    });
+    if (setDialogState != null) {
+      setState(() {
+        currentEpisode = newCurrentEpisode;
+        searches = newSearchesAndIds[0]
+            .sublist(0, min(10, newSearchesAndIds[0].length));
+        searchesId = newSearchesAndIds[1]
+            .sublist(0, min(10, newSearchesAndIds[1].length));
+
+        // wrongTitleEntries = [
+        //   ...newSearches.mapIndexed(
+        //     (index, title) {
+        //       return DropdownMenuEntry(
+        //         style: const ButtonStyle(
+        //           foregroundColor: MaterialStatePropertyAll(Colors.white),
+        //         ),
+        //         value: index,
+        //         label: title,
+        //       );
+        //     },
+        //   ),
+        // ];
+      });
+      setDialogState(() {
+        wrongTitleEntries = [
+          ...searches.mapIndexed(
+            (index, title) {
+              return DropdownMenuEntry(
+                style: const ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.white),
+                ),
+                value: index,
+                label: title,
+              );
+            },
+          ),
+        ];
+      });
+    } else {
+      setState(() {
+        currentEpisode = newCurrentEpisode;
+        searches = newSearchesAndIds[0];
+        searchesId = newSearchesAndIds[1];
+      });
+    }
   }
 
   void updateSource(int newSource) {
     setState(() {
       currentSource = newSource;
       currentSearch = 0;
-      setDropDowns[newSource]!();
+      setSearches(dropDownSearchFunctions[currentSource]!);
     });
   }
 
@@ -249,76 +328,86 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     );
   }
 
-  void openWrongTitleDialog(BuildContext context) {
+  void openWrongTitleDialog(BuildContext context, double width, double heigh,
+      void Function(void Function()) updateOutsideState) {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title:
-              const Text("Select Title", style: TextStyle(color: Colors.white)),
-          backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-          actions: [
-            Column(
-              children: [
-                const Text("Please select new title",
-                    style: TextStyle(color: Colors.white)),
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            setWrongTitleSearch(setState);
+            return AlertDialog(
+              title: const Text("Select Title",
+                  style: TextStyle(color: Colors.white)),
+              backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+              //Must be container
+              content: Container(
+                width: width * 0.5,
+                height: heigh * 0.5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    DropdownMenu(
-                      menuStyle: const MenuStyle(
-                        backgroundColor: MaterialStatePropertyAll(
-                          Color.fromARGB(255, 44, 44, 44),
+                    Column(
+                      children: [
+                        const Text(
+                            "Please select new title or search for one",
+                            style: TextStyle(color: Colors.white)),
+                        const SizedBox(
+                          height: 30,
                         ),
-                      ),
-                      onSelected: (value) {
-                        currentSearch = value!;
-                      },
-                      dropdownMenuEntries: [
-                        ...searches.mapIndexed(
-                          (index, title) {
-                            return DropdownMenuEntry(
-                              style: const ButtonStyle(
-                                foregroundColor:
-                                    MaterialStatePropertyAll(Colors.white),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DropdownMenu(
+                              textStyle: const TextStyle(color: Colors.white),
+                              menuStyle: const MenuStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                  Color.fromARGB(255, 44, 44, 44),
+                                ),
                               ),
-                              value: index,
-                              label: title,
-                            );
+                              controller: wrongTitleSearchController,
+                              onSelected: (value) {
+                                currentSearch = value!;
+                              },
+                              initialSelection: 0,
+                              dropdownMenuEntries: wrongTitleEntries,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                              Color.fromARGB(255, 37, 37, 37),
+                            ),
+                            foregroundColor: MaterialStatePropertyAll(
+                              Colors.white,
+                            ),
+                          ),
+                          onPressed: () {
+                            // setState(() {
+                            //   searches = List.from(newSearches);
+                            //   searchesId = List.from(newSearchesIds);
+                            //   print(newSearches);
+                            // });
+                            Navigator.of(context).pop();
                           },
+                          child: const Text("Confirm"),
                         ),
                       ],
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(
-                          Color.fromARGB(255, 37, 37, 37),
-                        ),
-                        foregroundColor: MaterialStatePropertyAll(
-                          Colors.white,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Confirm"),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
+              ),
+            );
+          },
         );
       },
     );
@@ -671,7 +760,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                         Navigator.pop(context);
                                       },
                                       child: const Padding(
-                                        padding: EdgeInsets.only(right: 16.0, top: 32.0),
+                                        padding: EdgeInsets.only(
+                                            right: 16.0, top: 32.0),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
@@ -792,7 +882,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                       ),
                                     ),
                                     onPressed: () {
-                                      openWrongTitleDialog(context);
+                                      // setWrongTitleSearch();
+                                      openWrongTitleDialog(
+                                          context,
+                                          adjustedWidth,
+                                          adjustedHeight,
+                                          setState);
                                     },
                                     child: const Text("Wrong Title?"),
                                   ),
@@ -885,7 +980,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                     userAnimeModel?.progress ?? 1,
                                 onTap: () {
                                   openVideo(
-                                      searchesId[currentSearch], index + 1, widget.currentAnime.title ?? "");
+                                      searchesId[currentSearch],
+                                      index + 1,
+                                      widget.currentAnime.title ?? "");
                                 },
                               );
                             },
