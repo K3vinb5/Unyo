@@ -435,22 +435,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       AnimeButton(
                                         text: "Animes",
                                         onTap: () {
-                                          //TODO find another way to updateUsersLists
-                                          /*Navigator.pushNamed(
-                                  context, "animeScreen")
-                                  .then((_) {
-                                updateUserLists();
-                              });*/
                                           goTo(0);
                                         },
                                         width: adjustedWidth,
                                         height: adjustedHeight,
                                       ),
-                                      AnimeButton(
-                                          text: "User Stats",
-                                          onTap: () {},
-                                          width: adjustedWidth,
-                                          height: adjustedHeight),
                                       AnimeButton(
                                         text: "Mangas",
                                         onTap: () {
@@ -504,23 +493,46 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 30,
                             ),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
                               children: [
-                                AnimeButton(
-                                    text: "Anime List",
-                                    onTap: () {},
-                                    width: adjustedWidth,
-                                    height: adjustedHeight),
-                                AnimeButton(
-                                    text: "Calendar",
-                                    onTap: () {},
-                                    width: adjustedWidth,
-                                    height: adjustedHeight),
-                                AnimeButton(
-                                    text: "Manga List",
-                                    onTap: () {},
-                                    width: adjustedWidth,
-                                    height: adjustedHeight),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      AnimeButton(
+                                          text: "Anime List",
+                                          onTap: () {},
+                                          width: adjustedWidth,
+                                          height: adjustedHeight),
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      AnimeButton(
+                                          text: "Manga List",
+                                          onTap: () {},
+                                          width: adjustedWidth,
+                                          height: adjustedHeight),
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      AnimeButton(
+                                          text: "Calendar",
+                                          onTap: () {},
+                                          width: adjustedWidth,
+                                          height: adjustedHeight),
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      // AnimeButton(
+                                      //     text: "User Stats",
+                                      //     onTap: () {},
+                                      //     width: adjustedWidth,
+                                      //     height: adjustedHeight),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(
