@@ -146,8 +146,10 @@ class _VideoScreenState extends State<VideoScreen> {
       print("Received: $messageString");
 
       if (messageString.contains("seekTo")) {
+        print("Message: ${messageString.split(":")[1]}");
+        double value = double.parse(messageString.split(":")[1]);
         _controller.seekTo(Duration(
-            milliseconds: double.parse(messageString.split(":")[1]).toInt()));
+            microseconds: (value * 1000).toInt()));
       }
 
       switch (messageString) {

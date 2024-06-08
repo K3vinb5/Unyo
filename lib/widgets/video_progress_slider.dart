@@ -65,11 +65,15 @@ class VideoProgressSlider extends StatelessWidget {
                 max: max,
                 value: value,
                 onChanged: (value) {
-                  controller.seekTo(Duration(milliseconds: value.toInt()));
+                  // controller.seekTo(Duration(milliseconds: value.toInt()));
+                  controller
+                      .seekTo(Duration(microseconds: (value * 1000).toInt()));
                 },
-                onChangeEnd: (_) {
+                onChangeEnd: (value) {
+                  // controller
+                      // .seekTo(Duration(microseconds: (value * 1000).toInt()));
                   seekToPeer(
-                      controller.value.position.inMilliseconds.toDouble());
+                      /* controller.value.position.inMilliseconds.toDouble() */ value);
                 },
               ),
             ),
@@ -120,11 +124,11 @@ class VideoProgressSlider extends StatelessWidget {
                                       ElevatedButton(
                                         style: const ButtonStyle(
                                           backgroundColor:
-                                          MaterialStatePropertyAll(
+                                              MaterialStatePropertyAll(
                                             Color.fromARGB(255, 37, 37, 37),
                                           ),
                                           foregroundColor:
-                                          MaterialStatePropertyAll(
+                                              MaterialStatePropertyAll(
                                             Colors.white,
                                           ),
                                         ),
@@ -135,7 +139,7 @@ class VideoProgressSlider extends StatelessWidget {
                                         },
                                         child: const Text("Confirm",
                                             style:
-                                            TextStyle(color: Colors.white)),
+                                                TextStyle(color: Colors.white)),
                                       ),
                                       const SizedBox(
                                         width: 50,
@@ -143,11 +147,11 @@ class VideoProgressSlider extends StatelessWidget {
                                       ElevatedButton(
                                         style: const ButtonStyle(
                                           backgroundColor:
-                                          MaterialStatePropertyAll(
+                                              MaterialStatePropertyAll(
                                             Color.fromARGB(255, 37, 37, 37),
                                           ),
                                           foregroundColor:
-                                          MaterialStatePropertyAll(
+                                              MaterialStatePropertyAll(
                                             Colors.white,
                                           ),
                                         ),
@@ -156,7 +160,7 @@ class VideoProgressSlider extends StatelessWidget {
                                         },
                                         child: const Text("Cancel",
                                             style:
-                                            TextStyle(color: Colors.white)),
+                                                TextStyle(color: Colors.white)),
                                       ),
                                     ],
                                   ),
