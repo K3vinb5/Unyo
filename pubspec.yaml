@@ -39,7 +39,7 @@ dependencies:
   url_launcher: ^6.2.5
   image_gradient: ^0.0.2
   video_player: ^2.8.3
-  fvp: ^0.19.0
+  fvp: ^0.16.1
   window_manager: ^0.3.8
   smooth_video_progress: ^0.0.4
   shelf: ^1.4.1
