@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:unyo/widgets/widgets.dart';
 
 late StatefulNavigationShell publicNavigationShell;
 
