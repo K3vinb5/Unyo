@@ -182,27 +182,15 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
       color: const Color.fromARGB(255, 37, 37, 37),
       child: Column(
         children: [
-          SizedBox(
-            height: 50,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Stack(
+          Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: WindowTitleBarBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: MoveWindow(),
-                            ),
-                            const WindowButtons(),
-                          ],
-                        ),
-                      ),
-                    ),
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
                       color: Colors.white,
@@ -210,23 +198,33 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
                         goTo(1);
                       },
                     ),
-                  ],
-                ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "${userName ?? ""} Anime List",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${userName ?? ""} Anime List",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              WindowTitleBarBox(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: MoveWindow(),
+                    ),
+                    const WindowButtons(),
+                  ],
+                ),
+              )
+            ],
           ),
           SizedBox(
             width: double.infinity,

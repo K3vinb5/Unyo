@@ -286,7 +286,6 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Wrap(
-                    runSpacing: -(totalWidth * 0.1),
                     alignment: WrapAlignment.center,
                     children: [
                       ...searchMediaList.mapIndexed((index, mediaModel) {

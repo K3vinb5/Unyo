@@ -97,10 +97,10 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
             score: mangaList[j].averageScore,
             coverImage: mangaList[j].coverImage,
             onTap: () {
-              // openManga(
-              //   mangaList[j],
-              //   "${"user-manga-list-$title-view"}-$j",
-              // );
+              openMangaDetails(
+                mangaList[j],
+                "${"user-manga-list-$title-view"}-$j",
+              );
             },
             textColor: Colors.white,
             height: min(max(calculatedHeight, minimumHeight), maximumHeight),
@@ -115,6 +115,20 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
     return rowWidgets;
   }
 
+  void openMangaDetails(MangaModel currentManga, String tag) {
+    var mangaScreen = MangaDetailsScreen(
+      currentManga: currentManga,
+      tag: tag,
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => mangaScreen),
+    ).then((_) {
+      // if (widget.updateHomeScreenLists != null) {
+        // widget.updateHomeScreenLists!();
+      // }
+    });
+  }
   double getAdjustedHeight(double value) {
     if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
       return value;
@@ -172,27 +186,14 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
       color: const Color.fromARGB(255, 37, 37, 37),
       child: Column(
         children: [
-          SizedBox(
-            height: 50,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Stack(
+          Stack(
+            children: [
+              SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: WindowTitleBarBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: MoveWindow(),
-                            ),
-                            const WindowButtons(),
-                          ],
-                        ),
-                      ),
-                    ),
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
                       color: Colors.white,
@@ -200,23 +201,33 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                         goTo(1);
                       },
                     ),
-                  ],
-                ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "${userName ?? ""} Manga List",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${userName ?? ""} Manga List",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              WindowTitleBarBox(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: MoveWindow(),
+                    ),
+                    const WindowButtons(),
+                  ],
+                ),
+              ),
+            ],
           ),
           SizedBox(
             width: double.infinity,
@@ -275,7 +286,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                           //             score: mediaModel.averageScore,
                           //             coverImage: mediaModel.coverImage,
                           //             onTap: () {
-                          //               openManga(
+                          //               openMangaDetails(
                           //                 mediaModel,
                           //                 "${"user-manga-list-$title-view"}-$index",
                           //               );
