@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unyo/models/models.dart';
@@ -187,12 +188,29 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  color: Colors.white,
-                  onPressed: () {
-                    goTo(1);
-                  },
+                Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: WindowTitleBarBox(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: MoveWindow(),
+                            ),
+                            const WindowButtons(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      color: Colors.white,
+                      onPressed: () {
+                        goTo(1);
+                      },
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: Align(
