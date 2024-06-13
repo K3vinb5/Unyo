@@ -9,7 +9,8 @@ const String anilistEndpoint = "https://graphql.anilist.co";
 const String anilistEndPointGetToken =
     "https://anilist.co/api/v2/oauth/authorize?client_id=17550&response_type=token";
 
-Future<List<AnimeModel>> getAnimeModelListTrending(int page, int n, int attempt) async {
+Future<List<AnimeModel>> getAnimeModelListTrending(
+    int page, int n, int attempt) async {
   Map<String, dynamic> query = {
     "query":
         "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id title{userPreferred}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
@@ -26,8 +27,9 @@ Future<List<AnimeModel>> getAnimeModelListTrending(int page, int n, int attempt)
     body: json.encode(query),
   );
   if (response.statusCode == 500) {
-    if(attempt < 5){
-      List<AnimeModel> returnList = await getAnimeModelListRecentlyReleased(page, n, attempt++);
+    if (attempt < 5) {
+      List<AnimeModel> returnList =
+          await getAnimeModelListRecentlyReleased(page, n, attempt++);
       return returnList;
     }
     return [];
@@ -72,13 +74,15 @@ Future<List<AnimeModel>> getAnimeModelListRecentlyReleased(
     body: json.encode(query),
   );
   if (response.statusCode == 500) {
-    if(attempt < 5){
-      List<AnimeModel> returnList = await getAnimeModelListRecentlyReleased(page, n, attempt++);
+    if (attempt < 5) {
+      List<AnimeModel> returnList =
+          await getAnimeModelListRecentlyReleased(page, n, attempt++);
       return returnList;
     }
     return [];
   } else {
-    List<dynamic> media = jsonDecode(response.body)["data"]["Page"]["airingSchedules"];
+    List<dynamic> media =
+        jsonDecode(response.body)["data"]["Page"]["airingSchedules"];
     List<AnimeModel> list = [];
     for (int i = 0; i < media.length; i++) {
       var currentMedia = media[i]["media"];
@@ -87,8 +91,10 @@ Future<List<AnimeModel>> getAnimeModelListRecentlyReleased(
         title: currentMedia["title"]["userPreferred"],
         coverImage: currentMedia["coverImage"]["large"],
         bannerImage: currentMedia["bannerImage"],
-        startDate: "${currentMedia["startDate"]["day"]}/${currentMedia["startDate"]["month"]}/${currentMedia["startDate"]["year"]}",
-        endDate: "${currentMedia["endDate"]["day"]}/${currentMedia["endDate"]["month"]}/${currentMedia["endDate"]["year"]}",
+        startDate:
+            "${currentMedia["startDate"]["day"]}/${currentMedia["startDate"]["month"]}/${currentMedia["startDate"]["year"]}",
+        endDate:
+            "${currentMedia["endDate"]["day"]}/${currentMedia["endDate"]["month"]}/${currentMedia["endDate"]["year"]}",
         type: currentMedia["type"],
         status: currentMedia["status"],
         averageScore: currentMedia["averageScore"],
@@ -99,9 +105,9 @@ Future<List<AnimeModel>> getAnimeModelListRecentlyReleased(
         format: currentMedia["format"],
       ));
     }
-    for(int i = 0; i < list.length; i++){
-      for(int j = i + 1; j < list.length - 1; j++){
-        if(list[i].id == list[j].id){
+    for (int i = 0; i < list.length; i++) {
+      for (int j = i + 1; j < list.length - 1; j++) {
+        if (list[i].id == list[j].id) {
           list.removeAt(j);
         }
       }
@@ -130,8 +136,9 @@ Future<List<AnimeModel>> getAnimeModelListSeasonPopular(
     body: json.encode(query),
   );
   if (response.statusCode == 500) {
-    if(attempt < 5){
-      List<AnimeModel> returnList = await getAnimeModelListRecentlyReleased(page, n, attempt++);
+    if (attempt < 5) {
+      List<AnimeModel> returnList =
+          await getAnimeModelListRecentlyReleased(page, n, attempt++);
       return returnList;
     }
     return [];
@@ -214,7 +221,7 @@ Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort,
       ));
     }
     print(list.length);
-    if ((sort != "Select Sorting")){
+    if ((sort != "Select Sorting")) {
       return list.reversed.toList();
     }
     return list;
@@ -228,7 +235,7 @@ Future<String> getRandomAnimeBanner(int attempt) async {
         "query(\$page:Int, \$perPage:Int){ Page(page: \$page, perPage: \$perPage) { media(type: ANIME) { bannerImage } } }",
     "variables": {
       "peraPage": 50,
-      "page" : Random().nextInt(395),
+      "page": Random().nextInt(395),
     }
   };
   var response = await http.post(
@@ -237,21 +244,21 @@ Future<String> getRandomAnimeBanner(int attempt) async {
     body: json.encode(query),
   );
   int index = Random().nextInt(50);
-  while(attempt < 10){
+  while (attempt < 10) {
     Map<String, dynamic> jsonResponse = json.decode(response.body);
-    if(response.statusCode == 500){
+    if (response.statusCode == 500) {
       attempt++;
       continue;
     }
-    if(jsonResponse["data"]["Page"]["media"][index]["bannerImage"] == null){
+    if (jsonResponse["data"]["Page"]["media"][index]["bannerImage"] == null) {
       index = Random().nextInt(50);
       attempt++;
       continue;
-    }else{
+    } else {
       return jsonResponse["data"]["Page"]["media"][index]["bannerImage"];
     }
   }
-  
+
   return getRandomAnimeBanner(0);
 }
 
@@ -274,9 +281,9 @@ Future<String> getUserbannerImageUrl(String name, int attempt) async {
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if(response.statusCode == 500){
+  if (response.statusCode == 500) {
     print(response.body);
-    if(attempt < 5){
+    if (attempt < 5) {
       String returnString = await getUserbannerImageUrl(name, attempt++);
       return returnString;
     }
@@ -301,9 +308,9 @@ Future<String> getUserAvatarImageUrl(String name, int attempt) async {
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if(response.statusCode == 500){
+  if (response.statusCode == 500) {
     print(response.body);
-    if(attempt < 5){
+    if (attempt < 5) {
       String returnString = await getUserAvatarImageUrl(name, attempt++);
       return returnString;
     }
@@ -313,11 +320,12 @@ Future<String> getUserAvatarImageUrl(String name, int attempt) async {
   return jsonResponse["data"]["User"]["avatar"]["medium"];
 }
 
-Future<List<AnimeModel>> getUserAnimeLists(int userId, String listName, int attempt) async {
+Future<List<AnimeModel>> getUserAnimeLists(
+    int userId, String listName, int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query":
-    "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
+        "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
     "variables": {
       "userId": /*859862*/ userId,
       "type": "ANIME",
@@ -328,10 +336,11 @@ Future<List<AnimeModel>> getUserAnimeLists(int userId, String listName, int atte
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if(response.statusCode == 500){
+  if (response.statusCode == 500) {
     print(response.body);
-    if(attempt < 5){
-      List<AnimeModel> returnList = await getUserAnimeLists(userId, listName, attempt++);
+    if (attempt < 5) {
+      List<AnimeModel> returnList =
+          await getUserAnimeLists(userId, listName, attempt++);
       return returnList;
     }
     return [];
@@ -339,7 +348,7 @@ Future<List<AnimeModel>> getUserAnimeLists(int userId, String listName, int atte
   List<AnimeModel> animeModelList = [];
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   List<dynamic> animeLists =
-  jsonResponse["data"]["MediaListCollection"]["lists"];
+      jsonResponse["data"]["MediaListCollection"]["lists"];
   for (int i = 0; i < animeLists.length; i++) {
     if (animeLists[i]["name"] == listName) {
       List<dynamic> wantedList = animeLists[i]["entries"];
@@ -350,7 +359,8 @@ Future<List<AnimeModel>> getUserAnimeLists(int userId, String listName, int atte
             title: wantedList[i]["media"]["title"]["userPreferred"],
             coverImage: wantedList[i]["media"]["coverImage"]["large"],
             bannerImage: wantedList[i]["media"]["bannerImage"],
-            startDate: "${wantedList[i]["media"]["startDate"]["day"]}/${wantedList[i]["media"]["startDate"]["month"]}/${wantedList[i]["media"]["startDate"]["year"]}",
+            startDate:
+                "${wantedList[i]["media"]["startDate"]["day"]}/${wantedList[i]["media"]["startDate"]["month"]}/${wantedList[i]["media"]["startDate"]["year"]}",
             endDate: "",
             //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
             type: wantedList[i]["media"]["type"],
@@ -367,6 +377,69 @@ Future<List<AnimeModel>> getUserAnimeLists(int userId, String listName, int atte
     }
   }
   return animeModelList;
+}
+
+Future<Map<String, List<AnimeModel>>> getAllUserAnimeLists(
+    int userId, int attempt) async {
+  var url = Uri.parse(anilistEndpoint);
+  Map<String, dynamic> query = {
+    "query":
+        "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
+    "variables": {
+      "userId": /*859862*/ userId,
+      "type": "ANIME",
+    }
+  };
+  var response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: json.encode(query),
+  );
+  if (response.statusCode == 500) {
+    print(response.body);
+    if (attempt < 5) {
+      Map<String, List<AnimeModel>> returnList =
+          await getAllUserAnimeLists(userId, attempt++);
+      return returnList;
+    }
+    //NOTE empry Map
+    return {};
+  }
+  Map<String, List<AnimeModel>> userAnimeListsMap = {};
+  Map<String, dynamic> jsonResponse = json.decode(response.body);
+  List<dynamic> userAnimeLists =
+      jsonResponse["data"]["MediaListCollection"]["lists"];
+  for (int i = 0; i < userAnimeLists.length; i++) {
+    List<dynamic> currentList = userAnimeLists[i]["entries"];
+
+    List<AnimeModel> animeModelList = [];
+
+    for (int j = 0; j < currentList.length; j++) {
+      animeModelList.add(
+        AnimeModel(
+          id: currentList[j]["media"]["id"],
+          title: currentList[j]["media"]["title"]["userPreferred"],
+          coverImage: currentList[j]["media"]["coverImage"]["large"],
+          bannerImage: currentList[j]["media"]["bannerImage"],
+          startDate:
+              "${currentList[j]["media"]["startDate"]["day"]}/${currentList[j]["media"]["startDate"]["month"]}/${currentList[j]["media"]["startDate"]["year"]}",
+          endDate: "",
+          //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
+          type: currentList[j]["media"]["type"],
+          description: currentList[j]["media"]["description"],
+          status: currentList[j]["media"]["status"],
+          averageScore: currentList[j]["media"]["averageScore"],
+          episodes: currentList[j]["media"]["episodes"],
+          duration: currentList[j]["media"]["episodes"],
+          format: currentList[j]["media"]["format"],
+        ),
+      );
+    }
+
+    userAnimeListsMap.addAll({userAnimeLists[i]["name"]: animeModelList});
+  }
+  print(userAnimeListsMap);
+  return userAnimeListsMap;
 }
 
 Future<List<String>> getUserAccessToken(String code) async {
@@ -392,7 +465,7 @@ Future<List<String>> getUserAccessToken(String code) async {
   return [jsonResponse["access_token"], jsonResponse["refresh_token"]];
 }
 
-Future<List<String>> getUserNameAndId(String access_token) async {
+Future<List<String>> getUserNameAndId(String accessToken) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query": "query {Viewer{name id}}",
@@ -401,7 +474,7 @@ Future<List<String>> getUserNameAndId(String access_token) async {
     url,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer $access_token"
+      "Authorization": "Bearer $accessToken"
     },
     body: json.encode(query),
   );
@@ -415,7 +488,8 @@ Future<List<String>> getUserNameAndId(String access_token) async {
 Future<UserMediaModel> getUserAnimeInfo(int mediaId, int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
-    "query": "query{ Media(id: $mediaId){ mediaListEntry { score progress repeat priority status startedAt{day month year} completedAt{day month year} } } }",
+    "query":
+        "query{ Media(id: $mediaId){ mediaListEntry { score progress repeat priority status startedAt{day month year} completedAt{day month year} } } }",
   };
   var response = await http.post(
     url,
@@ -425,13 +499,13 @@ Future<UserMediaModel> getUserAnimeInfo(int mediaId, int attempt) async {
     },
     body: json.encode(query),
   );
-  if (response.statusCode == 500){
-    if(attempt < 5){
+  if (response.statusCode == 500) {
+    if (attempt < 5) {
       return getUserAnimeInfo(mediaId, attempt++);
     }
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
-  if (jsonResponse["data"]["Media"]["mediaListEntry"] == null){
+  if (jsonResponse["data"]["Media"]["mediaListEntry"] == null) {
     return UserMediaModel(
       score: 0,
       progress: 0,
@@ -450,22 +524,33 @@ Future<UserMediaModel> getUserAnimeInfo(int mediaId, int attempt) async {
     repeat: mediaListEntry["repeat"],
     priority: mediaListEntry["priority"],
     status: mediaListEntry["status"],
-    startDate: "${mediaListEntry["startedAt"]["day"]}/${mediaListEntry["startedAt"]["month"]}/${mediaListEntry["startedAt"]["year"]}",
-    endDate: "${mediaListEntry["completedAt"]["day"]}/${mediaListEntry["completedAt"]["month"]}/${mediaListEntry["completedAt"]["year"]}",
+    startDate:
+        "${mediaListEntry["startedAt"]["day"]}/${mediaListEntry["startedAt"]["month"]}/${mediaListEntry["startedAt"]["year"]}",
+    endDate:
+        "${mediaListEntry["completedAt"]["day"]}/${mediaListEntry["completedAt"]["month"]}/${mediaListEntry["completedAt"]["year"]}",
   );
 }
 
 void setUserAnimeInfo(int mediaId, Map<String, String> receivedQuery) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
-    "query": "mutation (\$mediaId: Int, \$status: MediaListStatus, \$score: Float, \$progress: Int, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) { SaveMediaListEntry(mediaId: \$mediaId, status: \$status, score: \$score, progress: \$progress, startedAt: \$startedAt, completedAt: \$completedAt) { mediaId status score progress startedAt { year month day } completedAt { year month day } } } ",
-    "variables" : {
-      "mediaId" : mediaId,
-      "status" : receivedQuery["status"],
-      "score" : double.parse(receivedQuery["score"]!),
-      "progress" : int.parse(receivedQuery["progress"]!),
-      "startedAt" : {"day" : receivedQuery["startDateDay"], "month": receivedQuery["startDateMonth"], "year" : receivedQuery["startDateYear"]},
-      "completedAt" : {"day" : receivedQuery["endDateDay"], "month" : receivedQuery["endDateMonth"], "year" : receivedQuery["endDateYear"]},
+    "query":
+        "mutation (\$mediaId: Int, \$status: MediaListStatus, \$score: Float, \$progress: Int, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) { SaveMediaListEntry(mediaId: \$mediaId, status: \$status, score: \$score, progress: \$progress, startedAt: \$startedAt, completedAt: \$completedAt) { mediaId status score progress startedAt { year month day } completedAt { year month day } } } ",
+    "variables": {
+      "mediaId": mediaId,
+      "status": receivedQuery["status"],
+      "score": double.parse(receivedQuery["score"]!),
+      "progress": int.parse(receivedQuery["progress"]!),
+      "startedAt": {
+        "day": receivedQuery["startDateDay"],
+        "month": receivedQuery["startDateMonth"],
+        "year": receivedQuery["startDateYear"]
+      },
+      "completedAt": {
+        "day": receivedQuery["endDateDay"],
+        "month": receivedQuery["endDateMonth"],
+        "year": receivedQuery["endDateYear"]
+      },
     },
   };
   var response = await http.post(
@@ -479,13 +564,13 @@ void setUserAnimeInfo(int mediaId, Map<String, String> receivedQuery) async {
   print(response.body);
 }
 
-void deleteUserAnime(int mediaId) async{
+void deleteUserAnime(int mediaId) async {
   var url = Uri.parse(anilistEndpoint);
 
   Map<String, dynamic> query1 = {
     "query": "query(\$mediaId:Int){ MediaList(mediaId:\$mediaId){ id } }",
-    "variables" : {
-      "mediaId" : mediaId,
+    "variables": {
+      "mediaId": mediaId,
     },
   };
   var response1 = await http.post(
@@ -500,9 +585,10 @@ void deleteUserAnime(int mediaId) async{
   int entryId = jsonDecode(response1.body)["data"]["MediaList"]["id"];
 
   Map<String, dynamic> query = {
-    "query": "mutation (\$entryId: Int) {DeleteMediaListEntry(id: \$entryId){ deleted }}",
-    "variables" : {
-      "entryId" : entryId,
+    "query":
+        "mutation (\$entryId: Int) {DeleteMediaListEntry(id: \$entryId){ deleted }}",
+    "variables": {
+      "entryId": entryId,
     },
   };
   var response = await http.post(
@@ -516,10 +602,11 @@ void deleteUserAnime(int mediaId) async{
   print(response.body);
 }
 
-Future<int> getAnimeCurrentEpisode(int mediaId) async{
+Future<int> getAnimeCurrentEpisode(int mediaId) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
-    "query": "query{ AiringSchedule(mediaId: $mediaId, sort: TIME_DESC, notYetAired: false){ episode } }",
+    "query":
+        "query{ AiringSchedule(mediaId: $mediaId, sort: TIME_DESC, notYetAired: false){ episode } }",
   };
   var response = await http.post(
     url,

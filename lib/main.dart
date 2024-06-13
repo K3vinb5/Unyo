@@ -27,6 +27,11 @@ final GlobalKey<NavigatorState> _animeScreen =
     GlobalKey<NavigatorState>(debugLabel: 'anime');
 final GlobalKey<NavigatorState> _mangaScreen =
     GlobalKey<NavigatorState>(debugLabel: 'manga');
+final GlobalKey<NavigatorState> _userAnimeListScreen =
+    GlobalKey<NavigatorState>(debugLabel: 'userAnimeList');
+final GlobalKey<NavigatorState> _userMangaListScreen =
+    GlobalKey<NavigatorState>(debugLabel: 'userAnimeList');
+
 
 final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -69,7 +74,27 @@ final GoRouter _router = GoRouter(
               path: '/manga',
               builder: (BuildContext context, GoRouterState state) =>
                   const MangaScreen(),
-           ),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          navigatorKey: _userAnimeListScreen,
+          routes: <RouteBase>[
+            GoRoute(
+              path: '/userAnimeList',
+              builder: (BuildContext context, GoRouterState state) =>
+                  const AnimeUserListsScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          navigatorKey: _userMangaListScreen,
+          routes: <RouteBase>[
+            GoRoute(
+              path: '/userMangaList',
+              builder: (BuildContext context, GoRouterState state) =>
+                  const MangaUserListsScreen(),
+            ),
           ],
         ),
       ],

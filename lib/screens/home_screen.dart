@@ -7,8 +7,7 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelfio;
 import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
-import 'package:unyo/screens/login_screen.dart';
-import 'package:unyo/screens/scaffold_screen.dart';
+import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -497,13 +496,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       AnimeButton(
                                           text: "Anime List",
-                                          onTap: () {},
+                                          onTap: () {
+                                           goTo(3); 
+                                          },
                                           width: adjustedWidth,
                                           height: adjustedHeight),
                                       const SizedBox(
@@ -511,7 +513,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       AnimeButton(
                                           text: "Manga List",
-                                          onTap: () {},
+                                          onTap: () {goTo(4);},
                                           width: adjustedWidth,
                                           height: adjustedHeight),
                                       const SizedBox(

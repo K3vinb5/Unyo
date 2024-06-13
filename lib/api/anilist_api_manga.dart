@@ -229,6 +229,69 @@ Future<List<MangaModel>> getUserMangaLists(
   return animeModelList;
 }
 
+Future<Map<String, List<MangaModel>>> getAllUserMangaLists(
+    int userId, int attempt) async {
+  var url = Uri.parse(anilistEndpoint);
+  Map<String, dynamic> query = {
+    "query":
+        "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
+    "variables": {
+      "userId": /*859862*/ userId,
+      "type": "MANGA",
+    }
+  };
+  var response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: json.encode(query),
+  );
+  if (response.statusCode == 500) {
+    print(response.body);
+    if (attempt < 5) {
+      Map<String, List<MangaModel>> returnList =
+          await getAllUserMangaLists(userId, attempt++);
+      return returnList;
+    }
+    //NOTE empry Map
+    return {};
+  }
+  Map<String, List<MangaModel>> userMangaListsMap = {};
+  Map<String, dynamic> jsonResponse = json.decode(response.body);
+  List<dynamic> userMangaLists =
+      jsonResponse["data"]["MediaListCollection"]["lists"];
+  for (int i = 0; i < userMangaLists.length; i++) {
+    List<dynamic> currentList = userMangaLists[i]["entries"];
+
+    List<MangaModel> mangaModelList = [];
+
+    for (int j = 0; j < currentList.length; j++) {
+      mangaModelList.add(
+        MangaModel(
+          id: currentList[j]["media"]["id"],
+          title: currentList[j]["media"]["title"]["userPreferred"],
+          coverImage: currentList[j]["media"]["coverImage"]["large"],
+          bannerImage: currentList[j]["media"]["bannerImage"],
+          startDate:
+              "${currentList[j]["media"]["startDate"]["day"]}/${currentList[j]["media"]["startDate"]["month"]}/${currentList[j]["media"]["startDate"]["year"]}",
+          endDate: "",
+          //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
+          type: currentList[j]["media"]["type"],
+          description: currentList[j]["media"]["description"],
+          status: currentList[j]["media"]["status"],
+          averageScore: currentList[j]["media"]["averageScore"],
+          chapters: currentList[j]["media"]["chapters"],
+          duration: currentList[j]["media"]["episodes"],
+          format: currentList[j]["media"]["format"],
+        ),
+      );
+    }
+
+    userMangaListsMap.addAll({userMangaLists[i]["name"]: mangaModelList});
+  }
+  print(userMangaListsMap);
+  return userMangaListsMap;
+}
+
 // Future<int> getMangaCurrentChapter(int mediaId) async{
 //   var url = Uri.parse(anilistEndpoint);
 //   Map<String, dynamic> query = {

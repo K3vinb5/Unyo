@@ -253,7 +253,7 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                           items: [
                             ...years.map(
                               (year) {
-                                return Text("$year");
+                                return Text(year);
                               },
                             ),
                           ],
