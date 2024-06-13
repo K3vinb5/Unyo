@@ -43,15 +43,14 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
       double calculatedHeight,
       List<MangaModel> mangaList) {
     List<Widget> rowsList = [];
-    //TODO There might be a mistake in the - 2
     int rowWidgetNum = totalWidth ~/
             (min(max(calculatedWidth, minimumWidth), maximumWidth) +
                 2 * horizontalPadding) -
-        2;
+        1;
     for (int i = 0; i < mangaList.length; i++) {
       int actualIndex = i * rowWidgetNum;
       //NOTE there is at least x more elements
-      if (actualIndex < mangaList.length - rowWidgetNum - 1) {
+      if (actualIndex < mangaList.length - rowWidgetNum) {
         rowsList.add(Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
