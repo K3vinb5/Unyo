@@ -50,7 +50,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
     for (int i = 0; i < animeList.length; i++) {
       int actualIndex = i * rowWidgetNum;
       //NOTE there is at least x more elements
-      if (actualIndex < animeList.length - rowWidgetNum - 1) {
+      if (actualIndex < animeList.length - rowWidgetNum){
         rowsList.add(Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
