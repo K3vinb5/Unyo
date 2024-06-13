@@ -36,7 +36,7 @@ class AnimeWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: SizedBox(
           width: width,
-          height: height * 2,
+          height: height * 1.3,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,

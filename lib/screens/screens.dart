@@ -8,3 +8,5 @@ export 'video_screen.dart';
 export 'manga_screen.dart';
 export 'manga_details_screen.dart';
 export 'reading_screen.dart';
+export 'anime_user_lists_screen.dart';
+export 'manga_user_lists_screen.dart';
