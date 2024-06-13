@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hovering/hovering.dart';
 
 class AnimeWidget extends StatelessWidget {
   const AnimeWidget({
@@ -34,7 +35,11 @@ class AnimeWidget extends StatelessWidget {
       color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: SizedBox(
+        child: HoverAnimatedContainer(
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 170),
+          hoverWidth: width * 1.1,
+          hoverHeight: height * 1.3,
           width: width,
           height: height * 1.3,
           child: Column(

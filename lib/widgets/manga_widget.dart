@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:hovering/hovering.dart';
 
 class MangaWidget extends StatelessWidget {
-  const MangaWidget({super.key, required this.title, required this.score, required this.coverImage, required this.onTap, required this.textColor, required this.width, required this.height, required this.status, required this.format, required this.year});
+  const MangaWidget(
+      {super.key,
+      required this.title,
+      required this.score,
+      required this.coverImage,
+      required this.onTap,
+      required this.textColor,
+      required this.width,
+      required this.height,
+      required this.status,
+      required this.format,
+      required this.year});
 
   final String? title;
   final int? score;
@@ -22,7 +34,11 @@ class MangaWidget extends StatelessWidget {
       color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: SizedBox(
+        child: HoverAnimatedContainer(
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 170),
+          hoverWidth: width * 1.1,
+          hoverHeight: height * 1.3,
           width: width,
           height: height * 1.3,
           child: Column(
