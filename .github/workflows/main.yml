@@ -97,14 +97,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/windows/x64/runner/Release/Unyo-${{github.ref_name}}-windows.zip
-      - name: Build Msix
-        run: flutter pub run msix:create
-      - name: Windows Msix Release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: build/windows/x64/runner/Release/unyo.msix
+      - name: Windows .msi Release
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
+      # - name: Build Msix
+      #   run: flutter pub run msix:create
+      # - name: Windows Msix Release
+      #   uses: softprops/action-gh-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     files: build/windows/x64/runner/Release/unyo.msix
 
   build-and-release-macos:
     runs-on: macos-14
