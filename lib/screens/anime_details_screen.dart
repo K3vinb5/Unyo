@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
@@ -27,6 +28,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   UserMediaModel? userAnimeModel;
   List<String> searches = [];
   List<String> searchesId = [];
+  String currentSearchString = "";
   late int currentSearch;
   int currentSource = 0;
   int currentEpisode = 0;
@@ -52,8 +54,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   double totalWidth = 0;
   double totalHeight = 0;
 
-  // List<String> newSearches = [];
-  // List<String> newSearchesIds = [];
   List<DropdownMenuEntry> wrongTitleEntries = [];
   String oldWrongTitleSearch = "";
   Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 500), () {});
@@ -95,6 +95,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     wrongTitleSearchFunction = () {
       wrongTitleSearchTimer.cancel();
       wrongTitleSearchTimer = Timer(const Duration(milliseconds: 1000), () {
+        //TODO generalize search
         if (wrongTitleSearchController.text != oldWrongTitleSearch &&
             wrongTitleSearchController.text != "") {
           setSearches(getAnimeConsumetGogoAnimeIds,
@@ -140,20 +141,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             .sublist(0, min(10, newSearchesAndIds[0].length));
         searchesId = newSearchesAndIds[1]
             .sublist(0, min(10, newSearchesAndIds[1].length));
-
-        // wrongTitleEntries = [
-        //   ...newSearches.mapIndexed(
-        //     (index, title) {
-        //       return DropdownMenuEntry(
-        //         style: const ButtonStyle(
-        //           foregroundColor: MaterialStatePropertyAll(Colors.white),
-        //         ),
-        //         value: index,
-        //         label: title,
-        //       );
-        //     },
-        //   ),
-        // ];
       });
       setDialogState(() {
         wrongTitleEntries = [
@@ -176,6 +163,20 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
         searches = newSearchesAndIds[0];
         searchesId = newSearchesAndIds[1];
       });
+      if (!mounted) return;
+      if (searches.isNotEmpty) {
+        AnimatedSnackBar.material(
+          "Found \"${searches[0]}\"! :D",
+          type: AnimatedSnackBarType.success,
+          desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
+        ).show(context);
+      } else {
+        AnimatedSnackBar.material(
+          "No Title was Found!! D:",
+          type: AnimatedSnackBarType.error,
+          desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
+        ).show(context);
+      }
     }
   }
 
@@ -183,6 +184,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     setState(() {
       currentSource = newSource;
       currentSearch = 0;
+      currentSearchString = "";
       setSearches(dropDownSearchFunctions[currentSource]!);
     });
   }
@@ -338,7 +340,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
               title: const Text("Select Title",
                   style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-              //Must be container
+              //NOTE Must be container
               content: Container(
                 width: width * 0.5,
                 height: heigh * 0.5,
@@ -347,8 +349,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                   children: [
                     Column(
                       children: [
-                        const Text(
-                            "Please select new title or search for one",
+                        const Text("Please select new title or search for one",
                             style: TextStyle(color: Colors.white)),
                         const SizedBox(
                           height: 30,
@@ -357,6 +358,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             DropdownMenu(
+                              width: 350,
                               textStyle: const TextStyle(color: Colors.white),
                               menuStyle: const MenuStyle(
                                 backgroundColor: MaterialStatePropertyAll(
@@ -365,6 +367,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               ),
                               controller: wrongTitleSearchController,
                               onSelected: (value) {
+                                currentSearchString = searches[value];
                                 currentSearch = value!;
                               },
                               initialSelection: 0,
@@ -389,12 +392,23 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               Colors.white,
                             ),
                           ),
-                          onPressed: () {
-                            // setState(() {
-                            //   searches = List.from(newSearches);
-                            //   searchesId = List.from(newSearchesIds);
-                            //   print(newSearches);
-                            // });
+                          onPressed: () async {
+                            //NOTE dirty fix for a bug
+                            AnimatedSnackBar.material(
+                              "Updating Title, don't close...",
+                              type: AnimatedSnackBarType.warning,
+                              desktopSnackBarPosition:
+                                  DesktopSnackBarPosition.topCenter,
+                            ).show(context);
+                            await Future.delayed(const Duration(seconds: 1));
+                            currentSearch =
+                                searches.indexOf(currentSearchString);
+                            AnimatedSnackBar.material(
+                              "Title Updated",
+                              type: AnimatedSnackBarType.success,
+                              desktopSnackBarPosition:
+                                  DesktopSnackBarPosition.topCenter,
+                            ).show(context);
                             Navigator.of(context).pop();
                           },
                           child: const Text("Confirm"),
@@ -517,7 +531,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                       children: [
                         Text(
                           score.toInt().toString(),
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                         Expanded(
                           child: Slider(
@@ -727,7 +741,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        top: 16.0, left: 16.0),
+                                        top: 16.0, left: 50.0),
                                     child: Hero(
                                       tag: widget.tag,
                                       child: AnimeWidget(
@@ -751,40 +765,47 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                       ),
                                     ),
                                   ),
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: InkWell(
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Padding(
-                                        padding: EdgeInsets.only(
-                                            right: 16.0, top: 32.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.arrow_back,
-                                              color: Colors.white,
-                                            ),
-                                            Text(
-                                              "  Home Screen",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                                 ],
                               ),
                             )
                           : const SizedBox(),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10.0, left: 4.0, bottom: 4.0),
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: const Icon(Icons.arrow_back),
+                                color: Colors.white,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 4.0, left: 4.0),
+                              child: IconButton(
+                                onPressed: () {
+                                  updateSource(0);
+                                  setUserAnimeModel();
+
+                                  AnimatedSnackBar.material(
+                                    "Refreshing Page",
+                                    type: AnimatedSnackBarType.info,
+                                    desktopSnackBarPosition:
+                                        DesktopSnackBarPosition.topCenter,
+                                  ).show(context);
+                                },
+                                icon: const Icon(Icons.refresh),
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   Expanded(
@@ -887,7 +908,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                           adjustedHeight,
                                           setState);
                                     },
-                                    child: const Text("Wrong Title?"),
+                                    child: const Text("Wrong/No Title?"),
                                   ),
                                   const SizedBox(
                                     width: 16.0,
@@ -994,6 +1015,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
               WindowTitleBarBox(
                 child: Row(
                   children: [
+                    const SizedBox(
+                      width: 70,
+                    ),
                     Expanded(
                       child: MoveWindow(),
                     ),

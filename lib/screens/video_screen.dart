@@ -30,7 +30,7 @@ class VideoScreen extends StatefulWidget {
   final String title;
 
   @override
-  _VideoScreenState createState() => _VideoScreenState();
+  State<VideoScreen> createState() => _VideoScreenState();
 }
 
 class _VideoScreenState extends State<VideoScreen> {
@@ -103,7 +103,7 @@ class _VideoScreenState extends State<VideoScreen> {
 
     client.onDisconnected = onDisconnected;
     client.onConnected = onConnected;
-    if (!connection){
+    if (!connection) {
       topic = generateRandomId();
       myId = generateRandomId();
     }
@@ -130,7 +130,7 @@ class _VideoScreenState extends State<VideoScreen> {
       client.disconnect();
       //TODO dialog
       return;
-    } else if (connection){
+    } else if (connection) {
       connected = true;
     }
 
@@ -138,8 +138,10 @@ class _VideoScreenState extends State<VideoScreen> {
 
     client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       final recMess = c![0].payload as MqttPublishMessage;
-      final messageStringAndId = MqttPublishPayload.bytesToStringAsString(recMess.payload.message).split("-");
-      if (messageStringAndId[0] == myId){
+      final messageStringAndId =
+          MqttPublishPayload.bytesToStringAsString(recMess.payload.message)
+              .split("-");
+      if (messageStringAndId[0] == myId) {
         return;
       }
       final messageString = messageStringAndId[1];
@@ -148,8 +150,7 @@ class _VideoScreenState extends State<VideoScreen> {
       if (messageString.contains("seekTo")) {
         print("Message: ${messageString.split(":")[1]}");
         double value = double.parse(messageString.split(":")[1]);
-        _controller.seekTo(Duration(
-            microseconds: (value * 1000).toInt()));
+        _controller.seekTo(Duration(microseconds: (value * 1000).toInt()));
       }
 
       switch (messageString) {
@@ -163,28 +164,26 @@ class _VideoScreenState extends State<VideoScreen> {
           _controller.seekTo(
             Duration(
                 milliseconds:
-                _controller.value.position.inMilliseconds + 15000),
+                    _controller.value.position.inMilliseconds + 15000),
           );
           break;
         case "fifteenminus":
           _controller.seekTo(
             Duration(
                 milliseconds:
-                _controller.value.position.inMilliseconds - 15000),
+                    _controller.value.position.inMilliseconds - 15000),
           );
           break;
         case "fiveplus":
           _controller.seekTo(
             Duration(
-                milliseconds:
-                _controller.value.position.inMilliseconds + 5000),
+                milliseconds: _controller.value.position.inMilliseconds + 5000),
           );
           break;
         case "fiveminus":
           _controller.seekTo(
             Duration(
-                milliseconds:
-                _controller.value.position.inMilliseconds - 5000),
+                milliseconds: _controller.value.position.inMilliseconds - 5000),
           );
           break;
         case "confirmed":
@@ -276,10 +275,9 @@ class _VideoScreenState extends State<VideoScreen> {
       }
     });
 
-    if(connection){
+    if (connection) {
       sendConnectedOrder();
     }
-
   }
 
   String generateRandomId() {
@@ -739,6 +737,9 @@ class _VideoScreenState extends State<VideoScreen> {
                   ? WindowTitleBarBox(
                       child: Row(
                         children: [
+                          const SizedBox(
+                            width: 70,
+                          ),
                           Expanded(
                             child: MoveWindow(),
                           ),

@@ -247,6 +247,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
           WindowTitleBarBox(
             child: Row(
               children: [
+                const SizedBox(
+                  width: 70,
+                ),
                 Expanded(
                   child: MoveWindow(),
                 ),

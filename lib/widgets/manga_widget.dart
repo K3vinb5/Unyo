@@ -37,7 +37,7 @@ class MangaWidget extends StatelessWidget {
         child: HoverAnimatedContainer(
           curve: Curves.easeOut,
           duration: const Duration(milliseconds: 170),
-          hoverWidth: width * 1.1,
+          hoverWidth: onTap != null ? width * 1.1 : width,
           hoverHeight: height * 1.3,
           width: width,
           height: height * 1.3,

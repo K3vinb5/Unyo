@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:math';
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +28,12 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   List<String> searches = [];
   List<String> searchesId = [];
   List<String> chaptersId = [];
+  String currentSearchString = "";
   late int currentSearch;
   int currentSource = 0;
   int currentEpisode = 0;
-  late Map<int, Function> setDropDowns;
+  late Map<int, Future<List<List<String>>> Function(String)>
+      dropDownSearchFunctions;
   late double progress;
   late double score;
   late String startDate;
@@ -50,25 +54,57 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   double totalWidth = 0;
   double totalHeight = 0;
 
+  List<DropdownMenuEntry> wrongTitleEntries = [];
+  String oldWrongTitleSearch = "";
+  Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 0), () {});
+  Timer updateSearchTimer = Timer(const Duration(milliseconds: 0), () {});
+  void Function() wrongTitleSearchFunction = () {};
+  TextEditingController wrongTitleSearchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    setDropDowns = {
-      0: () {
-        //mangahere
-        print("New source, searching...");
-        setSearches(getMangaMangaHereIds);
-      },
-      1: () {
-        //zoro
-        // setSearches(getAnimeConsumetZoroIds);
-      },
-      2: () {
-        //animepahe
-      },
+    dropDownSearchFunctions = {
+      0: getMangaMangaHereIds,
     };
     updateSource(0);
     setUserMangaModel();
+  }
+
+  void setWrongTitleSearch(void Function(void Function()) setDialogState) {
+    //reset listener
+    setDialogState(() {
+      wrongTitleEntries = [
+        ...searches.mapIndexed(
+          (index, title) {
+            return DropdownMenuEntry(
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.white),
+              ),
+              value: index,
+              label: title,
+            );
+          },
+        ),
+      ];
+      // newSearches = searches;
+      // newSearchesIds = searchesId;
+    });
+    wrongTitleSearchController.removeListener(wrongTitleSearchFunction);
+    wrongTitleSearchFunction = () {
+      wrongTitleSearchTimer.cancel();
+      wrongTitleSearchTimer = Timer(const Duration(milliseconds: 1000), () {
+        //TODO generalize search
+        if (wrongTitleSearchController.text != oldWrongTitleSearch &&
+            wrongTitleSearchController.text != "") {
+          setSearches(getMangaMangaHereIds,
+              query: wrongTitleSearchController.text,
+              setDialogState: setDialogState);
+        }
+        oldWrongTitleSearch = wrongTitleSearchController.text;
+      });
+    };
+    wrongTitleSearchController.addListener(wrongTitleSearchFunction);
   }
 
   void setUserMangaModel() async {
@@ -90,38 +126,84 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     ];
   }
 
-  void setSearches(Future<List<List<String>>> Function(String) getIds) async {
+  void setSearches(Future<List<List<String>>> Function(String) getIds,
+      {String? query, void Function(void Function())? setDialogState}) async {
     List<List<String>> newSearches = await getIds(widget.currentManga.title!);
+    List<List<String>> newSearchesAndIds =
+        await getIds(query ?? widget.currentManga.title!);
     int newCurrentEpisode = widget.currentManga.status == "RELEASING"
         ? chaptersId.length
         : widget.currentManga.chapters!;
-    setState(() {
-      currentEpisode = newCurrentEpisode;
-      searches = newSearches[0];
-      searchesId = newSearches[1];
-    });
+    if (setDialogState != null) {
+      setState(() {
+        currentEpisode = newCurrentEpisode;
+        searches = newSearchesAndIds[0]
+            .sublist(0, min(10, newSearchesAndIds[0].length));
+        searchesId = newSearchesAndIds[1]
+            .sublist(0, min(10, newSearchesAndIds[1].length));
+      });
+      setDialogState(() {
+        wrongTitleEntries = [
+          ...searches.mapIndexed(
+            (index, title) {
+              return DropdownMenuEntry(
+                style: const ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.white),
+                ),
+                value: index,
+                label: title,
+              );
+            },
+          ),
+        ];
+      });
+    } else {
+      setState(() {
+        currentEpisode = newCurrentEpisode;
+        searches = newSearches[0];
+        searchesId = newSearches[1];
+      });
+      if (!mounted) return;
+      if (searches.isNotEmpty) {
+        updateSearchTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (searchesId.isEmpty) {
+            updateSearch(currentSearch);
+          } else {
+            updateSearch(currentSearch);
+            timer.cancel();
+          }
+        });
+        AnimatedSnackBar.material(
+          "Found \"${searches[0]}\"! :D",
+          type: AnimatedSnackBarType.success,
+          desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
+        ).show(context);
+      } else {
+        AnimatedSnackBar.material(
+          "No Title was Found!! D:",
+          type: AnimatedSnackBarType.error,
+          desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
+        ).show(context);
+      }
+    }
   }
 
   void updateSource(int newSource) async {
-    Function setSearches = setDropDowns[newSource]!;
     setState(() {
       currentSource = newSource;
       currentSearch = 0;
-      //calls the function above
-      setSearches();
-    });
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (searchesId.isEmpty) {
-        updateSearch(currentSearch);
-      } else {
-        updateSearch(currentSearch);
-        timer.cancel();
-      }
+      currentSearchString = "";
+      setSearches(dropDownSearchFunctions[currentSource]!);
     });
   }
 
   void updateSearch(int currentSearch) async {
     print("Update Search called, lenght is: ${searchesId.length}");
+    if (searchesId.isEmpty) {
+      updateSearchTimer.cancel();
+      return;
+    }
+    ;
     List<String> newChaptersId =
         await getMangaMangaHereChapterIds(searchesId[currentSearch]);
     setState(() {
@@ -237,79 +319,107 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     );
   }
 
-  void openWrongTitleDialog(BuildContext context) {
+  void openWrongTitleDialog(BuildContext context, double width, double heigh,
+      void Function(void Function()) updateOutsideState) {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title:
-              const Text("Select Title", style: TextStyle(color: Colors.white)),
-          backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-          actions: [
-            Column(
-              children: [
-                const Text("Please select new title",
-                    style: TextStyle(color: Colors.white)),
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            setWrongTitleSearch(setState);
+            return AlertDialog(
+              title: const Text("Select Title",
+                  style: TextStyle(color: Colors.white)),
+              backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+              //NOTE Must be container
+              content: Container(
+                width: width * 0.5,
+                height: heigh * 0.5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    DropdownMenu(
-                      menuStyle: const MenuStyle(
-                        backgroundColor: MaterialStatePropertyAll(
-                          Color.fromARGB(255, 44, 44, 44),
+                    Column(
+                      children: [
+                        const Text("Please select new title or search for one",
+                            style: TextStyle(color: Colors.white)),
+                        const SizedBox(
+                          height: 30,
                         ),
-                      ),
-                      onSelected: (value) {
-                        currentSearch = value!;
-                      },
-                      dropdownMenuEntries: [
-                        ...searches.mapIndexed(
-                          (index, title) {
-                            return DropdownMenuEntry(
-                              style: const ButtonStyle(
-                                foregroundColor:
-                                    MaterialStatePropertyAll(Colors.white),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DropdownMenu(
+                              width: 350,
+                              textStyle: const TextStyle(color: Colors.white),
+                              menuStyle: const MenuStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                  Color.fromARGB(255, 44, 44, 44),
+                                ),
                               ),
-                              value: index,
-                              label: title,
-                            );
+                              controller: wrongTitleSearchController,
+                              onSelected: (value) {
+                                currentSearchString = searches[value];
+                                currentSearch = value!;
+                              },
+                              initialSelection: 0,
+                              dropdownMenuEntries: wrongTitleEntries,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                              Color.fromARGB(255, 37, 37, 37),
+                            ),
+                            foregroundColor: MaterialStatePropertyAll(
+                              Colors.white,
+                            ),
+                          ),
+                          onPressed: () async {
+                            //NOTE dirty fix for a bug
+                            updateSearchTimer = Timer.periodic(
+                                const Duration(seconds: 1), (timer) {
+                              if (searchesId.isEmpty) {
+                                updateSearch(currentSearch);
+                              } else {
+                                updateSearch(currentSearch);
+                                timer.cancel();
+                              }
+                            });
+                            AnimatedSnackBar.material(
+                              "Updating Title, don't close...",
+                              type: AnimatedSnackBarType.warning,
+                              desktopSnackBarPosition:
+                                  DesktopSnackBarPosition.topCenter,
+                            ).show(context);
+                            await Future.delayed(const Duration(seconds: 1));
+                            currentSearch =
+                                searches.indexOf(currentSearchString);
+                            AnimatedSnackBar.material(
+                              "Title Updated",
+                              type: AnimatedSnackBarType.success,
+                              desktopSnackBarPosition:
+                                  DesktopSnackBarPosition.topCenter,
+                            ).show(context);
+                            Navigator.of(context).pop();
                           },
+                          child: const Text("Confirm"),
                         ),
                       ],
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(
-                          Color.fromARGB(255, 37, 37, 37),
-                        ),
-                        foregroundColor: MaterialStatePropertyAll(
-                          Colors.white,
-                        ),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          updateSearch(currentSearch);
-                        });
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Confirm"),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
+              ),
+            );
+          },
         );
       },
     );
@@ -630,7 +740,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        top: 16.0, left: 16.0),
+                                        top: 16.0, left: 50.0),
                                     child: Hero(
                                       tag: widget.tag,
                                       child: AnimeWidget(
@@ -654,40 +764,46 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                       ),
                                     ),
                                   ),
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: InkWell(
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Padding(
-                                        padding: EdgeInsets.only(
-                                            right: 16.0, top: 32.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.arrow_back,
-                                              color: Colors.white,
-                                            ),
-                                            Text(
-                                              "  Home Screen",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                                 ],
                               ),
                             )
                           : const SizedBox(),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10.0, left: 4.0, bottom: 4.0),
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: const Icon(Icons.arrow_back),
+                                color: Colors.white,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 4.0, left: 4.0),
+                              child: IconButton(
+                                onPressed: () {
+                                  updateSource(0);
+                                  setUserMangaModel();
+                                  AnimatedSnackBar.material(
+                                    "Refreshing Page",
+                                    type: AnimatedSnackBarType.info,
+                                    desktopSnackBarPosition:
+                                        DesktopSnackBarPosition.topCenter,
+                                  ).show(context);
+                                },
+                                icon: const Icon(Icons.refresh),
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   Expanded(
@@ -783,9 +899,13 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                       ),
                                     ),
                                     onPressed: () {
-                                      openWrongTitleDialog(context);
+                                      openWrongTitleDialog(
+                                          context,
+                                          adjustedWidth,
+                                          adjustedHeight,
+                                          setState);
                                     },
-                                    child: const Text("Wrong Title?"),
+                                    child: const Text("Wrong/No Title?"),
                                   ),
                                   const SizedBox(
                                     width: 16.0,
@@ -887,6 +1007,9 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
               WindowTitleBarBox(
                 child: Row(
                   children: [
+                    const SizedBox(
+                      width: 70,
+                    ),
                     Expanded(
                       child: MoveWindow(),
                     ),

@@ -438,6 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         },
                                         width: adjustedWidth,
                                         height: adjustedHeight,
+                                        horizontalAllignment: true,
                                       ),
                                       AnimeButton(
                                         text: "Mangas",
@@ -446,6 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         },
                                         width: adjustedWidth,
                                         height: adjustedHeight,
+                                        horizontalAllignment: true,
                                       ),
                                     ],
                                   )
@@ -502,28 +504,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       AnimeButton(
-                                          text: "Anime List",
-                                          onTap: () {
-                                           goTo(3); 
-                                          },
-                                          width: adjustedWidth,
-                                          height: adjustedHeight),
+                                        text: "Anime List",
+                                        onTap: () {
+                                          goTo(3);
+                                        },
+                                        width: adjustedWidth,
+                                        height: adjustedHeight,
+                                        horizontalAllignment: false,
+                                      ),
                                       const SizedBox(
                                         height: 30,
                                       ),
                                       AnimeButton(
-                                          text: "Manga List",
-                                          onTap: () {goTo(4);},
-                                          width: adjustedWidth,
-                                          height: adjustedHeight),
+                                        text: "Manga List",
+                                        onTap: () {
+                                          goTo(4);
+                                        },
+                                        width: adjustedWidth,
+                                        height: adjustedHeight,
+                                        horizontalAllignment: false,
+                                      ),
                                       const SizedBox(
                                         height: 30,
                                       ),
                                       AnimeButton(
-                                          text: "Calendar",
-                                          onTap: () {},
-                                          width: adjustedWidth,
-                                          height: adjustedHeight),
+                                        text: "Calendar",
+                                        onTap: () {},
+                                        width: adjustedWidth,
+                                        height: adjustedHeight,
+                                        horizontalAllignment: false,
+                                      ),
                                       const SizedBox(
                                         height: 30,
                                       ),

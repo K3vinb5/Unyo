@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -124,10 +125,11 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
       MaterialPageRoute(builder: (context) => mangaScreen),
     ).then((_) {
       // if (widget.updateHomeScreenLists != null) {
-        // widget.updateHomeScreenLists!();
+      // widget.updateHomeScreenLists!();
       // }
     });
   }
+
   double getAdjustedHeight(double value) {
     if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
       return value;
@@ -200,6 +202,19 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                         goTo(1);
                       },
                     ),
+                    IconButton(
+                      onPressed: () {
+                        setSharedPreferences();
+                        AnimatedSnackBar.material(
+                          "Refreshing Page",
+                          type: AnimatedSnackBarType.info,
+                          desktopSnackBarPosition:
+                              DesktopSnackBarPosition.topCenter,
+                        ).show(context);
+                      },
+                      icon: const Icon(Icons.refresh),
+                      color: Colors.white,
+                    ),
                     Expanded(
                       child: Align(
                         alignment: Alignment.center,
@@ -219,6 +234,9 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
               WindowTitleBarBox(
                 child: Row(
                   children: [
+                    const SizedBox(
+                      width: 70,
+                    ),
                     Expanded(
                       child: MoveWindow(),
                     ),

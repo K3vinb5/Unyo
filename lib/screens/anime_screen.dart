@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
-import 'package:unyo/screens/home_screen.dart';
 
 class AnimeScreen extends StatefulWidget {
   const AnimeScreen({super.key});
@@ -234,41 +234,51 @@ class _AnimeScreenState extends State<AnimeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: InkWell(
-                            onTap: () {
-                              if (updateHomeScreenLists != null) {
-                                updateHomeScreenLists!();
-                              }
-                              goTo(1);
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.only(right: 16.0, top: 32.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.min,
+                        Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Column(
                                 children: [
-                                  Text(
-                                    "Home Screen  ",
-                                    style: TextStyle(
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 10.0, left: 4.0, bottom: 4.0),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        if (updateHomeScreenLists != null) {
+                                          updateHomeScreenLists!();
+                                        }
+                                        goTo(1);
+                                      },
+                                      icon: const Icon(Icons.arrow_back),
                                       color: Colors.white,
-                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: Colors.white,
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 4.0, left: 4.0),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        initAnimeList();
+                                        AnimatedSnackBar.material(
+                                          "Refreshing Page",
+                                          type: AnimatedSnackBarType.info,
+                                          desktopSnackBarPosition:
+                                              DesktopSnackBarPosition.topCenter,
+                                        ).show(context);
+                                      },
+                                      icon: const Icon(Icons.refresh),
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
+                            SizedBox(
+                              height: totalHeight * 0.3,
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          height: totalHeight * 0.3,
-                        ),
-                        //Acts as the beginning of screen
                         AnimatedOpacity(
                           opacity: bannerInfoVisible ? 1.0 : 0.0,
                           duration: !bannerInfoVisible
@@ -340,6 +350,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           },
                           width: adjustedWidth,
                           height: adjustedHeight,
+                          horizontalAllignment: true,
                         ),
                         const SizedBox(height: 40),
                       ],
@@ -350,6 +361,9 @@ class _AnimeScreenState extends State<AnimeScreen> {
               WindowTitleBarBox(
                 child: Row(
                   children: [
+                    const SizedBox(
+                      width: 70,
+                    ),
                     Expanded(
                       child: MoveWindow(),
                     ),

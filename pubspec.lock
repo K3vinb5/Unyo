@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.4.1"
+  animated_snack_bar:
+    dependency: "direct main"
+    description:
+      name: animated_snack_bar
+      sha256: "9ec2d79507546f65b82038c9ac5ddfc3c2fccf285def43070606b0ec0fc56d34"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0"
   another_flutter_splash_screen:
     dependency: "direct main"
     description:

@@ -55,6 +55,7 @@ dependencies:
   loading_animation_widget: ^1.2.1
   collection: ^1.18.0
   hovering: ^1.0.4
+  animated_snack_bar: ^0.4.0
 
 icons_launcher:
   image_path: 'assets/logo.png'
