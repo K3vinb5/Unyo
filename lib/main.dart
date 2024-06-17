@@ -12,7 +12,7 @@ void main() {
   runApp(const MyApp());
   doWhenWindowReady(() {
     appWindow.position = const Offset(200, 200);
-    appWindow.minSize = const Size(854, 480);
+    appWindow.minSize = const Size(1280, 720);
     appWindow.title = "Unyo";
     appWindow.size = const Size(1280, 720);
     appWindow.show();

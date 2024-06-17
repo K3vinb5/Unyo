@@ -5,12 +5,12 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
-import 'package:unyo/screens/video_screen.dart';
+import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
+import 'package:unyo/sources/sources.dart';
 
-import '../api/consumet_api.dart';
 
 class AnimeDetailsScreen extends StatefulWidget {
   const AnimeDetailsScreen(
@@ -32,8 +32,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late int currentSearch;
   int currentSource = 0;
   int currentEpisode = 0;
-  late Map<int, Future<List<List<String>>> Function(String)>
-      dropDownSearchFunctions;
+  late Map<int, /* Future<List<List<String>>> Function(String) */ AnimeSource>
+      animeSources;
   late double progress;
   late double score;
   late String startDate;
@@ -63,10 +63,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    dropDownSearchFunctions = {
-      0: getAnimeConsumetGogoAnimeIds,
-      1: getAnimeConsumetZoroIds,
-      2: getAnimeConsumetGogoAnimeIds,
+    animeSources = {
+      0: GogoAnimeSource(),
+      1: ZoroSource(),
     };
     updateSource(0);
     setUserAnimeModel();
@@ -95,10 +94,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     wrongTitleSearchFunction = () {
       wrongTitleSearchTimer.cancel();
       wrongTitleSearchTimer = Timer(const Duration(milliseconds: 1000), () {
-        //TODO generalize search
         if (wrongTitleSearchController.text != oldWrongTitleSearch &&
             wrongTitleSearchController.text != "") {
-          setSearches(getAnimeConsumetGogoAnimeIds,
+          setSearches(animeSources[currentSource]!.getAnimeTitlesAndIds,
               query: wrongTitleSearchController.text,
               setDialogState: setDialogState);
         }
@@ -185,7 +183,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       currentSource = newSource;
       currentSearch = 0;
       currentSearchString = "";
-      setSearches(dropDownSearchFunctions[currentSource]!);
+      setSearches(animeSources[currentSource]!.getAnimeTitlesAndIds);
     });
   }
 
@@ -287,41 +285,18 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void openVideo(String consumetId, int animeEpisode, String animeName) async {
-    late String consumetStream;
-    if (currentSource == 0) {
-      consumetStream = await getAnimeConsumetGogoAnimeStream(
-          consumetId, animeEpisode, context);
-      videoScreen = VideoScreen(
-        stream: consumetStream,
-        updateEntry: () {
-          updateEntry(animeEpisode);
-        },
-        title: "$animeName, Episode $animeEpisode",
-      );
-    } else if (currentSource == 1) {
-      List<String> streamCaption =
-          await getAnimeConsumetZoroStream(consumetId, animeEpisode, context);
-
-      consumetStream = streamCaption[0];
-      videoScreen = VideoScreen(
-        stream: consumetStream,
-        captions: streamCaption[1],
-        updateEntry: () {
-          updateEntry(animeEpisode);
-        },
-        title: "$animeName, Episode $animeEpisode",
-      );
-    } else {
-      consumetStream = await getAnimeConsumetGogoAnimeStream(
-          consumetId, animeEpisode, context);
-      videoScreen = VideoScreen(
-        stream: consumetStream,
-        updateEntry: () {
-          updateEntry(animeEpisode);
-        },
-        title: "$animeName, Episode $animeEpisode",
-      );
-    }
+    late List<String?> streamAndCaptions;
+    streamAndCaptions = await animeSources[currentSource]!
+        .getAnimeStreamAndCaptions(consumetId, animeEpisode, context);
+    videoScreen = VideoScreen(
+      stream: streamAndCaptions[0] ?? "",
+      captions: streamAndCaptions[1],
+      updateEntry: () {
+        updateEntry(animeEpisode);
+      },
+      title: "$animeName, Episode $animeEpisode",
+    );
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => videoScreen),
@@ -838,7 +813,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                             children: [
                               Row(
                                 children: [
-                                  //TODO dropdowns
                                   const SizedBox(
                                     width: 16,
                                   ),
@@ -852,39 +826,42 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                       color: Colors.white,
                                     ),
                                     items: [
-                                      DropdownMenuItem(
-                                        value: 0,
-                                        onTap: () {
-                                          updateSource(0);
-                                        },
-                                        child: const Text(
-                                          "GogoAnime",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 1,
-                                        onTap: () {
-                                          updateSource(1);
-                                        },
-                                        child: const Text(
-                                          "Zoro",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 2,
-                                        onTap: () {
-                                          updateSource(2);
-                                        },
-                                        child: const Text(
-                                          "AnimePahe",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
+                                      ...animeSources.entries
+                                          .mapIndexed((index, entry) {
+                                        return DropdownMenuItem(
+                                          value: index,
+                                          onTap: () {
+                                            updateSource(index);
+                                          },
+                                          child: Text(
+                                            entry.value.getSourceName(),
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        );
+                                      }),
+                                      // DropdownMenuItem(
+                                      //   value: 0,
+                                      //   onTap: () {
+                                      //     updateSource(0);
+                                      //   },
+                                      //   child: const Text(
+                                      //     "GogoAnime",
+                                      //     style: TextStyle(
+                                      //         fontWeight: FontWeight.bold),
+                                      //   ),
+                                      // ),
+                                      // DropdownMenuItem(
+                                      //   value: 1,
+                                      //   onTap: () {
+                                      //     updateSource(1);
+                                      //   },
+                                      //   child: const Text(
+                                      //     "Zoro",
+                                      //     style: TextStyle(
+                                      //         fontWeight: FontWeight.bold),
+                                      //   ),
+                                      // ),
                                     ],
                                     onChanged: (index) {},
                                   ),

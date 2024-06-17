@@ -5,8 +5,8 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gradient/image_gradient.dart';
-import 'package:unyo/api/consumet_api.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/sources/sources.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
@@ -32,8 +32,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   late int currentSearch;
   int currentSource = 0;
   int currentEpisode = 0;
-  late Map<int, Future<List<List<String>>> Function(String)>
-      dropDownSearchFunctions;
+  late Map<int, /* Future<List<List<String>>> Function(String) */ MangaSource>
+      mangaSources;
   late double progress;
   late double score;
   late String startDate;
@@ -64,8 +64,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    dropDownSearchFunctions = {
-      0: getMangaMangaHereIds,
+    mangaSources = {
+      0: MangaHereSource(),
     };
     updateSource(0);
     setUserMangaModel();
@@ -97,7 +97,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
         //TODO generalize search
         if (wrongTitleSearchController.text != oldWrongTitleSearch &&
             wrongTitleSearchController.text != "") {
-          setSearches(getMangaMangaHereIds,
+          setSearches(mangaSources[currentSource]!.getMangaTitlesAndIds,
               query: wrongTitleSearchController.text,
               setDialogState: setDialogState);
         }
@@ -193,19 +193,18 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       currentSource = newSource;
       currentSearch = 0;
       currentSearchString = "";
-      setSearches(dropDownSearchFunctions[currentSource]!);
+      setSearches(mangaSources[currentSource]!.getMangaTitlesAndIds);
     });
   }
 
   void updateSearch(int currentSearch) async {
-    print("Update Search called, lenght is: ${searchesId.length}");
+    // print("Update Search called, lenght is: ${searchesId.length}");
     if (searchesId.isEmpty) {
       updateSearchTimer.cancel();
       return;
     }
-    ;
-    List<String> newChaptersId =
-        await getMangaMangaHereChapterIds(searchesId[currentSearch]);
+    List<String> newChaptersId = await mangaSources[currentSource]!
+        .getMangaChapterIds(searchesId[currentSearch]);
     setState(() {
       chaptersId = newChaptersId;
     });
@@ -850,39 +849,21 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                       color: Colors.white,
                                     ),
                                     items: [
-                                      DropdownMenuItem(
-                                        value: 0,
-                                        onTap: () {
-                                          updateSource(0);
+                                      ...mangaSources.entries.mapIndexed(
+                                        (index, entry) {
+                                          return DropdownMenuItem(
+                                            value: index,
+                                            onTap: () {
+                                              updateSource(index);
+                                            },
+                                            child: Text(
+                                              entry.value.getSourceName(),
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          );
                                         },
-                                        child: const Text(
-                                          "MangaHere",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
                                       ),
-                                      //   DropdownMenuItem(
-                                      //     value: 1,
-                                      //     onTap: () {
-                                      //       updateSource(1);
-                                      //     },
-                                      //     child: const Text(
-                                      //       "Zoro",
-                                      //       style: TextStyle(
-                                      //           fontWeight: FontWeight.bold),
-                                      //     ),
-                                      //   ),
-                                      //   DropdownMenuItem(
-                                      //     value: 2,
-                                      //     onTap: () {
-                                      //       updateSource(2);
-                                      //     },
-                                      //     child: const Text(
-                                      //       "AnimePahe",
-                                      //       style: TextStyle(
-                                      //           fontWeight: FontWeight.bold),
-                                      //     ),
-                                      //   ),
                                     ],
                                     onChanged: (index) {},
                                   ),
