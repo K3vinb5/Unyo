@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:unyo/models/models.dart';
@@ -181,7 +182,7 @@ Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort,
       if (sort == "Select Sorting")
         "sort": "SEARCH_MATCH"
       else
-        "sort": sort.toUpperCase(),
+        "sort": "${sort.toUpperCase()}_DESC",
       if (format != "Select Format") "format": format.toUpperCase(),
       if (season != "Select Season") "season": season.toUpperCase(),
       if (year != "Select Year") "seasonYear": int.parse(year),
@@ -254,6 +255,9 @@ Future<String> getRandomAnimeBanner(int attempt) async {
       index = Random().nextInt(50);
       attempt++;
       continue;
+      String capitalize(String s) {
+        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+      }
     } else {
       return jsonResponse["data"]["Page"]["media"][index]["bannerImage"];
     }
@@ -318,6 +322,77 @@ Future<String> getUserAvatarImageUrl(String name, int attempt) async {
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   return jsonResponse["data"]["User"]["avatar"]["medium"];
+}
+
+String capitalize(String s) {
+  return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+}
+
+Future<Map<String, Map<String, double>>> getUserStatsMaps(
+    String userName, int attempt) async {
+  Map<String, Map<String, double>> userStatsMaps = {};
+
+  var url = Uri.parse(anilistEndpoint);
+  Map<String, dynamic> query = {
+    "query":
+        "query(\$name:String){User(name:\$name){statistics{anime{episodesWatched minutesWatched formats{format\n\tcount\n\tmeanScore\n\tminutesWatched\n\tchaptersRead\n\tmediaIds\n}statuses{status\n\tcount\n\tmeanScore\n\tminutesWatched\n\tchaptersRead\n\tmediaIds\n}releaseYears{releaseYear\n\tcount\n\tmeanScore\n\tminutesWatched\n\tchaptersRead\n\tmediaIds\n}}}}}",
+    "variables": {
+      "name": userName,
+    }
+  };
+  var response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: json.encode(query),
+  );
+  if (response.statusCode == 500) {
+    print(response.body);
+    if (attempt < 5) {
+      Map<String, Map<String, double>> returnList =
+          await getUserStatsMaps(userName, attempt++);
+      return returnList;
+    }
+    return {};
+  }
+
+  print(json.decode(response.body));
+  var animeStatistics =
+      json.decode(response.body)["data"]["User"]["statistics"]["anime"];
+
+  List<dynamic> formats = animeStatistics["formats"];
+  List<dynamic> statuses = animeStatistics["statuses"];
+  List<dynamic> releaseYears = animeStatistics["releaseYears"];
+
+  Map<String, double> formatsMap = {};
+  for (int i = 0; i < formats.length; i++) {
+    formatsMap.addAll(
+        {capitalize(formats[i]["format"]): formats[i]["count"].toDouble()});
+  }
+  userStatsMaps.addAll({"formats": formatsMap});
+
+  Map<String, double> statusesMap = {};
+  for (int i = 0; i < statuses.length; i++) {
+    statusesMap.addAll(
+        {capitalize(statuses[i]["status"]): statuses[i]["count"].toDouble()});
+  }
+  userStatsMaps.addAll({"statuses": statusesMap});
+
+  Map<String, double> releaseYearsMap = {};
+  for (int i = 0; i < releaseYears.length; i++) {
+    releaseYearsMap.addAll({
+      releaseYears[i]["releaseYear"].toString():
+          releaseYears[i]["count"].toDouble()
+    });
+  }
+  // userStatsMaps.addAll({"releaseYears": releaseYearsMap});
+  Map<String, double> watchedStatisticsMap = {};
+  watchedStatisticsMap.addAll(
+      {"episodesWatched": animeStatistics["episodesWatched"].toDouble()});
+  watchedStatisticsMap
+      .addAll({"minutesWatched": animeStatistics["minutesWatched"].toDouble()});
+  userStatsMaps.addAll({"watchedStatistics": watchedStatisticsMap});
+
+  return userStatsMaps;
 }
 
 Future<List<AnimeModel>> getUserAnimeLists(
@@ -620,4 +695,108 @@ Future<int> getAnimeCurrentEpisode(int mediaId) async {
   return jsonResponse["data"]["AiringSchedule"]["episode"];
 }
 
-//MANGA SPECIFIC QUERIES
+Future<List<AnimeModel>> getAnimeListFromMALIds(
+    List<int> malIds, String name, int attempt) async {
+  if (malIds.isEmpty) return [];
+
+  List<AnimeModel> returnList = [];
+  List<String> subQueries = [];
+
+  for (int i = 0; i < malIds.length; i++) {
+    subQueries.add(getSingleAnimeQueryFromMALIds("$name$i", malIds[i]));
+  }
+
+  String spreadedSubQueries = subQueries.join("\n");
+
+  var url = Uri.parse(anilistEndpoint);
+  Map<String, dynamic> query = {
+    "query": "query{$spreadedSubQueries}",
+  };
+  var response = await http.post(
+    url,
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: json.encode(query),
+  );
+
+  if (response.statusCode == 500) {
+    if (attempt < 5) {
+      return getAnimeListFromMALIds(malIds, name, attempt++);
+    }
+  }
+
+  Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+  List<dynamic> mapsList = jsonResponse["data"].entries.toList();
+
+  for (int i = 0; i < mapsList.length; i++) {
+    MapEntry mapEntry = mapsList[i] as MapEntry;
+
+    if (!mapEntry.key.contains(name) || mapEntry.value == null) continue;
+
+    Map<String, dynamic> animeEntry = mapEntry.value;
+    if (animeEntry["type"] != "ANIME") continue;
+    returnList.add(AnimeModel(
+        id: animeEntry["id"],
+        title: animeEntry["title"]["userPreferred"],
+        coverImage: animeEntry["coverImage"]["large"],
+        bannerImage: animeEntry["bannerImage"],
+        startDate:
+            "${animeEntry["startDate"]["day"]}/${animeEntry["startDate"]["month"]}/${animeEntry["startDate"]["year"]}",
+        endDate: "",
+        type: animeEntry["type"],
+        status: animeEntry["status"],
+        averageScore: animeEntry["averageScore"],
+        episodes: animeEntry["episodes"],
+        duration: animeEntry["episodes"],
+        description: animeEntry["description"],
+        format: animeEntry["format"]));
+  }
+
+  return returnList;
+}
+
+String getSingleAnimeQueryFromMALIds(String name, int malId) {
+  return "$name: Media(idMal: $malId) { id title {userPreferred} coverImage {large} bannerImage startDate {year month day} description type status averageScore episodes format}";
+}
+
+Future<List<int>> getMALIdListFromDay(String day, int attempt) async {
+  List<int> returnList = [];
+
+  print(day);
+  var url = Uri.parse(
+      "https://api.jikan.moe/v4/schedules?filter=${day}&sfw=true&unapproved=false&page=1&limit=25");
+
+  var response = await http.get(
+    url,
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+  );
+
+  await Future.delayed(const Duration(milliseconds: 350));
+
+  if (response.statusCode == 500) {
+    if (attempt < 5) {
+      return getMALIdListFromDay(day, attempt++);
+    }
+  }
+
+  List<dynamic> dataList = [];
+
+  if (json.decode(response.body)["data"] != null) {
+    dataList = json.decode(response.body)["data"];
+  } else {
+    return [];
+  }
+
+  for (int i = 0; i < dataList.length; i++) {
+    if (dataList[i]["aired"]["prop"]["from"]["year"] != DateTime.now().year ||
+        returnList.contains(dataList[i]["mal_id"])) continue;
+    returnList.add(dataList[i]["mal_id"]);
+  }
+  return returnList;
+}

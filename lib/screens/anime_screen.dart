@@ -275,7 +275,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                               ),
                             ),
                             SizedBox(
-                              height: totalHeight * 0.3,
+                              height: totalHeight * 0.37,
                             ),
                           ],
                         ),

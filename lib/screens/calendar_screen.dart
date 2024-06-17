@@ -2,40 +2,56 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unyo/models/models.dart';
-import 'package:unyo/widgets/widgets.dart';
-import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/models/models.dart';
+import 'package:unyo/screens/screens.dart';
+import 'package:unyo/widgets/widgets.dart';
 
-class AnimeUserListsScreen extends StatefulWidget {
-  const AnimeUserListsScreen({super.key});
+class CalendarScreen extends StatefulWidget {
+  const CalendarScreen({super.key});
 
   @override
-  State<AnimeUserListsScreen> createState() => _AnimeUserListsScreenState();
+  State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
+class _CalendarScreenState extends State<CalendarScreen>
     with TickerProviderStateMixin {
-  Map<String, List<AnimeModel>> userAnimeLists = {};
-  String? userName;
-  int? userId;
   final double minimumWidth = 124.08;
   final double minimumHeight = 195.44;
   double maximumWidth = 0;
   double maximumHeight = 0;
+  final List<String> weekDays = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday"
+  ];
+  Map<String, List<AnimeModel>> calendarMap = {};
 
   @override
   void initState() {
     super.initState();
-    setSharedPreferences();
-    // initUserAnimeListsMap();
     //TODO find this value with totalHeight and totalWidth in the future
     maximumWidth = minimumWidth * 1.4;
     maximumHeight = minimumHeight * 1.4;
+    //TODO temp
+    initCalendarMap();
   }
 
-  //horizontalPadding must be given as half of its real value as to avoid multiple divisions
+  void initCalendarMap() async {
+    for (int i = 0; i < weekDays.length; i++) {
+      List<int> malIds = await getMALIdListFromDay(weekDays[i], 0);
+      List<AnimeModel> animeList =
+          await getAnimeListFromMALIds(malIds, weekDays[i], 0);
+      setState(() {
+        calendarMap.addAll({weekDays[i]: animeList});
+      });
+    }
+  }
+
   List<Widget> generateAnimeWidgetRows(
       double totalWidth,
       double horizontalPadding,
@@ -144,33 +160,11 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
     );
   }
 
-  void initUserAnimeListsMap() async {
-    var newUserAnimeLists = await getAllUserAnimeLists(userId!, 0);
-    setState(() {
-      userAnimeLists = newUserAnimeLists;
-    });
-  }
-
-  void setSharedPreferences() async {
-    var prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("accessToken") == null) {
-      // _startServer();
-      // goToLogin();
-      return;
-    } else {
-      // accessToken = prefs.getString("accessToken");
-      userName = prefs.getString("userName");
-      userId = prefs.getInt("userId");
-      initUserAnimeListsMap();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     //TODO must calculate both adjustedHeight and adjustedWidth in the future so it doesn't depend on 16/9 aspect ratio
 
-    TabController tabContrller =
-        TabController(length: userAnimeLists.entries.length, vsync: this);
+    TabController tabContrller = TabController(length: 7, vsync: this);
     //sizes calculations
     double totalWidth = MediaQuery.of(context).size.width;
     double totalHeight = MediaQuery.of(context).size.height;
@@ -201,7 +195,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
                     ),
                     IconButton(
                       onPressed: () {
-                        setSharedPreferences();
+                        initCalendarMap();
                         AnimatedSnackBar.material(
                           "Refreshing Page",
                           type: AnimatedSnackBarType.info,
@@ -212,12 +206,12 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
                       icon: const Icon(Icons.refresh),
                       color: Colors.white,
                     ),
-                    Expanded(
+                    const Expanded(
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "${userName ?? ""} Anime List",
-                          style: const TextStyle(
+                          "Animes Calendar",
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 20.0,
@@ -251,16 +245,49 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
               unselectedLabelColor: Colors.grey,
               isScrollable: true,
               controller: tabContrller,
-              tabs: [
-                ...userAnimeLists.entries.map((entry) {
-                  String title = entry.key;
-                  return SizedBox(
-                    width: 150,
-                    child: Tab(
-                      text: title,
-                    ),
-                  );
-                }),
+              tabs: const [
+                SizedBox(
+                  width: 200,
+                  child: Tab(
+                    text: "Monday",
+                  ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: Tab(
+                    text: "Tuesday",
+                  ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: Tab(
+                    text: "Wednesday",
+                  ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: Tab(
+                    text: "Thursday",
+                  ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: Tab(
+                    text: "Friday",
+                  ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: Tab(
+                    text: "Saturday",
+                  ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: Tab(
+                    text: "Sunday",
+                  ),
+                ),
               ],
             ),
           ),
@@ -271,12 +298,12 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
               controller: tabContrller,
               children: [
                 //TODO temp, must use wrap in the future
-                ...userAnimeLists.entries.map(
+                ...calendarMap.entries.map(
                   (entry) {
-                    String title = entry.key;
+                    String weekDay = entry.key;
                     List<AnimeModel> animeList = entry.value;
                     List<Widget> rowsList = generateAnimeWidgetRows(totalWidth,
-                        2, title, calculatedWidth, calculatedHeight, animeList);
+                        2, weekDay, calculatedWidth, calculatedHeight, animeList);
                     return SizedBox(
                       width: totalWidth,
                       height: double.infinity,

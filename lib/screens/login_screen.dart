@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
@@ -44,16 +45,25 @@ class _LoginPageState extends State<LoginPage> {
     goToMainScreen();
   }
 
+  void manualLaunchUrl() async {
+    String authUrl =
+        'https://anilist.co/api/v2/oauth/authorize?client_id=18959&redirect_urihttps://anilist.co/api/v2/oauth/pin=&response_type=code';
+    if (await canLaunchUrl(Uri.parse(authUrl))) {
+      await launchUrl(Uri.parse(authUrl));
+    } else {
+      throw 'Could not launch $authUrl';
+    }
+  }
+
   void manualLogin(String code) async {
-    accessCode = code;
-    // var url = "https://anilist.co/api/v2/oauth/token";
-    var url = "https:kevin-is-awesome.mooo.com/unyo/getToken";
+    var url = "https://anilist.co/api/v2/oauth/token";
+
     Map<String, dynamic> query = {
       "grant_type": "authorization_code",
-      "client_id": 17550,
-      "client_secret": "xI8KTZlKm2F3kHXLko1ArQ21bKap4MojgDTk6Ukx",
+      "client_id": 18959,
+      "client_secret": "c098EXiKkLbWatBWbNcSJYPv2rnWcQooqfxvoEcR",
       "redirect_uri":
-          "http://localhost:9999/auth", // http://example.com/callback
+          "https://anilist.co/api/v2/oauth/pin", // http://example.com/callback
       "code": code,
     };
     var uri = Uri.parse(url);
@@ -159,12 +169,35 @@ class _LoginPageState extends State<LoginPage> {
                                   const SizedBox(
                                     height: 20,
                                   ),
-                                  StyledTextField(
-                                    width: 350,
-                                    controller: manualLoginController,
-                                    color: Colors.white,
-                                    hintColor: Colors.grey,
-                                    hint: "Paste your code here",
+                                  Column(
+                                    children: [
+                                      StyledTextField(
+                                        width: 350,
+                                        controller: manualLoginController,
+                                        color: Colors.white,
+                                        hintColor: Colors.grey,
+                                        hint: "Paste your code here",
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          manualLaunchUrl();
+                                        },
+                                        style: const ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.black12),
+                                        ),
+                                        child: const Text(
+                                          "Click me First!",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(
                                     height: 20,

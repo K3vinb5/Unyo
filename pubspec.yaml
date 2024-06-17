@@ -56,6 +56,8 @@ dependencies:
   collection: ^1.18.0
   hovering: ^1.0.4
   animated_snack_bar: ^0.4.0
+  pie_chart: ^5.4.0
+  palette_generator: ^0.3.3+3
 
 icons_launcher:
   image_path: 'assets/logo.png'

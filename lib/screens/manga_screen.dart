@@ -283,7 +283,7 @@ class _MangaScreenState extends State<MangaScreen> {
                               ),
                             ),
                             SizedBox(
-                              height: totalHeight * 0.3,
+                              height: totalHeight * 0.37,
                             ),
                           ],
                         ),

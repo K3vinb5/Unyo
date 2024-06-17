@@ -2,6 +2,8 @@ import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:palette_generator/palette_generator.dart';
+import 'package:pie_chart/pie_chart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelfio;
@@ -40,6 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
   double adjustedHeight = 0;
   double totalWidth = 0;
   double totalHeight = 0;
+  PaletteGenerator? paletteGenerator;
+  Map<String, Map<String, double>>? userStats;
+  int? episodesWatched;
+  int? minutesWatched;
 
   Future<void> _startServer() async {
     handler(shelf.Request request) async {
@@ -112,18 +118,38 @@ class _HomeScreenState extends State<HomeScreen> {
       newbannerUrl = await getUserbannerImageUrl(userName!, 0);
     } catch (error) {
       //If newBannerURL never returns a string use default avatar
-      print("could not fetch image");
+      print("could not fetch user banner image");
     }
+    setBannerPallete(newbannerUrl);
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
     List<AnimeModel> newWatchingAnimeList =
         await getUserAnimeLists(userId!, "Watching", 0);
     List<MangaModel> newReadingMangaList =
         await getUserMangaLists(userId!, "Reading", 0);
+    Map<String, Map<String, double>> newUserStats =
+        await getUserStatsMaps(userName!, 0);
+    episodesWatched =
+        newUserStats["watchedStatistics"]?["episodesWatched"]?.toInt() ?? -1;
+    minutesWatched =
+        newUserStats["watchedStatistics"]?["minutesWatched"]?.toInt() ?? -1;
+    newUserStats.remove("watchedStatistics");
     setState(() {
       bannerImageUrl = newbannerUrl;
       avatarImageUrl = newavatarUrl;
       watchingList = newWatchingAnimeList;
       readingList = newReadingMangaList;
+      userStats = newUserStats;
+    });
+  }
+
+  void setBannerPallete(String url) async {
+    ImageProvider image = NetworkImage(url);
+    var newPaletteGenerator = await PaletteGenerator.fromImageProvider(
+      image,
+      maximumColorCount: 20,
+    );
+    setState(() {
+      paletteGenerator = newPaletteGenerator;
     });
   }
 
@@ -136,6 +162,54 @@ class _HomeScreenState extends State<HomeScreen> {
       watchingList = newWatchingAnimeList;
       readingList = newReadingMangaList;
     });
+  }
+
+  List<Widget> getUserCharts() {
+    List<Color> colorList = [];
+    if(paletteGenerator != null){
+      colorList = paletteGenerator!.colors.toList();
+      // colorList = colorList.reversed.toList();
+    }
+    return [
+      ...userStats!.entries.map(
+        (entry) {
+          Map<String, double> entryMap = entry.key != "formats" ? {"Planning" : 0.0, "Current" : 0.0, "Completed" : 0.0, "Repeating" : 0.0, "Paused" : 0.0, "Dropped" : 0.0} : {"Tv" : 0.0, "Tv short" : 0.0, "Movie": 0.0, "Special" : 0.0, "Ova" : 0.0, "Ona" : 0.0, "Music" : 0.0};
+          if(entry.value.entries.isNotEmpty){
+            entryMap = entry.value; 
+          }
+          return PieChart(
+            dataMap: entryMap,
+            animationDuration: const Duration(milliseconds: 800),
+            chartLegendSpacing: 32,
+            chartRadius: adjustedWidth * 0.15,
+            colorList: colorList.isNotEmpty ? colorList : [Colors.purpleAccent],
+            initialAngleInDegree: 0,
+            chartType: ChartType.disc,
+            legendOptions: LegendOptions(
+              showLegendsInRow: false,
+              legendPosition: entry.key != "formats"
+                  ? LegendPosition.right
+                  : LegendPosition.left,
+              showLegends: true,
+              legendShape: BoxShape.circle,
+              legendTextStyle: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            chartValuesOptions: const ChartValuesOptions(
+              showChartValueBackground: true,
+              showChartValues: true,
+              showChartValuesInPercentage: false,
+              showChartValuesOutside: false,
+              decimalPlaces: 1,
+            ),
+            // gradientList: ---To add gradient colors---
+            // emptyColorGradient: ---Empty Color gradient---
+          );
+        },
+      )
+    ];
   }
 
   double getAdjustedHeight(double value) {
@@ -506,6 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       AnimeButton(
                                         text: "Anime List",
                                         onTap: () {
+                                          //animeListScreen
                                           goTo(3);
                                         },
                                         width: adjustedWidth,
@@ -518,6 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       AnimeButton(
                                         text: "Manga List",
                                         onTap: () {
+                                          //mangaListScreen
                                           goTo(4);
                                         },
                                         width: adjustedWidth,
@@ -529,7 +605,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       AnimeButton(
                                         text: "Calendar",
-                                        onTap: () {},
+                                        onTap: () {
+                                          //calendarScreen
+                                          goTo(5);
+                                        },
                                         width: adjustedWidth,
                                         height: adjustedHeight,
                                         horizontalAllignment: false,
@@ -542,6 +621,55 @@ class _HomeScreenState extends State<HomeScreen> {
                                       //     onTap: () {},
                                       //     width: adjustedWidth,
                                       //     height: adjustedHeight),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: adjustedWidth * 0.05),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            Text(
+                                              "Episodes Watched: ${episodesWatched ?? -1}",
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 19,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              "Hours Watched: ${(minutesWatched! ~/ 60)}",
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 19,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 50,
+                                      ),
+                                      userStats != null
+                                          ? Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [...getUserCharts()],
+                                            )
+                                          : const SizedBox(),
                                     ],
                                   ),
                                 ),
