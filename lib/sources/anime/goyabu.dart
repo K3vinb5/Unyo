@@ -61,17 +61,20 @@ class GoyabuSource implements AnimeSource {
       "appfullhd",
       "apphd",
       "apphd2",
-     /*  "appfullhd", */
-      "apphd2",
+      "appsd",
       "appsd2",
-      "apphd",
-      "appsd"
     ];
+    bool newMp4 = false;
+    for(String line in cleanLines){
+      newMp4 = newMp4 || (line.contains("appsd2") || line.contains("apphd2"));
+    }
+    if(!newMp4) qualities.removeAt(0);
     for (String quality in qualities) {
       for (String line in cleanLines) {
         if (line.contains(quality)) {
+          print(line);
           return [
-            line /* "https://cdn8.anicdn.net/apphd/43606.mp4" */,
+            line,
             null,
             "https://www.goyabu.us/"
           ];
@@ -114,7 +117,7 @@ class GoyabuSource implements AnimeSource {
 
   @override
   String getSourceName() {
-    return "Goyabu (Pt -Br)";
+    return "Goyabu (Pt-Br)";
   }
 
 }
