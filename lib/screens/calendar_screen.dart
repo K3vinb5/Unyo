@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
@@ -297,13 +298,17 @@ class _CalendarScreenState extends State<CalendarScreen>
             child: TabBarView(
               controller: tabContrller,
               children: [
-                //TODO temp, must use wrap in the future
                 ...calendarMap.entries.map(
                   (entry) {
                     String weekDay = entry.key;
                     List<AnimeModel> animeList = entry.value;
-                    List<Widget> rowsList = generateAnimeWidgetRows(totalWidth,
-                        2, weekDay, calculatedWidth, calculatedHeight, animeList);
+                    List<Widget> rowsList = generateAnimeWidgetRows(
+                        totalWidth,
+                        2,
+                        weekDay,
+                        calculatedWidth,
+                        calculatedHeight,
+                        animeList);
                     return SizedBox(
                       width: totalWidth,
                       height: double.infinity,

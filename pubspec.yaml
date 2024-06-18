@@ -59,6 +59,8 @@ dependencies:
   pie_chart: ^5.4.0
   palette_generator: ^0.3.3+3
   html: ^0.15.4
+  smooth_list_view: ^1.0.5
+  crypto: ^3.0.3
 
 icons_launcher:
   image_path: 'assets/logo.png'

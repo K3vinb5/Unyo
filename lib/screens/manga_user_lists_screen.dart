@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -289,41 +290,6 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                             horizontal: 12.0,
                             vertical: 8.0,
                           ),
-                          // child: Wrap(
-                          //   runSpacing: -(totalWidth * 0.1),
-                          //   alignment: WrapAlignment.center,
-                          //   children: [
-                          //     ...mangaList.mapIndexed(
-                          //       (index, mediaModel) {
-                          //         return Hero(
-                          //           tag:
-                          //               "${"user-manga-list-$title-view"}-$index",
-                          //           child: MangaWidget(
-                          //             title: mediaModel.title,
-                          //             score: mediaModel.averageScore,
-                          //             coverImage: mediaModel.coverImage,
-                          //             onTap: () {
-                          //               openMangaDetails(
-                          //                 mediaModel,
-                          //                 "${"user-manga-list-$title-view"}-$index",
-                          //               );
-                          //             },
-                          //             textColor: Colors.white,
-                          //             height: min(
-                          //                 max(calculatedHeight, minimumHeight),
-                          //                 maximumHeight),
-                          //             width: min(
-                          //                 max(calculatedWidth, minimumWidth),
-                          //                 maximumWidth),
-                          //             year: mediaModel.startDate,
-                          //             format: mediaModel.format,
-                          //             status: mediaModel.status,
-                          //           ),
-                          //         );
-                          //       },
-                          //     ),
-                          //   ],
-                          // ),
                           child: SizedBox(
                             width: totalWidth,
                             height: totalHeight,

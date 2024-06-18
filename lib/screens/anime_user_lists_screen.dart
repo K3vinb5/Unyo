@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -270,7 +271,6 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
             child: TabBarView(
               controller: tabContrller,
               children: [
-                //TODO temp, must use wrap in the future
                 ...userAnimeLists.entries.map(
                   (entry) {
                     String title = entry.key;

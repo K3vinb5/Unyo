@@ -96,12 +96,12 @@ class VideoProgressSlider extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SelectableText("Your Id:\n$topic",
+                            SelectableText("Your Id:\n${topic.split("-")[1]}",
                                 style: const TextStyle(color: Colors.white)),
                             const SizedBox(
                               height: 20,
                             ),
-                            const Text("Please paste your buddys peerId",
+                            const Text("Please paste your buddys peerId, or all come up with a new one!",
                                 style: TextStyle(color: Colors.white)),
                             const SizedBox(
                               height: 20,

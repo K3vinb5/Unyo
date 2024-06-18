@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
@@ -10,7 +12,6 @@ import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
 import 'package:unyo/sources/sources.dart';
-
 
 class AnimeDetailsScreen extends StatefulWidget {
   const AnimeDetailsScreen(
@@ -53,7 +54,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   double adjustedHeight = 0;
   double totalWidth = 0;
   double totalHeight = 0;
-
+  bool isShiftKeyPressed = false;
   List<DropdownMenuEntry> wrongTitleEntries = [];
   String oldWrongTitleSearch = "";
   Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 500), () {});
@@ -63,6 +64,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     animeSources = {
       0: GogoAnimeSource(),
       1: ZoroSource(),
@@ -71,6 +73,29 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     };
     updateSource(0);
     setUserAnimeModel();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
+  }
+
+  bool _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = true;
+      });
+      return true;
+    } else if (event is KeyUpEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = false;
+      });
+      return true;
+    }
+    return false;
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
@@ -812,7 +837,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         SizedBox(
                           width: totalWidth / 2,
                           height: totalHeight * 0.63,
-                          child: ListView(
+                          child: SmoothListView(
+                            duration: const Duration(milliseconds: 200),
+                            shouldScroll: !isShiftKeyPressed,
                             children: [
                               Row(
                                 children: [

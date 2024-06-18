@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/services.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/models/models.dart';
@@ -31,13 +33,32 @@ class _MangaScreenState extends State<MangaScreen> {
   double totalHeight = 0;
   ScrollController pageScrollController = ScrollController();
   TextEditingController quickSearchController = TextEditingController();
+  bool isShiftKeyPressed = false;
 
   @override
   void initState() {
     super.initState();
+    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     pageScrollController.addListener(setScrollListener);
     initPage();
     initMangaList();
+  }
+
+  bool _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = true;
+      });
+      return true;
+    } else if (event is KeyUpEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = false;
+      });
+      return true;
+    }
+    return false;
   }
 
   void setScrollListener() {
@@ -237,80 +258,84 @@ class _MangaScreenState extends State<MangaScreen> {
                       ),
                     ],
                   ),
-                  SingleChildScrollView(
+                  SmoothListView(
                     controller: pageScrollController,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10.0, left: 4.0, bottom: 4.0),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        if (updateHomeScreenLists != null) {
-                                          updateHomeScreenLists!();
-                                        }
-                                        goTo(1);
-                                      },
-                                      icon: const Icon(Icons.arrow_back),
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 4.0, left: 4.0),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        initMangaList();
-                                        AnimatedSnackBar.material(
-                                          "Refreshing Page",
-                                          type: AnimatedSnackBarType.info,
-                                          desktopSnackBarPosition:
-                                              DesktopSnackBarPosition.topCenter,
-                                        ).show(context);
-                                      },
-                                      icon: const Icon(Icons.refresh),
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: totalHeight * 0.37,
-                            ),
-                          ],
-                        ),
-                        AnimatedOpacity(
-                          opacity: bannerInfoVisible ? 1.0 : 0.0,
-                          duration: !bannerInfoVisible
-                              ? const Duration(milliseconds: 300)
-                              : const Duration(milliseconds: 1500),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                    duration: const Duration(milliseconds: 200),
+                    shouldScroll: !isShiftKeyPressed,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Stack(
                             children: [
-                              SearchingMangaMenu(
-                                width: 400,
-                                controller: quickSearchController,
-                                color: Colors.white,
-                                hintColor: Colors.grey,
-                                label: "Search...",
-                                labelColor: Colors.white,
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10.0, left: 4.0, bottom: 4.0),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          if (updateHomeScreenLists != null) {
+                                            updateHomeScreenLists!();
+                                          }
+                                          goTo(1);
+                                        },
+                                        icon: const Icon(Icons.arrow_back),
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 4.0, left: 4.0),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          initMangaList();
+                                          AnimatedSnackBar.material(
+                                            "Refreshing Page",
+                                            type: AnimatedSnackBarType.info,
+                                            desktopSnackBarPosition:
+                                                DesktopSnackBarPosition
+                                                    .topCenter,
+                                          ).show(context);
+                                        },
+                                        icon: const Icon(Icons.refresh),
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              const SizedBox(
-                                width: 16,
+                              SizedBox(
+                                height: totalHeight * 0.37,
                               ),
                             ],
                           ),
-                        ),
+                          AnimatedOpacity(
+                            opacity: bannerInfoVisible ? 1.0 : 0.0,
+                            duration: !bannerInfoVisible
+                                ? const Duration(milliseconds: 300)
+                                : const Duration(milliseconds: 1500),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SearchingMangaMenu(
+                                  width: 400,
+                                  controller: quickSearchController,
+                                  color: Colors.white,
+                                  hintColor: Colors.grey,
+                                  label: "Search...",
+                                  labelColor: Colors.white,
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                              ],
+                            ),
+                          ),
 
-                        /*MangaWidgetList(
+                          /*MangaWidgetList(
                           tag: "manga-details-list1",
                           title: "Recently Released",
                           animeList: recentlyReleased,
@@ -320,50 +345,51 @@ class _MangaScreenState extends State<MangaScreen> {
                           width: adjustedWidth,
                           height: adjustedHeight,
                         ),*/
-                        MangaWidgetList(
-                          tag: "manga-details-list2",
-                          title: "Trending",
-                          mangaList: trendingMangaList,
-                          textColor: Colors.white,
-                          loadMore: true,
-                          loadMoreFunction: getMangaModelListTrending,
-                          width: adjustedWidth,
-                          height: adjustedHeight,
-                        ),
-                        MangaWidgetList(
-                          tag: "manga-details-list3",
-                          title: "Yearly Popular",
-                          mangaList: seasonPopularMangaList,
-                          textColor: Colors.white,
-                          loadMore: true,
-                          loadMoreFunction: (int page, int n, int attempt) {
-                            return getMangaModelListYearlyPopular(
-                                page,
-                                n,
-                                DateTime.now().year,
-                                // getCurrentSeason(),
-                                attempt);
-                          },
-                          width: adjustedWidth,
-                          height: adjustedHeight,
-                        ),
-                        const SizedBox(height: 20),
-                        AnimeButton(
-                          text: "Advanced Search",
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const MediaSearchScreen(
-                                type: "MANGA",
-                              ),
-                            ));
-                          },
-                          width: adjustedWidth,
-                          height: adjustedHeight,
-                          horizontalAllignment: false,
-                        ),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
+                          MangaWidgetList(
+                            tag: "manga-details-list2",
+                            title: "Trending",
+                            mangaList: trendingMangaList,
+                            textColor: Colors.white,
+                            loadMore: true,
+                            loadMoreFunction: getMangaModelListTrending,
+                            width: adjustedWidth,
+                            height: adjustedHeight,
+                          ),
+                          MangaWidgetList(
+                            tag: "manga-details-list3",
+                            title: "Yearly Popular",
+                            mangaList: seasonPopularMangaList,
+                            textColor: Colors.white,
+                            loadMore: true,
+                            loadMoreFunction: (int page, int n, int attempt) {
+                              return getMangaModelListYearlyPopular(
+                                  page,
+                                  n,
+                                  DateTime.now().year,
+                                  // getCurrentSeason(),
+                                  attempt);
+                            },
+                            width: adjustedWidth,
+                            height: adjustedHeight,
+                          ),
+                          const SizedBox(height: 20),
+                          AnimeButton(
+                            text: "Advanced Search",
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const MediaSearchScreen(
+                                  type: "MANGA",
+                                ),
+                              ));
+                            },
+                            width: adjustedWidth,
+                            height: adjustedHeight,
+                            horizontalAllignment: false,
+                          ),
+                          const SizedBox(height: 40),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),

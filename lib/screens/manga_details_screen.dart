@@ -4,7 +4,9 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_gradient/image_gradient.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/screens/screens.dart';
@@ -53,7 +55,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   double adjustedHeight = 0;
   double totalWidth = 0;
   double totalHeight = 0;
-
+  bool isShiftKeyPressed = false;
   List<DropdownMenuEntry> wrongTitleEntries = [];
   String oldWrongTitleSearch = "";
   Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 0), () {});
@@ -64,11 +66,35 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     mangaSources = {
       0: MangaHereSource(),
     };
     updateSource(0);
     setUserMangaModel();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
+  }
+
+  bool _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = true;
+      });
+      return true;
+    } else if (event is KeyUpEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = false;
+      });
+      return true;
+    }
+    return false;
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
@@ -313,7 +339,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       MaterialPageRoute(
         builder: (context) => ReadingScreen(
           chapterId: chapterId,
-          getMangaChapterPages: mangaSources[currentSource]!.getMangaChapterPages,
+          getMangaChapterPages:
+              mangaSources[currentSource]!.getMangaChapterPages,
         ),
       ),
     );
@@ -832,11 +859,12 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                         SizedBox(
                           width: totalWidth / 2,
                           height: totalHeight * 0.63,
-                          child: ListView(
+                          child: SmoothListView(
+                            duration: const Duration(milliseconds: 200),
+                            shouldScroll: !isShiftKeyPressed,
                             children: [
                               Row(
                                 children: [
-                                  //TODO dropdowns
                                   const SizedBox(
                                     width: 16,
                                   ),

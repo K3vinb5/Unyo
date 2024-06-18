@@ -1,5 +1,7 @@
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/services.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -46,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, Map<String, double>>? userStats;
   int? episodesWatched;
   int? minutesWatched;
+  bool isShiftKeyPressed = false;
 
   Future<void> _startServer() async {
     handler(shelf.Request request) async {
@@ -88,6 +91,23 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  bool _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = true;
+      });
+      return true;
+    } else if (event is KeyUpEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = false;
+      });
+      return true;
+    }
+    return false;
+  }
+
   void goToLogin() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -101,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     setSharedPreferences();
     updateHomeScreenLists = updateUserLists;
   }
@@ -166,16 +187,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> getUserCharts() {
     List<Color> colorList = [];
-    if(paletteGenerator != null){
+    if (paletteGenerator != null) {
       colorList = paletteGenerator!.colors.toList();
       // colorList = colorList.reversed.toList();
     }
     return [
       ...userStats!.entries.map(
         (entry) {
-          Map<String, double> entryMap = entry.key != "formats" ? {"Planning" : 0.0, "Current" : 0.0, "Completed" : 0.0, "Repeating" : 0.0, "Paused" : 0.0, "Dropped" : 0.0} : {"Tv" : 0.0, "Tv short" : 0.0, "Movie": 0.0, "Special" : 0.0, "Ova" : 0.0, "Ona" : 0.0, "Music" : 0.0};
-          if(entry.value.entries.isNotEmpty){
-            entryMap = entry.value; 
+          Map<String, double> entryMap = entry.key != "formats"
+              ? {
+                  "Planning": 0.0,
+                  "Current": 0.0,
+                  "Completed": 0.0,
+                  "Repeating": 0.0,
+                  "Paused": 0.0,
+                  "Dropped": 0.0
+                }
+              : {
+                  "Tv": 0.0,
+                  "Tv short": 0.0,
+                  "Movie": 0.0,
+                  "Special": 0.0,
+                  "Ova": 0.0,
+                  "Ona": 0.0,
+                  "Music": 0.0
+                };
+          if (entry.value.entries.isNotEmpty) {
+            entryMap = entry.value;
           }
           return PieChart(
             dataMap: entryMap,
@@ -495,192 +533,199 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   : Padding(
                       padding: EdgeInsets.only(top: totalHeight * 0.25),
-                      child: SingleChildScrollView(
+                      child: SmoothListView(
                         scrollDirection: Axis.vertical,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            watchingList != null
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      AnimeButton(
-                                        text: "Animes",
-                                        onTap: () {
-                                          goTo(0);
-                                        },
-                                        width: adjustedWidth,
-                                        height: adjustedHeight,
-                                        horizontalAllignment: true,
-                                      ),
-                                      AnimeButton(
-                                        text: "Mangas",
-                                        onTap: () {
-                                          goTo(2);
-                                        },
-                                        width: adjustedWidth,
-                                        height: adjustedHeight,
-                                        horizontalAllignment: true,
-                                      ),
-                                    ],
-                                  )
-                                : const Text(
-                                    "Login found! Loading, please wait...",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                            //NOTE pageStart
-                            // FloattingMenu(
-                            // height: totalHeight * 0.1,
-                            // ),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            watchingList != null
-                                ? AnimeWidgetList(
-                                    tag: "home-details-list1",
-                                    title: "Continue Watching",
-                                    animeList: watchingList!,
-                                    textColor: Colors.white,
-                                    loadMore: false,
-                                    updateHomeScreenLists: updateUserLists,
-                                    width: adjustedWidth,
-                                    height: adjustedHeight,
-                                    verticalPadding: 30,
-                                  )
-                                : const SizedBox(),
-                            readingList != null
-                                ? MangaWidgetList(
-                                    tag: "home-details-list2",
-                                    title: "Continue Reading",
-                                    mangaList: readingList!,
-                                    textColor: Colors.white,
-                                    loadMore: false,
-                                    updateHomeScreenLists: updateUserLists,
-                                    width: adjustedWidth,
-                                    height: adjustedHeight,
-                                    verticalPadding: 30,
-                                  )
-                                : const SizedBox(),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      AnimeButton(
-                                        text: "Anime List",
-                                        onTap: () {
-                                          //animeListScreen
-                                          goTo(3);
-                                        },
-                                        width: adjustedWidth,
-                                        height: adjustedHeight,
-                                        horizontalAllignment: false,
-                                      ),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      AnimeButton(
-                                        text: "Manga List",
-                                        onTap: () {
-                                          //mangaListScreen
-                                          goTo(4);
-                                        },
-                                        width: adjustedWidth,
-                                        height: adjustedHeight,
-                                        horizontalAllignment: false,
-                                      ),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      AnimeButton(
-                                        text: "Calendar",
-                                        onTap: () {
-                                          //calendarScreen
-                                          goTo(5);
-                                        },
-                                        width: adjustedWidth,
-                                        height: adjustedHeight,
-                                        horizontalAllignment: false,
-                                      ),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      // AnimeButton(
-                                      //     text: "User Stats",
-                                      //     onTap: () {},
-                                      //     width: adjustedWidth,
-                                      //     height: adjustedHeight),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: adjustedWidth * 0.05),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Text(
-                                              "Episodes Watched: ${episodesWatched ?? -1}",
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 19,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text(
-                                              "Hours Watched: ${(minutesWatched! ~/ 60)}",
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 19,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
+                        duration: const Duration(milliseconds: 200),
+                        shouldScroll: !isShiftKeyPressed,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              watchingList != null
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        AnimeButton(
+                                          text: "Animes",
+                                          onTap: () {
+                                            goTo(0);
+                                          },
+                                          width: adjustedWidth,
+                                          height: adjustedHeight,
+                                          horizontalAllignment: true,
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 50,
-                                      ),
-                                      userStats != null
-                                          ? Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisSize: MainAxisSize.max,
-                                              children: [...getUserCharts()],
-                                            )
-                                          : const SizedBox(),
-                                    ],
+                                        AnimeButton(
+                                          text: "Mangas",
+                                          onTap: () {
+                                            goTo(2);
+                                          },
+                                          width: adjustedWidth,
+                                          height: adjustedHeight,
+                                          horizontalAllignment: true,
+                                        ),
+                                      ],
+                                    )
+                                  : const Text(
+                                      "Login found! Loading, please wait...",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                              //NOTE pageStart
+                              // FloattingMenu(
+                              // height: totalHeight * 0.1,
+                              // ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              watchingList != null
+                                  ? AnimeWidgetList(
+                                      tag: "home-details-list1",
+                                      title: "Continue Watching",
+                                      animeList: watchingList!,
+                                      textColor: Colors.white,
+                                      loadMore: false,
+                                      updateHomeScreenLists: updateUserLists,
+                                      width: adjustedWidth,
+                                      height: adjustedHeight,
+                                      verticalPadding: 30,
+                                    )
+                                  : const SizedBox(),
+                              readingList != null
+                                  ? MangaWidgetList(
+                                      tag: "home-details-list2",
+                                      title: "Continue Reading",
+                                      mangaList: readingList!,
+                                      textColor: Colors.white,
+                                      loadMore: false,
+                                      updateHomeScreenLists: updateUserLists,
+                                      width: adjustedWidth,
+                                      height: adjustedHeight,
+                                      verticalPadding: 30,
+                                    )
+                                  : const SizedBox(),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        AnimeButton(
+                                          text: "Anime List",
+                                          onTap: () {
+                                            //animeListScreen
+                                            goTo(3);
+                                          },
+                                          width: adjustedWidth,
+                                          height: adjustedHeight,
+                                          horizontalAllignment: false,
+                                        ),
+                                        const SizedBox(
+                                          height: 30,
+                                        ),
+                                        AnimeButton(
+                                          text: "Manga List",
+                                          onTap: () {
+                                            //mangaListScreen
+                                            goTo(4);
+                                          },
+                                          width: adjustedWidth,
+                                          height: adjustedHeight,
+                                          horizontalAllignment: false,
+                                        ),
+                                        const SizedBox(
+                                          height: 30,
+                                        ),
+                                        AnimeButton(
+                                          text: "Calendar",
+                                          onTap: () {
+                                            //calendarScreen
+                                            goTo(5);
+                                          },
+                                          width: adjustedWidth,
+                                          height: adjustedHeight,
+                                          horizontalAllignment: false,
+                                        ),
+                                        const SizedBox(
+                                          height: 30,
+                                        ),
+                                        // AnimeButton(
+                                        //     text: "User Stats",
+                                        //     onTap: () {},
+                                        //     width: adjustedWidth,
+                                        //     height: adjustedHeight),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 55,
-                            ),
-                            //NOTE pageEnd
-                          ],
-                        ),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: adjustedWidth * 0.05),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Text(
+                                                "Episodes Watched: ${episodesWatched ?? -1}",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 19,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                "Hours Watched: ${(minutesWatched! ~/ 60)}",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 19,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 50,
+                                        ),
+                                        userStats != null
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [...getUserCharts()],
+                                              )
+                                            : const SizedBox(),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 55,
+                              ),
+                              //NOTE pageEnd
+                            ],
+                          ),
+                        ],
                       ),
                     ),
             ],

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:crypto/crypto.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/foundation.dart';
@@ -100,7 +102,7 @@ class _VideoScreenState extends State<VideoScreen> {
   void connectToPeer(String receivedTopic) {
     client.unsubscribe(topic);
     connected = false;
-    topic = receivedTopic;
+    topic = "${sha256.convert(utf8.encode(widget.title)).toString().substring(0,10)}-$receivedTopic";
     setClientMqttConnection(true);
   }
 
@@ -118,7 +120,7 @@ class _VideoScreenState extends State<VideoScreen> {
     client.onDisconnected = onDisconnected;
     client.onConnected = onConnected;
     if (!connection) {
-      topic = generateRandomId();
+      topic = "${sha256.convert(utf8.encode(widget.title)).toString().substring(0,10)}-${generateRandomId()}";
       myId = generateRandomId();
     }
 

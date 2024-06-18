@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
@@ -54,14 +56,33 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
   final double minimumHeight = 195.44;
   double maximumWidth = 0;
   double maximumHeight = 0;
+  bool isShiftKeyPressed = false;
 
   @override
   void initState() {
     super.initState();
+    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     initYearsList();
     resetSearchTimer("");
     maximumWidth = minimumWidth * 1.4;
     maximumHeight = minimumHeight * 1.4;
+  }
+
+  bool _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = true;
+      });
+      return true;
+    } else if (event is KeyUpEvent &&
+        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+      setState(() {
+        isShiftKeyPressed = false;
+      });
+      return true;
+    }
+    return false;
   }
 
   void initYearsList() {
@@ -117,14 +138,13 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => mangaScreen),
-    )/*.then((_) {
+    ) /*.then((_) {
       if (widget.updateHomeScreenLists != null){
         widget.updateHomeScreenLists!();
       }
-    })*/;
+    })*/
+        ;
   }
-
-
 
   void openAnime(AnimeModel currentAnime, String tag) {
     var animeScreen = AnimeDetailsScreen(
@@ -283,40 +303,45 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
               SizedBox(
                 width: totalWidth,
                 height: totalHeight - 172,
-                child: SingleChildScrollView(
+                child: SmoothListView(
                   scrollDirection: Axis.vertical,
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    children: [
-                      ...searchMediaList.mapIndexed((index, mediaModel) {
-                        double calculatedWidth = adjustedWidth * 0.1;
-                        double calculatedHeight = adjustedHeight * 0.28;
-                        return Hero(
-                          tag: "${"grid-view"}-$index",
-                          child: AnimeWidget(
-                            title: mediaModel.title,
-                            score: mediaModel.averageScore,
-                            coverImage: mediaModel.coverImage,
-                            onTap: () {
-                              if (widget.type == "ANIME"){
-                                openAnime(mediaModel, "grid-view-$index");
-                              }else{
-                                openMangaDetails(mediaModel, "grid-view-$index");
-                              }
-                            },
-                            textColor: Colors.white,
-                            height: min(max(calculatedHeight, minimumHeight),
-                                maximumHeight),
-                            width: min(max(calculatedWidth, minimumWidth),
-                                maximumWidth),
-                            year: mediaModel.startDate,
-                            format: mediaModel.format,
-                            status: mediaModel.status,
-                          ),
-                        );
-                      })
-                    ],
-                  ),
+                  duration: const Duration(milliseconds: 200),
+                  shouldScroll: !isShiftKeyPressed,
+                  children: [
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      children: [
+                        ...searchMediaList.mapIndexed((index, mediaModel) {
+                          double calculatedWidth = adjustedWidth * 0.1;
+                          double calculatedHeight = adjustedHeight * 0.28;
+                          return Hero(
+                            tag: "${"grid-view"}-$index",
+                            child: AnimeWidget(
+                              title: mediaModel.title,
+                              score: mediaModel.averageScore,
+                              coverImage: mediaModel.coverImage,
+                              onTap: () {
+                                if (widget.type == "ANIME") {
+                                  openAnime(mediaModel, "grid-view-$index");
+                                } else {
+                                  openMangaDetails(
+                                      mediaModel, "grid-view-$index");
+                                }
+                              },
+                              textColor: Colors.white,
+                              height: min(max(calculatedHeight, minimumHeight),
+                                  maximumHeight),
+                              width: min(max(calculatedWidth, minimumWidth),
+                                  maximumWidth),
+                              year: mediaModel.startDate,
+                              format: mediaModel.format,
+                              status: mediaModel.status,
+                            ),
+                          );
+                        })
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],

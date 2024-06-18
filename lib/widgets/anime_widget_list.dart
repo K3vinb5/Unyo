@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/anime_details_screen.dart';
@@ -135,6 +134,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                   height: min(max(calculatedListHeight, widget.minimumListHeight),maximumListHeight),
                   child: ListView(
                     scrollDirection: Axis.horizontal,
+                    // duration: const Duration(milliseconds: 150),
                     children: [
                       ...animeList.mapIndexed((index, animeModel) {
                         return Hero(
