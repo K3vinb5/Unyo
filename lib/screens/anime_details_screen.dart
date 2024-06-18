@@ -66,6 +66,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     animeSources = {
       0: GogoAnimeSource(),
       1: ZoroSource(),
+      2: GoyabuSource(),
+      3: AnimesOnlineSource(),
     };
     updateSource(0);
     setUserAnimeModel();
@@ -291,6 +293,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     videoScreen = VideoScreen(
       stream: streamAndCaptions[0] ?? "",
       captions: streamAndCaptions[1],
+      referer: streamAndCaptions.length > 2 ? streamAndCaptions[2] : null,
       updateEntry: () {
         updateEntry(animeEpisode);
       },

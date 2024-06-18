@@ -21,11 +21,13 @@ class VideoScreen extends StatefulWidget {
     required this.stream,
     required this.updateEntry,
     this.captions,
+    this.referer,
     required this.title,
   });
 
   final String stream;
   final String? captions;
+  final String? referer;
   final void Function() updateEntry;
   final String title;
 
@@ -60,6 +62,7 @@ class _VideoScreenState extends State<VideoScreen> {
     super.initState();
     _controller = VideoPlayerController.networkUrl(
       Uri.parse(widget.stream),
+      httpHeaders: widget.referer != null ? {"Referer": widget.referer!} : {},
       closedCaptionFile:
           widget.captions != null ? loadCaptions(widget.captions!) : null,
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
@@ -68,6 +71,17 @@ class _VideoScreenState extends State<VideoScreen> {
       setState(() {});
     });
     _controller.setLooping(true);
+    // temp();
+    _controller.initialize().then((_) => setState(() {}));
+    _controller.play();
+    _resetHideControlsTimer();
+    interactScreen(true);
+    _screenFocusNode.requestFocus();
+    setClientMqttConnection(false);
+  }
+
+  void temp() async {
+    await Future.delayed(const Duration(seconds: 10));
     _controller.initialize().then((_) => setState(() {}));
     _controller.play();
     _resetHideControlsTimer();

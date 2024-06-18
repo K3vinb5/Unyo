@@ -380,10 +380,10 @@ packages:
     dependency: "direct main"
     description:
       name: fvp
-      sha256: e7239f98ccc59db95bb1a73832e720ceb96f4b44aca05bf6d017852e913ad2be
+      sha256: b692043a7f1a789672f70837879853533fbcb0b4c17b86fffa7c642aeee9f70c
       url: "https://pub.dev"
     source: hosted
-    version: "0.16.1"
+    version: "0.19.0"
   get_it:
     dependency: transitive
     description:
@@ -425,7 +425,7 @@ packages:
     source: hosted
     version: "1.0.4"
   html:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: html
       sha256: "3a7812d5bcd2894edf53dfaf8cd640876cf6cef50a8f238745c8b8120ea74d3a"
@@ -977,10 +977,10 @@ packages:
     dependency: "direct main"
     description:
       name: video_player
-      sha256: db6a72d8f4fd155d0189845678f55ad2fd54b02c10dcafd11c068dbb631286c0
+      sha256: aced48e701e24c02b0b7f881a8819e4937794e46b5a5821005e2bf3b40a324cc
       url: "https://pub.dev"
     source: hosted
-    version: "2.8.6"
+    version: "2.8.7"
   video_player_android:
     dependency: transitive
     description:

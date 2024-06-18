@@ -313,6 +313,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       MaterialPageRoute(
         builder: (context) => ReadingScreen(
           chapterId: chapterId,
+          getMangaChapterPages: mangaSources[currentSource]!.getMangaChapterPages,
         ),
       ),
     );

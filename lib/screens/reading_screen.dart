@@ -3,13 +3,13 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:unyo/api/consumet_api.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class ReadingScreen extends StatefulWidget {
-  const ReadingScreen({super.key, required this.chapterId});
+  const ReadingScreen({super.key, required this.chapterId, required this.getMangaChapterPages});
 
   final String chapterId;
+  final Future<List<String>> Function(String) getMangaChapterPages;
 
   @override
   State<ReadingScreen> createState() => _ReadingScreenState();
@@ -32,7 +32,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   void initPages() async {
-    chapterPages = await getMangaMangaHereChapterPages(widget.chapterId);
+    chapterPages = await widget.getMangaChapterPages(widget.chapterId);
     setState(() {
       totalPages = chapterPages.length;
       //kinda scuffed
