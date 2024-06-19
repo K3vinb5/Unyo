@@ -87,7 +87,7 @@ class VideoProgressSlider extends StatelessWidget {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text("Watch 2gether",
+                      title: const Text("Unyo2gether",
                           style: TextStyle(color: Colors.white)),
                       backgroundColor: const Color.fromARGB(255, 44, 44, 44),
                       content: SizedBox(
@@ -101,7 +101,7 @@ class VideoProgressSlider extends StatelessWidget {
                             const SizedBox(
                               height: 20,
                             ),
-                            const Text("Please paste your buddys peerId, or all come up with a new one!",
+                            const Text("Please paste your buddys peerId, or all of you come up with a new one!",
                                 style: TextStyle(color: Colors.white)),
                             const SizedBox(
                               height: 20,

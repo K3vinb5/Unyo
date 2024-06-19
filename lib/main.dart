@@ -1,6 +1,7 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+// import 'package:puppeteer/puppeteer.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:fvp/fvp.dart' as fvp;
 
@@ -18,7 +19,7 @@ void main() {
     appWindow.show();
   });
 }
-
+// List<Browser> openBrowsers = [];
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _homeNavigatorKey =

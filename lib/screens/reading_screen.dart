@@ -52,6 +52,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         chapterBytes[i] = bytes;
       });
     }
+
     //on first page download
     // Image chapterImage = Image.memory(chapterBytes[0]!);
     // if (chapterImage. > MediaQuery.of(context).size.height) {
@@ -60,6 +61,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
     // } else {
     //   print("smaller than height keeping current viewing option");
     // }
+    
   }
 
   void setNewPageOption(int newPageOption) {

@@ -67,6 +67,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     animeSources = {
       0: GogoAnimeSource(),
+      // 1: KickAssAnimeSource(),
       1: ZoroSource(),
       2: GoyabuSource(),
       3: AnimesOnlineSource(),
