@@ -56,30 +56,25 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void manualLogin(String code) async {
-    var url = "https://anilist.co/api/v2/oauth/token";
-
+    if(code.isEmpty)return;
+    var url = Uri.parse("https://anilist.co/api/v2/oauth/token");
     Map<String, dynamic> query = {
       "grant_type": "authorization_code",
       "client_id": 18959,
       "client_secret": "c098EXiKkLbWatBWbNcSJYPv2rnWcQooqfxvoEcR",
-      "redirect_uri":
-          "https://anilist.co/api/v2/oauth/pin", // http://example.com/callback
+      "redirect_uri": "https://anilist.co/api/v2/oauth/pin",
       "code": code,
     };
-    var uri = Uri.parse(url);
-    print("Uri: $uri");
     var response = await http.post(
-      uri,
-      body: json.encode(query),
+      url,
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "Referer": "https://anilist.co",
       },
+      body: json.encode(query),
     );
-    print("Response: ${response.statusCode}");
     Map<String, dynamic> jsonResponse = json.decode(response.body);
-
+    print(jsonResponse);
     List<String> codes = [
       jsonResponse["access_token"],
       jsonResponse["refresh_token"]
@@ -87,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
 
     accessToken = codes[0];
     refreshToken = codes[1];
+    accessCode = code;
     widget.updateUserInfo();
     await prefs.setString("accessCode", accessCode!);
     await prefs.setString("refreshToken", refreshToken!);
@@ -124,15 +120,13 @@ class _LoginPageState extends State<LoginPage> {
                     style: const ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(Colors.black12),
                     ),
-                    child: Row(
+                    child: const Row(
                       children: [
                         Text(
-                          accessToken == null
-                              ? "Please Login to Anilist  "
-                              : "Please Wait...  ",
-                          style: const TextStyle(color: Colors.white),
+                          "Login to Anilist  ",
+                          style: TextStyle(color: Colors.white),
                         ),
-                        const Icon(
+                        Icon(
                           Icons.person,
                           color: Colors.white,
                         ),
@@ -191,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   Colors.black12),
                                         ),
                                         child: const Text(
-                                          "Click me First!",
+                                          "Get your Code!",
                                           style: TextStyle(
                                             color: Colors.white,
                                           ),
@@ -234,9 +228,6 @@ class _LoginPageState extends State<LoginPage> {
                                                 manualLogin(
                                                     manualLoginController.text);
                                                 Navigator.of(context).pop();
-                                                //temp
-                                                print(
-                                                    "Clicked, code: ${manualLoginController.text}");
                                               },
                                               style: const ButtonStyle(
                                                 backgroundColor:

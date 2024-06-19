@@ -34,7 +34,9 @@ class AnimeWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: HoverAnimatedContainer(
-        margin: EdgeInsets.symmetric(horizontal: width * 0.05),
+        margin: onTap != null
+            ? EdgeInsets.symmetric(horizontal: width * 0.05)
+            : const EdgeInsets.symmetric(horizontal: 0),
         hoverMargin: const EdgeInsets.symmetric(horizontal: 0),
         curve: Curves.easeOut,
         duration: const Duration(milliseconds: 170),
@@ -56,9 +58,9 @@ class AnimeWidget extends StatelessWidget {
                     width: width,
                     hoverWidth: onTap != null ? width * 1.1 : width,
                     hoverHeight: onTap != null ? height * 1.03 : height,
-                    cursor: SystemMouseCursors.click,
+                    cursor: onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
                     curve: Curves.easeOut,
-                    hoverDecoration: BoxDecoration(
+                    hoverDecoration: onTap != null ? BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white, width: 2),
                       image: DecorationImage(
@@ -66,7 +68,7 @@ class AnimeWidget extends StatelessWidget {
                             coverImage == null ? uknown : coverImage!),
                         fit: BoxFit.fill,
                       ),
-                    ),
+                    ) : null,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       image: DecorationImage(
@@ -135,7 +137,6 @@ class AnimeWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  //TODO some disallignment on hovering
                 ],
               ),
             ),

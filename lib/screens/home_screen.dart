@@ -123,7 +123,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     setSharedPreferences();
-    updateHomeScreenLists = updateUserLists;
+    updateHomeScreenLists = () {
+      HardwareKeyboard.instance.addHandler(_handleKeyEvent);
+      updateUserLists();
+    };
   }
 
   void getUserInfo() async {
@@ -549,6 +552,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         AnimeButton(
                                           text: "Animes",
                                           onTap: () {
+                                            HardwareKeyboard.instance
+                                                .removeHandler(_handleKeyEvent);
                                             goTo(0);
                                           },
                                           width: adjustedWidth,
@@ -558,6 +563,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         AnimeButton(
                                           text: "Mangas",
                                           onTap: () {
+                                            HardwareKeyboard.instance
+                                                .removeHandler(_handleKeyEvent);
                                             goTo(2);
                                           },
                                           width: adjustedWidth,

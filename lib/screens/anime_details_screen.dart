@@ -727,9 +727,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               widget.currentAnime.coverImage!,
                           width: totalWidth,
                           height: totalHeight * 0.35,
-                          fit: widget.currentAnime.bannerImage != null
+                          fit: /*widget.currentAnime.bannerImage != null
                               ? BoxFit.fill
-                              : BoxFit.cover,
+                              :*/
+                              BoxFit.cover,
                         ),
                         colors: const [Colors.white, Colors.black],
                         begin: Alignment.topCenter,
@@ -871,28 +872,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                           ),
                                         );
                                       }),
-                                      // DropdownMenuItem(
-                                      //   value: 0,
-                                      //   onTap: () {
-                                      //     updateSource(0);
-                                      //   },
-                                      //   child: const Text(
-                                      //     "GogoAnime",
-                                      //     style: TextStyle(
-                                      //         fontWeight: FontWeight.bold),
-                                      //   ),
-                                      // ),
-                                      // DropdownMenuItem(
-                                      //   value: 1,
-                                      //   onTap: () {
-                                      //     updateSource(1);
-                                      //   },
-                                      //   child: const Text(
-                                      //     "Zoro",
-                                      //     style: TextStyle(
-                                      //         fontWeight: FontWeight.bold),
-                                      //   ),
-                                      // ),
                                     ],
                                     onChanged: (index) {},
                                   ),

@@ -32,85 +32,120 @@ class MangaWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: HoverAnimatedContainer(
-          curve: Curves.easeOut,
-          duration: const Duration(milliseconds: 170),
-          hoverWidth: onTap != null ? width * 1.1 : width,
-          hoverHeight: height * 1.3,
-          width: width,
-          height: height * 1.3,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              InkWell(
-                onTap: onTap,
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Container(
-                      height: height,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        image: DecorationImage(
-                          image: NetworkImage(
-                              coverImage == null ? uknown : coverImage!),
-                          fit: BoxFit.fill,
-                        ),
+      child: HoverAnimatedContainer(
+        margin: onTap != null
+            ? EdgeInsets.symmetric(horizontal: width * 0.05)
+            : const EdgeInsets.symmetric(horizontal: 0),
+        hoverMargin: const EdgeInsets.symmetric(horizontal: 0),
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 170),
+        hoverWidth: onTap != null ? width * 1.1 : width,
+        hoverHeight: height * 1.3,
+        width: width,
+        height: height * 1.3,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            InkWell(
+              onTap: onTap,
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  HoverAnimatedContainer(
+                    height: height,
+                    width: width,
+                    hoverWidth: onTap != null ? width * 1.1 : width,
+                    hoverHeight: onTap != null ? height * 1.03 : height,
+                    cursor: onTap != null
+                        ? SystemMouseCursors.click
+                        : SystemMouseCursors.basic,
+                    curve: Curves.easeOut,
+                    hoverDecoration: onTap != null
+                        ? BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white, width: 2),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                  coverImage == null ? uknown : coverImage!),
+                              fit: BoxFit.fill,
+                            ),
+                          )
+                        : null,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      image: DecorationImage(
+                        image: NetworkImage(
+                            coverImage == null ? uknown : coverImage!),
+                        fit: BoxFit.fill,
                       ),
                     ),
-                    score != null
-                        ? Opacity(
-                            opacity: 0.8,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(20),
-                                    topLeft: Radius.circular(50)),
-                              ),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 6.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      score == null ? "" : "  ${(score! / 10)}",
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: score != null
+                              ? Opacity(
+                                  opacity: 0.8,
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.only(
+                                          bottomRight: Radius.circular(20),
+                                          topLeft: Radius.circular(50)),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 6.0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            score == null
+                                                ? ""
+                                                : "  ${(score! / 10)}",
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.star,
+                                            color: Colors.black,
+                                            size: 15,
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.black,
-                                      size: 15,
+                                  ),
+                                )
+                              : const SizedBox(),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: status != null && status == "RELEASING"
+                              ? const Padding(
+                                  padding:
+                                      EdgeInsets.only(bottom: 4.0, left: 4.0),
+                                  child: Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.green,
+                                      maxRadius: 7,
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        : const SizedBox(),
-                    status != null && status == "RELEASING"
-                        ? const Padding(
-                            padding: EdgeInsets.only(bottom: 4.0, left: 4.0),
-                            child: Align(
-                              alignment: Alignment.bottomLeft,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.green,
-                                maxRadius: 7,
-                              ),
-                            ),
-                          )
-                        : const SizedBox(),
-                  ],
-                ),
+                                  ),
+                                )
+                              : const SizedBox(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              Text(
+            ),
+            SizedBox(
+              width: width,
+              child: Text(
                 title == null ? "" : title!,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -118,8 +153,11 @@ class MangaWidget extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              format != null && year != null
-                  ? Row(
+            ),
+            format != null && year != null
+                ? SizedBox(
+                    width: width,
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
@@ -158,10 +196,10 @@ class MangaWidget extends StatelessWidget {
                           ],
                         ),
                       ],
-                    )
-                  : const SizedBox(),
-            ],
-          ),
+                    ),
+                  )
+                : const SizedBox(),
+          ],
         ),
       ),
     );

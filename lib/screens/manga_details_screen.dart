@@ -749,9 +749,9 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                               widget.currentManga.coverImage!,
                           width: totalWidth,
                           height: totalHeight * 0.35,
-                          fit: widget.currentManga.bannerImage != null
+                          fit: /*widget.currentManga.bannerImage != null
                               ? BoxFit.fill
-                              : BoxFit.cover,
+                              :*/ BoxFit.cover,
                         ),
                         colors: const [Colors.white, Colors.black],
                         begin: Alignment.topCenter,
@@ -863,7 +863,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                             duration: const Duration(milliseconds: 200),
                             shouldScroll: !isShiftKeyPressed,
                             children: [
-                              Row(
+                              Wrap(
                                 children: [
                                   const SizedBox(
                                     width: 16,
