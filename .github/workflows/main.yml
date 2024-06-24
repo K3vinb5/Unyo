@@ -70,7 +70,7 @@ jobs:
       - name: Build deb package
         run: flutter_to_debian
       - name: Rename deb file
-        run: cp unyo-${{github.ref_name}}-amd64.deb unyo-${{github.ref_name}}-amd64.deb
+        run: cp unyo-0.0.0-amd64.deb unyo-${{github.ref_name}}-amd64.deb
       - name: Linux Debain package Release
         uses: softprops/action-gh-release@v1
         env:
@@ -110,8 +110,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/windows/x64/runner/Release/Unyo-${{github.ref_name}}-windows.zip
-      - name: Windows .msi Release
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
+      #- name: Windows .msi Release
+      #  uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
       # - name: Build Msix
       #   run: flutter pub run msix:create
       # - name: Windows Msix Release
