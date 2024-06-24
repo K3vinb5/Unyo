@@ -9,7 +9,9 @@ class EmbeddedSource implements AnimeSource {
 
   final String source;
   final String name;
-  final String embeddedServerEndPoint = "http://127.0.0.1:8080";
+  // final String embeddedServerEndPoint = "http://127.0.0.1:8080"; will be embbeded subsituting the need for a server :), already tested and works, but need to change building scripts
+  final String embeddedServerEndPoint = "https://kevin-is-awesome.mooo.com/api";
+
   @override
   Future<List<List<String?>?>> getAnimeStreamAndCaptions(
       String id, int episode, BuildContext context) async {
@@ -27,7 +29,8 @@ class EmbeddedSource implements AnimeSource {
     }
     Map<String, dynamic> jsonResponse = json.decode(response.body);
     // print(response.body);
-    List<dynamic> streams = jsonResponse["stream"];
+    List<dynamic> streams = jsonResponse["streams"];
+    List<dynamic> qualities = jsonResponse["qualities"];
     List<dynamic>? captions =
         jsonResponse["captions"] != "null" ? jsonResponse["captions"] : null;
     List<dynamic>? headersKeys = jsonResponse["headersKeys"] != "null"
@@ -46,17 +49,22 @@ class EmbeddedSource implements AnimeSource {
         headersValuesProcessed.add((headersValue as List<dynamic>).join("@"));
       }
     }
+    streams.removeWhere((element) => (element as String) == "");
+    captions?.removeWhere((element) => (element as String) == "");
+
     print([
       streams.map((e) => e as String).toList(),
       captions?.map((e) => e as String).toList(),
       headersKeysProcessed,
       headersValuesProcessed,
+      qualities.map((e) => e as String).toList(),
     ]);
     return [
       streams.map((e) => e as String).toList(),
       captions?.map((e) => e as String).toList(),
       headersKeysProcessed,
       headersValuesProcessed,
+      qualities.map((e) => e as String).toList(),
     ];
   }
 

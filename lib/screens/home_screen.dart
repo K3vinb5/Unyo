@@ -1,6 +1,7 @@
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/services.dart';
+import 'package:process_run/shell.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -31,7 +32,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> /*with WidgetsBindingObserver*/ {
   String? bannerImageUrl;
   String? avatarImageUrl;
   String? userName;
@@ -49,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int? episodesWatched;
   int? minutesWatched;
   bool isShiftKeyPressed = false;
+  Shell shell = Shell();
 
   Future<void> _startServer() async {
     handler(shelf.Request request) async {
@@ -78,8 +80,20 @@ class _HomeScreenState extends State<HomeScreen> {
     // print('Local server running on port ${server.port}');
   }
 
+  Future<void> startEmbeddedServer() async {
+    String name =
+        'assets/embedded-api-${Platform.isLinux ? "linux" : Platform.isMacOS ? "macos" : "windows"}';
+    int pid;
+    if (Platform.isLinux || Platform.isMacOS) {
+      var processResults = shell.run('''
+      ./$name
+      ''');
+    }
+  }
+
   void setSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
+    // startEmbeddedServer();
     if (prefs.getString("accessToken") == null) {
       _startServer();
       goToLogin();
@@ -122,12 +136,28 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
+    // WidgetsBinding.instance.addObserver(this);
     setSharedPreferences();
     updateHomeScreenLists = () {
       HardwareKeyboard.instance.addHandler(_handleKeyEvent);
       updateUserLists();
     };
   }
+
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   super.didChangeAppLifecycleState(state);
+  //   print("Changed $state");
+  //   if (state == AppLifecycleState.paused) {
+  //     shell.kill(ProcessSignal.sigint);
+  //     shell = Shell();
+  //   } else if (state == AppLifecycleState.resumed) {
+  //     startEmbeddedServer();
+  //   } else if (state == AppLifecycleState.inactive) {
+  //     shell.kill(ProcessSignal.sigint);
+  //     shell = Shell();
+  //   }
+  // }
 
   void getUserInfo() async {
     if (userName == null || userId == null) {

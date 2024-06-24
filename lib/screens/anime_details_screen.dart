@@ -218,16 +218,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       setSearches(animeSources[currentSource]!.getAnimeTitlesAndIds);
     });
   }
-
+//TODO temp, this is a mess
   void addEmbeddedAniyomiExtensions() async {
-    var urlStream = Uri.parse("http://127.0.0.1:8080/unyo/sources");
+    var urlStream = Uri.parse("https://kevin-is-awesome.mooo.com/api/unyo/sources");
     var response = await http.get(urlStream);
 
     if (response.statusCode == 200) {
       List<dynamic> sources = json.decode(response.body)["sources"];
       int sourcesLenght = animeSources.length;
       for (var source in sources) {
-        String name = await getSourceNameAsync(source);
+        String name = await getSourceNameAndLangAsync(source);
         print(name);
         animeSources.addAll({
           sourcesLenght: EmbeddedSource(source: source as String, name: name)
@@ -240,10 +240,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     }
     updateSource(0);
   }
-
-  Future<String> getSourceNameAsync(String source) async {
+//TODO temp, this is a mess
+  Future<String> getSourceNameAndLangAsync(String source) async {
     var urlStream =
-        Uri.parse("http://127.0.0.1:8080/unyo/sources/name?source=$source");
+        Uri.parse("https://kevin-is-awesome.mooo.com/api/unyo/sources/name?source=$source");
     var response = await http.get(urlStream);
 
     if (response.statusCode != 200) {
@@ -351,7 +351,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void openVideo(String consumetId, int animeEpisode, String animeName) async {
-    int source = 1;
+    int source = 0;
     late List<List<String?>?> streamAndCaptions;
     streamAndCaptions = await animeSources[currentSource]!
         .getAnimeStreamAndCaptions(consumetId, animeEpisode, context);
@@ -367,20 +367,81 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
         headers.addAll({keys[i]: values[i]});
       }
     }
-    videoScreen = VideoScreen(
-      stream: streamAndCaptions[0]![source] ?? "",
-      captions: streamAndCaptions[1]?[source],
-      headers: headers,
-      updateEntry: () {
-        updateEntry(animeEpisode);
+
+    /*if (mounted &&
+        streamAndCaptions[4] != null &&
+        streamAndCaptions[4]!.isNotEmpty) {*/
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Select quality", style: TextStyle(color: Colors.white),),
+          backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+          content: SizedBox(
+            width: adjustedWidth * 0.4,
+            height: adjustedHeight * 0.7,
+            child: SmoothListView(
+              duration: const Duration(milliseconds: 200),
+              children: [
+                ...streamAndCaptions[4]!.mapIndexed(
+                  (index, text) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                    child: SizedBox(
+                      height: 60,
+                      child: ElevatedButton(
+                        style: const ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                            Color.fromARGB(255, 37, 37, 37),
+                          ),
+                          foregroundColor: MaterialStatePropertyAll(
+                            Colors.white,
+                          ),
+                        ),
+                        onPressed: () {
+                          source = index;
+                          Navigator.of(context).pop();
+                          videoScreen = VideoScreen(
+                            stream: streamAndCaptions[0]![source] ?? "",
+                            captions: streamAndCaptions[1]?[source],
+                            headers: headers,
+                            updateEntry: () {
+                              updateEntry(animeEpisode);
+                            },
+                            title: "$animeName, Episode $animeEpisode",
+                          );
+                          if (!mounted) return;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => videoScreen),
+                          );
+                        },
+                        child: Text(text ?? "empty"),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       },
-      title: "$animeName, Episode $animeEpisode",
     );
-    if (!mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => videoScreen),
-    );
+    //}
+
+    // videoScreen = VideoScreen(
+    //   stream: streamAndCaptions[0]![source] ?? "",
+    //   captions: streamAndCaptions[1]?[source],
+    //   headers: headers,
+    //   updateEntry: () {
+    //     updateEntry(animeEpisode);
+    //   },
+    //   title: "$animeName, Episode $animeEpisode",
+    // );
+    // if (!mounted) return;
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => videoScreen),
+    // );
   }
 
   void openWrongTitleDialog(BuildContext context, double width, double heigh,
