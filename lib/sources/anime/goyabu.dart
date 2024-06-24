@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class GoyabuSource implements AnimeSource {
   @override
-  Future<List<String?>> getAnimeStreamAndCaptions(
+  Future<List<List<String?>?>> getAnimeStreamAndCaptions(
       String id, int episode, BuildContext context) async {
     var url = Uri.parse(id);
     var response =
@@ -74,9 +74,10 @@ class GoyabuSource implements AnimeSource {
         if (line.contains(quality)) {
           print(line);
           return [
-            line,
+            [line],
             null,
-            "https://www.goyabu.us/"
+            ["Referer"],
+            ["https://www.goyabu.us/"]
           ];
         }
       }

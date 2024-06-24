@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
@@ -12,6 +13,7 @@ import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
 import 'package:unyo/sources/sources.dart';
+import 'package:http/http.dart' as http;
 
 class AnimeDetailsScreen extends StatefulWidget {
   const AnimeDetailsScreen(
@@ -66,13 +68,15 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     animeSources = {
-      0: GogoAnimeSource(),
+      // 0: GogoAnimeSource(),
       // 1: KickAssAnimeSource(),
-      1: ZoroSource(),
-      2: GoyabuSource(),
-      3: AnimesOnlineSource(),
+      // 1: ZoroSource(),
+      // 0: GoyabuSource(),
+      // 1: AnimesGamesSource(),
+      // 2: AnimesOnlineSource(),
     };
-    updateSource(0);
+    addEmbeddedAniyomiExtensions();
+    // updateSource(0);
     setUserAnimeModel();
   }
 
@@ -215,6 +219,40 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     });
   }
 
+  void addEmbeddedAniyomiExtensions() async {
+    var urlStream = Uri.parse("http://127.0.0.1:8080/unyo/sources");
+    var response = await http.get(urlStream);
+
+    if (response.statusCode == 200) {
+      List<dynamic> sources = json.decode(response.body)["sources"];
+      int sourcesLenght = animeSources.length;
+      for (var source in sources) {
+        String name = await getSourceNameAsync(source);
+        print(name);
+        animeSources.addAll({
+          sourcesLenght: EmbeddedSource(source: source as String, name: name)
+        });
+        sourcesLenght++;
+      }
+      setState(() {});
+    } else {
+      print(response.body);
+    }
+    updateSource(0);
+  }
+
+  Future<String> getSourceNameAsync(String source) async {
+    var urlStream =
+        Uri.parse("http://127.0.0.1:8080/unyo/sources/name?source=$source");
+    var response = await http.get(urlStream);
+
+    if (response.statusCode != 200) {
+      return "";
+    }
+    Map<String, dynamic> jsonResponse = json.decode(response.body);
+    return jsonResponse["name"] ?? "";
+  }
+
   double getAdjustedHeight(double value) {
     if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
       return value;
@@ -313,13 +351,26 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void openVideo(String consumetId, int animeEpisode, String animeName) async {
-    late List<String?> streamAndCaptions;
+    int source = 1;
+    late List<List<String?>?> streamAndCaptions;
     streamAndCaptions = await animeSources[currentSource]!
         .getAnimeStreamAndCaptions(consumetId, animeEpisode, context);
+
+    print(streamAndCaptions);
+    Map<String, String>? headers = null;
+
+    if (streamAndCaptions[2] != null && streamAndCaptions[2]!.isNotEmpty) {
+      headers = {};
+      List<String> values = streamAndCaptions[3]![source]!.split("@");
+      List<String> keys = streamAndCaptions[2]![source]!.split("@");
+      for (int i = 0; i < values.length; i++) {
+        headers.addAll({keys[i]: values[i]});
+      }
+    }
     videoScreen = VideoScreen(
-      stream: streamAndCaptions[0] ?? "",
-      captions: streamAndCaptions[1],
-      referer: streamAndCaptions.length > 2 ? streamAndCaptions[2] : null,
+      stream: streamAndCaptions[0]![source] ?? "",
+      captions: streamAndCaptions[1]?[source],
+      headers: headers,
       updateEntry: () {
         updateEntry(animeEpisode);
       },

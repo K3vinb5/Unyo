@@ -6,7 +6,7 @@ flutter_app:
 
 control:
   Package: unyo
-  Version: 0.2.0
+  Version: 0.0.0
   Architecture: amd64
   Priority: optional
   Depends:

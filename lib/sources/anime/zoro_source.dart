@@ -8,7 +8,7 @@ class ZoroSource implements AnimeSource {
   final String consumetEndPoint = "https://kevin-is-awesome.mooo.com/consumet";
 
   @override
-  Future<List<String?>> getAnimeStreamAndCaptions(
+  Future<List<List<String?>?>> getAnimeStreamAndCaptions(
       String id, int episode, BuildContext context) async {
     var infoUrl = Uri.parse("$consumetEndPoint/anime/zoro/info?id=$id");
     // print(infoUrl);
@@ -39,7 +39,7 @@ class ZoroSource implements AnimeSource {
         englishCaptions = i;
       }
     }
-    return [urls[0]["url"], captions[englishCaptions]["url"]];
+    return [[urls[0]["url"]], [captions[englishCaptions]["url"]]];
   }
 
   @override

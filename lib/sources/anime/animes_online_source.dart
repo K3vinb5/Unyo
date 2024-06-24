@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class AnimesOnlineSource implements AnimeSource {
   @override
-  Future<List<String?>> getAnimeStreamAndCaptions(
+  Future<List<List<String?>?>> getAnimeStreamAndCaptions(
       String id, int episode, BuildContext context) async {
     final String animePageEndpoint =
         "${id.replaceFirst("/anime/", "/episodio/")}-episodio-${episode > 9 ? episode : "0$episode"}";
@@ -69,7 +69,7 @@ class AnimesOnlineSource implements AnimeSource {
         "https://animesonline.cloud/jwplayer?source=", "");
     mp4Endpoint = mp4Endpoint.replaceFirst("&id=$dataId&type=mp4", "");
     mp4Endpoint = Uri.decodeFull(mp4Endpoint);
-    return [mp4Endpoint, null];
+    return [[mp4Endpoint], null, null, null];
   }
 
   @override

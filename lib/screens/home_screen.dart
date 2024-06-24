@@ -296,187 +296,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 bannerImageUrl!,
                                 width: totalWidth,
                                 height: totalHeight * 0.35,
-                                fit: BoxFit.fill,
+                                fit: BoxFit.cover,
                               ),
                               colors: const [Colors.white, Colors.black87],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                            ),
-                            avatarImageUrl != null
-                                ? Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Row(
-                                      children: [
-                                        SizedBox(
-                                          height: 100,
-                                          width: 100,
-                                          child: Image.network(
-                                            avatarImageUrl!,
-                                            fit: BoxFit.fill,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 20,
-                                        ),
-                                        Text(
-                                          userName!,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 22,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              const Text("Log out",
-                                                  style: TextStyle(
-                                                      color: Colors.white)),
-                                              IconButton(
-                                                onPressed: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return AlertDialog(
-                                                        title: const Text(
-                                                            "Do you wanna log out?",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white)),
-                                                        backgroundColor:
-                                                            const Color
-                                                                .fromARGB(255,
-                                                                44, 44, 44),
-                                                        content: SizedBox(
-                                                          width: adjustedWidth *
-                                                              0.15,
-                                                          height:
-                                                              adjustedHeight *
-                                                                  0.15,
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              const Text(
-                                                                "Are you sure you want to log out?",
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              ),
-                                                              Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .end,
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  ElevatedButton(
-                                                                    style:
-                                                                        const ButtonStyle(
-                                                                      backgroundColor: MaterialStatePropertyAll(Color.fromARGB(
-                                                                          255,
-                                                                          37,
-                                                                          37,
-                                                                          37)),
-                                                                    ),
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                    },
-                                                                    child:
-                                                                        const Text(
-                                                                      "Cancel",
-                                                                      style: TextStyle(
-                                                                          color:
-                                                                              Colors.white),
-                                                                    ),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    width: 20,
-                                                                  ),
-                                                                  ElevatedButton(
-                                                                    style:
-                                                                        const ButtonStyle(
-                                                                      backgroundColor: MaterialStatePropertyAll(Color.fromARGB(
-                                                                          255,
-                                                                          37,
-                                                                          37,
-                                                                          37)),
-                                                                    ),
-                                                                    onPressed:
-                                                                        () {
-                                                                      prefs
-                                                                          .clear();
-                                                                      setState(
-                                                                          () {
-                                                                        //TODO updateLists on logout, maybe extract method
-                                                                        bannerImageUrl =
-                                                                            null;
-                                                                        avatarImageUrl =
-                                                                            null;
-                                                                        watchingList =
-                                                                            null;
-                                                                        readingList =
-                                                                            null;
-                                                                        userName =
-                                                                            null;
-                                                                        userId =
-                                                                            null;
-                                                                        accessToken =
-                                                                            null;
-                                                                        refreshToken =
-                                                                            null;
-                                                                      });
-                                                                      setSharedPreferences();
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                      //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage(updateUserInfo: getUserInfo),));
-                                                                    },
-                                                                    child:
-                                                                        const Text(
-                                                                      "Confirm",
-                                                                      style: TextStyle(
-                                                                          color:
-                                                                              Colors.white),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  Icons.person,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : const SizedBox(),
-                            WindowTitleBarBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: MoveWindow(),
-                                  ),
-                                  const WindowButtons(),
-                                ],
-                              ),
                             ),
                           ],
                         )
@@ -535,12 +359,180 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     )
                   : Padding(
-                      padding: EdgeInsets.only(top: totalHeight * 0.25),
+                      padding: const EdgeInsets.only(top: 16),
                       child: SmoothListView(
                         scrollDirection: Axis.vertical,
                         duration: const Duration(milliseconds: 200),
                         shouldScroll: !isShiftKeyPressed,
                         children: [
+                          avatarImageUrl != null
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 100,
+                                        width: 100,
+                                        child: Image.network(
+                                          avatarImageUrl!,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      Text(
+                                        userName!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 22,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            const Text("Log out",
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                            IconButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          "Do you wanna log out?",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white)),
+                                                      backgroundColor:
+                                                          const Color.fromARGB(
+                                                              255, 44, 44, 44),
+                                                      content: SizedBox(
+                                                        width: adjustedWidth *
+                                                            0.15,
+                                                        height: adjustedHeight *
+                                                            0.15,
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            const Text(
+                                                              "Are you sure you want to log out?",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            ),
+                                                            Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .end,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                ElevatedButton(
+                                                                  style:
+                                                                      const ButtonStyle(
+                                                                    backgroundColor:
+                                                                        MaterialStatePropertyAll(Color.fromARGB(
+                                                                            255,
+                                                                            37,
+                                                                            37,
+                                                                            37)),
+                                                                  ),
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                  child:
+                                                                      const Text(
+                                                                    "Cancel",
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 20,
+                                                                ),
+                                                                ElevatedButton(
+                                                                  style:
+                                                                      const ButtonStyle(
+                                                                    backgroundColor:
+                                                                        MaterialStatePropertyAll(Color.fromARGB(
+                                                                            255,
+                                                                            37,
+                                                                            37,
+                                                                            37)),
+                                                                  ),
+                                                                  onPressed:
+                                                                      () {
+                                                                    prefs
+                                                                        .clear();
+                                                                    setState(
+                                                                        () {
+                                                                      //TODO updateLists on logout, maybe extract method
+                                                                      bannerImageUrl =
+                                                                          null;
+                                                                      avatarImageUrl =
+                                                                          null;
+                                                                      watchingList =
+                                                                          null;
+                                                                      readingList =
+                                                                          null;
+                                                                      userName =
+                                                                          null;
+                                                                      userId =
+                                                                          null;
+                                                                      accessToken =
+                                                                          null;
+                                                                      refreshToken =
+                                                                          null;
+                                                                    });
+                                                                    setSharedPreferences();
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage(updateUserInfo: getUserInfo),));
+                                                                  },
+                                                                  child:
+                                                                      const Text(
+                                                                    "Confirm",
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                Icons.person,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : const SizedBox(),
+                          SizedBox(height: adjustedHeight * 0.12),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -735,6 +727,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
+              WindowTitleBarBox(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: MoveWindow(),
+                    ),
+                    const WindowButtons(),
+                  ],
+                ),
+              ),
             ],
           );
         },

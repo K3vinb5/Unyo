@@ -10,7 +10,7 @@ class GogoAnimeSource implements AnimeSource {
   final String consumetEndPoint = "https://kevin-is-awesome.mooo.com/consumet";
 
   @override
-  Future<List<String?>> getAnimeStreamAndCaptions(
+  Future<List<List<String?>?>> getAnimeStreamAndCaptions(
       String id, int episode, BuildContext context) async {
     final Completer<String> completer = Completer<String>();
 
@@ -32,7 +32,7 @@ class GogoAnimeSource implements AnimeSource {
       }
     }
     int? chosenValue;
-    if (!context.mounted) return ["", null];
+    if (!context.mounted) return [[""], null, null, null];
     showDialog(
       context: context,
       builder: (context) {
@@ -127,7 +127,7 @@ class GogoAnimeSource implements AnimeSource {
         );
       },
     );
-    return [await completer.future, null];
+    return [[await completer.future], null, null, null];
   }
 
   @override

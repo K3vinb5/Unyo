@@ -22,6 +22,17 @@ jobs:
         run: flutter pub get
       - name: Generate intermediates
         run: flutter pub run build_runner build --delete-conflicting-outputs
+      - name: Generate embedded native server
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+        run: |
+          cp assets/api-0.0.2.jar .
+          native-image -jar  api-0.0.2.jar embedded-api
+          cp embedded-api assets/.
       - name: Enable linux build
         run: flutter config --enable-linux-desktop
       - name: Build artifacts
@@ -58,12 +69,14 @@ jobs:
         run: export PATH="$PATH":"$HOME/.pub-cache/bin"
       - name: Build deb package
         run: flutter_to_debian
+      - name: Rename deb file
+        run: cp unyo-${{github.ref_name}}-amd64.deb unyo-${{github.ref_name}}-amd64.deb
       - name: Linux Debain package Release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/linux/x64/release/debian/unyo_${{github.ref_name}}_amd64.deb
+          files: build/linux/x64/release/debian/unyo-${{github.ref_name}}-amd64.deb
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -136,23 +149,23 @@ jobs:
           type: 'zip'
           filename: Unyo-${{github.ref_name}}-macos.zip
           directory: build/macos/Build/Products/Release
-      - name: macOS Archive Release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: build/macos/Build/Products/Release/Unyo-${{github.ref_name}}-macos.zip
-      - name: Package Macos App
-        run: |
-          brew install python-setuptools
-          npm install -g appdmg
-          mkdir -p build/${{ env.BUILD_VERSION }}
-          appdmg appdmg.json build/Unyo-macos-universal.dmg
-          flutter_distributor package --platform=macos --targets pkg --skip-clean
-          mv dist/**/unyo-*-macos.pkg build/Unyo-macos-universal.pkg
-      - name: Release Dmg
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: Unyo-${{github.ref_name}}-macos.zip
-          directory: build/Spotube-macos-universal.dmg
+      # - name: macOS Archive Release
+      #   uses: softprops/action-gh-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     files: build/macos/Build/Products/Release/Unyo-${{github.ref_name}}-macos.zip
+      # - name: Package Macos App
+      #   run: |
+      #     brew install python-setuptools
+      #     npm install -g appdmg
+      #     mkdir -p build/${{ env.BUILD_VERSION }}
+      #     appdmg appdmg.json build/Unyo-macos-universal.dmg
+      #     flutter_distributor package --platform=macos --targets pkg --skip-clean
+      #     mv dist/**/unyo-*-macos.pkg build/Unyo-macos-universal.pkg
+      # - name: Release Dmg
+      #   uses: thedoctor0/zip-release@master
+      #   with:
+      #     type: 'zip'
+      #     filename: Unyo-${{github.ref_name}}-macos.zip
+      #     directory: build/Spotube-macos-universal.dmg

@@ -23,13 +23,13 @@ class VideoScreen extends StatefulWidget {
     required this.stream,
     required this.updateEntry,
     this.captions,
-    this.referer,
+    required this.headers,
     required this.title,
   });
 
   final String stream;
   final String? captions;
-  final String? referer;
+  final Map<String, String>? headers;
   final void Function() updateEntry;
   final String title;
 
@@ -62,13 +62,22 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse(widget.stream),
-      httpHeaders: widget.referer != null ? {"Referer": widget.referer!} : {},
-      closedCaptionFile:
-          widget.captions != null ? loadCaptions(widget.captions!) : null,
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
+    if (widget.headers != null) {
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.stream),
+        httpHeaders: widget.headers!,
+        closedCaptionFile:
+            widget.captions != null ? loadCaptions(widget.captions!) : null,
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      );
+    } else {
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.stream),
+        closedCaptionFile:
+            widget.captions != null ? loadCaptions(widget.captions!) : null,
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      );
+    }
     _controller.addListener(() {
       setState(() {});
     });
@@ -102,7 +111,8 @@ class _VideoScreenState extends State<VideoScreen> {
   void connectToPeer(String receivedTopic) {
     client.unsubscribe(topic);
     connected = false;
-    topic = "${sha256.convert(utf8.encode(widget.title)).toString().substring(0,10)}-$receivedTopic";
+    topic =
+        "${sha256.convert(utf8.encode(widget.title)).toString().substring(0, 10)}-$receivedTopic";
     setClientMqttConnection(true);
   }
 
@@ -120,7 +130,8 @@ class _VideoScreenState extends State<VideoScreen> {
     client.onDisconnected = onDisconnected;
     client.onConnected = onConnected;
     if (!connection) {
-      topic = "${sha256.convert(utf8.encode(widget.title)).toString().substring(0,10)}-${generateRandomId()}";
+      topic =
+          "${sha256.convert(utf8.encode(widget.title)).toString().substring(0, 10)}-${generateRandomId()}";
       myId = generateRandomId();
     }
 
