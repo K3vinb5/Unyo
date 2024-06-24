@@ -22,13 +22,13 @@ jobs:
         run: flutter pub get
       - name: Generate intermediates
         run: flutter pub run build_runner build --delete-conflicting-outputs
-      - name: Generate embedded native server
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
+      - name: Generate embedded native server
         run: |
           cp assets/api-0.0.2.jar .
           native-image -jar  api-0.0.2.jar embedded-api
