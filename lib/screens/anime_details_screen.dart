@@ -14,6 +14,7 @@ import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:http/http.dart' as http;
+import 'package:unyo/sources/anime/util/embedded_extensions.dart';
 
 class AnimeDetailsScreen extends StatefulWidget {
   const AnimeDetailsScreen(
@@ -67,16 +68,17 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   void initState() {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
-    animeSources = {
+    // animeSources = {
       // 0: GogoAnimeSource(),
       // 1: KickAssAnimeSource(),
       // 1: ZoroSource(),
       // 0: GoyabuSource(),
       // 1: AnimesGamesSource(),
       // 2: AnimesOnlineSource(),
-    };
-    addEmbeddedAniyomiExtensions();
-    // updateSource(0);
+    // };
+    // addEmbeddedAniyomiExtensions();
+    animeSources = globalAnimesSources;
+    updateSource(0);
     setUserAnimeModel();
   }
 
@@ -218,7 +220,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       setSearches(animeSources[currentSource]!.getAnimeTitlesAndIds);
     });
   }
-//TODO temp, this is a mess
+
   void addEmbeddedAniyomiExtensions() async {
     var urlStream = Uri.parse("https://kevin-is-awesome.mooo.com/api/unyo/sources");
     var response = await http.get(urlStream);

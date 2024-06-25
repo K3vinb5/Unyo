@@ -84,6 +84,7 @@ class _VideoScreenState extends State<VideoScreen> {
     _controller.setLooping(true);
     // temp();
     _controller.initialize().then((_) => setState(() {}));
+
     _controller.play();
     _resetHideControlsTimer();
     interactScreen(true);
