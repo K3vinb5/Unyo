@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
+import 'package:unyo/main.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -706,12 +707,15 @@ class _VideoScreenState extends State<VideoScreen> {
                                 },
                                 position: progress,
                                 duration: duration,
-                                swatch: Colors.red,
+                                swatch: lightBorderColor,
                                 onEnter: onEnterSound,
                                 onExit: onExitSound,
                                 connectToPeer: connectToPeer,
                                 seekToPeer: sendSeekToOrder,
                                 topic: topic,
+                                onTap: controlsOverlayOnTap,
+                                playPeer: sendPlayVideoOrder,
+                                pausePeer: sendPauseVideoOrder,
                               );
                             },
                           ),

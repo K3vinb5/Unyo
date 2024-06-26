@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:unyo/widgets/floatting_menu.dart';
 
 late StatefulNavigationShell publicNavigationShell;
 
 late void Function(int) goTo;
 late void Function(bool) floatingMenu;
+bool menu = false;
 
 class ScaffoldScreen extends StatefulWidget {
   const ScaffoldScreen({super.key, required this.navigationShell});
@@ -17,7 +19,6 @@ class ScaffoldScreen extends StatefulWidget {
 
 class _ScaffoldScreenState extends State<ScaffoldScreen> {
 
-  bool menu = false;
 
   @override
   void initState() {
@@ -51,7 +52,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
         alignment: Alignment.bottomCenter,
         children: [
           widget.navigationShell,
-          // if (menu) FloattingMenu(setScreen: setScreen),
+           if (menu)  FloattingMenu(setScreen: setScreen, height: 50,),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hovering/hovering.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/main.dart';
@@ -64,10 +65,13 @@ class _AnimeButtonState extends State<AnimeButton> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
-                border: Border.all(color: darkBorderColor, width: 2),
+                border: Border.all(
+                    color: darkBorderColor.withOpacity(0.4), width: 2),
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   opacity: 0.35,
+                  colorFilter:
+                      ColorFilter.mode(darkBorderColor, BlendMode.modulate),
                   image: NetworkImage(
                     bannerImageUrl!,
                   ),
@@ -80,10 +84,13 @@ class _AnimeButtonState extends State<AnimeButton> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
-                border: Border.all(color: darkBorderColor, width: 2),
+                border: Border.all(
+                    color: veryLightBorderColor.withOpacity(0.4), width: 2),
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   opacity: 0.35,
+                  colorFilter:
+                      ColorFilter.mode(lightBorderColor, BlendMode.modulate),
                   image: NetworkImage(
                     bannerImageUrl!,
                   ),

@@ -2,8 +2,8 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unyo/main.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
@@ -221,8 +221,8 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                         alignment: Alignment.center,
                         child: Text(
                           "${userName ?? ""} Manga List",
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 20.0,
                           ),
@@ -252,6 +252,8 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
             height: 50,
             child: TabBar(
               labelColor: Colors.white,
+              dividerColor: veryLightBorderColor.withOpacity(0.5),
+              indicatorColor: lightBorderColor,
               unselectedLabelColor: Colors.grey,
               isScrollable: true,
               controller: tabContrller,

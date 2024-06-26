@@ -47,7 +47,7 @@ class _HomeScreenState
   double adjustedHeight = 0;
   double totalWidth = 0;
   double totalHeight = 0;
-  PaletteGenerator? paletteGenerator;
+  List<Color> colorList = []; 
   Map<String, Map<String, double>>? userStats;
   int? episodesWatched;
   int? minutesWatched;
@@ -205,16 +205,21 @@ class _HomeScreenState
       maximumColorCount: 20,
     );
     List<Color> lightToDarkColors = newPaletteGenerator.colors.toList();
+    List<Color> newColorList = newPaletteGenerator.colors.toList();
+    int lightest = lightToDarkColors.length - 1;
+    while (newColorList.length < 20){
+      newColorList.addAll(newPaletteGenerator.colors.toList());
+    } 
     lightToDarkColors.sort((color1, color2) =>
         (color1.computeLuminance() * 10 - color2.computeLuminance() * 10)
             .toInt());
 
     setState(() {
       //NOTE higher the number the lighter the color
-      veryLightBorderColor = lightToDarkColors[19];
+      veryLightBorderColor = lightToDarkColors[lightest];
       lightBorderColor = lightToDarkColors[10];
       darkBorderColor = lightToDarkColors[0];
-      paletteGenerator = newPaletteGenerator;
+      colorList = newColorList;
     });
   }
 
@@ -230,9 +235,8 @@ class _HomeScreenState
   }
 
   List<Widget> getUserCharts() {
-    List<Color> colorList = [];
-    if (paletteGenerator != null) {
-      colorList = paletteGenerator!.colors.toList();
+    if (colorList.isNotEmpty) {
+      
       // colorList = colorList.reversed.toList();
     }
     return [
@@ -286,8 +290,6 @@ class _HomeScreenState
               showChartValuesOutside: false,
               decimalPlaces: 1,
             ),
-            // gradientList: ---To add gradient colors---
-            // emptyColorGradient: ---Empty Color gradient---
           );
         },
       )
@@ -411,6 +413,7 @@ class _HomeScreenState
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16.0),
                                   child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       SizedBox(
                                         height: 100,
@@ -423,22 +426,31 @@ class _HomeScreenState
                                       const SizedBox(
                                         width: 20,
                                       ),
-                                      Text(
-                                        userName!,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 22,
-                                        ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            userName!,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 22,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       Expanded(
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
                                           children: [
-                                            const Text("Log out",
-                                                style: TextStyle(
-                                                    color: Colors.white)),
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: const Icon(
+                                                  Icons.settings_rounded,
+                                                  color: Colors.white),
+                                            ),
                                             IconButton(
                                               onPressed: () {
                                                 showDialog(

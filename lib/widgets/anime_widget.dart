@@ -161,15 +161,15 @@ class AnimeWidget extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.calendar_today,
-                              color: Colors.grey,
+                              color: veryLightBorderColor,
                               size: 17,
                             ),
                             Text(
                               " ${year!.split("/")[2]}",
-                              style: const TextStyle(
-                                color: Colors.grey,
+                              style: TextStyle(
+                                color: veryLightBorderColor,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -181,14 +181,14 @@ class AnimeWidget extends StatelessWidget {
                             Text(
                               "${format!.replaceAll("_", " ")} ",
                               style: TextStyle(
-                                color: Colors.grey,
+                                color: veryLightBorderColor,
                                 overflow: TextOverflow.ellipsis,
                                 fontSize: format == "TV_SHORT" ? 10 : 14,
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.tv_rounded,
-                              color: Colors.grey,
+                              color: veryLightBorderColor,
                               size: 17,
                             ),
                           ],

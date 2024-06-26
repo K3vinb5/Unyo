@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:hovering/hovering.dart';
+import 'package:unyo/main.dart';
 
 class MenuButton extends StatefulWidget {
-  const MenuButton({super.key,
-    required this.text,
-    required this.icon,
-    required this.onTap,
-    required this.textOrIcon});
+  const MenuButton(
+      {super.key,
+      required this.text,
+      required this.icon,
+      required this.onTap,
+      required this.textOrIcon});
 
   final String text;
   final IconData icon;
@@ -39,28 +42,32 @@ class _MenuButtonState extends State<MenuButton> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: widget.onTap,
-      child: Container(
+      child: HoverAnimatedContainer(
+        cursor: SystemMouseCursors.click,
         alignment: Alignment.center,
-        height: MediaQuery
-            .of(context)
-            .size
-            .height * 0.04,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width * 0.05,
+        height: 60,
+        width: 60,
+        // hoverWidth: 70,
+        // hoverHeight: 70,
         decoration: BoxDecoration(
+          color: Colors.black,
           borderRadius: BorderRadius.circular(20),
         ),
         child: !textOrIcon
-            ? Icon(widget.icon)
+            ? HoverAnimatedContainer(
+                child: Icon(
+                  widget.icon,
+                  color: textOrIcon ? lightBorderColor : Colors.white,
+                ),
+              )
             : Text(
-          widget.text,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
+                widget.text,
+                style: TextStyle(
+                  color: textOrIcon ? lightBorderColor : Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
       ),
     );
   }
