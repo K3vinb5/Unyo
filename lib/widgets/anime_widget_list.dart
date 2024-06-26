@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:unyo/main.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/anime_details_screen.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -114,7 +115,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                             style: TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
-                              color: widget.textColor,
+                              color: veryLightBorderColor, 
                             ),
                           ),
                           Text(

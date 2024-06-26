@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/main.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
@@ -30,7 +31,7 @@ class PageBannerWidget extends StatelessWidget {
             animeModel.bannerImage ?? animeModel.coverImage!,
             width: width,
             height: height,
-            fit: animeModel.bannerImage != null ? BoxFit.fill : BoxFit.cover,
+            fit: BoxFit.cover,
           ),
           colors: const [Colors.white, Colors.black87],
           begin: Alignment.topCenter,
@@ -76,8 +77,8 @@ class PageBannerWidget extends StatelessWidget {
                     ),
                     Text(
                       animeModel.status!.replaceAll("_", " "),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: lightBorderColor, 
                         fontWeight: FontWeight.bold,
                       ),
                     ),

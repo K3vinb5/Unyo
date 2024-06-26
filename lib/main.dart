@@ -20,6 +20,9 @@ void main() {
   });
 }
 
+Color veryLightBorderColor = Colors.white;
+Color lightBorderColor = Colors.grey;
+Color darkBorderColor = Colors.black;
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _homeNavigatorKey =
@@ -133,11 +136,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(),
       title: 'Unyo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
       routerConfig: _router,
     );
   }

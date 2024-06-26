@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:unyo/main.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/manga_details_screen.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -112,7 +113,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
                             style: TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
-                              color: widget.textColor,
+                              color: veryLightBorderColor, 
                             ),
                           ),
                           Text(

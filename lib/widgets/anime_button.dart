@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/main.dart';
 
 class AnimeButton extends StatefulWidget {
-  const AnimeButton(
-      {super.key,
-      required this.text,
-      required this.onTap,
-      required this.width,
-      required this.height,
-      required this.horizontalAllignment,
-      });
+  const AnimeButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+    required this.width,
+    required this.height,
+    required this.horizontalAllignment,
+  });
 
   final String text;
   final void Function() onTap;
@@ -49,17 +50,37 @@ class _AnimeButtonState extends State<AnimeButton> {
               duration: const Duration(milliseconds: 130),
               alignment: Alignment.center,
               width: widget.width * 0.3,
-              hoverWidth: widget.horizontalAllignment ? widget.width * 0.3 * 1.03 : widget.width * 0.3,
+              hoverWidth: widget.horizontalAllignment
+                  ? widget.width * 0.3 * 1.03
+                  : widget.width * 0.3,
               height: widget.height * 0.1,
-              hoverHeight: widget.horizontalAllignment ? widget.height * 0.1 : widget.height * 0.1 * 1.1,
-              cursor: SystemMouseCursors.click, 
+              hoverHeight: widget.horizontalAllignment
+                  ? widget.height * 0.1
+                  : widget.height * 0.1 * 1.1,
+              cursor: SystemMouseCursors.click,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Colors.transparent, Colors.black87],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
-                border: Border.all(color: Colors.black54),
+                border: Border.all(color: darkBorderColor, width: 2),
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                  opacity: 0.35,
+                  image: NetworkImage(
+                    bannerImageUrl!,
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              hoverDecoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Colors.transparent, Colors.black87],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                border: Border.all(color: darkBorderColor, width: 2),
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   opacity: 0.35,
@@ -83,7 +104,7 @@ class _AnimeButtonState extends State<AnimeButton> {
                   Container(
                     width: widget.width * 0.08,
                     height: 2,
-                    color: Colors.white,
+                    color: lightBorderColor,
                   ),
                 ],
               ),

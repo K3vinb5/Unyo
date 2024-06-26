@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
+import 'package:unyo/main.dart';
 
 class AnimeWidget extends StatelessWidget {
   const AnimeWidget({
@@ -85,9 +86,9 @@ class AnimeWidget extends StatelessWidget {
                                 child: Opacity(
                                   opacity: 0.8,
                                   child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.only(
+                                    decoration: BoxDecoration(
+                                      color: lightBorderColor,
+                                      borderRadius: const BorderRadius.only(
                                           bottomRight: Radius.circular(20),
                                           topLeft: Radius.circular(50)),
                                     ),

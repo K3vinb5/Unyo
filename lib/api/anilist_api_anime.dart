@@ -355,7 +355,6 @@ Future<Map<String, Map<String, double>>> getUserStatsMaps(
     return {};
   }
 
-  print(json.decode(response.body));
   var animeStatistics =
       json.decode(response.body)["data"]["User"]["statistics"]["anime"];
 

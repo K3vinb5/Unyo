@@ -12,6 +12,7 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelfio;
 import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
+import 'package:unyo/main.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
@@ -32,7 +33,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> /*with WidgetsBindingObserver*/ {
+class _HomeScreenState
+    extends State<HomeScreen> /*with WidgetsBindingObserver*/ {
   String? bannerImageUrl;
   String? avatarImageUrl;
   String? userName;
@@ -202,7 +204,16 @@ class _HomeScreenState extends State<HomeScreen> /*with WidgetsBindingObserver*/
       image,
       maximumColorCount: 20,
     );
+    List<Color> lightToDarkColors = newPaletteGenerator.colors.toList();
+    lightToDarkColors.sort((color1, color2) =>
+        (color1.computeLuminance() * 10 - color2.computeLuminance() * 10)
+            .toInt());
+
     setState(() {
+      //NOTE higher the number the lighter the color
+      veryLightBorderColor = lightToDarkColors[19];
+      lightBorderColor = lightToDarkColors[10];
+      darkBorderColor = lightToDarkColors[0];
       paletteGenerator = newPaletteGenerator;
     });
   }
