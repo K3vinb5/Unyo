@@ -33,7 +33,7 @@ If you are on **Linux**, you can:
 
 ## Available Sources
 
-The sources for this app from this app are from a custom made api that uses [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, this means that if you wish to have a source added you can open a issue saying the name of the extension and I'll try to integrate it, because the orinal project was for android I had to translate a lot of the codebase to work on pc, this means that not all extensions will be working (most likely a skill issue to be honest)
+The sources for this app are from a custom made api that uses [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, this means that if you wish to have a source added you can open a issue saying the name of the extension and I'll try to integrate it. Note that because the orinal project was for android I had to translate a lot of the codebase to work on pc, this means that not all extensions will be working (most likely a skill issue to be honest -_-)
 
 **English**
 
