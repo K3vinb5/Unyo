@@ -49,8 +49,8 @@ class EmbeddedSource implements AnimeSource {
         headersValuesProcessed.add((headersValue as List<dynamic>).join("@"));
       }
     }
-    streams.removeWhere((element) => (element as String) == "");
-    captions?.removeWhere((element) => (element as String) == "");
+    // streams.removeWhere((element) => (element as String) == "");
+    // captions?.removeWhere((element) => (element as String) == "");
 
     print([
       streams.map((e) => e as String).toList(),

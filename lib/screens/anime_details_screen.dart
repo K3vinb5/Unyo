@@ -358,7 +358,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     streamAndCaptions = await animeSources[currentSource]!
         .getAnimeStreamAndCaptions(consumetId, animeEpisode, context);
 
-    print(streamAndCaptions);
+
     Map<String, String>? headers = null;
 
     if (streamAndCaptions[2] != null && streamAndCaptions[2]!.isNotEmpty) {
@@ -404,7 +404,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           Navigator.of(context).pop();
                           videoScreen = VideoScreen(
                             stream: streamAndCaptions[0]![source] ?? "",
-                            captions: streamAndCaptions[1]?[source],
+                            captions: streamAndCaptions[1]?[source] != null && streamAndCaptions[1]?[source] != "" ? streamAndCaptions[1]![source] : null,
                             headers: headers,
                             updateEntry: () {
                               updateEntry(animeEpisode);

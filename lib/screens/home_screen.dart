@@ -367,7 +367,7 @@ class _HomeScreenState
                         FlutterSplashScreen.fadeIn(
                           backgroundColor:
                               const Color.fromARGB(255, 44, 44, 44),
-                          animationCurve: Curves.decelerate,
+                          animationCurve: Curves.linearToEaseOut,
                           duration: const Duration(milliseconds: 5000),
                           animationDuration: const Duration(milliseconds: 5000),
                           childWidget: Center(
