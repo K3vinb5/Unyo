@@ -69,6 +69,8 @@ jobs:
         run: export PATH="$PATH":"$HOME/.pub-cache/bin"
       - name: Build deb package
         run: flutter_to_debian
+      - name: Go to deb file path
+        run: cd  build/linux/x64/release/debian/
       - name: Rename deb file
         run: cp unyo_0.0.0_amd64.deb unyo-${{github.ref_name}}-amd64.deb
       - name: Linux Debain package Release
