@@ -57,6 +57,7 @@ The sources for this app are from a custom made api that uses [Aniyomi](https://
 ## Known Issues
 
 - Some videos streams don't work, and the app won't give you an error, a bit rare to happen on working extensions.
+- Some banners will cause the app to have weird issues, since coloring is based on the banner, if you experience that, go to versin 0.4.8 or 0.4.9
 
 ## Contributors
 
