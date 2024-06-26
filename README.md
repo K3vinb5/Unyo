@@ -21,7 +21,7 @@
 
 ## Installation
 
-You can download the version from the [releases](https://github.com/K3vinb5/Unyo/releases/latest) tab.
+You can download the latest version from the [releases](https://github.com/K3vinb5/Unyo/releases/latest) tab.
 
 If you are on **Windows**, you can:
 - Download the .zip, extract it and run the executable "unyo.exe"
@@ -29,7 +29,7 @@ If you are on **Windows**, you can:
 If you are on **Linux**, you can:
 - Download the .zip, extract it and run the executable "unyo"
 - Downlaod the .AppImage, and run it (Recommended option)
-- DOwnload the .deb, and install the package by running "sudo apt install ./package_name.deb" (Debian based distros only)
+- Download the .deb, and install the package by running "sudo apt install ./package_name.deb" (Debian based distros only)
 
 ## Available Sources
 
