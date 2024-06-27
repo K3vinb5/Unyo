@@ -21,7 +21,7 @@
 
 ## Installation
 
-You can download the version from the [releases](https://github.com/K3vinb5/Unyo/releases/latest) tab.
+You can download the latest version from the [releases](https://github.com/K3vinb5/Unyo/releases/latest) tab.
 
 If you are on **Windows**, you can:
 - Download the .zip, extract it and run the executable "unyo.exe"
@@ -29,7 +29,7 @@ If you are on **Windows**, you can:
 If you are on **Linux**, you can:
 - Download the .zip, extract it and run the executable "unyo"
 - Downlaod the .AppImage, and run it (Recommended option)
-- DOwnload the .deb, and install the package by running "sudo apt install ./package_name.deb" (Debian based distros only)
+- Download the .deb, and install the package by running "sudo apt install ./package_name.deb" (Debian based distros only)
 
 ## Available Sources
 
@@ -38,7 +38,7 @@ The sources for this app are from a custom made api that uses [Aniyomi](https://
 **English**
 
 - Gogogoanime ✅
-- KickAssAnime ✅
+- KickAssAnime ✅ (Audio issues)
 - Animepahe ❌
 - AllAnime ✅
 - AnimeParadise ⚠️ (Searching not working)
@@ -57,6 +57,7 @@ The sources for this app are from a custom made api that uses [Aniyomi](https://
 ## Known Issues
 
 - Some videos streams don't work, and the app won't give you an error, a bit rare to happen on working extensions.
+- Some banners will cause the app to have weird issues, since coloring is based on the banner, if you experience that, go to versin 0.4.8 or 0.4.9
 
 ## Contributors
 
@@ -70,6 +71,6 @@ This project is licensed under the **GNU Public License version 3.0**.
 
 ## Disclaimer
 
-- By using this app, you agree that the developer(s) of animestream is not responsible for any content within the app and won't be legally responsible for any violations.
-- All the contents in animestream are hosted by 3rd parties, and the developer(s) is not accountable for their nature or legality. Users are advised to use the application responsibly and in compliance with relevant laws and regulations.
-- animestream or its developer(s) are not responsible for the misuse of any content within or outside the app and shall not be responsible for dissemination of any content within the app.
+- By using this app, you agree that the developer(s) of Unyo is not responsible for any content within the app and won't be legally responsible for any violations.
+- All the contents in Unyo are hosted by 3rd parties, and the developer(s) is not accountable for their nature or legality. Users are advised to use the application responsibly and in compliance with relevant laws and regulations.
+- Unyo or its developer(s) are not responsible for the misuse of any content within or outside the app and shall not be responsible for dissemination of any content within the app.
