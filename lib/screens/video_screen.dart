@@ -84,7 +84,7 @@ class _VideoScreenState extends State<VideoScreen> {
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     }
-    if (widget.audioStream != null) {
+    if (widget.audioStream != null && widget.audioStream != "") {
       if (widget.headers != null) {
         _audioController = VideoPlayerController.networkUrl(
           Uri.parse(widget.audioStream!),
@@ -111,7 +111,10 @@ class _VideoScreenState extends State<VideoScreen> {
     _controller.initialize().then((_) => setState(() {}));
     _controller.play();
 
-    if (widget.audioStream != null) {
+    if (widget.audioStream != null && widget.audioStream != "") {
+      _controller.addListener(() {
+        setState(() {});
+      });
       _audioController.setLooping(false);
       _audioController.initialize().then((_) => setState(() {}));
       _audioController.play();
@@ -122,8 +125,10 @@ class _VideoScreenState extends State<VideoScreen> {
     interactScreen(true);
     _screenFocusNode.requestFocus();
     setClientMqttConnection(false);
-    _mixedControllers = MixedControllers(widget.audioStream != null,
-        videoController: _controller, audioController: _audioController);
+    _mixedControllers = MixedControllers(
+        widget.audioStream != null && widget.audioStream != "",
+        videoController: _controller,
+        audioController: _audioController);
     _mixedControllers.init();
   }
 

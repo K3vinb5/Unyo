@@ -20,8 +20,8 @@ late Map<int, AnimeSource> globalAnimesSources;
         });
         sourcesLenght++;
       }
-      globalAnimesSources.addAll({sourcesLenght++ : GoyabuSource()});
-      globalAnimesSources.addAll({sourcesLenght++ : AnimesGamesSource()});
+      // globalAnimesSources.addAll({sourcesLenght++ : GoyabuSource()});
+      // globalAnimesSources.addAll({sourcesLenght++ : AnimesGamesSource()});
     }
   }
 

@@ -55,7 +55,9 @@ class MixedControllers {
   }
 
   void dispose() {
-    syncTimer.cancel();
+    if (audio) {
+      syncTimer.cancel();
+    }
   }
 
   void syncControllers() async {

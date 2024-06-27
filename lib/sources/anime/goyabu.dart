@@ -35,25 +35,27 @@ class GoyabuSource implements AnimeSource {
     url = Uri.parse("https://www.goyabu.us/${episodePages[episode - 1]}");
     // print(episodePages);
     response =
-        await http.get(url, headers: {"Referer": "https://www.goaybu.us/"});
+        await http.get(url, headers: {"Referer": "https://www.goyabu.us/"});
 
     if (response.statusCode != 200) {
       return [];
     }
 
     htmlContent = response.body;
-    List<String> lines = htmlContent.split('\n');
+    // print("content: $htmlContent");
+    List<String> lines = htmlContent.split("\n");
     List<String> linesWithFile =
-        lines.where((line) => line.contains('file: ')).toList();
+        lines.where((line) => line.contains('file:')).toList();
+    // print("raw: $linesWithFile");
     List<String> cleanLines = [];
     for (var line in linesWithFile) {
-      String newLine = line
+      String newLine = getStream(line) 
           .replaceAll("\t", "")
           .replaceAll("\n", "")
           .replaceAll(" ", "")
           .replaceAll("file:", "")
           .replaceAll("'", "")
-          .replaceAll(",", "");
+          .replaceAll(",", "").trim();
       newLine = newLine.substring(0, newLine.length - 1);
       cleanLines.add(newLine);
     }
@@ -64,25 +66,24 @@ class GoyabuSource implements AnimeSource {
       "appsd",
       "appsd2",
     ];
-    bool newMp4 = false;
-    for(String line in cleanLines){
-      newMp4 = newMp4 || (line.contains("appsd2") || line.contains("apphd2"));
-    }
-    if(!newMp4) qualities.removeAt(0);
+    // bool newMp4 = false;
+    // for(String line in cleanLines){
+    //   newMp4 = newMp4 || (line.contains("appsd2") || line.contains("apphd2"));
+    // }
+    // if(!newMp4) qualities.removeAt(0);
+    print("streams: $cleanLines");
+    List<List<String?>?> returnList = [[], null, [], [], [], []];
     for (String quality in qualities) {
       for (String line in cleanLines) {
-        if (line.contains(quality)) {
-          print(line);
-          return [
-            [line],
-            null,
-            ["Referer"],
-            ["https://www.goyabu.us/"]
-          ];
-        }
+        returnList[0]?.add(line);
+        returnList[2]?.add("Referer");
+        returnList[3]?.add("https://www.goyabu.us/");
+        returnList[4]?.add("Qualidade - $quality");
+        returnList[5]?.add("");
       }
     }
-    return [];
+    print(returnList);
+    return returnList;
   }
 
   @override
@@ -116,9 +117,22 @@ class GoyabuSource implements AnimeSource {
     return titlesAndIds;
   }
 
+  String getStream(String htmlContent) {
+    int startIndex = htmlContent.indexOf("{file:'");
+    if (startIndex == -1) return "error";
+    int endIndex = htmlContent.indexOf("'", startIndex + 1);
+    if (endIndex == -1) return "error";
+    String streamingUrl = htmlContent
+        .substring(startIndex, endIndex + 1)
+        .replaceAll("\\", "")
+        .replaceAll('{"file":"', '')
+        .replaceAll('"', '')
+        .trim();
+    return streamingUrl;
+  }
+
   @override
   String getSourceName() {
     return "Goyabu (Pt-Br)";
   }
-
 }

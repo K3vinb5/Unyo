@@ -5,6 +5,7 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:icons_launcher/cli_commands.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
@@ -221,29 +222,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     });
   }
 
-  void addEmbeddedAniyomiExtensions() async {
-    var urlStream =
-        Uri.parse("https://kevin-is-awesome.mooo.com/api/unyo/sources");
-    var response = await http.get(urlStream);
-
-    if (response.statusCode == 200) {
-      List<dynamic> sources = json.decode(response.body)["sources"];
-      int sourcesLenght = animeSources.length;
-      for (var source in sources) {
-        String name = await getSourceNameAndLangAsync(source);
-        print(name);
-        animeSources.addAll({
-          sourcesLenght: EmbeddedSource(source: source as String, name: name)
-        });
-        sourcesLenght++;
-      }
-      setState(() {});
-    } else {
-      print(response.body);
-    }
-    updateSource(0);
-  }
-
 //TODO temp, this is a mess
   Future<String> getSourceNameAndLangAsync(String source) async {
     var urlStream = Uri.parse(
@@ -403,15 +381,18 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                             List<String> keys =
                                 streamAndCaptions[2]![source]!.split("@");
                             for (int i = 0; i < values.length; i++) {
-                              headers!.addAll({keys[i]: values[i]});
+                              headers!.addAll({keys[i][0].toUpperCase() + keys[i].substring(1): values[i]});
                             }
+                          }
+                          if (currentSource == 2){
+                            print(streamAndCaptions[3]?[source]);
                           }
                           String? captions;
 
                           if (streamAndCaptions[1] != null &&
                               streamAndCaptions[1]!.isNotEmpty) {
                             List<String> availableCaptions =
-                                streamAndCaptions[1]![0]!.split("@");
+                                streamAndCaptions[1]![source]!.split("@");
                             for (var s in availableCaptions) {
                               if (s.contains("English")) {
                                 captions = s.split(";")[0];
@@ -423,8 +404,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           List<String>? availableSubtracks;
                           if (streamAndCaptions[5] != null &&
                               streamAndCaptions[5]!.isNotEmpty) {
-                            if (streamAndCaptions[5]![0]!.contains("@")) {
-                              availableSubtracks = streamAndCaptions[5]![0]!.split("@");
+                            if (streamAndCaptions[5]![source]!.contains("@")) {
+                              availableSubtracks = streamAndCaptions[5]![source]!.split("@");
                               for (var s in availableSubtracks) {
                                 if (s.contains("English")) {
                                   subtracks = s.split(";")[0];

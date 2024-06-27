@@ -82,16 +82,16 @@ class _HomeScreenState
     // print('Local server running on port ${server.port}');
   }
 
-  Future<void> startEmbeddedServer() async {
-    String name =
-        'assets/embedded-api-${Platform.isLinux ? "linux" : Platform.isMacOS ? "macos" : "windows"}';
-    int pid;
-    if (Platform.isLinux || Platform.isMacOS) {
-      var processResults = shell.run('''
-      ./$name
-      ''');
-    }
-  }
+  // Future<void> startEmbeddedServer() async {
+  //   String name =
+  //       'assets/embedded-api-${Platform.isLinux ? "linux" : Platform.isMacOS ? "macos" : "windows"}';
+  //   int pid;
+  //   if (Platform.isLinux || Platform.isMacOS) {
+  //     var processResults = shell.run('''
+  //     ./$name
+  //     ''');
+  //   }
+  // }
 
   void setSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();

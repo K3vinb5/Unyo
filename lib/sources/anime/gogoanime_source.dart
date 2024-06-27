@@ -127,7 +127,7 @@ class GogoAnimeSource implements AnimeSource {
         );
       },
     );
-    return [[await completer.future], null, null, null];
+    return [[await completer.future], null, [""], [""], ["Goyabu - 1080p"], [""]];
   }
 
   @override
