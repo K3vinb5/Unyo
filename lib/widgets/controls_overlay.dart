@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/util/mixed_controllers.dart';
 import 'package:video_player/video_player.dart';
 
 class ControlsOverlay extends StatefulWidget {
   const ControlsOverlay({super.key, 
     required this.controller,
+    required this.mixedControllers,
     required this.onTap,
     required this.pausePeer,
     required this.playPeer,
@@ -14,6 +16,7 @@ class ControlsOverlay extends StatefulWidget {
   });
 
   final VideoPlayerController controller;
+  final MixedControllers mixedControllers;
   final void Function() onTap;
   final void Function() pausePeer;
   final void Function() playPeer;
@@ -69,7 +72,7 @@ class _ControlsOverlayState extends State<ControlsOverlay>
             if (widget.controller.value.isPlaying) {
               widget.onTap();
               widget.pausePeer();
-              widget.controller.pause();
+              widget.mixedControllers.pause();
             }
           },
           child: AnimatedOpacity(
@@ -87,7 +90,7 @@ class _ControlsOverlayState extends State<ControlsOverlay>
                         onPressed: () {
                           if (!widget.controller.value.isPlaying) {
                             widget.peerMinus();
-                            widget.controller.seekTo(
+                            widget.mixedControllers.seekTo(
                               Duration(
                                   milliseconds: widget.controller.value.position
                                           .inMilliseconds -
@@ -110,7 +113,7 @@ class _ControlsOverlayState extends State<ControlsOverlay>
                           if (!widget.controller.value.isPlaying) {
                             widget.onTap();
                             widget.playPeer();
-                            widget.controller.play();
+                            widget.mixedControllers.play();
                           }
                         },
                         child: AnimatedIcon(
@@ -127,7 +130,7 @@ class _ControlsOverlayState extends State<ControlsOverlay>
                         onPressed: () {
                           if (!widget.controller.value.isPlaying) {
                             widget.peerPlus();
-                            widget.controller.seekTo(
+                            widget.mixedControllers.seekTo(
                               Duration(
                                   milliseconds: widget.controller.value.position
                                           .inMilliseconds +

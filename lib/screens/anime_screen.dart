@@ -16,6 +16,8 @@ class AnimeScreen extends StatefulWidget {
   State<AnimeScreen> createState() => _AnimeScreenState();
 }
 
+void Function() resumeAnimePageTimer =(){};
+
 class _AnimeScreenState extends State<AnimeScreen> {
   List<AnimeModel> recentlyReleased = [];
   List<AnimeModel> trendingAnimeList = [];
@@ -40,6 +42,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     pageScrollController.addListener(setScrollListener);
+    resumeAnimePageTimer = initPage;
     initPage();
     initAnimeList();
   }
@@ -272,6 +275,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                                           if (updateHomeScreenLists != null) {
                                             updateHomeScreenLists!();
                                           }
+                                          pageTimer.cancel();
                                           goTo(1);
                                         },
                                         icon: const Icon(Icons.arrow_back),

@@ -599,6 +599,7 @@ class _HomeScreenState
                                           onTap: () {
                                             HardwareKeyboard.instance
                                                 .removeHandler(_handleKeyEvent);
+                                            resumeAnimePageTimer(); 
                                             goTo(0);
                                           },
                                           width: adjustedWidth,
@@ -610,6 +611,7 @@ class _HomeScreenState
                                           onTap: () {
                                             HardwareKeyboard.instance
                                                 .removeHandler(_handleKeyEvent);
+                                            resumeMangaPageTimer();
                                             goTo(2);
                                           },
                                           width: adjustedWidth,

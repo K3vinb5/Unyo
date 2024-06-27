@@ -31,8 +31,8 @@ class EmbeddedSource implements AnimeSource {
     // print(response.body);
     List<dynamic> streams = jsonResponse["streams"];
     List<dynamic> qualities = jsonResponse["qualities"];
-    List<dynamic>? captions =
-        jsonResponse["captions"] != "null" ? jsonResponse["captions"] : null;
+    List<dynamic>? captions = jsonResponse["captions"];
+    List<dynamic>? subtracks = jsonResponse["subtracks"];
     List<dynamic>? headersKeys = jsonResponse["headersKeys"] != "null"
         ? jsonResponse["headersKeys"]
         : null;
@@ -49,22 +49,14 @@ class EmbeddedSource implements AnimeSource {
         headersValuesProcessed.add((headersValue as List<dynamic>).join("@"));
       }
     }
-    // streams.removeWhere((element) => (element as String) == "");
-    // captions?.removeWhere((element) => (element as String) == "");
-
-    print([
-      streams.map((e) => e as String).toList(),
-      captions?.map((e) => e as String).toList(),
-      headersKeysProcessed,
-      headersValuesProcessed,
-      qualities.map((e) => e as String).toList(),
-    ]);
+    
     return [
       streams.map((e) => e as String).toList(),
       captions?.map((e) => e as String).toList(),
       headersKeysProcessed,
       headersValuesProcessed,
       qualities.map((e) => e as String).toList(),
+      subtracks?.map((e) => e as String).toList(),
     ];
   }
 

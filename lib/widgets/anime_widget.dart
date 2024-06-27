@@ -59,17 +59,21 @@ class AnimeWidget extends StatelessWidget {
                     width: width,
                     hoverWidth: onTap != null ? width * 1.1 : width,
                     hoverHeight: onTap != null ? height * 1.03 : height,
-                    cursor: onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                    cursor: onTap != null
+                        ? SystemMouseCursors.click
+                        : SystemMouseCursors.basic,
                     curve: Curves.easeOut,
-                    hoverDecoration: onTap != null ? BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white, width: 2),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                            coverImage == null ? uknown : coverImage!),
-                        fit: BoxFit.fill,
-                      ),
-                    ) : null,
+                    hoverDecoration: onTap != null
+                        ? BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white, width: 2),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                  coverImage == null ? uknown : coverImage!),
+                              fit: BoxFit.fill,
+                            ),
+                          )
+                        : null,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       image: DecorationImage(
@@ -102,14 +106,22 @@ class AnimeWidget extends StatelessWidget {
                                             score == null
                                                 ? ""
                                                 : "  ${(score! / 10)}",
-                                            style: const TextStyle(
-                                              color: Colors.black,
+                                            style: TextStyle(
+                                              color: lightBorderColor
+                                                          .computeLuminance() >
+                                                      0.2
+                                                  ? Colors.black
+                                                  : Colors.white.withOpacity(0.8),
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          const Icon(
+                                          Icon(
                                             Icons.star,
-                                            color: Colors.black,
+                                            color: lightBorderColor
+                                                        .computeLuminance() >
+                                                    0.2
+                                                ? Colors.black
+                                                : Colors.white.withOpacity(0.8),
                                             size: 15,
                                           ),
                                         ],
@@ -163,13 +175,13 @@ class AnimeWidget extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.calendar_today,
-                              color: veryLightBorderColor,
+                              color: veryLightBorderColor.withOpacity(0.8),
                               size: 17,
                             ),
                             Text(
                               " ${year!.split("/")[2]}",
                               style: TextStyle(
-                                color: veryLightBorderColor,
+                                color: veryLightBorderColor.withOpacity(0.8),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -181,14 +193,14 @@ class AnimeWidget extends StatelessWidget {
                             Text(
                               "${format!.replaceAll("_", " ")} ",
                               style: TextStyle(
-                                color: veryLightBorderColor,
+                                color: veryLightBorderColor.withOpacity(0.8),
                                 overflow: TextOverflow.ellipsis,
                                 fontSize: format == "TV_SHORT" ? 10 : 14,
                               ),
                             ),
                             Icon(
                               Icons.tv_rounded,
-                              color: veryLightBorderColor,
+                              color: veryLightBorderColor.withOpacity(0.8),
                               size: 17,
                             ),
                           ],

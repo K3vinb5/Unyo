@@ -105,14 +105,23 @@ class MangaWidget extends StatelessWidget {
                                             score == null
                                                 ? ""
                                                 : "  ${(score! / 10)}",
-                                            style: const TextStyle(
-                                              color: Colors.black,
+                                            style: TextStyle(
+                                              color: lightBorderColor
+                                                          .computeLuminance() >
+                                                      0.2
+                                                  ? Colors.black
+                                                  : Colors.white
+                                                      .withOpacity(0.8),
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          const Icon(
+                                          Icon(
                                             Icons.star,
-                                            color: Colors.black,
+                                            color: lightBorderColor
+                                                        .computeLuminance() >
+                                                    0.2
+                                                ? Colors.black
+                                                : Colors.white.withOpacity(0.8),
                                             size: 15,
                                           ),
                                         ],
@@ -166,13 +175,13 @@ class MangaWidget extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.calendar_today,
-                              color: veryLightBorderColor,
+                              color: veryLightBorderColor.withOpacity(0.8),
                               size: 17,
                             ),
                             Text(
                               " ${year!.split("/")[2]}",
                               style: TextStyle(
-                                color: veryLightBorderColor,
+                                color: veryLightBorderColor.withOpacity(0.8),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -184,14 +193,14 @@ class MangaWidget extends StatelessWidget {
                             Text(
                               "${format!.replaceAll("_", " ")} ",
                               style: TextStyle(
-                                color: veryLightBorderColor,
+                                color: veryLightBorderColor.withOpacity(0.8),
                                 overflow: TextOverflow.ellipsis,
                                 fontSize: format == "TV_SHORT" ? 10 : 14,
                               ),
                             ),
                             Icon(
                               Icons.book_rounded,
-                              color: veryLightBorderColor,
+                              color: veryLightBorderColor.withOpacity(0.8),
                               size: 17,
                             ),
                           ],

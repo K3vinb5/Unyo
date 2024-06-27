@@ -69,12 +69,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     // animeSources = {
-      // 0: GogoAnimeSource(),
-      // 1: KickAssAnimeSource(),
-      // 1: ZoroSource(),
-      // 0: GoyabuSource(),
-      // 1: AnimesGamesSource(),
-      // 2: AnimesOnlineSource(),
+    // 0: GogoAnimeSource(),
+    // 1: KickAssAnimeSource(),
+    // 1: ZoroSource(),
+    // 0: GoyabuSource(),
+    // 1: AnimesGamesSource(),
+    // 2: AnimesOnlineSource(),
     // };
     // addEmbeddedAniyomiExtensions();
     animeSources = globalAnimesSources;
@@ -222,7 +222,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void addEmbeddedAniyomiExtensions() async {
-    var urlStream = Uri.parse("https://kevin-is-awesome.mooo.com/api/unyo/sources");
+    var urlStream =
+        Uri.parse("https://kevin-is-awesome.mooo.com/api/unyo/sources");
     var response = await http.get(urlStream);
 
     if (response.statusCode == 200) {
@@ -242,10 +243,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     }
     updateSource(0);
   }
+
 //TODO temp, this is a mess
   Future<String> getSourceNameAndLangAsync(String source) async {
-    var urlStream =
-        Uri.parse("https://kevin-is-awesome.mooo.com/api/unyo/sources/name?source=$source");
+    var urlStream = Uri.parse(
+        "https://kevin-is-awesome.mooo.com/api/unyo/sources/name?source=$source");
     var response = await http.get(urlStream);
 
     if (response.statusCode != 200) {
@@ -358,26 +360,17 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     streamAndCaptions = await animeSources[currentSource]!
         .getAnimeStreamAndCaptions(consumetId, animeEpisode, context);
 
+    Map<String, String>? headers;
 
-    Map<String, String>? headers = null;
-
-    if (streamAndCaptions[2] != null && streamAndCaptions[2]!.isNotEmpty) {
-      headers = {};
-      List<String> values = streamAndCaptions[3]![source]!.split("@");
-      List<String> keys = streamAndCaptions[2]![source]!.split("@");
-      for (int i = 0; i < values.length; i++) {
-        headers.addAll({keys[i]: values[i]});
-      }
-    }
-
-    /*if (mounted &&
-        streamAndCaptions[4] != null &&
-        streamAndCaptions[4]!.isNotEmpty) {*/
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Select quality", style: TextStyle(color: Colors.white),),
+          title: const Text(
+            "Select quality",
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
           content: SizedBox(
             width: adjustedWidth * 0.4,
@@ -387,7 +380,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
               children: [
                 ...streamAndCaptions[4]!.mapIndexed(
                   (index, text) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0, vertical: 8.0),
                     child: SizedBox(
                       height: 60,
                       child: ElevatedButton(
@@ -401,10 +395,52 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         ),
                         onPressed: () {
                           source = index;
+                          if (streamAndCaptions[2] != null &&
+                              streamAndCaptions[2]!.isNotEmpty) {
+                            headers = {};
+                            List<String> values =
+                                streamAndCaptions[3]![source]!.split("@");
+                            List<String> keys =
+                                streamAndCaptions[2]![source]!.split("@");
+                            for (int i = 0; i < values.length; i++) {
+                              headers!.addAll({keys[i]: values[i]});
+                            }
+                          }
+                          String? captions;
+
+                          if (streamAndCaptions[1] != null &&
+                              streamAndCaptions[1]!.isNotEmpty) {
+                            List<String> availableCaptions =
+                                streamAndCaptions[1]![0]!.split("@");
+                            for (var s in availableCaptions) {
+                              if (s.contains("English")) {
+                                captions = s.split(";")[0];
+                              }
+                            }
+                          }
+                          String? subtracks;
+
+                          List<String>? availableSubtracks;
+                          if (streamAndCaptions[5] != null &&
+                              streamAndCaptions[5]!.isNotEmpty) {
+                            if (streamAndCaptions[5]![0]!.contains("@")) {
+                              availableSubtracks = streamAndCaptions[5]![0]!.split("@");
+                              for (var s in availableSubtracks) {
+                                if (s.contains("English")) {
+                                  subtracks = s.split(";")[0];
+                                }
+                              }
+                            }else{
+                              subtracks = streamAndCaptions[5]![0]!.split(";")[0];
+                            }
+                          }
+
+                          print("subtracks: $subtracks");
                           Navigator.of(context).pop();
                           videoScreen = VideoScreen(
                             stream: streamAndCaptions[0]![source] ?? "",
-                            captions: streamAndCaptions[1]?[source] != null && streamAndCaptions[1]?[source] != "" ? streamAndCaptions[1]![source] : null,
+                            audioStream: subtracks,
+                            captions: captions,
                             headers: headers,
                             updateEntry: () {
                               updateEntry(animeEpisode);
@@ -414,7 +450,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           if (!mounted) return;
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => videoScreen),
+                            MaterialPageRoute(
+                                builder: (context) => videoScreen),
                           );
                         },
                         child: Text(text ?? "empty"),
@@ -428,22 +465,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
         );
       },
     );
-    //}
-
-    // videoScreen = VideoScreen(
-    //   stream: streamAndCaptions[0]![source] ?? "",
-    //   captions: streamAndCaptions[1]?[source],
-    //   headers: headers,
-    //   updateEntry: () {
-    //     updateEntry(animeEpisode);
-    //   },
-    //   title: "$animeName, Episode $animeEpisode",
-    // );
-    // if (!mounted) return;
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => videoScreen),
-    // );
   }
 
   void openWrongTitleDialog(BuildContext context, double width, double heigh,
@@ -512,6 +533,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           ),
                           onPressed: () async {
                             //NOTE dirty fix for a bug
+                            if (!mounted) return;
                             AnimatedSnackBar.material(
                               "Updating Title, don't close...",
                               type: AnimatedSnackBarType.warning,
@@ -630,7 +652,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                             },
                             onChangeEnd: (value) {
                               query.remove("progress");
-                              print(progress.toInt().toString());
+                              // print(progress.toInt().toString());
                               query.addAll(
                                   {"progress": progress.toInt().toString()});
                             },

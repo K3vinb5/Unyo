@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/util/mixed_controllers.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -10,6 +11,7 @@ class VideoProgressSlider extends StatelessWidget {
     required this.position,
     required this.duration,
     required this.controller,
+    required this.mixedControllers,
     required this.swatch,
     required this.height,
     required this.switchFullScreen,
@@ -26,6 +28,7 @@ class VideoProgressSlider extends StatelessWidget {
   final Duration position;
   final Duration duration;
   final VideoPlayerController controller;
+  final MixedControllers mixedControllers;
   final void Function() onTap;
   final void Function() playPeer;
   final void Function() pausePeer;
@@ -73,7 +76,7 @@ class VideoProgressSlider extends StatelessWidget {
                   value: value,
                   onChanged: (value) {
                     // controller.seekTo(Duration(milliseconds: value.toInt()));
-                    controller
+                   mixedControllers 
                         .seekTo(Duration(microseconds: (value * 1000).toInt()));
                   },
                   onChangeEnd: (value) {
@@ -99,6 +102,13 @@ class VideoProgressSlider extends StatelessWidget {
                 width: 12,
               ),
               IconButton(
+                icon: const Icon(
+                  Icons.skip_previous_rounded,
+                  color: Colors.white,
+                ),
+                onPressed: () {},
+              ),
+              IconButton(
                 icon: !controller.value.isPlaying
                     ? const Icon(
                         Icons.play_arrow_rounded,
@@ -111,13 +121,17 @@ class VideoProgressSlider extends StatelessWidget {
                   if (!controller.value.isPlaying) {
                     onTap();
                     playPeer();
-                    controller.play();
+                    mixedControllers.play();
                   } else {
                     onTap();
                     pausePeer();
-                    controller.pause();
+                    mixedControllers.pause();
                   }
                 },
+              ),
+              IconButton(
+                icon: const Icon(Icons.skip_next_rounded, color: Colors.white),
+                onPressed: () {},
               ),
               Expanded(
                 child: Row(
@@ -266,7 +280,9 @@ class VideoProgressSlider extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
         ],
       ),
       // ),

@@ -16,6 +16,8 @@ class MangaScreen extends StatefulWidget {
   State<MangaScreen> createState() => _MangaScreenState();
 }
 
+void Function() resumeMangaPageTimer = () {};
+
 class _MangaScreenState extends State<MangaScreen> {
   List<MangaModel> recentlyReleased = [];
   List<MangaModel> trendingMangaList = [];
@@ -40,6 +42,7 @@ class _MangaScreenState extends State<MangaScreen> {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     pageScrollController.addListener(setScrollListener);
+    resumeMangaPageTimer = initPage;
     initPage();
     initMangaList();
   }
@@ -280,6 +283,7 @@ class _MangaScreenState extends State<MangaScreen> {
                                           if (updateHomeScreenLists != null) {
                                             updateHomeScreenLists!();
                                           }
+                                          pageTimer.cancel();
                                           goTo(1);
                                         },
                                         icon: const Icon(Icons.arrow_back),

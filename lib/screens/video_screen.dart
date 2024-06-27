@@ -12,6 +12,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
 import 'package:unyo/main.dart';
+import 'package:unyo/util/mixed_controllers.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -22,6 +23,7 @@ class VideoScreen extends StatefulWidget {
   const VideoScreen({
     super.key,
     required this.stream,
+    this.audioStream,
     required this.updateEntry,
     this.captions,
     required this.headers,
@@ -29,6 +31,7 @@ class VideoScreen extends StatefulWidget {
   });
 
   final String stream;
+  final String? audioStream;
   final String? captions;
   final Map<String, String>? headers;
   final void Function() updateEntry;
@@ -40,6 +43,8 @@ class VideoScreen extends StatefulWidget {
 
 class _VideoScreenState extends State<VideoScreen> {
   late VideoPlayerController _controller;
+  late VideoPlayerController _audioController;
+  late MixedControllers _mixedControllers;
   Timer? _hideControlsTimer;
   bool _showControls = true;
   bool paused = false;
@@ -79,18 +84,47 @@ class _VideoScreenState extends State<VideoScreen> {
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     }
+    if (widget.audioStream != null) {
+      if (widget.headers != null) {
+        _audioController = VideoPlayerController.networkUrl(
+          Uri.parse(widget.audioStream!),
+          httpHeaders: widget.headers!,
+          closedCaptionFile:
+              widget.captions != null ? loadCaptions(widget.captions!) : null,
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        );
+      } else {
+        _audioController = VideoPlayerController.networkUrl(
+          Uri.parse(widget.audioStream!),
+          closedCaptionFile:
+              widget.captions != null ? loadCaptions(widget.captions!) : null,
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        );
+      }
+    } else {
+      _audioController = _controller;
+    }
     _controller.addListener(() {
       setState(() {});
     });
-    _controller.setLooping(true);
-    // temp();
+    _controller.setLooping(false);
     _controller.initialize().then((_) => setState(() {}));
-
     _controller.play();
+
+    if (widget.audioStream != null) {
+      _audioController.setLooping(false);
+      _audioController.initialize().then((_) => setState(() {}));
+      _audioController.play();
+    }
+
     _resetHideControlsTimer();
+
     interactScreen(true);
     _screenFocusNode.requestFocus();
     setClientMqttConnection(false);
+    _mixedControllers = MixedControllers(widget.audioStream != null,
+        videoController: _controller, audioController: _audioController);
+    _mixedControllers.init();
   }
 
   void temp() async {
@@ -106,6 +140,10 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   void dispose() {
     _controller.dispose();
+    if (widget.audioStream != null) {
+      _audioController.dispose();
+      _mixedControllers.dispose();
+    }
     _hideControlsTimer?.cancel();
     super.dispose();
   }
@@ -184,40 +222,40 @@ class _VideoScreenState extends State<VideoScreen> {
 
       switch (messageString) {
         case "pause":
-          _controller.pause();
+          _mixedControllers.pause();
           break;
         case "play":
-          _controller.play();
+          _mixedControllers.play();
           break;
         case "fifteenplus":
-          _controller.seekTo(
+          _mixedControllers.seekTo(
             Duration(
                 milliseconds:
                     _controller.value.position.inMilliseconds + 15000),
           );
           break;
         case "fifteenminus":
-          _controller.seekTo(
+          _mixedControllers.seekTo(
             Duration(
                 milliseconds:
                     _controller.value.position.inMilliseconds - 15000),
           );
           break;
         case "fiveplus":
-          _controller.seekTo(
+          _mixedControllers.seekTo(
             Duration(
                 milliseconds: _controller.value.position.inMilliseconds + 5000),
           );
           break;
         case "fiveminus":
-          _controller.seekTo(
+          _mixedControllers.seekTo(
             Duration(
                 milliseconds: _controller.value.position.inMilliseconds - 5000),
           );
           break;
         case "confirmed":
-          _controller.seekTo(const Duration(milliseconds: 0));
-          _controller.pause();
+          _mixedControllers.seekTo(const Duration(milliseconds: 0));
+          _mixedControllers.pause();
           showDialog(
             context: context,
             builder: (context) {
@@ -255,6 +293,11 @@ class _VideoScreenState extends State<VideoScreen> {
         case "escape":
           WindowManager.instance.setFullScreen(false);
           _controller.dispose();
+          if (widget.audioStream != null) {
+            _audioController.dispose();
+            _mixedControllers.dispose();
+          }
+
           interactScreen(false);
           print(calculatePercentage());
           if (calculatePercentage() > 0.8) {
@@ -265,8 +308,8 @@ class _VideoScreenState extends State<VideoScreen> {
           break;
         case "connected":
           sendConfirmOrder();
-          _controller.seekTo(const Duration(milliseconds: 0));
-          _controller.pause();
+          _mixedControllers.seekTo(const Duration(milliseconds: 0));
+          _mixedControllers.pause();
           showDialog(
             context: context,
             builder: (context) {
@@ -535,16 +578,16 @@ class _VideoScreenState extends State<VideoScreen> {
               if (!_controller.value.isPlaying) {
                 controlsOverlayOnTap();
                 sendPlayVideoOrder();
-                _controller.play();
+                _mixedControllers.play();
               } else {
                 controlsOverlayOnTap();
                 sendPauseVideoOrder();
-                _controller.pause();
+                _mixedControllers.pause();
               }
               break;
             case LogicalKeyboardKey.arrowLeft:
               sendFiveMinOrder();
-              _controller.seekTo(
+              _mixedControllers.seekTo(
                 Duration(
                     milliseconds:
                         _controller.value.position.inMilliseconds - 5000),
@@ -553,21 +596,23 @@ class _VideoScreenState extends State<VideoScreen> {
               break;
             case LogicalKeyboardKey.arrowRight:
               sendFivePosOrder();
-              _controller.seekTo(
+              _mixedControllers.seekTo(
                 Duration(
                     milliseconds:
                         _controller.value.position.inMilliseconds + 5000),
               );
               break;
             case LogicalKeyboardKey.arrowUp:
-              _controller.setVolume(min(_controller.value.volume + 0.1, 1));
+              _mixedControllers
+                  .setVolume(min(_controller.value.volume + 0.1, 1));
               break;
             case LogicalKeyboardKey.arrowDown:
-              _controller.setVolume(max(_controller.value.volume - 0.1, 0));
+              _mixedControllers
+                  .setVolume(max(_controller.value.volume - 0.1, 0));
               break;
             case LogicalKeyboardKey.keyL:
               sendFifteenPosOrder();
-              _controller.seekTo(
+              _mixedControllers.seekTo(
                 Duration(
                     milliseconds:
                         _controller.value.position.inMilliseconds + 15000),
@@ -576,7 +621,7 @@ class _VideoScreenState extends State<VideoScreen> {
               break;
             case LogicalKeyboardKey.keyJ:
               //sendFifteenMinOrder();
-              _controller.seekTo(
+              _mixedControllers.seekTo(
                 Duration(
                     milliseconds:
                         _controller.value.position.inMilliseconds - 15000),
@@ -588,17 +633,22 @@ class _VideoScreenState extends State<VideoScreen> {
               if (!_controller.value.isPlaying) {
                 controlsOverlayOnTap();
                 sendPlayVideoOrder();
-                _controller.play();
+                _mixedControllers.play();
               } else {
                 controlsOverlayOnTap();
                 sendPauseVideoOrder();
-                _controller.pause();
+                _mixedControllers.pause();
               }
               break;
             case LogicalKeyboardKey.escape:
               sendEscapeOrder();
               WindowManager.instance.setFullScreen(false);
               _controller.dispose();
+              if (widget.audioStream != null) {
+                _audioController.dispose();
+                _mixedControllers.dispose();
+              }
+
               interactScreen(false);
               print(calculatePercentage());
               if (calculatePercentage() > 0.8) {
@@ -624,6 +674,8 @@ class _VideoScreenState extends State<VideoScreen> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
+                    if (widget.audioStream != null)
+                      VideoPlayer(_audioController),
                     AspectRatio(
                       aspectRatio: 16 / 9,
                       child: VideoPlayer(_controller),
@@ -639,6 +691,7 @@ class _VideoScreenState extends State<VideoScreen> {
                         children: [
                           ControlsOverlay(
                             controller: _controller,
+                            mixedControllers: _mixedControllers,
                             paused: paused,
                             delayedPaused: delayedPaused,
                             onTap: controlsOverlayOnTap,
@@ -682,9 +735,9 @@ class _VideoScreenState extends State<VideoScreen> {
                                         activeColor: Colors.white,
                                         min: 0,
                                         max: 1,
-                                        value: _controller.value.volume,
+                                        value: _audioController.value.volume,
                                         onChanged: (value) =>
-                                            _controller.setVolume(value),
+                                            _audioController.setVolume(value),
                                       ),
                                     ),
                                   ),
@@ -697,6 +750,7 @@ class _VideoScreenState extends State<VideoScreen> {
                             builder: (context, progress, duration, child) {
                               return VideoProgressSlider(
                                 controller: _controller,
+                                mixedControllers: _mixedControllers,
                                 height: 40,
                                 switchFullScreen: () {
                                   setState(
@@ -738,6 +792,11 @@ class _VideoScreenState extends State<VideoScreen> {
                           if (!fullScreen) {
                             sendEscapeOrder();
                             _controller.dispose();
+                            if (widget.audioStream != null) {
+                              _audioController.dispose();
+                              _mixedControllers.dispose();
+                            }
+
                             interactScreen(false);
                             print(calculatePercentage());
                             if (calculatePercentage() > 0.8) {
