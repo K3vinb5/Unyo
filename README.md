@@ -14,7 +14,8 @@
 <a href="https://img.shields.io/badge/Made_For-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=white"><img src="https://img.shields.io/badge/Made_For-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=white"></a>
 <a href="https://img.shields.io/badge/Made_For-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"><img src="https://img.shields.io/badge/Made_For-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"></a>
 <a href="https://img.shields.io/badge/Made_For-Macos-000000?style=for-the-badge&logo=macos&logoColor=white"><img src="https://img.shields.io/badge/Made_For-Macos-000000?style=for-the-badge&logo=macos&logoColor=white"></a>
-
+<br>
+<img title="img" alt="img" src="./readme-assets/screenshots.gif">
 ## About Unyo
 
 **Unyo** is a desktop application (inspired from [Dantotsu](https://github.com/rebelonion/dantotsu)) where you can watch and read your favourite animes and mangas, it is fully integrated with anilist so whatever content you consume will always be synced automatically. It has great UI and animations, and above all Add-Free.
