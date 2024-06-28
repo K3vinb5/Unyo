@@ -26,32 +26,36 @@ class MixedControllers {
   }
 
   void play() {
-    videoController.play();
     if (audio) {
       audioController.play();
     }
+
+    videoController.play();
   }
 
   void pause() {
-    videoController.pause();
     if (audio) {
       audioController.pause();
     }
+
+    videoController.pause();
   }
 
   void seekTo(Duration duration) {
-    videoController.seekTo(duration);
     if (audio) {
       audioController.seekTo(duration);
       init();
     }
+
+    videoController.seekTo(duration);
   }
 
   void setVolume(double n) {
-    videoController.setVolume(n);
     if (audio) {
       audioController.setVolume(n);
     }
+
+    videoController.setVolume(n);
   }
 
   void dispose() {

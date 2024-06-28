@@ -62,6 +62,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   Timer updateSearchTimer = Timer(const Duration(milliseconds: 0), () {});
   void Function() wrongTitleSearchFunction = () {};
   TextEditingController wrongTitleSearchController = TextEditingController();
+  int currentEpisodes = 0;
 
   @override
   void initState() {
@@ -751,7 +752,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           height: totalHeight * 0.35,
                           fit: /*widget.currentManga.bannerImage != null
                               ? BoxFit.fill
-                              :*/ BoxFit.cover,
+                              :*/
+                              BoxFit.cover,
                         ),
                         colors: const [Colors.white, Colors.black],
                         begin: Alignment.topCenter,
@@ -957,6 +959,77 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.star,
+                                      color: Color.fromARGB(255, 229, 166, 57),
+                                    ),
+                                    Text(
+                                      "${widget.currentManga.averageScore} %",
+                                      style: const TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 229, 166, 57)),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Icon(
+                                      widget.currentManga.status != "RELEASING"
+                                          ? Icons.check
+                                          : Icons.circle,
+                                      color: widget.currentManga.status !=
+                                              "RELEASING"
+                                          ? Colors.grey
+                                          : Colors.green,
+                                    ),
+                                    Text(
+                                      widget.currentManga.status != "RELEASING"
+                                          ? "Finished"
+                                          : "Releasing",
+                                      style: TextStyle(
+                                        color: widget.currentManga.status !=
+                                                "RELEASING"
+                                            ? Colors.grey
+                                            : Colors.green,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Icon(
+                                      Icons.tv,
+                                      color: Colors.grey,
+                                    ),
+                                    Text(
+                                      "${widget.currentManga.format}",
+                                      style:
+                                          const TextStyle(color: Colors.grey),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Icon(
+                                      Icons.movie,
+                                      color: Colors.grey,
+                                    ),
+                                    Text(
+                                      "${(widget.currentManga.chapters ?? currentEpisode)} Episodes",
+                                      style:
+                                          const TextStyle(color: Colors.grey),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
                                 child: Text(
                                   widget.currentManga.description
                                           ?.replaceAll("<br>", "\n")
@@ -979,16 +1052,93 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                         SizedBox(
                           height: totalHeight * 0.22,
                         ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
-                            Text(
-                              "Chapters:",
+                            const Text(
+                              "Episodes:",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 21,
                               ),
+                            ),
+                            const SizedBox(
+                              width: 50,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  height: 35,
+                                  width: 55,
+                                  decoration: BoxDecoration(
+                                      // color: Colors.white,
+                                      border: Border.all(color: Colors.white),
+                                      borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          bottomLeft: Radius.circular(20))),
+                                  child: InkWell(
+                                    child: const Icon(
+                                      Icons.navigate_before,
+                                      color: Colors.white,
+                                    ),
+                                    onTap: () {
+                                      if (currentEpisodes < 1) return;
+                                      setState(() {
+                                        currentEpisodes--;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Container(
+                                  height: 35,
+                                  width: 100,
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      top: BorderSide(color: Colors.white),
+                                      bottom: BorderSide(color: Colors.white),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "${currentEpisodes * 30 + 1} - ${min((30 * (currentEpisodes + 1)), (widget.currentManga.chapters ?? currentEpisode))}",
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  height: 35,
+                                  width: 55,
+                                  decoration: BoxDecoration(
+                                      // color: Colors.,
+                                      border: Border.all(color: Colors.white),
+                                      borderRadius: const BorderRadius.only(
+                                          topRight: Radius.circular(20),
+                                          bottomRight: Radius.circular(20))),
+                                  child: InkWell(
+                                    child: const Icon(
+                                      Icons.navigate_next,
+                                      color: Colors.white,
+                                    ),
+                                    onTap: () {
+                                      if ((currentEpisodes + 1) * 30 >
+                                          (widget.currentManga.chapters ??
+                                              currentEpisode)) return;
+                                      setState(() {
+                                        currentEpisodes++;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 32,
                             ),
                           ],
                         ),
