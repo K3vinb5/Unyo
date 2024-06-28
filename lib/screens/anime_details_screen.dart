@@ -64,6 +64,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   void Function() wrongTitleSearchFunction = () {};
   TextEditingController wrongTitleSearchController = TextEditingController();
   int currentEpisodes = 0;
+  late MediaContentModel mediaContentModel;
 
   @override
   void initState() {
@@ -79,6 +80,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     // };
     // addEmbeddedAniyomiExtensions();
     animeSources = globalAnimesSources;
+    mediaContentModel = MediaContentModel(anilistId: widget.currentAnime.id);
+    mediaContentModel.init();
     updateSource(0);
     setUserAnimeModel();
   }
@@ -387,9 +390,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               });
                             }
                           }
-                          if (currentSource == 2) {
-                            print(streamAndCaptions[3]?[source]);
-                          }
+
                           String? captions;
 
                           if (streamAndCaptions[1] != null &&
@@ -1057,7 +1058,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 height: 10,
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
                                 child: Row(
                                   children: [
                                     const Icon(
@@ -1065,9 +1067,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                       color: Color.fromARGB(255, 229, 166, 57),
                                     ),
                                     Text(
-                                      "${widget.currentAnime.averageScore} %",
+                                      " ${widget.currentAnime.averageScore} %",
                                       style: const TextStyle(
-                                          color: Color.fromARGB(255, 229, 166, 57)),
+                                          color: Color.fromARGB(
+                                              255, 229, 166, 57)),
                                     ),
                                     const SizedBox(
                                       width: 10,
@@ -1083,8 +1086,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                     ),
                                     Text(
                                       widget.currentAnime.status != "RELEASING"
-                                          ? "Finished"
-                                          : "Releasing",
+                                          ? " Finished"
+                                          : " Releasing",
                                       style: TextStyle(
                                         color: widget.currentAnime.status !=
                                                 "RELEASING"
@@ -1099,9 +1102,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                       Icons.tv,
                                       color: Colors.grey,
                                     ),
-                                    Text("${widget.currentAnime.format}",
-                                      style: const TextStyle(
-                                          color: Colors.grey),),
+                                    Text(
+                                      " ${widget.currentAnime.format}",
+                                      style:
+                                          const TextStyle(color: Colors.grey),
+                                    ),
                                     const SizedBox(
                                       width: 10,
                                     ),
@@ -1110,9 +1115,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                       color: Colors.grey,
                                     ),
                                     Text(
-                                        "${(widget.currentAnime.episodes ?? currentEpisode)} Episodes",
-                                      style: const TextStyle(
-                                          color: Colors.grey),),
+                                      " ${(widget.currentAnime.episodes ?? currentEpisode)} Episodes",
+                                      style:
+                                          const TextStyle(color: Colors.grey),
+                                    ),
                                     const SizedBox(
                                       width: 10,
                                     ),
@@ -1129,7 +1135,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   widget.currentAnime.description
                                           ?.replaceAll("<br>", "\n")
                                           .replaceAll("<i>", "")
-                                          .replaceAll("</i>", "") ??
+                                          .replaceAll("<b>", "")
+                                          .replaceAll("</b>", "") ??
                                       "",
                                   style: const TextStyle(
                                     color: Colors.white,
@@ -1143,105 +1150,92 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
                           height: totalHeight * 0.22,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            const Text(
-                              "Episodes:",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 21,
+                        SizedBox(
+                          width: totalWidth * 0.45,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    height: 35,
+                                    width: 30,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.white),
+                                        borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            bottomLeft: Radius.circular(20))),
+                                    child: InkWell(
+                                      child: const Icon(
+                                        Icons.navigate_before,
+                                        color: Colors.white,
+                                      ),
+                                      onTap: () {
+                                        if (currentEpisodes < 1) return;
+                                        setState(() {
+                                          currentEpisodes--;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 35,
+                                    width: 85,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        top: BorderSide(color: Colors.white),
+                                        bottom: BorderSide(color: Colors.white),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "${currentEpisodes * 30 + 1} - ${min((30 * (currentEpisodes + 1)), (widget.currentAnime.episodes ?? currentEpisode))}",
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.normal),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 35,
+                                    width: 30,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.white),
+                                        borderRadius: const BorderRadius.only(
+                                            topRight: Radius.circular(20),
+                                            bottomRight: Radius.circular(20))),
+                                    child: InkWell(
+                                      child: const Icon(
+                                        Icons.navigate_next,
+                                        color: Colors.white,
+                                      ),
+                                      onTap: () {
+                                        if ((currentEpisodes + 1) * 30 >
+                                            (widget.currentAnime.episodes ??
+                                                currentEpisode)) return;
+                                        setState(() {
+                                          currentEpisodes++;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(
-                              width: 50,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  height: 35,
-                                  width: 55,
-                                  decoration: BoxDecoration(
-                                      // color: Colors.white,
-                                      border: Border.all(color: Colors.white),
-                                      borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(20),
-                                          bottomLeft: Radius.circular(20))),
-                                  child: InkWell(
-                                    child: const Icon(
-                                      Icons.navigate_before,
-                                      color: Colors.white,
-                                    ),
-                                    onTap: () {
-                                      if (currentEpisodes < 1) return;
-                                      setState(() {
-                                        currentEpisodes--;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                Container(
-                                  height: 35,
-                                  width: 100,
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                      top: BorderSide(color: Colors.white),
-                                      bottom: BorderSide(color: Colors.white),
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      "${currentEpisodes * 30 + 1} - ${min((30 * (currentEpisodes + 1)), (widget.currentAnime.episodes ?? currentEpisode))}",
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height: 35,
-                                  width: 55,
-                                  decoration: BoxDecoration(
-                                      // color: Colors.,
-                                      border: Border.all(color: Colors.white),
-                                      borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(20),
-                                          bottomRight: Radius.circular(20))),
-                                  child: InkWell(
-                                    child: const Icon(
-                                      Icons.navigate_next,
-                                      color: Colors.white,
-                                    ),
-                                    onTap: () {
-                                      if ((currentEpisodes + 1) * 30 >
-                                          (widget.currentAnime.episodes ??
-                                              currentEpisode)) return;
-                                      setState(() {
-                                        currentEpisodes++;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              width: 32,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        const SizedBox(
-                          height: 20,
+                        SizedBox(
+                          height: totalHeight * 0.06,
                         ),
                         SizedBox(
                           width: totalWidth / 2,
-                          height: totalHeight * 0.59,
+                          height: totalHeight * 0.57,
                           child: SmoothListView.builder(
                             duration: const Duration(milliseconds: 200),
                             itemCount: (widget.currentAnime.episodes ??
@@ -1270,6 +1264,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                       (index + 1 + currentEpisodes * 30),
                                       widget.currentAnime.title ?? "");
                                 },
+                                episodeTitle: mediaContentModel.titles?[
+                                    (index + currentEpisodes * 30)],
+                                episodeImageUrl: mediaContentModel.imageUrls?[
+                                    (index + currentEpisodes * 30)],
                               );
                             },
                           ),

@@ -679,7 +679,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    if (widget.audioStream != null)
+                    if (widget.audioStream != null && widget.audioStream != "")
                       VideoPlayer(_audioController),
                     AspectRatio(
                       aspectRatio: 16 / 9,
