@@ -454,7 +454,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     );
   }
 
-  void openWrongTitleDialog(BuildContext context, double width, double heigh,
+  void openWrongTitleDialog(BuildContext context, double width, double height,
       void Function(void Function()) updateOutsideState) {
     showDialog(
       context: context,
@@ -469,14 +469,26 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
               //NOTE Must be container
               content: Container(
                 width: width * 0.5,
-                height: heigh * 0.5,
+                height: height * 0.5,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    alignment: Alignment.bottomCenter,
+                    opacity: 0.1,
+                    image: NetworkImage("https://i.imgur.com/fUX8AXq.png"),
+                  ),
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       children: [
+                        SizedBox(
+                          height: height * 0.05,
+                        ),
                         const Text("Please select new title or search for one",
-                            style: TextStyle(color: Colors.white)),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 22)),
                         const SizedBox(
                           height: 30,
                         ),
@@ -484,7 +496,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             DropdownMenu(
-                              width: 350,
+                              width: width * 0.4,
                               textStyle: const TextStyle(color: Colors.white),
                               menuStyle: const MenuStyle(
                                 backgroundColor: MaterialStatePropertyAll(
@@ -1179,7 +1191,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                     fontSize: 15,
                                     fontWeight: FontWeight.normal),
                               ),
-
                               IconButton(
                                 onPressed: () {
                                   if ((currentEpisodes + 1) * 30 >

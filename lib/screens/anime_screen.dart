@@ -16,7 +16,7 @@ class AnimeScreen extends StatefulWidget {
   State<AnimeScreen> createState() => _AnimeScreenState();
 }
 
-void Function() resumeAnimePageTimer =(){};
+void Function() resumeAnimePageTimer = () {};
 
 class _AnimeScreenState extends State<AnimeScreen> {
   List<AnimeModel> recentlyReleased = [];
@@ -371,6 +371,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           AnimeButton(
                             text: "Advanced Search",
                             onTap: () {
+                              // pageTimer.cancel();
                               Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const MediaSearchScreen(
                                   type: "ANIME",

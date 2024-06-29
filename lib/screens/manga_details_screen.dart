@@ -347,7 +347,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     );
   }
 
-  void openWrongTitleDialog(BuildContext context, double width, double heigh,
+  void openWrongTitleDialog(BuildContext context, double width, double height,
       void Function(void Function()) updateOutsideState) {
     showDialog(
       context: context,
@@ -362,12 +362,23 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
               //NOTE Must be container
               content: Container(
                 width: width * 0.5,
-                height: heigh * 0.5,
+                height: height * 0.5,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    alignment: Alignment.bottomCenter,
+                    opacity: 0.1,
+                    image: NetworkImage("https://i.imgur.com/fUX8AXq.png"),
+                  ),
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       children: [
+                        SizedBox(
+                          height: height * 0.05,
+                        ),
                         const Text("Please select new title or search for one",
                             style: TextStyle(color: Colors.white)),
                         const SizedBox(
@@ -377,7 +388,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             DropdownMenu(
-                              width: 350,
+                              width: width * 0.4,
                               textStyle: const TextStyle(color: Colors.white),
                               menuStyle: const MenuStyle(
                                 backgroundColor: MaterialStatePropertyAll(
