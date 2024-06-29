@@ -12,6 +12,7 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelfio;
 import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
+import 'package:unyo/dialogs/update_dialog.dart';
 import 'package:unyo/main.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
@@ -47,7 +48,7 @@ class _HomeScreenState
   double adjustedHeight = 0;
   double totalWidth = 0;
   double totalHeight = 0;
-  List<Color> colorList = []; 
+  List<Color> colorList = [];
   Map<String, Map<String, double>>? userStats;
   int? episodesWatched;
   int? minutesWatched;
@@ -196,6 +197,8 @@ class _HomeScreenState
       readingList = newReadingMangaList;
       userStats = newUserStats;
     });
+    if (!mounted) return;
+    showUpdateDialog(context);
   }
 
   void setBannerPallete(String url) async {
@@ -207,9 +210,9 @@ class _HomeScreenState
     List<Color> lightToDarkColors = newPaletteGenerator.colors.toList();
     List<Color> newColorList = newPaletteGenerator.colors.toList();
     int lightest = lightToDarkColors.length - 1;
-    while (newColorList.length < 20){
+    while (newColorList.length < 20) {
       newColorList.addAll(newPaletteGenerator.colors.toList());
-    } 
+    }
     lightToDarkColors.sort((color1, color2) =>
         (color1.computeLuminance() * 10 - color2.computeLuminance() * 10)
             .toInt());
@@ -236,7 +239,6 @@ class _HomeScreenState
 
   List<Widget> getUserCharts() {
     if (colorList.isNotEmpty) {
-      
       // colorList = colorList.reversed.toList();
     }
     return [
@@ -599,7 +601,7 @@ class _HomeScreenState
                                           onTap: () {
                                             HardwareKeyboard.instance
                                                 .removeHandler(_handleKeyEvent);
-                                            resumeAnimePageTimer(); 
+                                            resumeAnimePageTimer();
                                             goTo(0);
                                           },
                                           width: adjustedWidth,
