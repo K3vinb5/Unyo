@@ -1010,7 +1010,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                       width: 10,
                                     ),
                                     const Icon(
-                                      Icons.movie,
+                                      Icons.bookmark,
                                       color: Colors.grey,
                                     ),
                                     Text(
@@ -1036,7 +1036,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                           .replaceAll("<i>", "")
                                           .replaceAll("</i>", "")
                                           .replaceAll("<b>", "")
-                                          .replaceAll("</b>", "")??
+                                          .replaceAll("</b>", "") ??
                                       "",
                                   style: const TextStyle(
                                     color: Colors.white,
@@ -1056,87 +1056,56 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           height: totalHeight * 0.22,
                         ),
                         SizedBox(
-                          width: totalHeight * 0.45,
+                          width: totalWidth * 0.45,
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                height: 35,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white),
-                                    borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(20),
-                                        bottomLeft: Radius.circular(20))),
-                                child: InkWell(
-                                  child: const Icon(
-                                    Icons.navigate_before,
+                              IconButton(
+                                onPressed: () {
+                                  if (currentEpisodes < 1) return;
+                                  setState(() {
+                                    currentEpisodes--;
+                                  });
+                                },
+                                icon: const Icon(
+                                  Icons.navigate_before_rounded,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "${currentEpisodes * 30 + 1} - ${min((30 * (currentEpisodes + 1)), chaptersId.length)}",
+                                style: const TextStyle(
                                     color: Colors.white,
-                                  ),
-                                  onTap: () {
-                                    if (currentEpisodes < 1) return;
-                                    setState(() {
-                                      currentEpisodes--;
-                                    });
-                                  },
-                                ),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold),
                               ),
-                              Container(
-                                height: 35,
-                                width: 100,
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                    top: BorderSide(color: Colors.white),
-                                    bottom: BorderSide(color: Colors.white),
-                                  ),
+                              IconButton(
+                                onPressed: () {
+                                  if ((currentEpisodes + 1) * 30 >
+                                      chaptersId.length) return;
+                                  setState(() {
+                                    currentEpisodes++;
+                                  });
+                                },
+                                icon: const Icon(
+                                  Icons.navigate_next_rounded,
+                                  color: Colors.white,
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    "${currentEpisodes * 30 + 1} - ${min((30 * (currentEpisodes + 1)), chaptersId.length)}",
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 35,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white),
-                                    borderRadius: const BorderRadius.only(
-                                        topRight: Radius.circular(20),
-                                        bottomRight: Radius.circular(20))),
-                                child: InkWell(
-                                  child: const Icon(
-                                    Icons.navigate_next,
-                                    color: Colors.white,
-                                  ),
-                                  onTap: () {
-                                    if ((currentEpisodes + 1) * 30 >
-                                        chaptersId.length) return;
-                                    setState(() {
-                                      currentEpisodes++;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
                               ),
                             ],
                           ),
                         ),
                         SizedBox(
+                          height: totalHeight * 0.06,
+                        ),
+                        SizedBox(
                           width: totalWidth / 2,
-                          height: totalHeight * 0.59,
+                          height: totalHeight * 0.57,
                           child: SmoothListView.builder(
                             duration: const Duration(milliseconds: 200),
                             itemCount: chaptersId.length < 30
                                 ? chaptersId.length
-                                : min(
-                                        (30 * (currentEpisodes + 1)),
+                                : min((30 * (currentEpisodes + 1)),
                                         chaptersId.length) -
                                     (currentEpisodes * 30 + 1) +
                                     1,
