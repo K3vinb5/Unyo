@@ -122,6 +122,13 @@ class _SettingsOptionWidgetState extends State<SettingsOptionWidget> {
               ],
             ),
           ),
+          const SizedBox(height: 15,),
+          const Divider(
+            color: Colors.grey,
+            thickness: 2,
+            indent: 8,
+            endIndent: 8,
+          ),
         ],
       ),
     );

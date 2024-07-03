@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class EpisodeButton extends StatelessWidget {
   const EpisodeButton({
@@ -36,10 +35,9 @@ class EpisodeButton extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: totalWidth * 0.03,
-                vertical: 20),
+                horizontal: totalWidth * 0.03, vertical: 20),
             child: SizedBox(
-              height: totalWidth * 0.05,
+              height: totalWidth * 0.06,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,15 +53,32 @@ class EpisodeButton extends StatelessWidget {
                               : const SizedBox.shrink(),
                         ),
                       ),
-                      const SizedBox(width: 20,),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       SizedBox(
                         width: totalWidth * 0.25,
-                        child: Text(
-                          "Episode $episodeNumber${episodeTitle != null ? " - $episodeTitle" : ""}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        child:Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Episode $episodeNumber",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Text(
+                              episodeTitle != null ? "$episodeTitle" : "",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                overflow: TextOverflow.ellipsis
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

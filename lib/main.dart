@@ -37,8 +37,6 @@ final GlobalKey<NavigatorState> _userMangaListScreen =
     GlobalKey<NavigatorState>(debugLabel: 'userAnimeList');
 final GlobalKey<NavigatorState> _calendarScreen =
     GlobalKey<NavigatorState>(debugLabel: 'calendarScreen');
-final GlobalKey<NavigatorState> _settingsScreen =
-    GlobalKey<NavigatorState>(debugLabel: 'settingsScreen');
 
 final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -111,16 +109,6 @@ final GoRouter _router = GoRouter(
               path: '/calendarScreen',
               builder: (BuildContext context, GoRouterState state) =>
                   const CalendarScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _settingsScreen,
-          routes: <RouteBase>[
-            GoRoute(
-              path: '/settingsScreen',
-              builder: (BuildContext context, GoRouterState state) =>
-                  const SettingsScreen(),
             ),
           ],
         ),

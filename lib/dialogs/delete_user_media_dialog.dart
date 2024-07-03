@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:unyo/models/models.dart';
 
 class DeleteUserMediaDialog extends StatelessWidget {
-  const DeleteUserMediaDialog({super.key, required this.totalHeight, required this.totalWidth, required this.currentAnime, required this.deleteUserAnime});
+  const DeleteUserMediaDialog(
+      {super.key,
+      required this.totalHeight,
+      required this.totalWidth,
+      required this.currentAnime,
+      required this.deleteUserAnime});
 
   final double totalHeight;
   final double totalWidth;
