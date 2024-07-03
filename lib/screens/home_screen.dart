@@ -448,7 +448,10 @@ class _HomeScreenState
                                               MainAxisAlignment.end,
                                           children: [
                                             IconButton(
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                //settings screen
+                                                goTo(6);
+                                              },
                                               icon: const Icon(
                                                   Icons.settings_rounded,
                                                   color: Colors.white),

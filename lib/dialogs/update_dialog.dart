@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -29,12 +30,18 @@ class UpdateDialog extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(
-            height: 70,
+            height: 40,
           ),
-          Text(
-            markdown,
-            style: const TextStyle(color: Colors.white),
+          Theme(
+            data: Theme.of(context).copyWith(
+                textTheme:
+                    Theme.of(context).textTheme.apply(bodyColor: Colors.white)),
+            child: MarkdownBody(data: markdown),
           ),
+          // Text(
+          //   markdown,
+          //   style: const TextStyle(color: Colors.white),
+          // ),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.max,
@@ -45,6 +52,7 @@ class UpdateDialog extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       style: const ButtonStyle(
+                        foregroundColor: MaterialStatePropertyAll(Colors.white),
                         backgroundColor: MaterialStatePropertyAll(
                             Color.fromARGB(255, 37, 37, 37)),
                       ),
@@ -58,6 +66,7 @@ class UpdateDialog extends StatelessWidget {
                     ),
                     ElevatedButton(
                       style: const ButtonStyle(
+                        foregroundColor: MaterialStatePropertyAll(Colors.white),
                         backgroundColor: MaterialStatePropertyAll(
                             Color.fromARGB(255, 37, 37, 37)),
                       ),

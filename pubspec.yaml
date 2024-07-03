@@ -62,6 +62,7 @@ dependencies:
   smooth_list_view: ^1.0.5
   crypto: ^3.0.3
   process_run: ^0.14.2
+  flutter_markdown: ^0.7.3
 
 icons_launcher:
   image_path: 'assets/logo.png'

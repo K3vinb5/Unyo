@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/models/models.dart';
-import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
@@ -28,7 +28,6 @@ class AnimeDetailsScreen extends StatefulWidget {
 }
 
 class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
-  late VideoScreen videoScreen;
   UserMediaModel? userAnimeModel;
   List<String> searches = [];
   List<String> searchesId = [];
@@ -36,8 +35,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   late int currentSearch;
   int currentSource = 0;
   int currentEpisode = 0;
-  late Map<int, /* Future<List<List<String>>> Function(String) */ AnimeSource>
-      animeSources;
+  late Map<int, AnimeSource> animeSources;
   late double progress;
   late double score;
   late String startDate;
@@ -70,15 +68,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   void initState() {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
-    // animeSources = {
-    // 0: GogoAnimeSource(),
-    // 1: KickAssAnimeSource(),
-    // 1: ZoroSource(),
-    // 0: GoyabuSource(),
-    // 1: AnimesGamesSource(),
-    // 2: AnimesOnlineSource(),
-    // };
-    // addEmbeddedAniyomiExtensions();
     animeSources = globalAnimesSources;
     mediaContentModel = MediaContentModel(anilistId: widget.currentAnime.id);
     mediaContentModel.init();
@@ -125,8 +114,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
           },
         ),
       ];
-      // newSearches = searches;
-      // newSearchesIds = searchesId;
     });
     wrongTitleSearchController.removeListener(wrongTitleSearchFunction);
     wrongTitleSearchFunction = () {
@@ -264,48 +251,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
           title: const Text("Are you sure you wish to delete this media entry",
               style: TextStyle(color: Colors.white)),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-          content: SizedBox(
-            height: totalHeight * 0.2,
-            width: totalWidth * 0.1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    deleteUserAnime(widget.currentAnime.id);
-                    Navigator.of(context).pop();
-                  },
-                  style: const ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
-                      Color.fromARGB(255, 37, 37, 37),
-                    ),
-                    foregroundColor: MaterialStatePropertyAll(
-                      Colors.white,
-                    ),
-                  ),
-                  child: const Text("Confirm"),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: const ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
-                      Color.fromARGB(255, 37, 37, 37),
-                    ),
-                    foregroundColor: MaterialStatePropertyAll(
-                      Colors.white,
-                    ),
-                  ),
-                  child: const Text("Cancel"),
-                ),
-              ],
-            ),
+          content: DeleteUserMediaDialog(
+            totalHeight: totalHeight,
+            totalWidth: totalWidth,
+            currentAnime: widget.currentAnime,
+            deleteUserAnime: deleteUserAnime,
           ),
         );
       },
@@ -336,12 +286,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void openVideo(String consumetId, int animeEpisode, String animeName) async {
-    int source = 0;
+    // int source = 0;
     late List<List<String?>?> streamAndCaptions;
     streamAndCaptions = await animeSources[currentSource]!
         .getAnimeStreamAndCaptions(consumetId, animeEpisode, context);
 
-    Map<String, String>? headers;
+    // Map<String, String>? headers;
 
     if (!mounted) return;
     showDialog(
@@ -353,101 +303,13 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-          content: SizedBox(
-            width: adjustedWidth * 0.4,
-            height: adjustedHeight * 0.7,
-            child: SmoothListView(
-              duration: const Duration(milliseconds: 200),
-              children: [
-                ...streamAndCaptions[4]!.mapIndexed(
-                  (index, text) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 8.0),
-                    child: SizedBox(
-                      height: 60,
-                      child: ElevatedButton(
-                        style: const ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                            Color.fromARGB(255, 37, 37, 37),
-                          ),
-                          foregroundColor: MaterialStatePropertyAll(
-                            Colors.white,
-                          ),
-                        ),
-                        onPressed: () {
-                          source = index;
-                          if (streamAndCaptions[2] != null &&
-                              streamAndCaptions[2]!.isNotEmpty) {
-                            headers = {};
-                            List<String> values =
-                                streamAndCaptions[3]![source]!.split("@");
-                            List<String> keys =
-                                streamAndCaptions[2]![source]!.split("@");
-                            for (int i = 0; i < values.length; i++) {
-                              headers!.addAll({
-                                keys[i][0].toUpperCase() + keys[i].substring(1):
-                                    values[i]
-                              });
-                            }
-                          }
-
-                          String? captions;
-
-                          if (streamAndCaptions[1] != null &&
-                              streamAndCaptions[1]!.isNotEmpty) {
-                            List<String> availableCaptions =
-                                streamAndCaptions[1]![source]!.split("@");
-                            for (var s in availableCaptions) {
-                              if (s.contains("English")) {
-                                captions = s.split(";")[0];
-                              }
-                            }
-                          }
-                          String? subtracks;
-
-                          List<String>? availableSubtracks;
-                          if (streamAndCaptions[5] != null &&
-                              streamAndCaptions[5]!.isNotEmpty) {
-                            if (streamAndCaptions[5]![source]!.contains("@")) {
-                              availableSubtracks =
-                                  streamAndCaptions[5]![source]!.split("@");
-                              for (var s in availableSubtracks) {
-                                if (s.contains("English")) {
-                                  subtracks = s.split(";")[0];
-                                }
-                              }
-                            } else {
-                              subtracks =
-                                  streamAndCaptions[5]![0]!.split(";")[0];
-                            }
-                          }
-
-                          print("subtracks: $subtracks");
-                          Navigator.of(context).pop();
-                          videoScreen = VideoScreen(
-                            stream: streamAndCaptions[0]![source] ?? "",
-                            audioStream: subtracks,
-                            captions: captions,
-                            headers: headers,
-                            updateEntry: () {
-                              updateEntry(animeEpisode);
-                            },
-                            title: "$animeName, Episode $animeEpisode",
-                          );
-                          if (!mounted) return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => videoScreen),
-                          );
-                        },
-                        child: Text(text ?? "empty"),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          content: VideoQualityDialog(
+            adjustedWidth: adjustedWidth,
+            adjustedHeight: adjustedHeight,
+            streamAndCaptions: streamAndCaptions,
+            updateEntry: updateEntry,
+            animeEpisode: animeEpisode,
+            animeName: animeName,
           ),
         );
       },
@@ -466,96 +328,32 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
               title: const Text("Select Title",
                   style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-              //NOTE Must be container
-              content: Container(
-                width: width * 0.5,
-                height: height * 0.5,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    alignment: Alignment.bottomCenter,
-                    opacity: 0.1,
-                    image: NetworkImage("https://i.imgur.com/fUX8AXq.png"),
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: height * 0.05,
-                        ),
-                        const Text("Please select new title or search for one",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 22)),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            DropdownMenu(
-                              width: width * 0.4,
-                              textStyle: const TextStyle(color: Colors.white),
-                              menuStyle: const MenuStyle(
-                                backgroundColor: MaterialStatePropertyAll(
-                                  Color.fromARGB(255, 44, 44, 44),
-                                ),
-                              ),
-                              controller: wrongTitleSearchController,
-                              onSelected: (value) {
-                                currentSearchString = searches[value];
-                                currentSearch = value!;
-                              },
-                              initialSelection: 0,
-                              dropdownMenuEntries: wrongTitleEntries,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          style: const ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                              Color.fromARGB(255, 37, 37, 37),
-                            ),
-                            foregroundColor: MaterialStatePropertyAll(
-                              Colors.white,
-                            ),
-                          ),
-                          onPressed: () async {
-                            //NOTE dirty fix for a bug
-                            if (!mounted) return;
-                            AnimatedSnackBar.material(
-                              "Updating Title, don't close...",
-                              type: AnimatedSnackBarType.warning,
-                              desktopSnackBarPosition:
-                                  DesktopSnackBarPosition.topCenter,
-                            ).show(context);
-                            await Future.delayed(const Duration(seconds: 1));
-                            currentSearch =
-                                searches.indexOf(currentSearchString);
-                            AnimatedSnackBar.material(
-                              "Title Updated",
-                              type: AnimatedSnackBarType.success,
-                              desktopSnackBarPosition:
-                                  DesktopSnackBarPosition.topCenter,
-                            ).show(context);
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Confirm"),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              content: WrongTitleDialog(
+                width: width,
+                height: height,
+                wrongTitleSearchController: wrongTitleSearchController,
+                wrongTitleEntries: wrongTitleEntries,
+                onPressed: () async {
+                  //NOTE dirty fix for a bug
+                  if (!mounted) return;
+                  AnimatedSnackBar.material(
+                    "Updating Title, don't close...",
+                    type: AnimatedSnackBarType.warning,
+                    desktopSnackBarPosition: DesktopSnackBarPosition.topCenter,
+                  ).show(context);
+                  await Future.delayed(const Duration(seconds: 1));
+                  currentSearch = searches.indexOf(currentSearchString);
+                  AnimatedSnackBar.material(
+                    "Title Updated",
+                    type: AnimatedSnackBarType.success,
+                    desktopSnackBarPosition: DesktopSnackBarPosition.topCenter,
+                  ).show(context);
+                  Navigator.of(context).pop();
+                },
+                onSelected: (value) {
+                  currentSearchString = searches[value];
+                  currentSearch = value!;
+                },
               ),
             );
           },
@@ -592,244 +390,18 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             ],
           ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-          content: StatefulBuilder(
-            builder: (context, setState) {
-              return SizedBox(
-                width: totalWidth * 0.5,
-                height: totalHeight * 0.6,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    const Text(
-                      "Status",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    StyledDropDown(
-                      items: [
-                        ...statuses.map((status) => Text(status)),
-                      ],
-                      horizontalPadding: 10,
-                      onTap: (index) {
-                        String newCurrentStatus = statuses[index];
-                        statuses.removeAt(index);
-                        statuses.insert(0, newCurrentStatus);
-                        query.remove("status");
-                        query.addAll({"status": newCurrentStatus});
-                      },
-                      width: totalWidth * 0.4,
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const Text(
-                      "Progress",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          progress.toInt().toString(),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        Expanded(
-                          child: Slider(
-                            activeColor: Colors.grey,
-                            min: 0,
-                            max: widget.currentAnime.episodes?.toDouble() ??
-                                currentEpisode.toDouble(),
-                            value: progress,
-                            onChanged: (value) {
-                              setState(() {
-                                progress =
-                                    value; // Update the progress variable when slider value changes
-                              });
-                            },
-                            onChangeEnd: (value) {
-                              query.remove("progress");
-                              // print(progress.toInt().toString());
-                              query.addAll(
-                                  {"progress": progress.toInt().toString()});
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const Text(
-                      "Score",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          score.toInt().toString(),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        Expanded(
-                          child: Slider(
-                            activeColor: Colors.grey,
-                            min: 0,
-                            max: 10,
-                            value: score,
-                            onChanged: (value) {
-                              setState(() {
-                                score =
-                                    value; // Update the progress variable when slider value changes
-                              });
-                            },
-                            onChangeEnd: (value) {
-                              query.remove("score");
-                              query.addAll({"score": score.toString()});
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const Text(
-                      "Start / End Date",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () async {
-                            DateTime? chosenDateTime = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime(1970, 1, 1),
-                              lastDate: DateTime.now(),
-                            );
-                            if (chosenDateTime != null) {
-                              setState(() {
-                                startDate =
-                                    "${chosenDateTime.day}/${chosenDateTime.month}/${chosenDateTime.year}";
-                              });
-                              query.remove("startDateDay");
-                              query.addAll({
-                                "startDateDay": chosenDateTime.day.toString()
-                              });
-                              query.remove("startDateMonth");
-                              query.addAll({
-                                "startDateMonth":
-                                    chosenDateTime.month.toString()
-                              });
-                              query.remove("startDateYear");
-                              query.addAll({
-                                "startDateYear": chosenDateTime.year.toString()
-                              });
-                            }
-                          },
-                          icon: const Icon(Icons.calendar_month,
-                              color: Colors.grey),
-                        ),
-                        Text(
-                          startDate,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          endDate,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            DateTime? chosenDateTime = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime(1970, 1, 1),
-                              lastDate: DateTime.now(),
-                            );
-                            if (chosenDateTime != null) {
-                              setState(() {
-                                endDate =
-                                    "${chosenDateTime.day}/${chosenDateTime.month}/${chosenDateTime.year}";
-                              });
-                              query.remove("endDateDay");
-                              query.addAll({
-                                "endDateDay": chosenDateTime.day.toString()
-                              });
-                              query.remove("endDateMonth");
-                              query.addAll({
-                                "endDateMonth": chosenDateTime.month.toString()
-                              });
-                              query.remove("endDateYear");
-                              query.addAll({
-                                "endDateYear": chosenDateTime.year.toString()
-                              });
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.calendar_month,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Row(
-                            children: [
-                              ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor: MaterialStatePropertyAll(
-                                    Color.fromARGB(255, 37, 37, 37),
-                                  ),
-                                  foregroundColor: MaterialStatePropertyAll(
-                                    Colors.white,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  setUserAnimeInfo(
-                                      widget.currentAnime.id, query);
-                                  Timer(
-                                    const Duration(milliseconds: 1500),
-                                    () {
-                                      setUserAnimeModel();
-                                    },
-                                  );
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Confirm"),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor: MaterialStatePropertyAll(
-                                    Color.fromARGB(255, 37, 37, 37),
-                                  ),
-                                  foregroundColor: MaterialStatePropertyAll(
-                                    Colors.white,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Cancel"),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+          content: AnimeInfoDialog(
+            totalWidth: totalWidth,
+            totalHeight: totalHeight,
+            statuses: statuses,
+            query: query,
+            currentAnime: widget.currentAnime,
+            progress: progress,
+            currentEpisode: currentEpisode,
+            score: score,
+            setUserAnimeModel: setUserAnimeModel,
+            startDate: startDate,
+            endDate: endDate,
           ),
         );
       },

@@ -18,3 +18,4 @@ export 'manga_options_bar.dart';
 export 'searching_anime_menu.dart';
 export 'searching_manga_menu.dart';
 export 'media_tags.dart';
+export 'settings_option_widget.dart';
