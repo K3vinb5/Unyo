@@ -8,6 +8,7 @@
 <p align="center">
 <a href="https://img.shields.io/github/license/K3vinb5/Unyo?style=for-the-badge"><img src="https://img.shields.io/github/license/K3vinb5/Unyo?style=for-the-badge&color=F48041"></a>
 <a href="https://img.shields.io/github/v/release/K3vinb5/Unyo?style=for-the-badge"><img src="https://img.shields.io/github/v/release/K3vinb5/Unyo?style=for-the-badge&color=0E80C0"></a>
+<a href="https://img.shields.io/codefactor/grade/github/k3vinb5/unyo?style=for-the-badge&color=03A363"><img src="https://img.shields.io/codefactor/grade/github/k3vinb5/unyo?style=for-the-badge&color=03A363"></a>
 <a href="https://img.shields.io/github/downloads/K3vinb5/Unyo/total.svg?style=for-the-badge"><img src="https://img.shields.io/github/downloads/K3vinb5/Unyo/total.svg?style=for-the-badge&color=CAF979"></a>
 <a href="https://img.shields.io/github/issues/K3vinb5/Unyo?style=for-the-badge"><img src="https://img.shields.io/github/issues/K3vinb5/Unyo?style=for-the-badge&color=CE5842"></a>
 <br>
