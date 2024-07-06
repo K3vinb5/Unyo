@@ -50,10 +50,8 @@ The sources for this app are from a custom made api that uses [Aniyomi](https://
 - KickAssAnime ✅
 - Animepahe ❌
 - AllAnime ✅
-- AnimeParadise ⚠️ (Searching not working)
-- Aniwave ❌
-- Kaido ❌
-- Kayo ✅
+- AnimeParadise ✅
+- NollyVerse ✅ (Low on content)
 
 **Portuguese**
 
