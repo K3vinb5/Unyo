@@ -18,6 +18,8 @@ class MediaContentModel {
     Map<String, dynamic> episodes = jsonResponse["episodes"];
     imageUrls = episodes.values.map((e) => e["image"] as String?).toList(); 
     titles = episodes.values.map((e) => e["title"]["en"] as String?).toList();
+    fanart = jsonResponse["images"][2]["url"];
+    banner = jsonResponse["images"][0]["url"];
     // if (titles != null){
     //   titles!.addAll(List.filled(10, null));
     // }
@@ -27,6 +29,8 @@ class MediaContentModel {
   }
 
   final int anilistId;
+  String? fanart;  
+  String? banner;
   int attempt = 0;
   List<String?>? titles;
   List<String?>? imageUrls;

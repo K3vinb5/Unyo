@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:unyo/main.dart';
+import 'package:unyo/screens/screens.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/manga_details_screen.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -77,6 +78,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
       currentManga: currentManga,
       tag: tag,
     );
+    pauseMangaPageTimer();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => mangaScreen),
@@ -84,6 +86,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
       if (widget.updateHomeScreenLists != null) {
         widget.updateHomeScreenLists!();
       }
+      resumeMangaPageTimer();
     });
   }
 

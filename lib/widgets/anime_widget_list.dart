@@ -1,26 +1,27 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:unyo/main.dart';
+import 'package:unyo/screens/screens.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/anime_details_screen.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:collection/collection.dart';
 
 class AnimeWidgetList extends StatefulWidget {
-  const AnimeWidgetList(
-      {super.key,
-      required this.title,
-      required this.animeList,
-      required this.textColor,
-      required this.loadMore,
-      required this.tag,
-      required this.width,
-      required this.height,
-      this.updateHomeScreenLists,
-      this.loadMoreFunction,
-      this.verticalPadding,
-      this.horizontalPadding,
-      });
+  const AnimeWidgetList({
+    super.key,
+    required this.title,
+    required this.animeList,
+    required this.textColor,
+    required this.loadMore,
+    required this.tag,
+    required this.width,
+    required this.height,
+    this.updateHomeScreenLists,
+    this.loadMoreFunction,
+    this.verticalPadding,
+    this.horizontalPadding,
+  });
 
   final String title;
   final List<AnimeModel> animeList;
@@ -36,7 +37,6 @@ class AnimeWidgetList extends StatefulWidget {
   final double minimumListHeight = 244.3;
   final double? verticalPadding;
   final double? horizontalPadding;
-
 
   @override
   State<AnimeWidgetList> createState() => _AnimeWidgetListState();
@@ -78,13 +78,15 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
       currentAnime: currentAnime,
       tag: tag,
     );
+    pauseAnimePageTimer();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => animeScreen),
     ).then((_) {
-      if (widget.updateHomeScreenLists != null){
+      if (widget.updateHomeScreenLists != null) {
         widget.updateHomeScreenLists!();
       }
+      resumeAnimePageTimer();
     });
   }
 
@@ -94,13 +96,14 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
       color: Colors.transparent,
       child: LayoutBuilder(
         builder: (context, constraints) {
-
           calculatedWidth = widget.width * 0.1;
           calculatedHeight = widget.height * 0.28;
           calculatedListHeight = widget.height * 0.35;
 
           return Padding(
-            padding: EdgeInsets.symmetric(vertical: widget.verticalPadding ?? 50, horizontal: widget.horizontalPadding ?? 10),
+            padding: EdgeInsets.symmetric(
+                vertical: widget.verticalPadding ?? 50,
+                horizontal: widget.horizontalPadding ?? 10),
             child: Column(
               children: [
                 Row(
@@ -115,7 +118,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                             style: TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
-                              color: veryLightBorderColor, 
+                              color: veryLightBorderColor,
                             ),
                           ),
                           Text(
@@ -132,7 +135,9 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                   ],
                 ),
                 SizedBox(
-                  height: min(max(calculatedListHeight, widget.minimumListHeight),maximumListHeight),
+                  height: min(
+                      max(calculatedListHeight, widget.minimumListHeight),
+                      maximumListHeight),
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     // duration: const Duration(milliseconds: 150),
@@ -148,8 +153,12 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                               openAnime(animeModel, "${widget.tag}-$index");
                             },
                             textColor: widget.textColor,
-                            height: min(max(calculatedHeight, widget.minimumHeight),maximumHeight),
-                            width: min(max(calculatedWidth, widget.minimumWidth),maximumWidth),
+                            height: min(
+                                max(calculatedHeight, widget.minimumHeight),
+                                maximumHeight),
+                            width: min(
+                                max(calculatedWidth, widget.minimumWidth),
+                                maximumWidth),
                             year: animeModel.startDate,
                             format: animeModel.format,
                             status: animeModel.status,
@@ -159,23 +168,27 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                       //load More
                       widget.loadMore
                           ? AnimeWidget(
-                        title: "",
-                        score: null,
-                        coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
-                        onTap: () async {
-                          var newTrendingList =
-                          await widget.loadMoreFunction!(currentPage++, 20, 0);
-                          setState(() {
-                            animeList += newTrendingList;
-                          });
-                        },
-                        textColor: widget.textColor,
-                        height: min(max(calculatedHeight, widget.minimumHeight), maximumHeight),
-                        width: min(max(calculatedWidth, widget.minimumWidth), maximumWidth),
-                        status: null,
-                        format: null,
-                        year: null,
-                      )
+                              title: "",
+                              score: null,
+                              coverImage: "https://i.ibb.co/Kj8CQZH/cross.png",
+                              onTap: () async {
+                                var newTrendingList = await widget
+                                    .loadMoreFunction!(currentPage++, 20, 0);
+                                setState(() {
+                                  animeList += newTrendingList;
+                                });
+                              },
+                              textColor: widget.textColor,
+                              height: min(
+                                  max(calculatedHeight, widget.minimumHeight),
+                                  maximumHeight),
+                              width: min(
+                                  max(calculatedWidth, widget.minimumWidth),
+                                  maximumWidth),
+                              status: null,
+                              format: null,
+                              year: null,
+                            )
                           : const SizedBox(),
                     ],
                   ),

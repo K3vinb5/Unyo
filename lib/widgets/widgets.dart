@@ -19,3 +19,8 @@ export 'searching_anime_menu.dart';
 export 'searching_manga_menu.dart';
 export 'media_tags.dart';
 export 'settings_option_widget.dart';
+export 'media_status_icon_widget.dart';
+export 'media_status_text_widget.dart';
+export 'window_bar_buttons.dart';
+export 'styled_button.dart';
+export 'home_screen_bottom_buttons_widget.dart';

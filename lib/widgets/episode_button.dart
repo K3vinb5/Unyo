@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hovering/hovering.dart';
 
 class EpisodeButton extends StatelessWidget {
   const EpisodeButton({
@@ -36,8 +37,11 @@ class EpisodeButton extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: totalWidth * 0.03, vertical: 20),
-            child: SizedBox(
+            child: HoverAnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              hoverHeight: totalWidth * 0.062,
               height: totalWidth * 0.06,
+              cursor: SystemMouseCursors.click,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -57,7 +61,7 @@ class EpisodeButton extends StatelessWidget {
                         width: 20,
                       ),
                       SizedBox(
-                        width: totalWidth * 0.25,
+                        width: totalWidth * 0.20,
                         child:Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,

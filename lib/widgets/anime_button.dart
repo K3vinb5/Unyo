@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hovering/hovering.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
-import 'package:unyo/main.dart';
+import 'package:unyo/util/utils.dart';
 
 class AnimeButton extends StatefulWidget {
   const AnimeButton({

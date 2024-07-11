@@ -9,6 +9,12 @@ class MangaOptionsBar extends StatefulWidget {
     required this.totalPages,
     required this.pageOption,
     required this.setNewPageOption,
+    required this.fittingOption,
+    required this.setNewFittingOption,
+    required this.orientationOption,
+    required this.setNewOrientationOption,
+    required this.goForwardPage,
+    required this.goBackPage,
   });
 
   final double width;
@@ -17,8 +23,15 @@ class MangaOptionsBar extends StatefulWidget {
   final int currentPage;
   final int totalPages;
   final int pageOption;
+  final int fittingOption;
+  final int orientationOption;
 
   final void Function(int) setNewPageOption;
+  final void Function(int) setNewFittingOption;
+  final void Function(int) setNewOrientationOption;
+
+  final void Function() goForwardPage;
+  final void Function() goBackPage;
 
   @override
   State<MangaOptionsBar> createState() => _MangaOptionsBarState();
@@ -34,13 +47,17 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
     ["Double Page", Icons.library_books], // 1
     ["Long Strip", Icons.receipt_long], // 2
   ];
-  late int currentPageOption;
-  //TODO finish implementing
+  List<List<dynamic>> orientationButtonOptions = const [
+    ["Left to Right", Icons.arrow_right_rounded],
+    ["Right to Left", Icons.arrow_left_rounded],
+  ];
   List<String> fittingButtonOptions = const [
     "Fit Height",
     "Fit Width",
   ];
-  int currentFittingOption = 0;
+  late int currentPageOption;
+  late int currentFittingOption;
+  late int currentOrientationOption;
 
   @override
   void initState() {
@@ -48,6 +65,8 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
     currentPage = widget.currentPage;
     totalPages = widget.totalPages;
     currentPageOption = widget.pageOption;
+    currentFittingOption = widget.fittingOption;
+    currentOrientationOption = widget.orientationOption;
   }
 
   @override
@@ -84,7 +103,9 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
               Row(
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      widget.goBackPage();
+                    },
                     icon: const Icon(
                       Icons.arrow_left,
                       color: Colors.white,
@@ -101,7 +122,9 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                     width: 10,
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      widget.goForwardPage();
+                    },
                     icon: const Icon(Icons.arrow_right, color: Colors.white),
                   ),
                 ],
@@ -152,7 +175,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                         if (currentFittingOption > 1) {
                           currentFittingOption = 0;
                         }
-                        // widget.setNewPageOption(currentPageOption);
+                        widget.setNewFittingOption(currentFittingOption);
                       });
                     },
                     style: const ButtonStyle(
@@ -172,6 +195,39 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                   ),
                 ],
               ),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        currentOrientationOption++;
+                        if (currentOrientationOption > 1) {
+                          currentOrientationOption = 0;
+                        }
+                        widget
+                            .setNewOrientationOption(currentOrientationOption);
+                      });
+                    },
+                    style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                        Color.fromARGB(255, 37, 37, 37),
+                      ),
+                      foregroundColor: MaterialStatePropertyAll(
+                        Colors.white,
+                      ),
+                    ),
+                    child: Row(
+                      // mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                            "${orientationButtonOptions[currentOrientationOption][0]}  "),
+                        Icon(orientationButtonOptions[currentOrientationOption]
+                            [1]),
+                      ],
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
           const Divider(

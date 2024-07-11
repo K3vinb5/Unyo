@@ -3,7 +3,7 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unyo/main.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';

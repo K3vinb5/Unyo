@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unyo/main.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';

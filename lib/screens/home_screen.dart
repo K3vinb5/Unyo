@@ -13,17 +13,12 @@ import 'package:shelf/shelf_io.dart' as shelfio;
 import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:unyo/dialogs/update_dialog.dart';
-import 'package:unyo/main.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
-
-String? accessToken;
-String? refreshToken;
-String? accessCode;
-bool receivedValid = false;
+import 'package:unyo/util/utils.dart';
 
 void Function()? updateHomeScreenLists;
 
@@ -40,7 +35,6 @@ class _HomeScreenState
   String? avatarImageUrl;
   String? userName;
   int? userId;
-  late SharedPreferences prefs;
   late HttpServer server;
   List<AnimeModel>? watchingList;
   List<MangaModel>? readingList;
@@ -82,17 +76,6 @@ class _HomeScreenState
     server = await shelfio.serve(handler, 'localhost', 9999);
     // print('Local server running on port ${server.port}');
   }
-
-  // Future<void> startEmbeddedServer() async {
-  //   String name =
-  //       'assets/embedded-api-${Platform.isLinux ? "linux" : Platform.isMacOS ? "macos" : "windows"}';
-  //   int pid;
-  //   if (Platform.isLinux || Platform.isMacOS) {
-  //     var processResults = shell.run('''
-  //     ./$name
-  //     ''');
-  //   }
-  // }
 
   void setSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
@@ -139,28 +122,11 @@ class _HomeScreenState
   void initState() {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
-    // WidgetsBinding.instance.addObserver(this);
     setSharedPreferences();
     updateHomeScreenLists = () {
-      HardwareKeyboard.instance.addHandler(_handleKeyEvent);
       updateUserLists();
     };
   }
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   super.didChangeAppLifecycleState(state);
-  //   print("Changed $state");
-  //   if (state == AppLifecycleState.paused) {
-  //     shell.kill(ProcessSignal.sigint);
-  //     shell = Shell();
-  //   } else if (state == AppLifecycleState.resumed) {
-  //     startEmbeddedServer();
-  //   } else if (state == AppLifecycleState.inactive) {
-  //     shell.kill(ProcessSignal.sigint);
-  //     shell = Shell();
-  //   }
-  // }
 
   void getUserInfo() async {
     if (userName == null || userId == null) {
@@ -175,7 +141,6 @@ class _HomeScreenState
       newbannerUrl = await getUserbannerImageUrl(userName!, 0);
     } catch (error) {
       //If newBannerURL never returns a string use default avatar
-      print("could not fetch user banner image");
     }
     setBannerPallete(newbannerUrl);
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
@@ -368,17 +333,10 @@ class _HomeScreenState
                   ? Stack(
                       alignment: Alignment.center,
                       children: [
-                        FlutterSplashScreen.fadeIn(
-                          backgroundColor:
-                              const Color.fromARGB(255, 44, 44, 44),
-                          animationCurve: Curves.linearToEaseOut,
-                          duration: const Duration(milliseconds: 5000),
-                          animationDuration: const Duration(milliseconds: 5000),
-                          childWidget: Center(
-                            child: Image.asset(
-                              "assets/logo.png",
-                              scale: 0.85,
-                            ),
+                        Center(
+                          child: Image.asset(
+                            "assets/logo.png",
+                            scale: 0.85,
                           ),
                         ),
                         Padding(
@@ -388,18 +346,9 @@ class _HomeScreenState
                             size: 30,
                           ),
                         ),
-                        Align(
+                        const Align(
                           alignment: Alignment.topCenter,
-                          child: WindowTitleBarBox(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: MoveWindow(),
-                                ),
-                                const WindowButtons(),
-                              ],
-                            ),
-                          ),
+                          child: WindowBarButtons(startIgnoreWidth: 0),
                         ),
                       ],
                     )
@@ -501,43 +450,20 @@ class _HomeScreenState
                                                                   MainAxisAlignment
                                                                       .center,
                                                               children: [
-                                                                ElevatedButton(
-                                                                  style:
-                                                                      const ButtonStyle(
-                                                                    backgroundColor:
-                                                                        MaterialStatePropertyAll(Color.fromARGB(
-                                                                            255,
-                                                                            37,
-                                                                            37,
-                                                                            37)),
-                                                                  ),
+                                                                StyledButton(
                                                                   onPressed:
                                                                       () {
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
                                                                   },
-                                                                  child:
-                                                                      const Text(
-                                                                    "Cancel",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .white),
-                                                                  ),
+                                                                  text:
+                                                                      "Cencel",
                                                                 ),
                                                                 const SizedBox(
                                                                   width: 20,
                                                                 ),
-                                                                ElevatedButton(
-                                                                  style:
-                                                                      const ButtonStyle(
-                                                                    backgroundColor:
-                                                                        MaterialStatePropertyAll(Color.fromARGB(
-                                                                            255,
-                                                                            37,
-                                                                            37,
-                                                                            37)),
-                                                                  ),
+                                                                StyledButton(
                                                                   onPressed:
                                                                       () {
                                                                     prefs
@@ -566,15 +492,9 @@ class _HomeScreenState
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
-                                                                    //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage(updateUserInfo: getUserInfo),));
                                                                   },
-                                                                  child:
-                                                                      const Text(
-                                                                    "Confirm",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .white),
-                                                                  ),
+                                                                  text:
+                                                                      "Confirm",
                                                                 ),
                                                               ],
                                                             ),
@@ -609,8 +529,6 @@ class _HomeScreenState
                                         AnimeButton(
                                           text: "Animes",
                                           onTap: () {
-                                            HardwareKeyboard.instance
-                                                .removeHandler(_handleKeyEvent);
                                             resumeAnimePageTimer();
                                             goTo(0);
                                           },
@@ -621,8 +539,6 @@ class _HomeScreenState
                                         AnimeButton(
                                           text: "Mangas",
                                           onTap: () {
-                                            HardwareKeyboard.instance
-                                                .removeHandler(_handleKeyEvent);
                                             resumeMangaPageTimer();
                                             goTo(2);
                                           },
@@ -674,117 +590,14 @@ class _HomeScreenState
                               const SizedBox(
                                 height: 30,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        AnimeButton(
-                                          text: "Anime List",
-                                          onTap: () {
-                                            //animeListScreen
-                                            goTo(3);
-                                          },
-                                          width: adjustedWidth,
-                                          height: adjustedHeight,
-                                          horizontalAllignment: false,
-                                        ),
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-                                        AnimeButton(
-                                          text: "Manga List",
-                                          onTap: () {
-                                            //mangaListScreen
-                                            goTo(4);
-                                          },
-                                          width: adjustedWidth,
-                                          height: adjustedHeight,
-                                          horizontalAllignment: false,
-                                        ),
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-                                        AnimeButton(
-                                          text: "Calendar",
-                                          onTap: () {
-                                            //calendarScreen
-                                            goTo(5);
-                                          },
-                                          width: adjustedWidth,
-                                          height: adjustedHeight,
-                                          horizontalAllignment: false,
-                                        ),
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-                                        // AnimeButton(
-                                        //     text: "User Stats",
-                                        //     onTap: () {},
-                                        //     width: adjustedWidth,
-                                        //     height: adjustedHeight),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: adjustedWidth * 0.05),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Text(
-                                                "Episodes Watched: ${episodesWatched ?? -1}",
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 19,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                "Hours Watched: ${(minutesWatched! ~/ 60)}",
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 19,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 50,
-                                        ),
-                                        userStats != null
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [...getUserCharts()],
-                                              )
-                                            : const SizedBox(),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              HomeScreenBottomButtonsWidget(
+                                  adjustedHeight: adjustedHeight,
+                                  adjustedWidth: adjustedWidth,
+                                  episodesWatched: episodesWatched,
+                                  userStatsNull: userStats != null,
+                                  getUserCharts: getUserCharts,
+                          minutesWatched: minutesWatched,
+                        ),
                               const SizedBox(
                                 height: 55,
                               ),
@@ -794,16 +607,7 @@ class _HomeScreenState
                         ],
                       ),
                     ),
-              WindowTitleBarBox(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: MoveWindow(),
-                    ),
-                    const WindowButtons(),
-                  ],
-                ),
-              ),
+              const WindowBarButtons(startIgnoreWidth: 0),
             ],
           );
         },

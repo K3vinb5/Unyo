@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/widgets.dart';
-import 'home_screen.dart';
+import 'package:unyo/util/utils.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.updateUserInfo});

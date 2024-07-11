@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
-import 'package:unyo/main.dart';
+import 'package:unyo/util/utils.dart';
 
 class MenuButton extends StatefulWidget {
   const MenuButton(

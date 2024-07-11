@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/dialogs/dialogs.dart';
@@ -67,35 +66,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     animeSources = globalAnimesSources;
     mediaContentModel = MediaContentModel(anilistId: widget.currentAnime.id);
     mediaContentModel.init();
     updateSource(0);
     setUserAnimeModel();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
-  }
-
-  bool _handleKeyEvent(KeyEvent event) {
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
-      setState(() {
-        isShiftKeyPressed = true;
-      });
-      return true;
-    } else if (event is KeyUpEvent &&
-        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
-      setState(() {
-        isShiftKeyPressed = false;
-      });
-      return true;
-    }
-    return false;
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
@@ -285,14 +260,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     }
   }
 
-  void openVideo(String consumetId, int animeEpisode, String animeName) async {
-    // int source = 0;
-    late List<List<String?>?> streamAndCaptions;
-    streamAndCaptions = await animeSources[currentSource]!
-        .getAnimeStreamAndCaptions(consumetId, animeEpisode, context);
-
-    // Map<String, String>? headers;
-
+  void openVideoQualities(
+      String consumetId, int animeEpisode, String animeName) async {
     if (!mounted) return;
     showDialog(
       context: context,
@@ -306,10 +275,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
           content: VideoQualityDialog(
             adjustedWidth: adjustedWidth,
             adjustedHeight: adjustedHeight,
-            streamAndCaptions: streamAndCaptions,
             updateEntry: updateEntry,
             animeEpisode: animeEpisode,
             animeName: animeName,
+            consumetId: consumetId,
+            currentAnimeSource: animeSources[currentSource]!,
           ),
         );
       },
@@ -334,6 +304,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 wrongTitleSearchController: wrongTitleSearchController,
                 wrongTitleEntries: wrongTitleEntries,
                 onPressed: () async {
+                  wrongTitleSearchTimer.cancel();
                   //NOTE dirty fix for a bug
                   if (!mounted) return;
                   AnimatedSnackBar.material(
@@ -585,41 +556,24 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   const SizedBox(
                                     width: 16.0,
                                   ),
-                                  ElevatedButton(
-                                    style: const ButtonStyle(
-                                      backgroundColor: MaterialStatePropertyAll(
-                                        Color.fromARGB(255, 37, 37, 37),
-                                      ),
-                                      foregroundColor: MaterialStatePropertyAll(
-                                        Colors.white,
-                                      ),
-                                    ),
+                                  StyledButton(
                                     onPressed: () {
-                                      // setWrongTitleSearch();
                                       openWrongTitleDialog(
                                           context,
                                           adjustedWidth,
                                           adjustedHeight,
                                           setState);
                                     },
-                                    child: const Text("Wrong/No Title?"),
+                                    text: "Wrong/No Title?",
                                   ),
                                   const SizedBox(
                                     width: 16.0,
                                   ),
-                                  ElevatedButton(
-                                    style: const ButtonStyle(
-                                      backgroundColor: MaterialStatePropertyAll(
-                                        Color.fromARGB(255, 37, 37, 37),
-                                      ),
-                                      foregroundColor: MaterialStatePropertyAll(
-                                        Colors.white,
-                                      ),
-                                    ),
+                                  StyledButton(
                                     onPressed: () {
                                       openAnimeInfoDialog(context);
                                     },
-                                    child: const Text("Update Entry"),
+                                    text: "Update Entry",
                                   ),
                                 ],
                               ),
@@ -651,7 +605,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                       color: Color.fromARGB(255, 229, 166, 57),
                                     ),
                                     Text(
-                                      " ${widget.currentAnime.averageScore} %",
+                                      " ${widget.currentAnime.averageScore ?? "~"} %",
                                       style: const TextStyle(
                                           color: Color.fromARGB(
                                               255, 229, 166, 57)),
@@ -659,26 +613,12 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                     const SizedBox(
                                       width: 10,
                                     ),
-                                    Icon(
-                                      widget.currentAnime.status != "RELEASING"
-                                          ? Icons.check
-                                          : Icons.circle,
-                                      color: widget.currentAnime.status !=
-                                              "RELEASING"
-                                          ? Colors.grey
-                                          : Colors.green,
-                                    ),
-                                    Text(
-                                      widget.currentAnime.status != "RELEASING"
-                                          ? " Finished"
-                                          : " Releasing",
-                                      style: TextStyle(
-                                        color: widget.currentAnime.status !=
-                                                "RELEASING"
-                                            ? Colors.grey
-                                            : Colors.green,
-                                      ),
-                                    ),
+                                    MediaStatusIconWidget(
+                                        status:
+                                            widget.currentAnime.status ?? ""),
+                                    MediaStatusTextWidget(
+                                        status:
+                                            widget.currentAnime.status ?? ""),
                                     const SizedBox(
                                       width: 10,
                                     ),
@@ -781,11 +721,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: totalHeight * 0.06,
-                        ),
-                        SizedBox(
-                          width: totalWidth / 2,
-                          height: totalHeight * 0.57,
+                          width: totalWidth * 0.5,
+                          height: totalHeight * 0.62,
                           child: SmoothListView.builder(
                             duration: const Duration(milliseconds: 200),
                             itemCount: (widget.currentAnime.episodes ??
@@ -799,7 +736,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                             currentEpisode)) -
                                     (currentEpisodes * 30 + 1) +
                                     1,
-                            // widget.currentAnime.episodes ?? currentEpisode,
                             itemBuilder: (context, index) {
                               return EpisodeButton(
                                 episodeNumber:
@@ -808,16 +744,32 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                 latestEpisodeWatched:
                                     userAnimeModel?.progress ?? 1,
                                 onTap: () {
-                                  openVideo(
+                                  openVideoQualities(
                                       searchesId[currentSearch],
                                       // index + 1,
                                       (index + 1 + currentEpisodes * 30),
                                       widget.currentAnime.title ?? "");
                                 },
-                                episodeTitle: mediaContentModel
-                                    .titles?[(index + currentEpisodes * 30)],
-                                episodeImageUrl: mediaContentModel
-                                    .imageUrls?[(index + currentEpisodes * 30)],
+                                episodeTitle: mediaContentModel.titles != null
+                                    ? (mediaContentModel.titles!.length > index
+                                        ? mediaContentModel.titles![
+                                            (index + currentEpisodes * 30)]
+                                        : "")
+                                    : "",
+                                episodeImageUrl:
+                                    mediaContentModel.imageUrls != null
+                                        ? (mediaContentModel.imageUrls!.length >
+                                                    index &&
+                                                index < currentEpisode - 1 &&
+                                                mediaContentModel.imageUrls![
+                                                        (index +
+                                                            currentEpisodes *
+                                                                30)] !=
+                                                    null
+                                            ? mediaContentModel.imageUrls![
+                                                (index + currentEpisodes * 30)]
+                                            : mediaContentModel.fanart)
+                                        : mediaContentModel.fanart,
                               );
                             },
                           ),
@@ -827,19 +779,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                   ],
                 ),
               ),
-              WindowTitleBarBox(
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 70,
-                    ),
-                    Expanded(
-                      child: MoveWindow(),
-                    ),
-                    const WindowButtons(),
-                  ],
-                ),
-              ),
+              const WindowBarButtons(startIgnoreWidth: 70)
             ],
           );
         },

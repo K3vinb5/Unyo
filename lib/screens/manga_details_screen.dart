@@ -424,6 +424,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           ),
                           onPressed: () async {
                             //NOTE dirty fix for a bug
+                            wrongTitleSearchTimer.cancel();
                             updateSearchTimer = Timer.periodic(
                                 const Duration(seconds: 1), (timer) {
                               if (searchesId.isEmpty) {
@@ -977,7 +978,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                       color: Color.fromARGB(255, 229, 166, 57),
                                     ),
                                     Text(
-                                      " ${widget.currentManga.averageScore} %",
+                                      " ${widget.currentManga.averageScore ?? "~"} %",
                                       style: const TextStyle(
                                           color: Color.fromARGB(
                                               255, 229, 166, 57)),
@@ -985,26 +986,12 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                     const SizedBox(
                                       width: 10,
                                     ),
-                                    Icon(
-                                      widget.currentManga.status != "RELEASING"
-                                          ? Icons.check
-                                          : Icons.circle,
-                                      color: widget.currentManga.status !=
-                                              "RELEASING"
-                                          ? Colors.grey
-                                          : Colors.green,
-                                    ),
-                                    Text(
-                                      widget.currentManga.status != "RELEASING"
-                                          ? " Finished"
-                                          : " Releasing",
-                                      style: TextStyle(
-                                        color: widget.currentManga.status !=
-                                                "RELEASING"
-                                            ? Colors.grey
-                                            : Colors.green,
-                                      ),
-                                    ),
+                                    MediaStatusIconWidget(
+                                        status:
+                                            widget.currentManga.status ?? ""),
+                                    MediaStatusTextWidget(
+                                        status:
+                                            widget.currentManga.status ?? ""),
                                     const SizedBox(
                                       width: 10,
                                     ),
@@ -1107,11 +1094,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: totalHeight * 0.06,
-                        ),
-                        SizedBox(
                           width: totalWidth / 2,
-                          height: totalHeight * 0.57,
+                          height: totalHeight * 0.62,
                           child: SmoothListView.builder(
                             duration: const Duration(milliseconds: 200),
                             itemCount: chaptersId.length < 30
@@ -1128,7 +1112,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                                     : 0,
                                 onTap: () {
                                   openManga(
-                                      chaptersId[index],
+                                      chaptersId[index + currentEpisodes * 30],
                                       index + 1 + currentEpisodes * 30,
                                       widget.currentManga.title ?? "");
                                 },
@@ -1141,19 +1125,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                   ],
                 ),
               ),
-              WindowTitleBarBox(
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 70,
-                    ),
-                    Expanded(
-                      child: MoveWindow(),
-                    ),
-                    const WindowButtons(),
-                  ],
-                ),
-              ),
+              const WindowBarButtons(startIgnoreWidth: 70),
             ],
           );
         },

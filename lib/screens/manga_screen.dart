@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:flutter/services.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +16,7 @@ class MangaScreen extends StatefulWidget {
 }
 
 void Function() resumeMangaPageTimer = () {};
+void Function() pauseMangaPageTimer = (){};
 
 class _MangaScreenState extends State<MangaScreen> {
   List<MangaModel> recentlyReleased = [];
@@ -40,28 +40,11 @@ class _MangaScreenState extends State<MangaScreen> {
   @override
   void initState() {
     super.initState();
-    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     pageScrollController.addListener(setScrollListener);
     resumeMangaPageTimer = initPage;
+    pauseMangaPageTimer = (){pageTimer.cancel();};
     initPage();
     initMangaList();
-  }
-
-  bool _handleKeyEvent(KeyEvent event) {
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
-      setState(() {
-        isShiftKeyPressed = true;
-      });
-      return true;
-    } else if (event is KeyUpEvent &&
-        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
-      setState(() {
-        isShiftKeyPressed = false;
-      });
-      return true;
-    }
-    return false;
   }
 
   void setScrollListener() {

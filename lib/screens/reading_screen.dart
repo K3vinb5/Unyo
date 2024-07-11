@@ -1,12 +1,12 @@
 import 'dart:typed_data';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class ReadingScreen extends StatefulWidget {
-  const ReadingScreen({super.key, required this.chapterId, required this.getMangaChapterPages});
+  const ReadingScreen(
+      {super.key, required this.chapterId, required this.getMangaChapterPages});
 
   final String chapterId;
   final Future<List<String>> Function(String) getMangaChapterPages;
@@ -24,6 +24,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
   List<Uint8List?> chapterBytes = [null];
 
   int currentPageOption = 0;
+  int currentFittingOption = 0;
+  int currentOrientationOption = 0;
 
   @override
   void initState() {
@@ -52,16 +54,30 @@ class _ReadingScreenState extends State<ReadingScreen> {
         chapterBytes[i] = bytes;
       });
     }
+  }
 
-    //on first page download
-    // Image chapterImage = Image.memory(chapterBytes[0]!);
-    // if (chapterImage. > MediaQuery.of(context).size.height) {
-    //   print("bigger than height changinf to longsptrp viewing option");
-    //   setNewPageOption(2);
-    // } else {
-    //   print("smaller than height keeping current viewing option");
-    // }
-    
+  void goBackPage() {
+    setState(() {
+      if (currentPage > 1) {
+        currentPage -= 2;
+      }
+    });
+  }
+
+  void goForwardPage() {
+    setState(() {
+      if (currentPage < totalPages - 3) {
+        currentPage += 2;
+      } else if (currentPage < totalPages - 2) {
+        currentPage++;
+      }
+    });
+  }
+
+  void setNewFittingPageOption(int newFittingOption) {
+    setState(() {
+      currentFittingOption = newFittingOption;
+    });
   }
 
   void setNewPageOption(int newPageOption) {
@@ -70,22 +86,28 @@ class _ReadingScreenState extends State<ReadingScreen> {
     });
   }
 
+  void setNewOrientationOption(int newOrientationOption) {
+    setState(() {
+      currentOrientationOption = newOrientationOption;
+    });
+  }
+
   ///Allows user to show the type of schema they want for displaying pages
   Widget listPages(bool leftToRight, width, height) {
     switch (currentPageOption) {
       case 0:
-        return singlePageList(leftToRight, width, height);
+        return singlePageList(width, height);
       case 1:
         return doublePageList(leftToRight, width, height);
       case 2:
         // Needs reworking
-        return scrollingList();
+        return scrollingList(width);
       default:
-        return singlePageList(leftToRight, width, height);
+        return singlePageList(width, height);
     }
   }
 
-  Widget singlePageList(bool leftToRight, double width, double height) {
+  Widget singlePageList(double width, double height) {
     if (currentPage == totalPages - 1) {
       currentPage--;
     }
@@ -118,10 +140,22 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 ? SizedBox(
                     height: height,
                     width: width,
-                    child: Image.memory(
-                      chapterBytes[currentPage]!,
-                      fit: BoxFit.fitHeight,
-                    ))
+                    child: currentFittingOption != 0
+                        ? SingleChildScrollView(
+                            child: Image.memory(
+                              chapterBytes[currentPage]!,
+                              fit: currentFittingOption == 0
+                                  ? BoxFit.fitHeight
+                                  : BoxFit.fitWidth,
+                            ),
+                          )
+                        : Image.memory(
+                            chapterBytes[currentPage]!,
+                            fit: currentFittingOption == 0
+                                ? BoxFit.fitHeight
+                                : BoxFit.fitWidth,
+                          ),
+                  )
                 : const SizedBox.shrink(),
           ],
         ),
@@ -132,27 +166,25 @@ class _ReadingScreenState extends State<ReadingScreen> {
   Widget doublePageList(bool leftToRight, double width, double height) {
     return SizedBox(
       width: width,
-      height: height,
+      // height: height,
       child: Listener(
         onPointerDown: (PointerDownEvent event) {
           final RenderBox renderBox = context.findRenderObject() as RenderBox;
           final position = renderBox.globalToLocal(event.position);
           if (position.dx < MediaQuery.of(context).size.width / 2) {
             // Clicked on the left side
-            setState(() {
-              if (currentPage > 1) {
-                currentPage -= 2;
-              }
-            });
+            if (currentOrientationOption != 0) {
+              goForwardPage();
+            } else {
+              goBackPage();
+            }
           } else {
             // Clicked on the right side
-            setState(() {
-              if (currentPage < totalPages - 3) {
-                currentPage += 2;
-              } else if (currentPage < totalPages - 2) {
-                currentPage++;
-              }
-            });
+            if (currentOrientationOption != 0) {
+              goBackPage();
+            } else {
+              goForwardPage();
+            }
           }
         },
         child: Column(
@@ -162,10 +194,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                     height: height,
                     width: width,
                     child: Center(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: doublePages(leftToRight),
-                      ),
+                      child: doublePages(leftToRight),
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -180,39 +209,52 @@ class _ReadingScreenState extends State<ReadingScreen> {
       //last chapter page
       return Image.memory(
         chapterBytes[currentPage]!,
-        fit: BoxFit.fitHeight,
+        fit: currentFittingOption == 0 ? BoxFit.fitHeight : BoxFit.fitWidth,
       );
     }
-    //every other page
-    return Row(
+
+    Widget doublePage = Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.memory(
-          chapterBytes[currentPage]!,
-          fit: BoxFit.fitHeight,
+          chapterBytes[leftToRight ? currentPage : currentPage + 1]!,
+          fit: currentFittingOption == 0 ? BoxFit.fitHeight : BoxFit.fitWidth,
         ),
         const SizedBox(
           width: 5,
         ),
         Image.memory(
-          chapterBytes[currentPage + 1]!,
-          fit: BoxFit.fitHeight,
+          chapterBytes[leftToRight ? currentPage + 1 : currentPage]!,
+          fit: currentFittingOption == 0 ? BoxFit.fitHeight : BoxFit.fitWidth,
         ),
       ],
     );
+
+    //every other page
+    return currentFittingOption != 0
+        ? SingleChildScrollView(child: doublePage)
+        : doublePage;
   }
 
-  Widget scrollingList() {
+  Widget scrollingList(double width) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          ...chapterBytes.mapIndexed((index, element) {
-            return chapterBytes[index] != null
-                ? Image.memory(chapterBytes[index]!)
-                : const SizedBox.shrink();
-          })
-        ],
+      child: SizedBox(
+        width: width,
+        child: Column(
+          children: [
+            ...chapterBytes.mapIndexed((index, element) {
+              return chapterBytes[index] != null
+                  ? Image.memory(
+                      chapterBytes[index]!,
+                      fit: currentFittingOption == 0
+                          ? BoxFit.fitHeight
+                          : BoxFit.fitWidth,
+                    )
+                  : const SizedBox.shrink();
+            })
+          ],
+        ),
       ),
     );
   }
@@ -238,27 +280,21 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 totalPages: totalPages,
                 pageOption: currentPageOption,
                 setNewPageOption: setNewPageOption,
+                fittingOption: currentFittingOption,
+                setNewFittingOption: setNewFittingPageOption,
+                orientationOption: currentOrientationOption,
+                setNewOrientationOption: setNewOrientationOption,
+                goBackPage: goBackPage,
+                goForwardPage: goForwardPage,
               ),
               SizedBox(
                 width: totalWidth,
                 height: usableHeight,
-                child: listPages(false, totalWidth, usableHeight),
+                child: listPages(currentOrientationOption == 0, totalWidth, usableHeight),
               ),
             ],
           ),
-          WindowTitleBarBox(
-            child: Row(
-              children: [
-                const SizedBox(
-                  width: 70,
-                ),
-                Expanded(
-                  child: MoveWindow(),
-                ),
-                const WindowButtons(),
-              ],
-            ),
-          ),
+          const WindowBarButtons(startIgnoreWidth: 650),
         ],
       ),
     );

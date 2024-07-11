@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
@@ -17,6 +15,7 @@ class AnimeScreen extends StatefulWidget {
 }
 
 void Function() resumeAnimePageTimer = () {};
+void Function() pauseAnimePageTimer = (){};
 
 class _AnimeScreenState extends State<AnimeScreen> {
   List<AnimeModel> recentlyReleased = [];
@@ -40,28 +39,11 @@ class _AnimeScreenState extends State<AnimeScreen> {
   @override
   void initState() {
     super.initState();
-    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     pageScrollController.addListener(setScrollListener);
     resumeAnimePageTimer = initPage;
+    pauseAnimePageTimer = (){pageTimer.cancel();};
     initPage();
     initAnimeList();
-  }
-
-  bool _handleKeyEvent(KeyEvent event) {
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
-      setState(() {
-        isShiftKeyPressed = true;
-      });
-      return true;
-    } else if (event is KeyUpEvent &&
-        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
-      setState(() {
-        isShiftKeyPressed = false;
-      });
-      return true;
-    }
-    return false;
   }
 
   void getBanner() async {
@@ -389,19 +371,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                   ),
                 ],
               ),
-              WindowTitleBarBox(
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 70,
-                    ),
-                    Expanded(
-                      child: MoveWindow(),
-                    ),
-                    const WindowButtons(),
-                  ],
-                ),
-              ),
+              const WindowBarButtons(startIgnoreWidth: 70),
             ],
           );
         },

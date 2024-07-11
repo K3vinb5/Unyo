@@ -1,31 +1,63 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/screens/screens.dart';
+import 'package:unyo/sources/sources.dart';
 
-class VideoQualityDialog extends StatelessWidget {
-  const VideoQualityDialog({super.key, required this.adjustedWidth, required this.adjustedHeight, required this.streamAndCaptions, required this.updateEntry, required this.animeEpisode, required this.animeName});
+class VideoQualityDialog extends StatefulWidget {
+  const VideoQualityDialog({
+    super.key,
+    required this.adjustedWidth,
+    required this.adjustedHeight,
+    required this.updateEntry,
+    required this.animeEpisode,
+    required this.animeName,
+    required this.currentAnimeSource,
+    required this.consumetId,
+  });
 
   final double adjustedWidth;
   final double adjustedHeight;
   final int animeEpisode;
   final String animeName;
-  final List<List<String?>?> streamAndCaptions;
-  final void Function(int) updateEntry; 
+  final void Function(int) updateEntry;
+  final AnimeSource currentAnimeSource;
+  final String consumetId;
+
+  @override
+  State<VideoQualityDialog> createState() => _VideoQualityDialogState();
+}
+
+class _VideoQualityDialogState extends State<VideoQualityDialog> {
+  List<List<String?>?>? streamInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    getStreamInfo();
+  }
+
+  void getStreamInfo() async {
+    streamInfo = await widget.currentAnimeSource.getAnimeStreamAndCaptions(
+        widget.consumetId, widget.animeEpisode, context);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-int source = 0;
-Map<String, String>? headers;
-VideoScreen videoScreen;
+    int source = 0;
+    Map<String, String>? headers;
+    VideoScreen videoScreen;
 
     return SizedBox(
-            width: adjustedWidth * 0.4,
-            height: adjustedHeight * 0.7,
-            child: SmoothListView(
+      width: widget.adjustedWidth * 0.4,
+      height: widget.adjustedHeight * 0.7,
+      child: streamInfo != null
+          ? SmoothListView(
               duration: const Duration(milliseconds: 200),
               children: [
-                ...streamAndCaptions[4]!.mapIndexed(
+                ...streamInfo![4]!.mapIndexed(
                   (index, text) => Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12.0, vertical: 8.0),
@@ -42,13 +74,13 @@ VideoScreen videoScreen;
                         ),
                         onPressed: () {
                           source = index;
-                          if (streamAndCaptions[2] != null &&
-                              streamAndCaptions[2]!.isNotEmpty) {
+                          if (streamInfo![2] != null &&
+                              streamInfo![2]!.isNotEmpty) {
                             headers = {};
                             List<String> values =
-                                streamAndCaptions[3]![source]!.split("@");
+                                streamInfo![3]![source]!.split("@");
                             List<String> keys =
-                                streamAndCaptions[2]![source]!.split("@");
+                                streamInfo![2]![source]!.split("@");
                             for (int i = 0; i < values.length; i++) {
                               headers!.addAll({
                                 keys[i][0].toUpperCase() + keys[i].substring(1):
@@ -59,10 +91,10 @@ VideoScreen videoScreen;
 
                           String? captions;
 
-                          if (streamAndCaptions[1] != null &&
-                              streamAndCaptions[1]!.isNotEmpty) {
+                          if (streamInfo![1] != null &&
+                              streamInfo![1]!.isNotEmpty) {
                             List<String> availableCaptions =
-                                streamAndCaptions[1]![source]!.split("@");
+                                streamInfo![1]![source]!.split("@");
                             for (var s in availableCaptions) {
                               if (s.contains("English")) {
                                 captions = s.split(";")[0];
@@ -72,33 +104,33 @@ VideoScreen videoScreen;
                           String? subtracks;
 
                           List<String>? availableSubtracks;
-                          if (streamAndCaptions[5] != null &&
-                              streamAndCaptions[5]!.isNotEmpty) {
-                            if (streamAndCaptions[5]![source]!.contains("@")) {
+                          if (streamInfo![5] != null &&
+                              streamInfo![5]!.isNotEmpty) {
+                            if (streamInfo![5]![source]!.contains("@")) {
                               availableSubtracks =
-                                  streamAndCaptions[5]![source]!.split("@");
+                                  streamInfo![5]![source]!.split("@");
                               for (var s in availableSubtracks) {
                                 if (s.contains("English")) {
                                   subtracks = s.split(";")[0];
                                 }
                               }
                             } else {
-                              subtracks =
-                                  streamAndCaptions[5]![0]!.split(";")[0];
+                              subtracks = streamInfo![5]![0]!.split(";")[0];
                             }
                           }
 
                           print("subtracks: $subtracks");
                           Navigator.of(context).pop();
                           videoScreen = VideoScreen(
-                            stream: streamAndCaptions[0]![source] ?? "",
+                            stream: streamInfo![0]![source] ?? "",
                             audioStream: subtracks,
                             captions: captions,
                             headers: headers,
                             updateEntry: () {
-                              updateEntry(animeEpisode);
+                              widget.updateEntry(widget.animeEpisode);
                             },
-                            title: "$animeName, Episode $animeEpisode",
+                            title:
+                                "${widget.animeName}, Episode ${widget.animeEpisode}",
                           );
                           if (!context.mounted) return;
                           Navigator.push(
@@ -113,7 +145,25 @@ VideoScreen videoScreen;
                   ),
                 ),
               ],
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                LoadingAnimationWidget.inkDrop(
+                  color: Colors.white,
+                  size: 30,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                const Text(
+                  "Please wait, this can take some seconds...",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                )
+              ],
             ),
-          );
+    );
   }
 }

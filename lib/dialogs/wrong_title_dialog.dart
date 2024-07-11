@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/widgets/widgets.dart';
 
 class WrongTitleDialog extends StatelessWidget {
   const WrongTitleDialog(
@@ -7,7 +8,8 @@ class WrongTitleDialog extends StatelessWidget {
       required this.height,
       required this.wrongTitleSearchController,
       required this.onSelected,
-      required this.onPressed, required this.wrongTitleEntries});
+      required this.onPressed,
+      required this.wrongTitleEntries});
 
   final double width;
   final double height;
@@ -68,17 +70,9 @@ class WrongTitleDialog extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(
-                    Color.fromARGB(255, 37, 37, 37),
-                  ),
-                  foregroundColor: MaterialStatePropertyAll(
-                    Colors.white,
-                  ),
-                ),
+              StyledButton(
+                text: "Confirm",
                 onPressed: onPressed,
-                child: const Text("Confirm"),
               ),
             ],
           ),
