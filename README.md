@@ -65,6 +65,7 @@ The sources for this app are from a custom made api that uses [Aniyomi](https://
 
 - Some videos streams don't work, and the app won't give you an error, a bit rare to happen on working extensions.
 - Some banners will cause the app to have weird issues, since coloring is based on the banner, if you experience that, go to versin 0.4.8 or 0.4.9
+- In the details screen the images that scroll will start to panick and scroll too much, this has already been notified and will be fixed as soon as possible (tomorrow most likely - 12/07/2024)
 
 ## Contributors
 
