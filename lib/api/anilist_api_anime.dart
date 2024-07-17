@@ -222,9 +222,9 @@ Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort,
       ));
     }
     print(list.length);
-    if ((sort != "Select Sorting")) {
-      return list.reversed.toList();
-    }
+    // if ((sort != "Select Sorting")) {
+      // return list.reversed.toList();
+    // }
     return list;
   }
 }

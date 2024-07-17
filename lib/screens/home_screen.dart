@@ -1,5 +1,3 @@
-import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/services.dart';
 import 'package:process_run/shell.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
@@ -263,33 +261,15 @@ class _HomeScreenState
     ];
   }
 
-  double getAdjustedHeight(double value) {
-    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
-    }
-  }
-
-  double getAdjustedWidth(double value) {
-    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
+          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width, context);
           adjustedHeight =
-              getAdjustedHeight(MediaQuery.of(context).size.height);
+              getAdjustedHeight(MediaQuery.of(context).size.height, context);
           totalHeight = MediaQuery.of(context).size.height;
           totalWidth = MediaQuery.of(context).size.width;
           //print("$adjustedWidth / $adjustedHeight");

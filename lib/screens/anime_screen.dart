@@ -6,6 +6,7 @@ import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
+import 'package:unyo/util/constants.dart';
 
 class AnimeScreen extends StatefulWidget {
   const AnimeScreen({super.key});
@@ -41,8 +42,8 @@ class _AnimeScreenState extends State<AnimeScreen> {
     super.initState();
     pageScrollController.addListener(setScrollListener);
     resumeAnimePageTimer = initPage;
-    pauseAnimePageTimer = (){pageTimer.cancel();};
     initPage();
+    pauseAnimePageTimer = (){pageTimer.cancel();};
     initAnimeList();
   }
 
@@ -52,24 +53,6 @@ class _AnimeScreenState extends State<AnimeScreen> {
     setState(() {
       randomAnimeBanner = newUrl;
     });
-  }
-
-  double getAdjustedHeight(double value) {
-    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
-    }
-  }
-
-  double getAdjustedWidth(double value) {
-    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
-    }
   }
 
   void initPage() {
@@ -161,8 +144,8 @@ class _AnimeScreenState extends State<AnimeScreen> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedHeight =
-              getAdjustedHeight(MediaQuery.of(context).size.height);
-          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
+              getAdjustedHeight(MediaQuery.of(context).size.height, context);
+          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width, context);
           totalWidth = MediaQuery.of(context).size.width;
           totalHeight = MediaQuery.of(context).size.height;
 

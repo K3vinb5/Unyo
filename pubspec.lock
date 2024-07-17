@@ -29,10 +29,10 @@ packages:
     dependency: "direct main"
     description:
       name: another_flutter_splash_screen
-      sha256: "99372a8c95839c7276f3399a637e8844f67fe1e7487036420a28a5a6abd7f179"
+      sha256: feb42edf8c67bc991eabb67b4aeb6832dd7f829f3d72102a5f8b6af3ae6c5933
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   archive:
     dependency: transitive
     description:
@@ -289,14 +289,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.3"
-  dmg:
-    dependency: "direct dev"
-    description:
-      name: dmg
-      sha256: "3cec333d6508467b802235760a1f2128184169a4a6c055b53fce4a9e1d0ac626"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.5"
   event_bus:
     dependency: transitive
     description:
@@ -388,10 +380,10 @@ packages:
     dependency: "direct main"
     description:
       name: fvp
-      sha256: b692043a7f1a789672f70837879853533fbcb0b4c17b86fffa7c642aeee9f70c
+      sha256: a8814c57e181d500a645722d2fd190ba7659c5eb4f9cfdc1c76b14b637f0d66c
       url: "https://pub.dev"
     source: hosted
-    version: "0.19.0"
+    version: "0.20.2"
   get_it:
     dependency: transitive
     description:
@@ -412,10 +404,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "771c8feb40ad0ef639973d7ecf1b43d55ffcedb2207fd43fab030f5639e40446"
+      sha256: "39dd52168d6c59984454183148dc3a5776960c61083adfc708cc79a7b3ce1ba8"
       url: "https://pub.dev"
     source: hosted
-    version: "13.2.4"
+    version: "14.2.1"
   graphs:
     dependency: transitive
     description:
@@ -444,10 +436,10 @@ packages:
     dependency: "direct main"
     description:
       name: http
-      sha256: "761a297c042deedc1ffbb156d6e2af13886bb305c2a343a4d972504cd67dd938"
+      sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.1"
+    version: "1.2.2"
   http_multi_server:
     dependency: transitive
     description:
@@ -628,10 +620,10 @@ packages:
     dependency: "direct main"
     description:
       name: palette_generator
-      sha256: eb7082b4b97487ebc65b3ad3f6f0b7489b96e76840381ed0e06a46fe7ffd4068
+      sha256: d50fbcd69abb80c5baec66d700033b1a320108b1aa17a5961866a12c0abb7c0c
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3+3"
+    version: "0.3.3+4"
   path:
     dependency: transitive
     description:
@@ -937,10 +929,10 @@ packages:
     dependency: "direct main"
     description:
       name: url_launcher
-      sha256: "6ce1e04375be4eed30548f10a315826fd933c1e493206eab82eed01f438c8d2e"
+      sha256: "21b704ce5fa560ea9f3b525b43601c678728ba46725bab9b01187b4831377ed3"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.6"
+    version: "6.3.0"
   url_launcher_android:
     dependency: transitive
     description:
@@ -1009,10 +1001,10 @@ packages:
     dependency: "direct main"
     description:
       name: video_player
-      sha256: aced48e701e24c02b0b7f881a8819e4937794e46b5a5821005e2bf3b40a324cc
+      sha256: e30df0d226c4ef82e2c150ebf6834b3522cf3f654d8e2f9419d376cdc071425d
       url: "https://pub.dev"
     source: hosted
-    version: "2.8.7"
+    version: "2.9.1"
   video_player_android:
     dependency: transitive
     description:
@@ -1089,10 +1081,10 @@ packages:
     dependency: "direct main"
     description:
       name: window_manager
-      sha256: b3c895bdf936c77b83c5254bec2e6b3f066710c1f89c38b20b8acc382b525494
+      sha256: "8699323b30da4cdbe2aa2e7c9de567a6abd8a97d9a5c850a3c86dcd0b34bbfbf"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.8"
+    version: "0.3.9"
   xdg_directories:
     dependency: transitive
     description:
@@ -1118,5 +1110,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.3.1 <3.22.1"
+  dart: ">=3.3.1 <3.22.2"
   flutter: ">=3.19.0"

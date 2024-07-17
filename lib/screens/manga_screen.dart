@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
+import 'package:unyo/util/constants.dart';
 
 class MangaScreen extends StatefulWidget {
   const MangaScreen({super.key});
@@ -56,24 +56,6 @@ class _MangaScreenState extends State<MangaScreen> {
       setState(() {
         bannerInfoVisible = true;
       });
-    }
-  }
-
-  double getAdjustedHeight(double value) {
-    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
-    }
-  }
-
-  double getAdjustedWidth(double value) {
-    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
     }
   }
 
@@ -157,8 +139,8 @@ class _MangaScreenState extends State<MangaScreen> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedHeight =
-              getAdjustedHeight(MediaQuery.of(context).size.height);
-          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
+              getAdjustedHeight(MediaQuery.of(context).size.height, context);
+          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width, context);
           totalWidth = MediaQuery.of(context).size.width;
           totalHeight = MediaQuery.of(context).size.height;
 
@@ -321,17 +303,6 @@ class _MangaScreenState extends State<MangaScreen> {
                               ],
                             ),
                           ),
-
-                          /*MangaWidgetList(
-                          tag: "manga-details-list1",
-                          title: "Recently Released",
-                          animeList: recentlyReleased,
-                          textColor: Colors.white,
-                          loadMore: true,
-                          loadMoreFunction: getAnimeModelListRecentlyReleased,
-                          width: adjustedWidth,
-                          height: adjustedHeight,
-                        ),*/
                           MangaWidgetList(
                             tag: "manga-details-list2",
                             title: "Trending",
@@ -380,19 +351,7 @@ class _MangaScreenState extends State<MangaScreen> {
                   ),
                 ],
               ),
-              WindowTitleBarBox(
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 70,
-                    ),
-                    Expanded(
-                      child: MoveWindow(),
-                    ),
-                    const WindowButtons(),
-                  ],
-                ),
-              ),
+              const WindowBarButtons(startIgnoreWidth: 70),
             ],
           );
         },
