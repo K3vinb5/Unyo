@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/widgets/styled_button.dart';
+import 'package:unyo/widgets/widgets.dart';
 
 class MangaOptionsBar extends StatefulWidget {
   const MangaOptionsBar({
@@ -104,7 +106,11 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      widget.goBackPage();
+                      if (currentOrientationOption != 0) {
+                        widget.goForwardPage();
+                      } else {
+                        widget.goBackPage();
+                      }
                     },
                     icon: const Icon(
                       Icons.arrow_left,
@@ -123,7 +129,11 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                   ),
                   IconButton(
                     onPressed: () {
-                      widget.goForwardPage();
+                      if (currentOrientationOption != 0) {
+                        widget.goBackPage();
+                      } else {
+                        widget.goForwardPage();
+                      }
                     },
                     icon: const Icon(Icons.arrow_right, color: Colors.white),
                   ),
@@ -136,7 +146,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
               // PageButton
               Row(
                 children: [
-                  ElevatedButton(
+                  StyledButton(
                     onPressed: () {
                       setState(() {
                         currentPageOption++;
@@ -146,14 +156,6 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                         widget.setNewPageOption(currentPageOption);
                       });
                     },
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
-                        Color.fromARGB(255, 37, 37, 37),
-                      ),
-                      foregroundColor: MaterialStatePropertyAll(
-                        Colors.white,
-                      ),
-                    ),
                     child: Row(
                       children: [
                         Text("${pageButtonOptions[currentPageOption][0]}  "),
@@ -168,7 +170,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
               ),
               Row(
                 children: [
-                  ElevatedButton(
+                  StyledButton(
                     onPressed: () {
                       setState(() {
                         currentFittingOption++;
@@ -178,14 +180,6 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                         widget.setNewFittingOption(currentFittingOption);
                       });
                     },
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
-                        Color.fromARGB(255, 37, 37, 37),
-                      ),
-                      foregroundColor: MaterialStatePropertyAll(
-                        Colors.white,
-                      ),
-                    ),
                     child: Row(
                       // mainAxisSize: MainAxisSize.max,
                       children: [
@@ -195,9 +189,12 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                   ),
                 ],
               ),
+              const SizedBox(
+                width: 10,
+              ),
               Row(
                 children: [
-                  ElevatedButton(
+                  StyledButton(
                     onPressed: () {
                       setState(() {
                         currentOrientationOption++;
@@ -208,16 +205,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                             .setNewOrientationOption(currentOrientationOption);
                       });
                     },
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
-                        Color.fromARGB(255, 37, 37, 37),
-                      ),
-                      foregroundColor: MaterialStatePropertyAll(
-                        Colors.white,
-                      ),
-                    ),
                     child: Row(
-                      // mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
                             "${orientationButtonOptions[currentOrientationOption][0]}  "),

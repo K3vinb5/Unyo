@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
-import 'package:unyo/screens/anime_details_screen.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:collection/collection.dart';
 
@@ -21,6 +20,7 @@ class AnimeWidgetList extends StatefulWidget {
     this.loadMoreFunction,
     this.verticalPadding,
     this.horizontalPadding,
+    required this.totalWidth,
   });
 
   final String title;
@@ -31,6 +31,7 @@ class AnimeWidgetList extends StatefulWidget {
   final String tag;
   final void Function()? updateHomeScreenLists;
   final double width;
+  final double totalWidth;
   final double height;
   final double minimumWidth = 124.08;
   final double minimumHeight = 195.44;
@@ -45,11 +46,11 @@ class AnimeWidgetList extends StatefulWidget {
 class _AnimeWidgetListState extends State<AnimeWidgetList> {
   late List<AnimeModel> animeList;
   late AnimeDetailsScreen animeScreen;
+  ScrollController controller = ScrollController();
   int currentPage = 2;
   double calculatedWidth = 0;
   double calculatedHeight = 0;
   double calculatedListHeight = 0;
-
   double maximumWidth = 0;
   double maximumHeight = 0;
   double maximumListHeight = 0;
@@ -111,25 +112,32 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            widget.title,
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              color: veryLightBorderColor,
+                      child: SizedBox(
+                        width: widget.totalWidth - 40,
+                        child: Row(
+                          children: [
+                            Text(
+                              widget.title,
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: veryLightBorderColor,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "  ${animeList.length.toString()} entries",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.grey,
+                            Text(
+                              "  ${animeList.length.toString()} entries",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                              ),
                             ),
-                          ),
-                        ],
+                            MediaListArrowsWidget(
+                              controller: controller,
+                              visible: animeList.length > 8,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -140,6 +148,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                       maximumListHeight),
                   child: ListView(
                     scrollDirection: Axis.horizontal,
+                    controller: controller,
                     // duration: const Duration(milliseconds: 150),
                     children: [
                       ...animeList.mapIndexed((index, animeModel) {

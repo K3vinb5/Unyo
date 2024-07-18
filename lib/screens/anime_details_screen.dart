@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/models/models.dart';
@@ -14,6 +12,7 @@ import 'package:collection/collection.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:http/http.dart' as http;
 import 'package:unyo/sources/anime/util/embedded_extensions.dart';
+import 'package:unyo/util/constants.dart';
 
 class AnimeDetailsScreen extends StatefulWidget {
   const AnimeDetailsScreen(
@@ -93,7 +92,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     wrongTitleSearchController.removeListener(wrongTitleSearchFunction);
     wrongTitleSearchFunction = () {
       wrongTitleSearchTimer.cancel();
-      wrongTitleSearchTimer = Timer(const Duration(milliseconds: 1000), () {
+      wrongTitleSearchTimer = Timer(const Duration(milliseconds: 500), () {
         if (wrongTitleSearchController.text != oldWrongTitleSearch &&
             wrongTitleSearchController.text != "") {
           setSearches(animeSources[currentSource]!.getAnimeTitlesAndIds,
@@ -198,24 +197,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     }
     Map<String, dynamic> jsonResponse = json.decode(response.body);
     return jsonResponse["name"] ?? "";
-  }
-
-  double getAdjustedHeight(double value) {
-    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
-    }
-  }
-
-  double getAdjustedWidth(double value) {
-    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
-    }
   }
 
   void askForDeleteUserMedia() {
@@ -385,10 +366,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       color: Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width);
+          adjustedWidth =
+              getAdjustedWidth(MediaQuery.of(context).size.width, context);
           totalWidth = MediaQuery.of(context).size.width;
           adjustedHeight =
-              getAdjustedHeight(MediaQuery.of(context).size.height);
+              getAdjustedHeight(MediaQuery.of(context).size.height, context);
           totalHeight = MediaQuery.of(context).size.height;
 
           return Stack(
@@ -405,10 +387,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               widget.currentAnime.coverImage!,
                           width: totalWidth,
                           height: totalHeight * 0.35,
-                          fit: /*widget.currentAnime.bannerImage != null
-                              ? BoxFit.fill
-                              :*/
-                              BoxFit.cover,
+                          fit: BoxFit.cover,
                         ),
                         colors: const [Colors.white, Colors.black],
                         begin: Alignment.topCenter,
@@ -452,42 +431,21 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               ),
                             )
                           : const SizedBox(),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 10.0, left: 4.0, bottom: 4.0),
-                              child: IconButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                icon: const Icon(Icons.arrow_back),
-                                color: Colors.white,
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 4.0, left: 4.0),
-                              child: IconButton(
-                                onPressed: () {
-                                  updateSource(0);
-                                  setUserAnimeModel();
+                      StyledScreenMenuWidget(
+                        onBackPress: () {
+                          Navigator.of(context).pop();
+                        },
+                        onRefreshPress: () {
+                          updateSource(0);
+                          setUserAnimeModel();
 
-                                  AnimatedSnackBar.material(
-                                    "Refreshing Page",
-                                    type: AnimatedSnackBarType.info,
-                                    desktopSnackBarPosition:
-                                        DesktopSnackBarPosition.topCenter,
-                                  ).show(context);
-                                },
-                                icon: const Icon(Icons.refresh),
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
+                          AnimatedSnackBar.material(
+                            "Refreshing Page",
+                            type: AnimatedSnackBarType.info,
+                            desktopSnackBarPosition:
+                                DesktopSnackBarPosition.topCenter,
+                          ).show(context);
+                        },
                       ),
                     ],
                   ),
@@ -508,169 +466,19 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: totalHeight * 0.27,
-                        ),
-                        SizedBox(
-                          width: totalWidth / 2,
-                          height: totalHeight * 0.63,
-                          child: SmoothListView(
-                            duration: const Duration(milliseconds: 200),
-                            shouldScroll: !isShiftKeyPressed,
-                            children: [
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 16,
-                                  ),
-                                  DropdownButton(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    iconDisabledColor: Colors.white,
-                                    value: currentSource,
-                                    dropdownColor: Colors.black,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    items: [
-                                      ...animeSources.entries
-                                          .mapIndexed((index, entry) {
-                                        return DropdownMenuItem(
-                                          value: index,
-                                          onTap: () {
-                                            updateSource(index);
-                                          },
-                                          child: Text(
-                                            entry.value.getSourceName(),
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        );
-                                      }),
-                                    ],
-                                    onChanged: (index) {},
-                                  ),
-                                  const SizedBox(
-                                    width: 16.0,
-                                  ),
-                                  StyledButton(
-                                    onPressed: () {
-                                      openWrongTitleDialog(
-                                          context,
-                                          adjustedWidth,
-                                          adjustedHeight,
-                                          setState);
-                                    },
-                                    text: "Wrong/No Title?",
-                                  ),
-                                  const SizedBox(
-                                    width: 16.0,
-                                  ),
-                                  StyledButton(
-                                    onPressed: () {
-                                      openAnimeInfoDialog(context);
-                                    },
-                                    text: "Update Entry",
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: Text(
-                                  widget.currentAnime.title ?? "",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.star,
-                                      color: Color.fromARGB(255, 229, 166, 57),
-                                    ),
-                                    Text(
-                                      " ${widget.currentAnime.averageScore ?? "~"} %",
-                                      style: const TextStyle(
-                                          color: Color.fromARGB(
-                                              255, 229, 166, 57)),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    MediaStatusIconWidget(
-                                        status:
-                                            widget.currentAnime.status ?? ""),
-                                    MediaStatusTextWidget(
-                                        status:
-                                            widget.currentAnime.status ?? ""),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    const Icon(
-                                      Icons.tv,
-                                      color: Colors.grey,
-                                    ),
-                                    Text(
-                                      " ${widget.currentAnime.format}",
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    const Icon(
-                                      Icons.movie,
-                                      color: Colors.grey,
-                                    ),
-                                    Text(
-                                      " ${(widget.currentAnime.episodes ?? currentEpisode)} Episodes",
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: Text(
-                                  widget.currentAnime.description
-                                          ?.replaceAll("<br>", "\n")
-                                          .replaceAll("<i>", "")
-                                          .replaceAll("<b>", "")
-                                          .replaceAll("</b>", "") ??
-                                      "",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    MediaDetailsInfoWidget(
+                      totalWidth: totalWidth,
+                      totalHeight: totalHeight,
+                      currentSource: currentSource,
+                      animeSources: animeSources,
+                      adjustedWidth: adjustedWidth,
+                      adjustedHeight: adjustedHeight,
+                      updateSource: updateSource,
+                      setState: setState,
+                      openWrongTitleDialog: openWrongTitleDialog,
+                      openAnimeInfoDialog: openAnimeInfoDialog,
+                      currentAnime: widget.currentAnime,
+                      currentEpisode: currentEpisode,
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -679,100 +487,44 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         SizedBox(
                           height: totalHeight * 0.22,
                         ),
-                        SizedBox(
-                          width: totalWidth * 0.45,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  if (currentEpisodes < 1) return;
-                                  setState(() {
-                                    currentEpisodes--;
-                                  });
-                                },
-                                icon: const Icon(
-                                  Icons.navigate_before_rounded,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                "${currentEpisodes * 30 + 1} - ${min((30 * (currentEpisodes + 1)), (widget.currentAnime.episodes ?? currentEpisode))}",
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.normal),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  if ((currentEpisodes + 1) * 30 >
-                                      (widget.currentAnime.episodes ??
-                                          currentEpisode)) return;
-                                  setState(() {
-                                    currentEpisodes++;
-                                  });
-                                },
-                                icon: const Icon(
-                                  Icons.navigate_next_rounded,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
+                        MediaDetailsListNavigationWidget(
+                          totalWidth: totalWidth,
+                          currentEpisodeGroup: currentEpisodes,
+                          currentEpisode: currentEpisode,
+                          totalEpisodes: widget.currentAnime.episodes,
+                          episodeGroupBack: () {
+                            setState(() {
+                              currentEpisodes--;
+                            });
+                          },
+                          episodeGroupForward: () {
+                            setState(() {
+                              currentEpisodes++;
+                            });
+                          },
                         ),
-                        SizedBox(
-                          width: totalWidth * 0.5,
-                          height: totalHeight * 0.62,
-                          child: SmoothListView.builder(
-                            duration: const Duration(milliseconds: 200),
-                            itemCount: (widget.currentAnime.episodes ??
-                                        currentEpisode) <
-                                    30
-                                ? (widget.currentAnime.episodes ??
-                                    currentEpisode)
-                                : min(
-                                        (30 * (currentEpisodes + 1)),
-                                        (widget.currentAnime.episodes ??
-                                            currentEpisode)) -
-                                    (currentEpisodes * 30 + 1) +
-                                    1,
-                            itemBuilder: (context, index) {
-                              return EpisodeButton(
-                                episodeNumber:
-                                    (index + 1 + currentEpisodes * 30),
-                                latestEpisode: currentEpisode,
-                                latestEpisodeWatched:
-                                    userAnimeModel?.progress ?? 1,
-                                onTap: () {
-                                  openVideoQualities(
-                                      searchesId[currentSearch],
-                                      // index + 1,
-                                      (index + 1 + currentEpisodes * 30),
-                                      widget.currentAnime.title ?? "");
-                                },
-                                episodeTitle: mediaContentModel.titles != null
-                                    ? (mediaContentModel.titles!.length > index
-                                        ? mediaContentModel.titles![
-                                            (index + currentEpisodes * 30)]
-                                        : "")
-                                    : "",
-                                episodeImageUrl:
-                                    mediaContentModel.imageUrls != null
-                                        ? (mediaContentModel.imageUrls!.length >
-                                                    index &&
-                                                index < currentEpisode - 1 &&
-                                                mediaContentModel.imageUrls![
-                                                        (index +
-                                                            currentEpisodes *
-                                                                30)] !=
-                                                    null
-                                            ? mediaContentModel.imageUrls![
-                                                (index + currentEpisodes * 30)]
-                                            : mediaContentModel.fanart)
-                                        : mediaContentModel.fanart,
-                              );
-                            },
-                          ),
+                        MediaDetailsListViewWidget(
+                          totalWidth: totalWidth,
+                          totalHeight: totalHeight,
+                          currentEpisodeGroup: currentEpisodes,
+                          currentEpisode: currentEpisode,
+                          totalEpisodes: widget.currentAnime.episodes,
+                          itemBuilder: (context, index) {
+                            return EpisodeButton(
+                              index: index,
+                              currentEpisodeGroup: currentEpisodes,
+                              currentAnime: widget.currentAnime,
+                              userAnimeModel: userAnimeModel,
+                              mediaContentModel: mediaContentModel,
+                              latestEpisode: currentEpisode,
+                              latestEpisodeWatched:
+                                  userAnimeModel?.progress ?? 1,
+                              videoQualities: openVideoQualities,
+                              currentSearchId: currentSearch < searchesId.length
+                                  ? searchesId[currentSearch]
+                                  : null,
+                            );
+                          },
                         ),
                       ],
                     ),

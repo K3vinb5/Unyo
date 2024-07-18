@@ -1,29 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
+import 'package:unyo/models/models.dart';
 
 class EpisodeButton extends StatelessWidget {
   const EpisodeButton({
     super.key,
-    required this.episodeNumber,
-    required this.onTap,
+    required this.index,
+    required this.currentEpisodeGroup,
+    required this.userAnimeModel,
+    required this.mediaContentModel,
+    required this.videoQualities,
     required this.latestEpisode,
     required this.latestEpisodeWatched,
-    required this.episodeImageUrl,
-    required this.episodeTitle,
+    required this.currentSearchId,
+    required this.currentAnime,
   });
-
-  final num episodeNumber;
+  final int index;
+  final int currentEpisodeGroup;
+  final UserMediaModel? userAnimeModel;
+  final MediaContentModel mediaContentModel;
   final int latestEpisode;
   final num latestEpisodeWatched;
-  final String? episodeImageUrl;
-  final String? episodeTitle;
-  final void Function() onTap;
+  final String? currentSearchId;
+  final AnimeModel currentAnime;
+  final void Function(String, int, String) videoQualities;
 
   @override
   Widget build(BuildContext context) {
     double totalWidth = MediaQuery.of(context).size.width;
+    int episodeNumber = (index + 1 + currentEpisodeGroup * 30);
+    String? episodeTitle = mediaContentModel.titles != null
+        ? (mediaContentModel.titles!.length > index
+            ? mediaContentModel.titles![(index + currentEpisodeGroup * 30)]
+            : "")
+        : "";
+    String? episodeImageUrl = mediaContentModel.imageUrls != null
+        ? (mediaContentModel.imageUrls!.length > index &&
+                index < latestEpisode &&
+                mediaContentModel
+                        .imageUrls![(index + currentEpisodeGroup * 30)] !=
+                    null
+            ? mediaContentModel.imageUrls![(index + currentEpisodeGroup * 30)]
+            : mediaContentModel.fanart)
+        : mediaContentModel.fanart;
+
     return InkWell(
-      onTap: latestEpisode >= episodeNumber ? onTap : null,
+      onTap: latestEpisode >= episodeNumber
+          ? () {
+              if (currentSearchId == null) return;
+              videoQualities(
+                  currentSearchId!,
+                  (index + 1 + currentEpisodeGroup * 30),
+                  currentAnime.title ?? "");
+            }
+          : null,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -53,7 +83,7 @@ class EpisodeButton extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: episodeImageUrl != null
-                              ? Image.network(episodeImageUrl!)
+                              ? Image.network(episodeImageUrl)
                               : const SizedBox.shrink(),
                         ),
                       ),
@@ -62,9 +92,9 @@ class EpisodeButton extends StatelessWidget {
                       ),
                       SizedBox(
                         width: totalWidth * 0.20,
-                        child:Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Episode $episodeNumber",
@@ -75,12 +105,12 @@ class EpisodeButton extends StatelessWidget {
                               ),
                             ),
                             Text(
+                              // ignore: unnecessary_string_interpolations
                               episodeTitle != null ? "$episodeTitle" : "",
                               style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.white,
-                                overflow: TextOverflow.ellipsis
-                              ),
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                  overflow: TextOverflow.ellipsis),
                             ),
                           ],
                         ),

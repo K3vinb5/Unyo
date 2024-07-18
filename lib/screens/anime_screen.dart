@@ -303,6 +303,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                             loadMore: true,
                             loadMoreFunction: getAnimeModelListRecentlyReleased,
                             width: adjustedWidth,
+                            totalWidth: totalWidth,
                             height: adjustedHeight,
                           ),
                           AnimeWidgetList(
@@ -313,6 +314,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                             loadMore: true,
                             loadMoreFunction: getAnimeModelListTrending,
                             width: adjustedWidth,
+                            totalWidth: totalWidth,
                             height: adjustedHeight,
                           ),
                           AnimeWidgetList(
@@ -330,6 +332,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                                   attempt);
                             },
                             width: adjustedWidth,
+                            totalWidth: totalWidth,
                             height: adjustedHeight,
                           ),
                           const SizedBox(height: 20),

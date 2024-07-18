@@ -1,14 +1,10 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key, required this.prefs});
-
-  final SharedPreferences prefs;
-  // final String optionName;
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -34,18 +30,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void initPrefs() async {
-    themesCurrentOption = widget.prefs.getInt("themes") ?? 0;
-    langCurrentOption = langs.indexOf(widget.prefs.getString("lang") ?? "English");
-    // print(themesCurrentOption);
+    themesCurrentOption = prefs.getInt("themes") ?? 0;
+    langCurrentOption = langs.indexOf(prefs.getString("lang") ?? "English");
   }
 
   void selectNewTheme(int index) {
-    widget.prefs.setInt("themes", index);
-    // print("seted $index");
+    prefs.setInt("themes", index);
   }
 
   void selectNewLanguage(int lang) {
-    widget.prefs.setString("lang", langs[lang]);
+    prefs.setString("lang", langs[lang]);
   }
 
   @override
@@ -66,48 +60,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
                   ),
-                  WindowTitleBarBox(
-                    child: Row(
-                      children: [
-                        const SizedBox(
-                          width: 50,
-                        ),
-                        Expanded(
-                          child: MoveWindow(),
-                        ),
-                        const WindowButtons(),
-                      ],
-                    ),
-                  ),
+                  const WindowBarButtons(startIgnoreWidth: 50),
                 ],
+              ),
+              const Text(
+                "Settings",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 27,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(
-                height: 25,
+                height: 100,
               ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [],
-              ),
-              SettingsOptionWidget(
-                selectedOption: themesCurrentOption,
-                selectNewOption: selectNewTheme,
-                title: "Themes",
-                options: const [
-                  "Auto (from banner)",
-                  "Red Accent",
-                  "Yellow Accent",
-                  "Blue Accent",
-                  "Purple Accent",
-                  "Pink Accent",
-                  "Grey Accent",
-                  "Green Accent"
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SettingsSwitchOptionWidget(
+                    title: "Test Switch",
+                    onPressed: (bool newValue) {},
+                    value: false,
+                  ),
+                  SettingsDropdownOptionWidget(
+                    title: "Test Dropdown",
+                    width: 150,
+                    onPressed: (int something) {},
+                    items: langs
+                        .map(
+                          (lang) => Text(
+                            lang,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ],
-              ),
-              SettingsOptionWidget(
-                title: "Language",
-                options: langs,
-                selectedOption: langCurrentOption,
-                selectNewOption: selectNewLanguage,
               ),
             ],
           ),

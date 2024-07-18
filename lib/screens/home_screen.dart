@@ -267,7 +267,8 @@ class _HomeScreenState
       color: Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width, context);
+          adjustedWidth =
+              getAdjustedWidth(MediaQuery.of(context).size.width, context);
           adjustedHeight =
               getAdjustedHeight(MediaQuery.of(context).size.height, context);
           totalHeight = MediaQuery.of(context).size.height;
@@ -316,7 +317,7 @@ class _HomeScreenState
                         Center(
                           child: Image.asset(
                             "assets/logo.png",
-                            scale: 0.85,
+                            scale: 0.75,
                           ),
                         ),
                         Padding(
@@ -382,9 +383,7 @@ class _HomeScreenState
                                                 Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                        SettingsScreen(
-                                                      prefs: prefs,
-                                                    ),
+                                                        const SettingsScreen(),
                                                   ),
                                                 );
                                               },
@@ -550,6 +549,7 @@ class _HomeScreenState
                                       loadMore: false,
                                       updateHomeScreenLists: updateUserLists,
                                       width: adjustedWidth,
+                                      totalWidth: totalWidth,
                                       height: adjustedHeight,
                                       verticalPadding: 30,
                                     )
@@ -563,6 +563,7 @@ class _HomeScreenState
                                       loadMore: false,
                                       updateHomeScreenLists: updateUserLists,
                                       width: adjustedWidth,
+                                      totalWidth: totalWidth,
                                       height: adjustedHeight,
                                       verticalPadding: 30,
                                     )
@@ -571,13 +572,13 @@ class _HomeScreenState
                                 height: 30,
                               ),
                               HomeScreenBottomButtonsWidget(
-                                  adjustedHeight: adjustedHeight,
-                                  adjustedWidth: adjustedWidth,
-                                  episodesWatched: episodesWatched,
-                                  userStatsNull: userStats != null,
-                                  getUserCharts: getUserCharts,
-                          minutesWatched: minutesWatched,
-                        ),
+                                adjustedHeight: adjustedHeight,
+                                adjustedWidth: adjustedWidth,
+                                episodesWatched: episodesWatched,
+                                userStatsNull: userStats != null,
+                                getUserCharts: getUserCharts,
+                                minutesWatched: minutesWatched,
+                              ),
                               const SizedBox(
                                 height: 55,
                               ),

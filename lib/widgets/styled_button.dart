@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class StyledButton extends StatelessWidget {
-  const StyledButton({super.key, required this.text, required this.onPressed});
+  const StyledButton({super.key, this.text, required this.onPressed, this.child});
 
-  final String text;
+  final String? text;
+  final Widget? child;
   final void Function() onPressed;
 
   @override
@@ -18,7 +19,7 @@ class StyledButton extends StatelessWidget {
         ),
       ),
       onPressed: onPressed,
-      child: Text(text),
+      child: text != null ? Text(text!) : child ?? const SizedBox(),
     );
   }
 }

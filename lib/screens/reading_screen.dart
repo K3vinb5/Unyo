@@ -58,17 +58,27 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   void goBackPage() {
     setState(() {
-      if (currentPage > 1) {
-        currentPage -= 2;
+      if (currentPageOption == 1) {
+        if (currentPage > 1) {
+          currentPage -= 2;
+        }
+      } else {
+        if (currentPage > 0) {
+          currentPage--;
+        }
       }
     });
   }
 
   void goForwardPage() {
     setState(() {
-      if (currentPage < totalPages - 3) {
-        currentPage += 2;
-      } else if (currentPage < totalPages - 2) {
+      if (currentPageOption == 1) {
+        if (currentPage < totalPages - 3) {
+          currentPage += 2;
+        } else if (currentPage < totalPages - 2) {
+          currentPage++;
+        }
+      } else {
         currentPage++;
       }
     });
@@ -120,18 +130,18 @@ class _ReadingScreenState extends State<ReadingScreen> {
           final position = renderBox.globalToLocal(event.position);
           if (position.dx < MediaQuery.of(context).size.width / 2) {
             // Clicked on the left side
-            setState(() {
-              if (currentPage > 0) {
-                currentPage--;
-              }
-            });
+            if (currentOrientationOption != 0) {
+              goForwardPage();
+            } else {
+              goBackPage();
+            }
           } else {
             // Clicked on the right side
-            setState(() {
-              if (currentPage < totalPages - 1) {
-                currentPage++;
-              }
-            });
+            if (currentOrientationOption != 0) {
+              goBackPage();
+            } else {
+              goForwardPage();
+            }
           }
         },
         child: Column(
@@ -290,7 +300,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
               SizedBox(
                 width: totalWidth,
                 height: usableHeight,
-                child: listPages(currentOrientationOption == 0, totalWidth, usableHeight),
+                child: listPages(
+                    currentOrientationOption == 0, totalWidth, usableHeight),
               ),
             ],
           ),

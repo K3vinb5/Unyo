@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
-import 'package:unyo/screens/manga_details_screen.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:collection/collection.dart';
 
@@ -21,6 +20,7 @@ class MangaWidgetList extends StatefulWidget {
     this.loadMoreFunction,
     this.verticalPadding,
     this.horizontalPadding,
+    required this.totalWidth,
   });
 
   final String title;
@@ -31,6 +31,7 @@ class MangaWidgetList extends StatefulWidget {
   final String tag;
   final void Function()? updateHomeScreenLists;
   final double width;
+  final double totalWidth;
   final double height;
   final double? verticalPadding;
   final double? horizontalPadding;
@@ -45,11 +46,11 @@ class MangaWidgetList extends StatefulWidget {
 class _MangaWidgetListState extends State<MangaWidgetList> {
   late List<MangaModel> mangaList;
   late MangaDetailsScreen mangaScreen;
+  ScrollController controller = ScrollController();
   int currentPage = 2;
   double calculatedWidth = 0;
   double calculatedHeight = 0;
   double calculatedListHeight = 0;
-
   double maximumWidth = 0;
   double maximumHeight = 0;
   double maximumListHeight = 0;
@@ -101,7 +102,9 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
           calculatedListHeight = widget.height * 0.35;
 
           return Padding(
-            padding: EdgeInsets.symmetric(vertical: widget.verticalPadding ?? 50, horizontal: widget.horizontalPadding ?? 10),
+            padding: EdgeInsets.symmetric(
+                vertical: widget.verticalPadding ?? 50,
+                horizontal: widget.horizontalPadding ?? 10),
             child: Column(
               children: [
                 Row(
@@ -109,25 +112,32 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            widget.title,
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              color: veryLightBorderColor, 
+                      child: SizedBox(
+                        width: widget.totalWidth - 40,
+                        child: Row(
+                          children: [
+                            Text(
+                              widget.title,
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: veryLightBorderColor,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "  ${mangaList.length.toString()} entries",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.grey,
+                            Text(
+                              "  ${mangaList.length.toString()} entries",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                              ),
                             ),
-                          ),
-                        ],
+                            MediaListArrowsWidget(
+                              controller: controller,
+                              visible: mangaList.length > 8,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -138,6 +148,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
                       maximumListHeight),
                   child: ListView(
                     scrollDirection: Axis.horizontal,
+                    controller: controller,
                     children: [
                       ...mangaList.mapIndexed((index, mangaModel) {
                         return Hero(

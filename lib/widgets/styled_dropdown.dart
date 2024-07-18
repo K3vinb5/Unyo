@@ -38,7 +38,7 @@ class _StyledDropDownState extends State<StyledDropDown> {
           style: const TextStyle(
             color: Colors.white,
           ),
-          dropdownColor: Colors.grey,
+          dropdownColor: const Color.fromARGB(255, 38, 37, 38),
           focusColor: Colors.transparent,
           underline: const SizedBox(),
           value: value,

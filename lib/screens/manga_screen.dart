@@ -311,6 +311,7 @@ class _MangaScreenState extends State<MangaScreen> {
                             loadMore: true,
                             loadMoreFunction: getMangaModelListTrending,
                             width: adjustedWidth,
+                            totalWidth: totalWidth,
                             height: adjustedHeight,
                           ),
                           MangaWidgetList(
@@ -328,6 +329,7 @@ class _MangaScreenState extends State<MangaScreen> {
                                   attempt);
                             },
                             width: adjustedWidth,
+                            totalWidth: totalWidth,
                             height: adjustedHeight,
                           ),
                           const SizedBox(height: 20),

@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unyo/dialogs/dialogs.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/widgets.dart';
 import 'package:unyo/util/utils.dart';
@@ -55,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void manualLogin(String code) async {
-    if(code.isEmpty)return;
+    if (code.isEmpty) return;
     var url = Uri.parse("https://anilist.co/api/v2/oauth/token");
     Map<String, dynamic> query = {
       "grant_type": "authorization_code",
@@ -73,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
       body: json.encode(query),
     );
     Map<String, dynamic> jsonResponse = json.decode(response.body);
-    print(jsonResponse);
     List<String> codes = [
       jsonResponse["access_token"],
       jsonResponse["refresh_token"]
@@ -90,7 +90,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void goToMainScreen() {
-    print("Login Done");
     Navigator.of(context).pop();
   }
 
@@ -101,171 +100,86 @@ class _LoginPageState extends State<LoginPage> {
       child: Stack(
         children: [
           Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(
                 height: 100,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Image.asset(
+                "assets/logo.png",
+                scale: 0.75,
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(
-                    height: 100,
+                    height: 50,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      login();
-                      //getUserInfo();
-                    },
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.black12),
-                    ),
-                    child: const Row(
-                      children: [
-                        Text(
-                          "Login to Anilist  ",
-                          style: TextStyle(color: Colors.white),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      StyledButton(
+                        onPressed: () {
+                          login();
+                        },
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Login to Anilist  ",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Icon(
+                              Icons.person,
+                              color: Colors.white,
+                            ),
+                          ],
                         ),
-                        Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
                   ),
                   const SizedBox(
                     width: 20,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      //login();
-                      //getUserInfo();
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            backgroundColor:
-                                const Color.fromARGB(255, 44, 44, 44),
-                            title: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("Paste the Authentication Code",
-                                    style: TextStyle(color: Colors.white)),
-                              ],
-                            ),
-                            content: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              height: MediaQuery.of(context).size.height * 0.3,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Column(
-                                    children: [
-                                      StyledTextField(
-                                        width: 350,
-                                        controller: manualLoginController,
-                                        color: Colors.white,
-                                        hintColor: Colors.grey,
-                                        hint: "Paste your code here",
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          manualLaunchUrl();
-                                        },
-                                        style: const ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStatePropertyAll(
-                                                  Colors.black12),
-                                        ),
-                                        child: const Text(
-                                          "Get your Code!",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              style: const ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStatePropertyAll(
-                                                        Colors.black12),
-                                              ),
-                                              child: const Text(
-                                                "Cancel",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: 20,
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () async {
-                                                manualLogin(
-                                                    manualLoginController.text);
-                                                Navigator.of(context).pop();
-                                              },
-                                              style: const ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStatePropertyAll(
-                                                        Colors.black12),
-                                              ),
-                                              child: const Text(
-                                                "Confirm",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      StyledButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return LoginManuallyDialog(
+                                manualLoginController: manualLoginController,
+                                getCodeFunction: manualLaunchUrl,
+                                loginFunction: () async {
+                                  manualLogin(manualLoginController.text);
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.black12),
-                    ),
-                    child: const Row(
-                      children: [
-                        Text(
-                          "Login Manually",
-                          style: TextStyle(color: Colors.white),
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Login to Anilist(Manually) ",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(Icons.back_hand, color: Colors.white),
+                          ],
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Icon(Icons.back_hand, color: Colors.white),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),

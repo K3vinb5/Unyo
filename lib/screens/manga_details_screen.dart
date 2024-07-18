@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
