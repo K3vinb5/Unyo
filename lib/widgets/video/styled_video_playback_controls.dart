@@ -11,9 +11,14 @@ class StyledVideoPlaybackControls extends StatefulWidget {
       required this.showControls,
       required this.paused,
       required this.delayedPaused,
-      required this.mixedController});
+      required this.mixedController, 
+      required this.streamData,
+      required this.source,
+      });
 
   final void Function() controlsOverlayOnTap;
+  final StreamData streamData;
+  final int source;
   final MixedController mixedController;
   final bool showControls;
   final bool paused;
@@ -77,6 +82,8 @@ class _StyledVideoPlaybackControlsState
                     },
                   );
                 },
+                streamData: widget.streamData,
+                source: widget.source,
                 position: progress,
                 duration: duration,
                 onTap: widget.controlsOverlayOnTap,

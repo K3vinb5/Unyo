@@ -144,6 +144,14 @@ class MixedController {
     return original;
   }
 
+  void changeCaption(int pos) {
+    Future<ClosedCaptionFile>? newClosedCaptionFile =
+        streamData.captions != null
+            ? loadCaptions(streamData.captions![source][pos].file)
+            : null;
+    videoController.setClosedCaptionFile(newClosedCaptionFile);
+  }
+
   void play({bool? sendCommand}) {
     isPlaying = true;
     if (audioSeparate) {

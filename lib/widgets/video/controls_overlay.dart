@@ -84,7 +84,6 @@ class _ControlsOverlayState extends State<ControlsOverlay>
                                           .inMilliseconds -
                                       15000),
                             );
-                            // widget.onTap();
                           }
                         },
                         icon: const Icon(
@@ -123,7 +122,6 @@ class _ControlsOverlayState extends State<ControlsOverlay>
                                           .inMilliseconds +
                                       15000),
                             );
-                            // widget.onTap();
                           }
                         },
                         icon: const Icon(

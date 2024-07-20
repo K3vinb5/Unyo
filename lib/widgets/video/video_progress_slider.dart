@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -10,6 +13,8 @@ class VideoProgressSlider extends StatelessWidget {
     required this.position,
     required this.duration,
     required this.mixedController,
+    required this.streamData,
+    required this.source,
     required this.switchFullScreen,
     required this.onTap,
   });
@@ -17,10 +22,17 @@ class VideoProgressSlider extends StatelessWidget {
   final Duration position;
   final Duration duration;
   final MixedController mixedController;
+  final StreamData streamData;
+  final int source;
   final void Function() onTap;
   final void Function() switchFullScreen;
 
   final TextEditingController textFieldcontroller = TextEditingController();
+
+  String getUtf8Text(String text) {
+    List<int> bytes = text.codeUnits;
+    return utf8.decode(bytes);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +128,44 @@ class VideoProgressSlider extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    FocusScope(
+                      canRequestFocus: false,
+                      child: DropdownButton2(
+                        customButton: const SizedBox(
+                            width: 200,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  Icons.subtitles,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            )),
+                        isExpanded: true,
+                        underline: const SizedBox(),
+                        dropdownStyleData: const DropdownStyleData(
+                            decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 34, 33, 34))),
+                        style: const TextStyle(color: Colors.white),
+                        onChanged: (newCaptionData) {
+                          int newPos = streamData.captions![source]
+                              .indexOf(newCaptionData as CaptionData);
+                          mixedController.changeCaption(newPos);
+                        },
+                        items: streamData.captions != null
+                            ? streamData.captions![source]
+                                .map((captionData) => DropdownMenuItem(
+                                      value: captionData,
+                                      child: Text(getUtf8Text(captionData.lang)),
+                                    ))
+                                .toList()
+                            : [],
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
                     IconButton(
                       icon: const Icon(
                         Icons.people,
@@ -228,11 +278,11 @@ class VideoProgressSlider extends StatelessWidget {
                     ),
                     MouseRegion(
                       onEnter: (_) {
-                        if(onEnterSound == null) return;
+                        if (onEnterSound == null) return;
                         onEnterSound!();
                       },
                       onExit: (_) {
-                        if(onExitSound == null)return;
+                        if (onExitSound == null) return;
                         onExitSound!();
                       },
                       child: IconButton(

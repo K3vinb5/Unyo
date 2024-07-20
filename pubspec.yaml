@@ -63,6 +63,7 @@ dependencies:
   flutter_markdown: ^0.7.3
   fvp: 0.20.2
   video_player: ^2.8.3
+  dropdown_button2: ^2.3.9
 
 icons_launcher:
   image_path: 'assets/logo.png'

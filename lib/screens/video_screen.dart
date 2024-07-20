@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_video_progress/smooth_video_progress.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
@@ -34,6 +34,7 @@ class _VideoScreenState extends State<VideoScreen> {
   bool delayedPaused = false;
   String? captions;
   final FocusNode _screenFocusNode = FocusNode();
+  final double captionsBorder = 2;
   bool keyDelay = false;
 
   @override
@@ -60,6 +61,11 @@ class _VideoScreenState extends State<VideoScreen> {
     _mixedController.dispose();
     _hideControlsTimer?.cancel();
     super.dispose();
+  }
+
+  String getUtf8Text(String text) {
+    List<int> bytes = text.codeUnits;
+    return utf8.decode(bytes);
   }
 
   void controlsOverlayOnTap() {
@@ -130,13 +136,49 @@ class _VideoScreenState extends State<VideoScreen> {
                       child: VideoPlayer(_mixedController.videoController),
                     ),
                     //Captions
-                    ClosedCaption(
-                      text: _mixedController.videoController.value.caption.text,
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 80),
+                        child: Text(
+                          getUtf8Text(_mixedController
+                              .videoController.value.caption.text),
+                          style: TextStyle(
+                            fontSize: 40.0,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                offset:
+                                    Offset(-captionsBorder, -captionsBorder),
+                                blurRadius: 0.2,
+                                color: Colors.black,
+                              ),
+                              Shadow(
+                                offset: Offset(captionsBorder, -captionsBorder),
+                                blurRadius: 0.2,
+                                color: Colors.black,
+                              ),
+                              Shadow(
+                                offset: Offset(captionsBorder, captionsBorder),
+                                blurRadius: 0.2,
+                                color: Colors.black,
+                              ),
+                              Shadow(
+                                offset: Offset(-captionsBorder, captionsBorder),
+                                blurRadius: 0.2,
+                                color: Colors.black,
+                              ),
+                            ],
+                          ), 
+                        ),
+                      ),
                     ), //Overlay controls, and slider
                     StyledVideoPlaybackControls(
                       controlsOverlayOnTap: controlsOverlayOnTap,
                       showControls: _showControls,
                       paused: paused,
+                      streamData: widget.streamData,
+                      source: widget.source,
                       delayedPaused: delayedPaused,
                       mixedController: _mixedController,
                     ),
