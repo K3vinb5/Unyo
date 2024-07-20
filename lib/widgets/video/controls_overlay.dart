@@ -1,27 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:unyo/util/mixed_controllers.dart';
-import 'package:video_player/video_player.dart';
+import 'package:unyo/util/utils.dart';
 
 class ControlsOverlay extends StatefulWidget {
   const ControlsOverlay({super.key, 
-    required this.controller,
     required this.mixedControllers,
     required this.onTap,
-    required this.pausePeer,
-    required this.playPeer,
-    required this.peerPlus,
-    required this.peerMinus,
     required this.paused,
-    required this.delayedPaused,
+    required this.delayedPaused, 
   });
 
-  final VideoPlayerController controller;
-  final MixedControllers mixedControllers;
+  final MixedController mixedControllers;
   final void Function() onTap;
-  final void Function() pausePeer;
-  final void Function() playPeer;
-  final void Function() peerPlus;
-  final void Function() peerMinus;
   final bool paused;
   final bool delayedPaused;
 
@@ -69,34 +58,33 @@ class _ControlsOverlayState extends State<ControlsOverlay>
       children: [
         GestureDetector(
           onTap: () {
-            if (widget.controller.value.isPlaying) {
+            if (widget.mixedControllers.isPlaying) {
               widget.onTap();
-              widget.pausePeer();
-              widget.mixedControllers.pause();
+              widget.mixedControllers.pause(sendCommand: true);
             }
           },
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 500),
-            opacity: widget.controller.value.isPlaying ? 0 : 1,
+            opacity: widget.mixedControllers.isPlaying ? 0 : 1,
             child: Container(
               color: Colors.black26,
               child: Center(
                 child: IgnorePointer(
-                  ignoring: widget.controller.value.isPlaying,
+                  ignoring: widget.mixedControllers.isPlaying,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
                         onPressed: () {
-                          if (!widget.controller.value.isPlaying) {
-                            widget.peerMinus();
+                          if (!widget.mixedControllers.isPlaying) {
+                            widget.mixedControllers.mqqtController.sendOrder("fifteenminus");
                             widget.mixedControllers.seekTo(
                               Duration(
-                                  milliseconds: widget.controller.value.position
+                                  milliseconds: widget.mixedControllers.videoController.value.position
                                           .inMilliseconds -
                                       15000),
                             );
-                            widget.onTap();
+                            // widget.onTap();
                           }
                         },
                         icon: const Icon(
@@ -110,10 +98,9 @@ class _ControlsOverlayState extends State<ControlsOverlay>
                       ),
                       InkWell(
                         onTap: () {
-                          if (!widget.controller.value.isPlaying) {
+                          if (!widget.mixedControllers.isPlaying) {
                             widget.onTap();
-                            widget.playPeer();
-                            widget.mixedControllers.play();
+                            widget.mixedControllers.play(sendCommand: true);
                           }
                         },
                         child: AnimatedIcon(
@@ -128,15 +115,15 @@ class _ControlsOverlayState extends State<ControlsOverlay>
                       ),
                       IconButton(
                         onPressed: () {
-                          if (!widget.controller.value.isPlaying) {
-                            widget.peerPlus();
+                          if (!widget.mixedControllers.isPlaying) {
+                            widget.mixedControllers.mqqtController.sendOrder("fifteenplus");
                             widget.mixedControllers.seekTo(
                               Duration(
-                                  milliseconds: widget.controller.value.position
+                                  milliseconds: widget.mixedControllers.videoController.value.position
                                           .inMilliseconds +
                                       15000),
                             );
-                            widget.onTap();
+                            // widget.onTap();
                           }
                         },
                         icon: const Icon(

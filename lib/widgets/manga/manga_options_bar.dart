@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unyo/widgets/styled_button.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class MangaOptionsBar extends StatefulWidget {

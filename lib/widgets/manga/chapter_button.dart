@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
 
 class ChapterButton extends StatelessWidget {
-  const ChapterButton({super.key, required this.onTap, required this.chapterNum, required this.progress});
-  
-  final void Function() onTap;
-  final int chapterNum;
-  final int progress;
+  const ChapterButton(
+      {super.key,
+      required this.openManga,
+      required this.userProgress,
+      required this.index,
+      required this.currentChapterGroup,
+      required this.chapterTitle,
+      required this.chaptersId});
+
+  final void Function(String, int, String) openManga;
+  final int index;
+  final int currentChapterGroup;
+  final List<String> chaptersId;
+  final num? userProgress;
+  final String? chapterTitle;
 
   @override
   Widget build(BuildContext context) {
+    int chapterNum = index + 1 + currentChapterGroup * 30;
+    int progress = userProgress != null ? userProgress as int : 0;
+
     return InkWell(
-      onTap: onTap,
+      onTap: () {
+        openManga(chaptersId[index + currentChapterGroup * 30],
+            index + 1 + currentChapterGroup * 30, chapterTitle ?? "");
+      },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -22,7 +38,9 @@ class ChapterButton extends StatelessWidget {
             indent: MediaQuery.of(context).size.width * 0.05,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.03, vertical: 20),
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.03,
+                vertical: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,12 +55,12 @@ class ChapterButton extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    progress >= chapterNum ?
-                    const Icon(
-                      Icons.check_rounded,
-                      color: Colors.grey,
-                    )
-                    : const SizedBox.shrink(),
+                    progress >= chapterNum
+                        ? const Icon(
+                            Icons.check_rounded,
+                            color: Colors.grey,
+                          )
+                        : const SizedBox.shrink(),
                     // const SizedBox(width: 20,),
                     // Text(
                     //   latestEpisode >= episodeNumber ? "Released" : "Not yet released" ,

@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:unyo/sources/sources.dart';
+import 'package:unyo/util/utils.dart';
 
 class EmbeddedSource implements AnimeSource {
   const EmbeddedSource({required this.source, required this.name});
 
   final String source;
   final String name;
-  // final String embeddedServerEndPoint = "http://127.0.0.1:8080"; will be embbeded subsituting the need for a server :), already tested and works, but need to change building scripts
   final String embeddedServerEndPoint = "https://kevin-is-awesome.mooo.com/api";
 
   @override
-  Future<List<List<String?>?>> getAnimeStreamAndCaptions(
+  Future<StreamData> getAnimeStreamAndCaptions(
       String id, int episode, BuildContext context) async {
     var urlStream = Uri.parse("$embeddedServerEndPoint/unyo/streamAndCaptions");
     Map<String, dynamic> requestBody = {
@@ -25,39 +25,69 @@ class EmbeddedSource implements AnimeSource {
         body: json.encode(requestBody),
         headers: {"Content-Type": "application/json"});
     if (response.statusCode != 200) {
-      return [[], null, null, null];
+      return StreamData.empy();
     }
     Map<String, dynamic> jsonResponse = json.decode(response.body);
-    // print(response.body);
     List<dynamic> streams = jsonResponse["streams"];
     List<dynamic> qualities = jsonResponse["qualities"];
-    List<dynamic>? captions = jsonResponse["captions"];
-    List<dynamic>? subtracks = jsonResponse["subtracks"];
+    List<dynamic> captionsResponse = jsonResponse["captions"];
+    captionsResponse.removeWhere((element) => element == "");
+    List<List<CaptionData>>? captions = captionsResponse.isNotEmpty
+        ? captionsResponse
+            .map((e) => (e as String)
+                .split("@")
+                .map((e) =>
+                    CaptionData(file: e.split(";")[0], lang: e.split(";")[1]))
+                .toList())
+            .toList()
+        : null;
+    List<dynamic> tracksResponse = jsonResponse["subtracks"];
+    tracksResponse.removeWhere((element) => element == "");
+    List<List<TrackData>>? tracks = tracksResponse.isNotEmpty
+        ? tracksResponse
+            .map((e) => (e as String)
+                .split("@")
+                .map((e) =>
+                    TrackData(file: e.split(";")[0], lang: e.split(";")[1]))
+                .toList())
+            .toList()
+        : null;
+
     List<dynamic>? headersKeys = jsonResponse["headersKeys"] != "null"
         ? jsonResponse["headersKeys"]
         : null;
     List<dynamic>? headersValues = jsonResponse["headersNames"] != "null"
         ? jsonResponse["headersNames"]
         : null;
-    List<String> headersKeysProcessed = [];
-    List<String> headersValuesProcessed = [];
+    //Not sure about the inner strings conversion, might need to manually cast
+    List<List<String>> headersKeysProcessed = [];
+    List<List<String>> headersValuesProcessed = [];
     if (headersKeys != null) {
       for (var headersKey in headersKeys) {
-        headersKeysProcessed.add((headersKey as List<dynamic>).join("@"));
+        headersKeysProcessed.add(
+            (headersKey as List<dynamic>).map((e) => e as String).toList());
       }
       for (var headersValue in headersValues!) {
-        headersValuesProcessed.add((headersValue as List<dynamic>).join("@"));
+        headersValuesProcessed.add(
+            (headersValue as List<dynamic>).map((e) => e as String).toList());
       }
     }
-    
-    return [
-      streams.map((e) => e as String).toList(),
-      captions?.map((e) => e as String).toList(),
-      headersKeysProcessed,
-      headersValuesProcessed,
-      qualities.map((e) => e as String).toList(),
-      subtracks?.map((e) => e as String).toList(),
-    ];
+// return [
+//       streams.map((e) => e as String).toList(),
+//       captions?.map((e) => e as String).toList(),
+//       headersKeysProcessed,
+//       headersValuesProcessed,
+//       qualities.map((e) => e as String).toList(),
+//       subtracks?.map((e) => e as String).toList(),
+//     ];
+    return StreamData(
+      streams: streams.map((e) => e as String).toList(),
+      qualities: qualities.map((e) => e as String).toList(),
+      captions: captions,
+      tracks: tracks,
+      headersKeys: headersKeysProcessed,
+      headersValues: headersValuesProcessed,
+    );
   }
 
   @override
@@ -85,15 +115,4 @@ class EmbeddedSource implements AnimeSource {
   String getSourceName() {
     return name;
   }
-
-  // Future<String> getSourceNameAsync() async{
-  //   var urlStream = Uri.parse("$embeddedServerEndPoint/sources/name?source=$source");
-  //   var response = await http.get(urlStream);
-  //
-  //   if (response.statusCode != 200) {
-  //     return "";
-  //   }
-  //   Map<String, dynamic> jsonResponse = json.decode(response.body);
-  //   return jsonResponse["name"] ?? "";
-  // }
 }

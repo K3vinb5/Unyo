@@ -4,6 +4,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/sources/sources.dart';
+import 'package:unyo/util/utils.dart';
 
 class VideoQualityDialog extends StatefulWidget {
   const VideoQualityDialog({
@@ -30,7 +31,9 @@ class VideoQualityDialog extends StatefulWidget {
 }
 
 class _VideoQualityDialogState extends State<VideoQualityDialog> {
-  List<List<String?>?>? streamInfo;
+  StreamData? streamData;
+  int source = 0;
+  VideoScreen? videoScreen;
 
   @override
   void initState() {
@@ -39,25 +42,39 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
   }
 
   void getStreamInfo() async {
-    streamInfo = await widget.currentAnimeSource.getAnimeStreamAndCaptions(
+    streamData = await widget.currentAnimeSource.getAnimeStreamAndCaptions(
         widget.consumetId, widget.animeEpisode, context);
     setState(() {});
   }
 
+  void onStreamSelected(int selected) {
+    source = selected;
+    Navigator.of(context).pop();
+    videoScreen = VideoScreen(
+      source: source,
+      streamData: streamData!,
+      updateEntry: () {
+        widget.updateEntry(widget.animeEpisode);
+      },
+      title: "${widget.animeName}, Episode ${widget.animeEpisode}",
+    );
+    if (!context.mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => videoScreen!),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    int source = 0;
-    Map<String, String>? headers;
-    VideoScreen videoScreen;
-
     return SizedBox(
       width: widget.adjustedWidth * 0.4,
       height: widget.adjustedHeight * 0.7,
-      child: streamInfo != null
+      child: streamData != null
           ? SmoothListView(
               duration: const Duration(milliseconds: 200),
               children: [
-                ...streamInfo![4]!.mapIndexed(
+                ...streamData!.qualities.mapIndexed(
                   (index, text) => Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12.0, vertical: 8.0),
@@ -73,73 +90,9 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
                           ),
                         ),
                         onPressed: () {
-                          source = index;
-                          if (streamInfo![2] != null &&
-                              streamInfo![2]!.isNotEmpty) {
-                            headers = {};
-                            List<String> values =
-                                streamInfo![3]![source]!.split("@");
-                            List<String> keys =
-                                streamInfo![2]![source]!.split("@");
-                            for (int i = 0; i < values.length; i++) {
-                              headers!.addAll({
-                                keys[i][0].toUpperCase() + keys[i].substring(1):
-                                    values[i]
-                              });
-                            }
-                          }
-
-                          String? captions;
-
-                          if (streamInfo![1] != null &&
-                              streamInfo![1]!.isNotEmpty) {
-                            List<String> availableCaptions =
-                                streamInfo![1]![source]!.split("@");
-                            for (var s in availableCaptions) {
-                              if (s.contains("English")) {
-                                captions = s.split(";")[0];
-                              }
-                            }
-                          }
-                          String? subtracks;
-
-                          List<String>? availableSubtracks;
-                          if (streamInfo![5] != null &&
-                              streamInfo![5]!.isNotEmpty) {
-                            if (streamInfo![5]![source]!.contains("@")) {
-                              availableSubtracks =
-                                  streamInfo![5]![source]!.split("@");
-                              for (var s in availableSubtracks) {
-                                if (s.contains("English")) {
-                                  subtracks = s.split(";")[0];
-                                }
-                              }
-                            } else {
-                              subtracks = streamInfo![5]![0]!.split(";")[0];
-                            }
-                          }
-
-                          print("subtracks: $subtracks");
-                          Navigator.of(context).pop();
-                          videoScreen = VideoScreen(
-                            stream: streamInfo![0]![source] ?? "",
-                            audioStream: subtracks,
-                            captions: captions,
-                            headers: headers,
-                            updateEntry: () {
-                              widget.updateEntry(widget.animeEpisode);
-                            },
-                            title:
-                                "${widget.animeName}, Episode ${widget.animeEpisode}",
-                          );
-                          if (!context.mounted) return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => videoScreen),
-                          );
+                          onStreamSelected(index);
                         },
-                        child: Text(text ?? "empty"),
+                        child: Text(text),
                       ),
                     ),
                   ),

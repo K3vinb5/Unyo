@@ -1,46 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:unyo/util/mixed_controllers.dart';
-import 'package:video_player/video_player.dart';
+import 'package:unyo/util/utils.dart';
+import 'package:unyo/widgets/widgets.dart';
 import 'package:window_manager/window_manager.dart';
-
-import '../screens/video_screen.dart';
+import 'package:unyo/screens/screens.dart';
 
 class VideoProgressSlider extends StatelessWidget {
   VideoProgressSlider({
     super.key,
     required this.position,
     required this.duration,
-    required this.controller,
-    required this.mixedControllers,
-    required this.swatch,
-    required this.height,
+    required this.mixedController,
     required this.switchFullScreen,
-    required this.onEnter,
-    required this.onExit,
-    required this.connectToPeer,
-    required this.seekToPeer,
     required this.onTap,
-    required this.playPeer,
-    required this.pausePeer,
-    required this.topic,
   });
 
   final Duration position;
   final Duration duration;
-  final VideoPlayerController controller;
-  final MixedControllers mixedControllers;
+  final MixedController mixedController;
   final void Function() onTap;
-  final void Function() playPeer;
-  final void Function() pausePeer;
-  final Color swatch;
-  final double height;
   final void Function() switchFullScreen;
-  final void Function() onEnter;
-  final void Function() onExit;
 
-  final String topic;
-  final void Function(String) connectToPeer;
-  final void Function(double) seekToPeer;
   final TextEditingController textFieldcontroller = TextEditingController();
 
   @override
@@ -49,7 +28,7 @@ class VideoProgressSlider extends StatelessWidget {
     final value = position.inMilliseconds.clamp(0, max).toDouble();
     return Theme(
       data: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(seedColor: swatch),
+        colorScheme: ColorScheme.fromSeed(seedColor: lightBorderColor),
         useMaterial3: true,
       ),
       child: Column(
@@ -63,11 +42,13 @@ class VideoProgressSlider extends StatelessWidget {
               ValueListenableBuilder(
                 builder: (context, value, child) {
                   return Text(
-                    controller.value.position.toString().substring(0, 7),
+                    mixedController.videoController.value.position
+                        .toString()
+                        .substring(0, 7),
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   );
                 },
-                valueListenable: controller,
+                valueListenable: mixedController.videoController,
               ),
               Expanded(
                 child: Slider(
@@ -76,19 +57,19 @@ class VideoProgressSlider extends StatelessWidget {
                   value: value,
                   onChanged: (value) {
                     // controller.seekTo(Duration(milliseconds: value.toInt()));
-                   mixedControllers 
+                    mixedController
                         .seekTo(Duration(microseconds: (value * 1000).toInt()));
+                    mixedController.mqqtController.sendOrder("seekTo:$value");
                   },
-                  onChangeEnd: (value) {
-                    // controller
-                    // .seekTo(Duration(microseconds: (value * 1000).toInt()));
-                    seekToPeer(
-                        /* controller.value.position.inMilliseconds.toDouble() */ value);
-                  },
+                  // onChangeEnd: (value) {
+                  // mixedController.mqqtController.sendOrder("seekTo:$value");
+                  // },
                 ),
               ),
               Text(
-                controller.value.duration.toString().substring(0, 7),
+                mixedController.videoController.value.duration
+                    .toString()
+                    .substring(0, 7),
                 style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
               const SizedBox(
@@ -109,7 +90,7 @@ class VideoProgressSlider extends StatelessWidget {
                 onPressed: () {},
               ),
               IconButton(
-                icon: !controller.value.isPlaying
+                icon: !mixedController.isPlaying
                     ? const Icon(
                         Icons.play_arrow_rounded,
                         size: 28,
@@ -118,14 +99,12 @@ class VideoProgressSlider extends StatelessWidget {
                 color: Colors.white,
                 // style: const ButtonStyle(iconSize: MaterialStatePropertyAll(35)),
                 onPressed: () {
-                  if (!controller.value.isPlaying) {
+                  if (!mixedController.isPlaying) {
                     onTap();
-                    playPeer();
-                    mixedControllers.play();
+                    mixedController.play(sendCommand: true);
                   } else {
                     onTap();
-                    pausePeer();
-                    mixedControllers.pause();
+                    mixedController.pause(sendCommand: true);
                   }
                 },
               ),
@@ -159,7 +138,7 @@ class VideoProgressSlider extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SelectableText(
-                                        "Your Id:\n${topic.split("-")[1]}",
+                                        "Your Id:\n${mixedController.mqqtController.topic.split("-")[1]}",
                                         style: const TextStyle(
                                             color: Colors.white)),
                                     const SizedBox(
@@ -202,8 +181,10 @@ class VideoProgressSlider extends StatelessWidget {
                                                   ),
                                                 ),
                                                 onPressed: () {
-                                                  connectToPeer(
-                                                      textFieldcontroller.text);
+                                                  mixedController.mqqtController
+                                                      .connectToPeer(
+                                                          textFieldcontroller
+                                                              .text);
                                                   Navigator.of(context).pop();
                                                 },
                                                 child: const Text("Confirm",
@@ -247,10 +228,12 @@ class VideoProgressSlider extends StatelessWidget {
                     ),
                     MouseRegion(
                       onEnter: (_) {
-                        onEnter();
+                        if(onEnterSound == null) return;
+                        onEnterSound!();
                       },
                       onExit: (_) {
-                        onExit();
+                        if(onExitSound == null)return;
+                        onExitSound!();
                       },
                       child: IconButton(
                         icon: const Icon(Icons.volume_up_rounded,
@@ -285,7 +268,6 @@ class VideoProgressSlider extends StatelessWidget {
           ),
         ],
       ),
-      // ),
     );
   }
 }

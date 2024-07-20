@@ -11,15 +11,17 @@ class MediaDetailsInfoWidget extends StatelessWidget {
       required this.totalWidth,
       required this.totalHeight,
       required this.currentSource,
-      required this.animeSources,
+      this.animeSources,
       required this.adjustedWidth,
       required this.adjustedHeight,
       required this.updateSource,
       required this.setState,
       required this.openWrongTitleDialog,
-      required this.openAnimeInfoDialog,
-      required this.currentAnime,
-      required this.currentEpisode});
+      required this.openMediaInfoDialog,
+      this.currentAnime,
+      required this.currentEpisode,
+      this.currentManga,
+      this.mangaSources});
 
   final double totalWidth;
   final double totalHeight;
@@ -27,17 +29,64 @@ class MediaDetailsInfoWidget extends StatelessWidget {
   final double adjustedHeight;
   final int? currentSource;
   final int currentEpisode;
-  final AnimeModel currentAnime;
-  final Map<int, AnimeSource> animeSources;
+  final AnimeModel? currentAnime;
+  final MangaModel? currentManga;
+  final Map<int, AnimeSource>? animeSources;
+  final Map<int, MangaSource>? mangaSources;
   final void Function(int) updateSource;
   final void Function(void Function()) setState;
   final void Function(
           BuildContext, double, double, void Function(void Function()))
       openWrongTitleDialog;
-  final void Function(BuildContext) openAnimeInfoDialog;
+  final void Function(BuildContext) openMediaInfoDialog;
+
+  List<DropdownMenuItem> getSources() {
+    if (currentAnime != null) {
+      return animeSources!.entries.mapIndexed((index, entry) {
+        return DropdownMenuItem(
+          value: index,
+          onTap: () {
+            updateSource(index);
+          },
+          child: Text(
+            entry.value.getSourceName(),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        );
+      }).toList();
+    } else {
+      return mangaSources!.entries.mapIndexed((index, entry) {
+        return DropdownMenuItem(
+          value: index,
+          onTap: () {
+            updateSource(index);
+          },
+          child: Text(
+            entry.value.getSourceName(),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        );
+      }).toList();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    int? episodes =
+        currentAnime != null ? currentAnime!.episodes : currentManga!.chapters;
+    int? averageScore = currentAnime != null
+        ? currentAnime!.averageScore
+        : currentManga!.averageScore;
+    String? format =
+        currentAnime != null ? currentAnime!.format : currentManga!.format;
+    String? status =
+        currentAnime != null ? currentAnime!.status : currentManga!.status;
+    String? title =
+        currentAnime != null ? currentAnime!.title : currentManga!.title;
+    String? description = currentAnime != null
+        ? currentAnime!.description
+        : currentManga!.description;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -63,20 +112,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.white,
                     ),
-                    items: [
-                      ...animeSources.entries.mapIndexed((index, entry) {
-                        return DropdownMenuItem(
-                          value: index,
-                          onTap: () {
-                            updateSource(index);
-                          },
-                          child: Text(
-                            entry.value.getSourceName(),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        );
-                      }),
-                    ],
+                    items: [...getSources()],
                     onChanged: (index) {},
                   ),
                   const SizedBox(
@@ -94,7 +130,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
                   ),
                   StyledButton(
                     onPressed: () {
-                      openAnimeInfoDialog(context);
+                      openMediaInfoDialog(context);
                     },
                     text: "Update Entry",
                   ),
@@ -106,7 +142,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  currentAnime.title ?? "",
+                  title ?? "",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 25,
@@ -126,35 +162,35 @@ class MediaDetailsInfoWidget extends StatelessWidget {
                       color: Color.fromARGB(255, 229, 166, 57),
                     ),
                     Text(
-                      " ${currentAnime.averageScore ?? "~"} %",
+                      " ${averageScore ?? "~"} %",
                       style: const TextStyle(
                           color: Color.fromARGB(255, 229, 166, 57)),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
-                    MediaStatusIconWidget(status: currentAnime.status ?? ""),
-                    MediaStatusTextWidget(status: currentAnime.status ?? ""),
+                    MediaStatusIconWidget(status: status ?? ""),
+                    MediaStatusTextWidget(status: status ?? ""),
                     const SizedBox(
                       width: 10,
                     ),
-                    const Icon(
-                      Icons.tv,
+                    Icon(
+                      currentAnime != null ? Icons.tv : Icons.book,
                       color: Colors.grey,
                     ),
                     Text(
-                      " ${currentAnime.format}",
+                      " $format",
                       style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
-                    const Icon(
-                      Icons.movie,
+                    Icon(
+                      currentAnime != null ? Icons.movie : Icons.bookmark,
                       color: Colors.grey,
                     ),
                     Text(
-                      " ${(currentAnime.episodes ?? currentEpisode)} Episodes",
+                      " ${(episodes ?? currentEpisode)} ${currentAnime != null ? "Episodes" : "Chapters"}",
                       style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(
@@ -169,7 +205,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  currentAnime.description
+                  description
                           ?.replaceAll("<br>", "\n")
                           .replaceAll("<i>", "")
                           .replaceAll("<b>", "")

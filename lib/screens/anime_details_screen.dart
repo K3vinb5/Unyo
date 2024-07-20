@@ -47,8 +47,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     "DROPPED"
   ];
   Map<String, String> query = {};
-  final double minimumWidth = 124.08;
-  final double minimumHeight = 195.44;
   double adjustedWidth = 0;
   double adjustedHeight = 0;
   double totalWidth = 0;
@@ -59,7 +57,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 500), () {});
   void Function() wrongTitleSearchFunction = () {};
   TextEditingController wrongTitleSearchController = TextEditingController();
-  int currentEpisodes = 0;
+  int currentEpisodeGroup = 0;
   late MediaContentModel mediaContentModel;
 
   @override
@@ -210,7 +208,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
           content: DeleteUserMediaDialog(
             totalHeight: totalHeight,
             totalWidth: totalWidth,
-            currentAnime: widget.currentAnime,
+            currentMediaId: widget.currentAnime.id,
             deleteUserAnime: deleteUserAnime,
           ),
         );
@@ -219,7 +217,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void updateEntry(int newProgress) {
-    print("Status: ${statuses[0]}");
+    // print("Status: ${statuses[0]}");
     if (statuses[0] != "COMPLETED") {
       query.remove("status");
       query.addAll({"status": "CURRENT"});
@@ -342,12 +340,13 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             ],
           ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-          content: AnimeInfoDialog(
+          content: MediaInfoDialog(
+            id: widget.currentAnime.id,
+            episodes: widget.currentAnime.episodes,
             totalWidth: totalWidth,
             totalHeight: totalHeight,
             statuses: statuses,
             query: query,
-            currentAnime: widget.currentAnime,
             progress: progress,
             currentEpisode: currentEpisode,
             score: score,
@@ -393,44 +392,13 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
-                      widget.currentAnime.coverImage != null
-                          ? SizedBox(
-                              height: totalHeight * 0.35,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 16.0, left: 50.0),
-                                    child: Hero(
-                                      tag: widget.tag,
-                                      child: AnimeWidget(
-                                        title: "",
-                                        coverImage:
-                                            widget.currentAnime.coverImage,
-                                        score: null,
-                                        onTap: null,
-                                        textColor: Colors.white,
-                                        height: (adjustedHeight * 0.28) >
-                                                minimumHeight
-                                            ? (adjustedHeight * 0.28)
-                                            : minimumHeight,
-                                        width:
-                                            (adjustedWidth * 0.1) > minimumWidth
-                                                ? (adjustedWidth * 0.1)
-                                                : minimumWidth,
-                                        status: widget.currentAnime.status,
-                                        year: null,
-                                        format: null,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : const SizedBox(),
+                      MediaDetailsCoverImageWidget(
+                          coverImage: widget.currentAnime.coverImage,
+                          totalHeight: totalHeight,
+                          tag: widget.tag,
+                          adjustedHeight: adjustedHeight,
+                          adjustedWidth: adjustedWidth,
+                          status: widget.currentAnime.status),
                       StyledScreenMenuWidget(
                         onBackPress: () {
                           Navigator.of(context).pop();
@@ -476,7 +444,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                       updateSource: updateSource,
                       setState: setState,
                       openWrongTitleDialog: openWrongTitleDialog,
-                      openAnimeInfoDialog: openAnimeInfoDialog,
+                      openMediaInfoDialog: openAnimeInfoDialog,
                       currentAnime: widget.currentAnime,
                       currentEpisode: currentEpisode,
                     ),
@@ -489,30 +457,30 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                         ),
                         MediaDetailsListNavigationWidget(
                           totalWidth: totalWidth,
-                          currentEpisodeGroup: currentEpisodes,
+                          currentEpisodeGroup: currentEpisodeGroup,
                           currentEpisode: currentEpisode,
                           totalEpisodes: widget.currentAnime.episodes,
                           episodeGroupBack: () {
                             setState(() {
-                              currentEpisodes--;
+                              currentEpisodeGroup--;
                             });
                           },
                           episodeGroupForward: () {
                             setState(() {
-                              currentEpisodes++;
+                              currentEpisodeGroup++;
                             });
                           },
                         ),
                         MediaDetailsListViewWidget(
                           totalWidth: totalWidth,
                           totalHeight: totalHeight,
-                          currentEpisodeGroup: currentEpisodes,
+                          currentEpisodeGroup: currentEpisodeGroup,
                           currentEpisode: currentEpisode,
                           totalEpisodes: widget.currentAnime.episodes,
                           itemBuilder: (context, index) {
                             return EpisodeButton(
                               index: index,
-                              currentEpisodeGroup: currentEpisodes,
+                              currentEpisodeGroup: currentEpisodeGroup,
                               currentAnime: widget.currentAnime,
                               userAnimeModel: userAnimeModel,
                               mediaContentModel: mediaContentModel,

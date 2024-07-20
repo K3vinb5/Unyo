@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:unyo/models/models.dart';
 
 class DeleteUserMediaDialog extends StatelessWidget {
   const DeleteUserMediaDialog(
       {super.key,
       required this.totalHeight,
       required this.totalWidth,
-      required this.currentAnime,
-      required this.deleteUserAnime});
+      required this.currentMediaId,
+      required this.deleteUserAnime,
+      });
 
   final double totalHeight;
   final double totalWidth;
-  final AnimeModel currentAnime;
+  final int currentMediaId;
   final void Function(int) deleteUserAnime;
 
   @override
@@ -26,7 +26,7 @@ class DeleteUserMediaDialog extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              deleteUserAnime(currentAnime.id);
+              deleteUserAnime(currentMediaId);
               Navigator.of(context).pop();
             },
             style: const ButtonStyle(
