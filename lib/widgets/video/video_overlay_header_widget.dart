@@ -1,7 +1,8 @@
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
-import 'package:unyo/screens/video_screen.dart';
+import 'package:unyo/util/constants.dart';
 import 'package:unyo/util/mixed_controller.dart';
+import 'package:window_manager/window_manager.dart';
 
 class VideoOverlayHeaderWidget extends StatefulWidget {
   const VideoOverlayHeaderWidget(
@@ -9,8 +10,7 @@ class VideoOverlayHeaderWidget extends StatefulWidget {
       required this.showControls,
       required this.title,
       required this.mixedController,
-      required this.updateEntry
-      });
+      required this.updateEntry});
 
   final bool showControls;
   final String title;
@@ -34,7 +34,7 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
   @override
   void didUpdateWidget(covariant VideoOverlayHeaderWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.showControls != widget.showControls){
+    if (oldWidget.showControls != widget.showControls) {
       showControls = widget.showControls;
     }
   }
@@ -55,18 +55,17 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
             child: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                if (!fullScreen) {
-                  // sendEscapeOrder();
-                  widget.mixedController.dispose();
-
-                  interactScreen(false);
-                  if (widget.mixedController.mqqtController
-                          .calculatePercentage() >
-                      0.8) {
-                    widget.updateEntry();
-                  }
-                  Navigator.pop(context);
+                // sendEscapeOrder();
+                widget.mixedController.dispose();
+                WindowManager.instance.setFullScreen(false);
+                interactScreen(false);
+                if (widget.mixedController.mqqtController
+                            .calculatePercentage() >
+                        0.8 &&
+                    (prefs.getBool("update_progress_automatically") ?? false)) {
+                  widget.updateEntry();
                 }
+                Navigator.pop(context);
               },
               color: Colors.white,
             ),

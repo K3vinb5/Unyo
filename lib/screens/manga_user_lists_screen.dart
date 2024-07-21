@@ -196,15 +196,13 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      color: Colors.white,
-                      onPressed: () {
+                    StyledScreenMenuWidget(
+                      isRow: true,
+                      onMenuPress: buttonsLayout,
+                      onBackPress: () {
                         goTo(1);
                       },
-                    ),
-                    IconButton(
-                      onPressed: () {
+                      onRefreshPress: () {
                         setSharedPreferences();
                         AnimatedSnackBar.material(
                           "Refreshing Page",
@@ -213,8 +211,6 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                               DesktopSnackBarPosition.topCenter,
                         ).show(context);
                       },
-                      icon: const Icon(Icons.refresh),
-                      color: Colors.white,
                     ),
                     Expanded(
                       child: Align(

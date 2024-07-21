@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/util/utils.dart';
 
 class SettingsSwitchOptionWidget extends StatelessWidget {
   const SettingsSwitchOptionWidget(
@@ -43,6 +44,7 @@ class SettingsSwitchOptionWidget extends StatelessWidget {
                   Row(
                     children: [
                       Switch(
+                        activeTrackColor: lightBorderColor,
                         value: value,
                         onChanged: onPressed,
                       ),

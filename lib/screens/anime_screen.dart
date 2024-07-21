@@ -5,6 +5,7 @@ import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/screens/screens.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/util/constants.dart';
 
@@ -16,7 +17,7 @@ class AnimeScreen extends StatefulWidget {
 }
 
 void Function() resumeAnimePageTimer = () {};
-void Function() pauseAnimePageTimer = (){};
+void Function() pauseAnimePageTimer = () {};
 
 class _AnimeScreenState extends State<AnimeScreen> {
   List<AnimeModel> recentlyReleased = [];
@@ -43,7 +44,9 @@ class _AnimeScreenState extends State<AnimeScreen> {
     pageScrollController.addListener(setScrollListener);
     resumeAnimePageTimer = initPage;
     initPage();
-    pauseAnimePageTimer = (){pageTimer.cancel();};
+    pauseAnimePageTimer = () {
+      pageTimer.cancel();
+    };
     initAnimeList();
   }
 
@@ -145,7 +148,8 @@ class _AnimeScreenState extends State<AnimeScreen> {
         builder: (context, constraints) {
           adjustedHeight =
               getAdjustedHeight(MediaQuery.of(context).size.height, context);
-          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width, context);
+          adjustedWidth =
+              getAdjustedWidth(MediaQuery.of(context).size.width, context);
           totalWidth = MediaQuery.of(context).size.width;
           totalHeight = MediaQuery.of(context).size.height;
 
@@ -232,38 +236,24 @@ class _AnimeScreenState extends State<AnimeScreen> {
                                 alignment: Alignment.topLeft,
                                 child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 10.0, left: 4.0, bottom: 4.0),
-                                      child: IconButton(
-                                        onPressed: () {
-                                          if (updateHomeScreenLists != null) {
-                                            updateHomeScreenLists!();
-                                          }
-                                          pageTimer.cancel();
-                                          goTo(1);
-                                        },
-                                        icon: const Icon(Icons.arrow_back),
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 4.0, left: 4.0),
-                                      child: IconButton(
-                                        onPressed: () {
-                                          initAnimeList();
-                                          AnimatedSnackBar.material(
-                                            "Refreshing Page",
-                                            type: AnimatedSnackBarType.info,
-                                            desktopSnackBarPosition:
-                                                DesktopSnackBarPosition
-                                                    .topCenter,
-                                          ).show(context);
-                                        },
-                                        icon: const Icon(Icons.refresh),
-                                        color: Colors.white,
-                                      ),
+                                    StyledScreenMenuWidget(
+                                      onMenuPress: buttonsLayout,
+                                      onBackPress: () {
+                                        if (updateHomeScreenLists != null) {
+                                          updateHomeScreenLists!();
+                                        }
+                                        pageTimer.cancel();
+                                        goTo(1);
+                                      },
+                                      onRefreshPress: () {
+                                        initAnimeList();
+                                        AnimatedSnackBar.material(
+                                          "Refreshing Page",
+                                          type: AnimatedSnackBarType.info,
+                                          desktopSnackBarPosition:
+                                              DesktopSnackBarPosition.topCenter,
+                                        ).show(context);
+                                      },
                                     ),
                                   ],
                                 ),

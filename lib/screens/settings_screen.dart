@@ -16,11 +16,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<String> langs = [
     "English",
     "Portuguese",
-    "French",
-    "Spanish",
-    "Italian",
-    "German",
-    "Polish",
+    // "French",
+    // "Spanish",
+    // "Italian",
+    // "German",
+    // "Polish",
   ];
 
   @override
@@ -72,19 +72,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(
-                height: 100,
+                height: 40,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   SettingsSwitchOptionWidget(
-                    title: "Test Switch",
-                    onPressed: (bool newValue) {},
-                    value: false,
+                    title: "Update progress automatically",
+                    onPressed: (bool newValue) {
+                      setState(() {
+                        prefs.setBool(
+                            "update_progress_automatically", newValue);
+                      });
+                    },
+                    value: (prefs.getBool("update_progress_automatically") ??
+                        false),
+                  ),
+                  SettingsSwitchOptionWidget(
+                    title: "Buttons Layout / Menu Layout",
+                    onPressed: (bool newValue) {
+                      setState(() {
+                        buttonsLayout = newValue;
+                      });
+
+                      prefs.setBool("buttons_layout", newValue);
+                    },
+                    value: (prefs.getBool("buttons_layout") ?? false),
                   ),
                   SettingsDropdownOptionWidget(
-                    title: "Test Dropdown",
+                    title: "Select Language",
                     width: 150,
                     onPressed: (int something) {},
                     items: langs
@@ -95,6 +112,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         )
                         .toList(),
+                  ),
+                  SettingsSwitchOptionWidget(
+                    title: "Display video duration / Display remaining time",
+                    onPressed: (bool newValue) {
+                      setState(() {
+                        prefs.setBool("display_video_duration", newValue);
+                      });
+                    },
+                    value: (prefs.getBool("display_video_duration") ?? false),
                   ),
                 ],
               ),

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
-class StyledButton extends StatelessWidget {
+class StyledButton extends StatefulWidget {
   const StyledButton({super.key, this.text, required this.onPressed, this.child});
 
   final String? text;
   final Widget? child;
   final void Function() onPressed;
 
+  @override
+  State<StyledButton> createState() => _StyledButtonState();
+}
+
+class _StyledButtonState extends State<StyledButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -18,8 +23,8 @@ class StyledButton extends StatelessWidget {
           Colors.white,
         ),
       ),
-      onPressed: onPressed,
-      child: text != null ? Text(text!) : child ?? const SizedBox(),
+      onPressed: widget.onPressed,
+      child: widget.text != null ? Text(widget.text!) : widget.child ?? const SizedBox(),
     );
   }
 }

@@ -37,13 +37,14 @@ class MqqtClientController {
 
   void init() {
     myId = sha256.convert(utf8.encode(key)).toString().substring(0, 10);
-    topic = "$myId- ";
+    topic = "$myId-${generateRandomId()}";
   }
 
   void connectToPeer(String newTopic) async {
-    if (newTopic.replaceAll(" ", "") == "") {
-      showErrorDialog(context, "Empty topic");
-      return;
+    if (newTopic.trim() == "") {
+      // showErrorDialog(context, "Empty topic");
+      // return;
+      newTopic = topic.substring(topic.indexOf("-") + 1);
     }
     if (firstConnection) {
       client = MqttServerClient('ws://kevin-is-awesome.mooo.com', '',
@@ -63,8 +64,7 @@ class MqqtClientController {
       client.unsubscribe(topic);
     }
     connected = true;
-    topic =
-        "$myId-$newTopic";
+    topic = "$myId-$newTopic";
 
     try {
       await client.connect();
@@ -152,6 +152,7 @@ class MqqtClientController {
         case "escape":
           WindowManager.instance.setFullScreen(false);
           mixedController.dispose();
+          interactScreen(false);
           Navigator.pop(context);
           break;
         case "connected":
@@ -241,7 +242,7 @@ class MqqtClientController {
         WindowManager.instance.setFullScreen(false);
         mixedController.dispose();
         interactScreen(false);
-        if (calculatePercentage() > 0.8) {
+        if (calculatePercentage() > 0.8 && (prefs.getBool("update_progress_automatically") ?? false)) {
           updateEntry();
         }
         Navigator.pop(context);
@@ -259,12 +260,21 @@ class MqqtClientController {
     const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random();
     const idLength = 20; // You can adjust the length of the ID as needed
-    return String.fromCharCodes(
+    String newId = String.fromCharCodes(
       List.generate(
         idLength,
         (_) => characters.codeUnitAt(random.nextInt(characters.length)),
       ),
     );
+    for (int i = 1; i < 4; i++) {
+      int index = 5 * i + (i - 2);
+      newId = insertCharacter(newId, index, "-");
+    }
+    return newId;
+  }
+
+  String insertCharacter(String original, int index, String charToInsert) {
+    return '${original.substring(0, index)}$charToInsert${original.substring(index)}';
   }
 
   double calculatePercentage() {

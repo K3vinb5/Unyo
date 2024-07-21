@@ -33,6 +33,7 @@ class MixedController {
 
   bool isPlaying = true;
   bool firstInit = true;
+  Future<ClosedCaptionFile>? closedCaptionFile;
 
   void init() {
     initControllers();
@@ -50,7 +51,7 @@ class MixedController {
   }
 
   void initControllers() {
-    Future<ClosedCaptionFile>? closedCaptionFile = streamData.captions != null
+    closedCaptionFile = streamData.captions != null
         ? loadCaptions(streamData.captions![source][0].file)
         : null;
     if (streamData.getHeaders(source) != null) {
@@ -152,6 +153,33 @@ class MixedController {
     videoController.setClosedCaptionFile(newClosedCaptionFile);
   }
 
+  void changeSubTrack(int pos) async {
+    // pause();
+    if (!audioSeparate) return;
+    audioController.dispose();
+    if (streamData.getHeaders(source) != null) {
+      audioController = VideoPlayerController.networkUrl(
+        Uri.parse(streamData.tracks![source][pos].file),
+        httpHeaders: streamData.getHeaders(source)!,
+        closedCaptionFile: closedCaptionFile,
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      );
+    } else {
+      audioController = VideoPlayerController.networkUrl(
+        Uri.parse(streamData.tracks![source][pos].file),
+        closedCaptionFile: closedCaptionFile,
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      );
+    }
+    audioController.addListener(() {
+      setState(() {});
+    });
+    audioController.setLooping(false);
+    audioController.initialize().then((_) => setState(() {}));
+    play();
+    sync();
+  }
+
   void play({bool? sendCommand}) {
     isPlaying = true;
     if (audioSeparate) {
@@ -221,6 +249,26 @@ class MixedController {
   void syncControllers() async {
     int difference = (videoController.value.position.inMilliseconds -
         audioController.value.position.inMilliseconds);
+
+    if (difference.abs() > 2500 && difference != 0) {
+      if (difference > 0) {
+        //video waits (audio forward)
+        audioController.seekTo(Duration(
+            milliseconds: videoController.value.position.inMilliseconds));
+        // videoController.pause();
+        // await Future.delayed(Duration(milliseconds: difference.abs() + 100));
+        // videoController.play();
+      } else {
+        //audio waits (audio backwards)
+        videoController.seekTo(Duration(
+            milliseconds: audioController.value.position.inMilliseconds));
+
+        // audioController.pause();
+        // await Future.delayed(Duration(milliseconds: difference.abs() + 100));
+        // audioController.play();
+      }
+      return;
+    }
 
     if (difference.abs() < 200 && difference != 0) {
       syncTimer.cancel();

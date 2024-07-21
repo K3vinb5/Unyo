@@ -5,6 +5,7 @@ import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/util/constants.dart';
 
@@ -16,7 +17,7 @@ class MangaScreen extends StatefulWidget {
 }
 
 void Function() resumeMangaPageTimer = () {};
-void Function() pauseMangaPageTimer = (){};
+void Function() pauseMangaPageTimer = () {};
 
 class _MangaScreenState extends State<MangaScreen> {
   List<MangaModel> recentlyReleased = [];
@@ -42,7 +43,9 @@ class _MangaScreenState extends State<MangaScreen> {
     super.initState();
     pageScrollController.addListener(setScrollListener);
     resumeMangaPageTimer = initPage;
-    pauseMangaPageTimer = (){pageTimer.cancel();};
+    pauseMangaPageTimer = () {
+      pageTimer.cancel();
+    };
     initPage();
     initMangaList();
   }
@@ -140,7 +143,8 @@ class _MangaScreenState extends State<MangaScreen> {
         builder: (context, constraints) {
           adjustedHeight =
               getAdjustedHeight(MediaQuery.of(context).size.height, context);
-          adjustedWidth = getAdjustedWidth(MediaQuery.of(context).size.width, context);
+          adjustedWidth =
+              getAdjustedWidth(MediaQuery.of(context).size.width, context);
           totalWidth = MediaQuery.of(context).size.width;
           totalHeight = MediaQuery.of(context).size.height;
 
@@ -240,38 +244,24 @@ class _MangaScreenState extends State<MangaScreen> {
                                 alignment: Alignment.topLeft,
                                 child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 10.0, left: 4.0, bottom: 4.0),
-                                      child: IconButton(
-                                        onPressed: () {
-                                          if (updateHomeScreenLists != null) {
-                                            updateHomeScreenLists!();
-                                          }
-                                          pageTimer.cancel();
-                                          goTo(1);
-                                        },
-                                        icon: const Icon(Icons.arrow_back),
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 4.0, left: 4.0),
-                                      child: IconButton(
-                                        onPressed: () {
-                                          initMangaList();
-                                          AnimatedSnackBar.material(
-                                            "Refreshing Page",
-                                            type: AnimatedSnackBarType.info,
-                                            desktopSnackBarPosition:
-                                                DesktopSnackBarPosition
-                                                    .topCenter,
-                                          ).show(context);
-                                        },
-                                        icon: const Icon(Icons.refresh),
-                                        color: Colors.white,
-                                      ),
+                                    StyledScreenMenuWidget(
+                                      onMenuPress: buttonsLayout,
+                                      onBackPress: () {
+                                        if (updateHomeScreenLists != null) {
+                                          updateHomeScreenLists!();
+                                        }
+                                        pageTimer.cancel();
+                                        goTo(1);
+                                      },
+                                      onRefreshPress: () {
+                                        initMangaList();
+                                        AnimatedSnackBar.material(
+                                          "Refreshing Page",
+                                          type: AnimatedSnackBarType.info,
+                                          desktopSnackBarPosition:
+                                              DesktopSnackBarPosition.topCenter,
+                                        ).show(context);
+                                      },
                                     ),
                                   ],
                                 ),

@@ -47,6 +47,7 @@ class SettingsDropdownOptionWidget extends StatelessWidget {
                   Row(
                     children: [
                       StyledDropDown(
+                        height: 45,
                         items: items,
                         horizontalPadding: 0,
                         onTap: onPressed,

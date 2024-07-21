@@ -135,49 +135,12 @@ class _VideoScreenState extends State<VideoScreen> {
                       aspectRatio: 16 / 9,
                       child: VideoPlayer(_mixedController.videoController),
                     ),
-                    //Captions
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 80),
-                        child: Text(
-                          getUtf8Text(_mixedController
-                              .videoController.value.caption.text),
-                          style: TextStyle(
-                            fontSize: 40.0,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                offset:
-                                    Offset(-captionsBorder, -captionsBorder),
-                                blurRadius: 0.2,
-                                color: Colors.black,
-                              ),
-                              Shadow(
-                                offset: Offset(captionsBorder, -captionsBorder),
-                                blurRadius: 0.2,
-                                color: Colors.black,
-                              ),
-                              Shadow(
-                                offset: Offset(captionsBorder, captionsBorder),
-                                blurRadius: 0.2,
-                                color: Colors.black,
-                              ),
-                              Shadow(
-                                offset: Offset(-captionsBorder, captionsBorder),
-                                blurRadius: 0.2,
-                                color: Colors.black,
-                              ),
-                            ],
-                          ), 
-                        ),
-                      ),
-                    ), //Overlay controls, and slider
+                    VideoSubtitles(mixedController: _mixedController),
+                    //Overlay controls, and slider
                     StyledVideoPlaybackControls(
                       controlsOverlayOnTap: controlsOverlayOnTap,
                       showControls: _showControls,
                       paused: paused,
-                      streamData: widget.streamData,
                       source: widget.source,
                       delayedPaused: delayedPaused,
                       mixedController: _mixedController,

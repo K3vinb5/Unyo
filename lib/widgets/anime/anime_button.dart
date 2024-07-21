@@ -42,7 +42,7 @@ class _AnimeButtonState extends State<AnimeButton> {
 
   @override
   Widget build(BuildContext context) {
-    return bannerImageUrl != null
+    return (bannerImageUrl != null && !buttonsLayout)
         ? InkWell(
             onTap: widget.onTap,
             child: HoverAnimatedContainer(

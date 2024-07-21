@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
+import 'package:unyo/util/constants.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -186,15 +188,13 @@ class _CalendarScreenState extends State<CalendarScreen>
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      color: Colors.white,
-                      onPressed: () {
+                    StyledScreenMenuWidget(
+                      isRow: true,
+                      onMenuPress: buttonsLayout,
+                      onBackPress: () {
                         goTo(1);
                       },
-                    ),
-                    IconButton(
-                      onPressed: () {
+                      onRefreshPress: () {
                         initCalendarMap();
                         AnimatedSnackBar.material(
                           "Refreshing Page",
@@ -203,8 +203,6 @@ class _CalendarScreenState extends State<CalendarScreen>
                               DesktopSnackBarPosition.topCenter,
                         ).show(context);
                       },
-                      icon: const Icon(Icons.refresh),
-                      color: Colors.white,
                     ),
                     const Expanded(
                       child: Align(

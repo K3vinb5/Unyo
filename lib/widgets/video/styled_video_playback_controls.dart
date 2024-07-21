@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
-import 'package:unyo/screens/video_screen.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class StyledVideoPlaybackControls extends StatefulWidget {
-  const StyledVideoPlaybackControls(
-      {super.key,
-      required this.controlsOverlayOnTap,
-      required this.showControls,
-      required this.paused,
-      required this.delayedPaused,
-      required this.mixedController, 
-      required this.streamData,
-      required this.source,
-      });
+  const StyledVideoPlaybackControls({
+    super.key,
+    required this.controlsOverlayOnTap,
+    required this.showControls,
+    required this.paused,
+    required this.delayedPaused,
+    required this.mixedController,
+    required this.source,
+  });
 
   final void Function() controlsOverlayOnTap;
-  final StreamData streamData;
   final int source;
   final MixedController mixedController;
   final bool showControls;
@@ -75,14 +72,6 @@ class _StyledVideoPlaybackControlsState
             builder: (context, progress, duration, child) {
               return VideoProgressSlider(
                 mixedController: widget.mixedController,
-                switchFullScreen: () {
-                  setState(
-                    () {
-                      fullScreen = !fullScreen;
-                    },
-                  );
-                },
-                streamData: widget.streamData,
                 source: widget.source,
                 position: progress,
                 duration: duration,

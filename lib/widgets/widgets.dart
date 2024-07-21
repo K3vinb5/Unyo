@@ -34,3 +34,6 @@ export 'media/media_details_coverimage_widget.dart';
 export 'video/audio_slider_widget.dart';
 export 'video/video_overlay_header_widget.dart';
 export 'video/styled_video_playback_controls.dart';
+export 'video/video_subtitles.dart';
+export 'styled/custom/column_or_row.dart';
+export 'styled/menu/side_bar.dart';

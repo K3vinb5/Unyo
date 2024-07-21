@@ -13,7 +13,7 @@ final GlobalKey<NavigatorState> _mangaScreen =
 final GlobalKey<NavigatorState> _userAnimeListScreen =
     GlobalKey<NavigatorState>(debugLabel: 'userAnimeList');
 final GlobalKey<NavigatorState> _userMangaListScreen =
-    GlobalKey<NavigatorState>(debugLabel: 'userAnimeList');
+    GlobalKey<NavigatorState>(debugLabel: 'userMangaList');
 final GlobalKey<NavigatorState> _calendarScreen =
     GlobalKey<NavigatorState>(debugLabel: 'calendarScreen');
 

@@ -7,6 +7,7 @@ late StatefulNavigationShell publicNavigationShell;
 late void Function(int) goTo;
 late void Function(bool) floatingMenu;
 bool menu = false;
+int selectedIndex = 0;
 
 class ScaffoldScreen extends StatefulWidget {
   const ScaffoldScreen({super.key, required this.navigationShell});
@@ -44,10 +45,17 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
       initialLocation: index == widget.navigationShell.currentIndex,
     );
   }
+
+  void selectIndex(int newIndex){
+    selectedIndex = newIndex;
+  }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Sidebar(
+        selectIndex: selectIndex,
+      ),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
