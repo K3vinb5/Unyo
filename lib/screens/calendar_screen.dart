@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
-import 'package:unyo/util/constants.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -204,13 +203,13 @@ class _CalendarScreenState extends State<CalendarScreen>
                         ).show(context);
                       },
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
                           "Animes Calendar",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 20.0,
                           ),
@@ -240,6 +239,8 @@ class _CalendarScreenState extends State<CalendarScreen>
             height: 50,
             child: TabBar(
               labelColor: Colors.white,
+              dividerColor: veryLightBorderColor.withOpacity(0.5),
+              indicatorColor: lightBorderColor,
               unselectedLabelColor: Colors.grey,
               isScrollable: true,
               controller: tabContrller,

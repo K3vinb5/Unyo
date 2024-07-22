@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
+import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
+import 'package:window_manager/window_manager.dart';
 
 bool fullScreen = false;
 
@@ -29,6 +31,7 @@ class VideoScreen extends StatefulWidget {
 class _VideoScreenState extends State<VideoScreen> {
   late MixedController _mixedController;
   Timer? _hideControlsTimer;
+  late Timer isVideoPlaying;
   bool _showControls = true;
   bool paused = false;
   bool delayedPaused = false;
@@ -51,6 +54,7 @@ class _VideoScreenState extends State<VideoScreen> {
       controlsOverlayOnTap: controlsOverlayOnTap,
     );
     _mixedController.init();
+    setIsvideoPlayingTimer();
     _resetHideControlsTimer();
     interactScreen(true);
     _screenFocusNode.requestFocus();
@@ -93,6 +97,24 @@ class _VideoScreenState extends State<VideoScreen> {
           _showControls = false;
         }
       });
+    });
+  }
+
+  void setIsvideoPlayingTimer() {
+    isVideoPlaying = Timer(const Duration(seconds: 5), () {
+      if (_mixedController.videoController.value.duration.inSeconds == 0) {
+        showErrorDialog(
+          context,
+          exception:
+              "An error occured, try using another source or server/quality",
+          onPressedAfterPop: () {
+            _mixedController.dispose();
+            WindowManager.instance.setFullScreen(false);
+            interactScreen(false);
+            Navigator.pop(context);
+          },
+        );
+      }
     });
   }
 

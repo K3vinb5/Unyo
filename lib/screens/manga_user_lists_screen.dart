@@ -3,11 +3,14 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
+
+void Function(void Function()) refreshMangaUserListScreenState = (func){};
 
 class MangaUserListsScreen extends StatefulWidget {
   const MangaUserListsScreen({super.key});
@@ -32,6 +35,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
     setSharedPreferences();
     // initUserMangaListsMap();
     //TODO find this value with totalHeight and totalWidth in the future
+    refreshMangaUserListScreenState = setState;
     maximumWidth = minimumWidth * 1.4;
     maximumHeight = minimumHeight * 1.4;
   }
@@ -282,22 +286,21 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                     return SizedBox(
                       width: totalWidth,
                       height: double.infinity,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0,
-                            vertical: 8.0,
-                          ),
-                          child: SizedBox(
-                            width: totalWidth,
-                            height: totalHeight,
-                            child: Center(
-                              child: ListView.builder(
-                                itemCount: rowsList.length,
-                                itemBuilder: (context, index) {
-                                  return rowsList[index];
-                                },
-                              ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 8.0,
+                        ),
+                        child: SizedBox(
+                          width: totalWidth,
+                          height: totalHeight,
+                          child: Center(
+                            child: SmoothListView.builder(
+                              duration: const Duration(milliseconds: 200),
+                              itemCount: rowsList.length,
+                              itemBuilder: (context, index) {
+                                return rowsList[index];
+                              },
                             ),
                           ),
                         ),

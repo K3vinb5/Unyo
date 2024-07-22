@@ -56,7 +56,6 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 // sendEscapeOrder();
-                widget.mixedController.dispose();
                 WindowManager.instance.setFullScreen(false);
                 interactScreen(false);
                 if (widget.mixedController.mqqtController
@@ -65,6 +64,7 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
                     (prefs.getBool("update_progress_automatically") ?? false)) {
                   widget.updateEntry();
                 }
+                widget.mixedController.dispose();
                 Navigator.pop(context);
               },
               color: Colors.white,

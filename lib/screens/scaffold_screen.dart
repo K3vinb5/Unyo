@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unyo/screens/screens.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 late StatefulNavigationShell publicNavigationShell;
@@ -10,7 +11,6 @@ late void Function(bool) floatingMenu;
 bool menu = false;
 //sidebar
 int selectedIndex = 0;
-
 int navIndex = 1;
 
 class ScaffoldScreen extends StatefulWidget {
@@ -31,10 +31,45 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
     goTo = (index) {
       publicNavigationShell.goBranch(index);
       changeScreen(navIndex, index);
+      refreshScreen(index);
       navIndex = index;
     };
 
     floatingMenu = (input) => menu = input;
+  }
+
+  void refreshScreen(int to) {
+    switch (to) {
+      case 0:
+        if (!isScreenRefreshed.contains(to)) {
+          refreshAnimeScreenState(() {});
+          isScreenRefreshed.add(to);
+        }
+        break;
+      case 1:
+        break;
+      case 2:
+        if (!isScreenRefreshed.contains(to)) {
+          refreshMangaScreenState(() {});
+          isScreenRefreshed.add(to);
+        }
+        break;
+      case 3:
+        if (!isScreenRefreshed.contains(to)) {
+          refreshAnimeUserListScreenState(() {});
+          isScreenRefreshed.add(to);
+        }
+        break;
+      case 4:
+        if (!isScreenRefreshed.contains(to)) {
+          refreshMangaUserListScreenState(() {});
+          isScreenRefreshed.add(to);
+        }
+        break;
+      case 5:
+        break;
+      default:
+    }
   }
 
   void changeScreen(int from, int to) {

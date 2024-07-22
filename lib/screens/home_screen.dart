@@ -418,7 +418,7 @@ class _HomeScreenState
                                                                             .pop();
                                                                       },
                                                                       text:
-                                                                          "Cencel",
+                                                                          "Cancel",
                                                                     ),
                                                                     const SizedBox(
                                                                       width: 20,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unyo/screens/scaffold_screen.dart';
+import 'package:unyo/util/constants.dart';
+import 'package:unyo/util/utils.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key, required this.selectIndex});
@@ -16,9 +18,13 @@ class Sidebar extends StatelessWidget {
           DrawerHeader(
               child: Container(
             width: 100,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/logo.png'),
+                image: const AssetImage(
+                  'assets/logo.png',
+                ),
+                colorFilter:
+                    ColorFilter.mode(lightBorderColor, BlendMode.modulate),
               ),
             ),
           )),
@@ -31,8 +37,9 @@ class Sidebar extends StatelessWidget {
               goTo(1);
               Navigator.of(context).pop();
             },
-            focusColor: const Color.fromARGB(255, 180, 8, 223),
+            // focusColor: lightBorderColor,
             textColor: Colors.white,
+            selectedColor: lightBorderColor,
             iconColor: Colors.white,
           ),
           ListTile(
@@ -45,6 +52,7 @@ class Sidebar extends StatelessWidget {
               Navigator.of(context).pop();
             },
             textColor: Colors.white,
+            selectedColor: lightBorderColor,
             iconColor: Colors.white,
           ),
           ListTile(
@@ -57,6 +65,7 @@ class Sidebar extends StatelessWidget {
               Navigator.of(context).pop();
             },
             textColor: Colors.white,
+            selectedColor: lightBorderColor,
             iconColor: Colors.white,
           ),
           ListTile(
@@ -69,6 +78,7 @@ class Sidebar extends StatelessWidget {
               Navigator.of(context).pop();
             },
             textColor: Colors.white,
+            selectedColor: lightBorderColor,
             iconColor: Colors.white,
           ),
           ListTile(
@@ -81,6 +91,7 @@ class Sidebar extends StatelessWidget {
               Navigator.of(context).pop();
             },
             textColor: Colors.white,
+            selectedColor: lightBorderColor,
             iconColor: Colors.white,
           ),
           ListTile(
@@ -93,6 +104,7 @@ class Sidebar extends StatelessWidget {
               Navigator.of(context).pop();
             },
             textColor: Colors.white,
+            selectedColor: lightBorderColor,
             iconColor: Colors.white,
           ),
         ],

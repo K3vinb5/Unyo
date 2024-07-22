@@ -93,7 +93,7 @@ class MixedController {
     try {
       videoController.initialize().then((_) => setState(() {}));
     } catch (e) {
-      showErrorDialog(context, e.toString());
+      showErrorDialog(context, exception: e.toString());
     }
     videoController.play();
 
@@ -113,7 +113,7 @@ class MixedController {
         await http.get(Uri.parse(url), headers: streamData.getHeaders(source));
     if (response.statusCode != 200) {
       if (context.mounted) {
-        showErrorDialog(context, null);
+        showErrorDialog(context, exception: null);
       }
       return WebVTTCaptionFile("");
     }

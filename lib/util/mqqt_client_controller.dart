@@ -73,7 +73,7 @@ class MqqtClientController {
       client.disconnect();
       connected = false;
       if (!context.mounted) return;
-      showErrorDialog(context, e.toString());
+      showErrorDialog(context, exception: e.toString());
     }
 
     /// Check we are connected
@@ -82,7 +82,7 @@ class MqqtClientController {
       client.disconnect();
       if (!context.mounted) return;
       showErrorDialog(context,
-          'Client connection failed - disconnecting... status is ${client.connectionStatus}');
+          exception: 'Client connection failed - disconnecting... status is ${client.connectionStatus}');
       return;
     }
     client.subscribe(topic, MqttQos.exactlyOnce); //qos 2

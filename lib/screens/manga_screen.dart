@@ -17,6 +17,7 @@ class MangaScreen extends StatefulWidget {
 
 void Function() resumeMangaPageTimer = () {};
 void Function() pauseMangaPageTimer = () {};
+void Function(void Function()) refreshMangaScreenState = (func){};
 
 class _MangaScreenState extends State<MangaScreen> {
   List<MangaModel> recentlyReleased = [];
@@ -47,6 +48,7 @@ class _MangaScreenState extends State<MangaScreen> {
     pauseMangaPageTimer = () {
       pageTimer.cancel();
     };
+    refreshMangaScreenState = setState;
     initMangaList();
   }
 

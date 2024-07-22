@@ -17,6 +17,7 @@ class AnimeScreen extends StatefulWidget {
 
 void Function() resumeAnimePageTimer = () {};
 void Function() pauseAnimePageTimer = () {};
+void Function(void Function()) refreshAnimeScreenState = (func){};
 
 class _AnimeScreenState extends State<AnimeScreen> {
   List<AnimeModel> recentlyReleased = [];
@@ -47,6 +48,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
     pauseAnimePageTimer = () {
       pageTimer.cancel();
     };
+    refreshAnimeScreenState = setState;
     initAnimeList();
   }
 

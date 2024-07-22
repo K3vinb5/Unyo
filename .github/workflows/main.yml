@@ -133,8 +133,6 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '3.19.5'
-      - name: Install dependencies
-        run: pip install dmgbuild
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
@@ -149,23 +147,16 @@ jobs:
           type: 'zip'
           filename: Unyo-${{github.ref_name}}-macos.zip
           directory: build/macos/Build/Products/Release
-      # - name: macOS Archive Release
-      #   uses: softprops/action-gh-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     files: build/macos/Build/Products/Release/Unyo-${{github.ref_name}}-macos.zip
-      # - name: Package Macos App
-      #   run: |
-      #     brew install python-setuptools
-      #     npm install -g appdmg
-      #     mkdir -p build/${{ env.BUILD_VERSION }}
-      #     appdmg appdmg.json build/Unyo-macos-universal.dmg
-      #     flutter_distributor package --platform=macos --targets pkg --skip-clean
-      #     mv dist/**/unyo-*-macos.pkg build/Unyo-macos-universal.pkg
-      # - name: Release Dmg
-      #   uses: thedoctor0/zip-release@master
-      #   with:
-      #     type: 'zip'
-      #     filename: Unyo-${{github.ref_name}}-macos.zip
-      #     directory: build/Spotube-macos-universal.dmg
+      - name: macOS Archive Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/macos/Build/Products/Release/Unyo-${{github.ref_name}}-macos.zip
+      - name: build macos
+        run: |
+          cd macos
+          pod update
+          cd ..
+          brew install create-dmg 
+          create-dmg --volname Unyo-${{ github.ref_name }}-macos --window-pos 200 120 --window-size 800 450 --icon-size 100 --app-drop-link 600 185 Unyo-${{ github.ref_name }}-macos.dmg build/macos/Build/Products/Release/unyo.app
