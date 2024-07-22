@@ -8,10 +8,12 @@ class SettingsDropdownOptionWidget extends StatelessWidget {
     required this.onPressed,
     required this.items, 
     required this.width,
+    this.value,
   });
 
   final String title;
   final double width;
+  final int? value;
   final void Function(int) onPressed;
   final List<Widget> items;
 
@@ -47,6 +49,7 @@ class SettingsDropdownOptionWidget extends StatelessWidget {
                   Row(
                     children: [
                       StyledDropDown(
+                        value: value,
                         height: 45,
                         items: items,
                         horizontalPadding: 0,

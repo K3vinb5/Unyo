@@ -3,7 +3,6 @@ import 'package:process_run/shell.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shelf/shelf.dart' as shelf;
@@ -19,8 +18,6 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
 
 void Function()? updateHomeScreenLists;
-String? bannerImageUrl;
-List<Color> colorList = [];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,7 +38,7 @@ class _HomeScreenState
   double adjustedHeight = 0;
   double totalWidth = 0;
   double totalHeight = 0;
-    Map<String, Map<String, double>>? userStats;
+  Map<String, Map<String, double>>? userStats;
   int? episodesWatched;
   int? minutesWatched;
   bool isShiftKeyPressed = false;
@@ -134,13 +131,7 @@ class _HomeScreenState
       await prefs.setString("userName", userName!);
       await prefs.setInt("userId", userId!);
     }
-    String newbannerUrl = "https://i.imgur.com/x6TGK1x.png";
-    try {
-      newbannerUrl = await getUserbannerImageUrl(userName!, 0);
-    } catch (error) {
-      //If newBannerURL never returns a string use default avatar
-    }
-    setBannerPallete(newbannerUrl, setState);
+    initThemes(prefs.getInt("theme") ?? 0, setState);
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
     List<AnimeModel> newWatchingAnimeList =
         await getUserAnimeLists(userId!, "Watching", 0);
@@ -154,7 +145,6 @@ class _HomeScreenState
         newUserStats["watchedStatistics"]?["minutesWatched"]?.toInt() ?? -1;
     newUserStats.remove("watchedStatistics");
     setState(() {
-      bannerImageUrl = newbannerUrl;
       avatarImageUrl = newavatarUrl;
       watchingList = newWatchingAnimeList;
       readingList = newReadingMangaList;
@@ -164,7 +154,6 @@ class _HomeScreenState
     showUpdateDialog(context);
   }
 
-  
   void updateUserLists() async {
     List<AnimeModel> newWatchingAnimeList =
         await getUserAnimeLists(userId!, "Watching", 0);
@@ -255,7 +244,7 @@ class _HomeScreenState
             children: [
               Column(
                 children: [
-                  bannerImageUrl != null
+                  (bannerImageUrl != null && watchingList != null)
                       ? Stack(
                           children: [
                             ImageGradient.linear(
