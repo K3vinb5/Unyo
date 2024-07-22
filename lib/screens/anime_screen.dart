@@ -7,7 +7,6 @@ import 'package:unyo/models/anime_model.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
-import 'package:unyo/util/constants.dart';
 
 class AnimeScreen extends StatefulWidget {
   const AnimeScreen({super.key});
@@ -29,6 +28,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
   int currentPage = 0;
   bool pageLeftToRight = true;
   late Timer pageTimer;
+  bool pageTimerStarted = false;
   bool bannerInfoVisible = true;
   double adjustedWidth = 0;
   double adjustedHeight = 0;
@@ -59,6 +59,11 @@ class _AnimeScreenState extends State<AnimeScreen> {
   }
 
   void initPage() {
+    if (pageTimerStarted) {
+      pageTimer.cancel();
+    } else {
+      pageTimerStarted = true;
+    }
     pageTimer = Timer.periodic(
       const Duration(seconds: 7),
       (Timer timer) {
@@ -239,10 +244,6 @@ class _AnimeScreenState extends State<AnimeScreen> {
                                     StyledScreenMenuWidget(
                                       onMenuPress: buttonsLayout,
                                       onBackPress: () {
-                                        if (updateHomeScreenLists != null) {
-                                          updateHomeScreenLists!();
-                                        }
-                                        pageTimer.cancel();
                                         goTo(1);
                                       },
                                       onRefreshPress: () {
@@ -328,6 +329,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           const SizedBox(height: 20),
                           AnimeButton(
                             text: "Advanced Search",
+                            dontHide: true,
                             onTap: () {
                               // pageTimer.cancel();
                               Navigator.of(context).push(MaterialPageRoute(

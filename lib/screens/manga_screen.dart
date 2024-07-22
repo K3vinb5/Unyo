@@ -7,7 +7,6 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
-import 'package:unyo/util/constants.dart';
 
 class MangaScreen extends StatefulWidget {
   const MangaScreen({super.key});
@@ -29,6 +28,7 @@ class _MangaScreenState extends State<MangaScreen> {
   int currentPage = 0;
   bool pageLeftToRight = true;
   late Timer pageTimer;
+  bool pageTimerStarted = false;
   bool bannerInfoVisible = true;
   double adjustedWidth = 0;
   double adjustedHeight = 0;
@@ -43,10 +43,10 @@ class _MangaScreenState extends State<MangaScreen> {
     super.initState();
     pageScrollController.addListener(setScrollListener);
     resumeMangaPageTimer = initPage;
+    initPage();
     pauseMangaPageTimer = () {
       pageTimer.cancel();
     };
-    initPage();
     initMangaList();
   }
 
@@ -63,6 +63,11 @@ class _MangaScreenState extends State<MangaScreen> {
   }
 
   void initPage() {
+    if(pageTimerStarted){
+      pageTimer.cancel(); 
+    }else{
+      pageTimerStarted = true;
+    }
     pageTimer = Timer.periodic(
       const Duration(seconds: 7),
       (Timer timer) {
@@ -324,6 +329,7 @@ class _MangaScreenState extends State<MangaScreen> {
                           ),
                           const SizedBox(height: 20),
                           AnimeButton(
+                            dontHide: true,
                             text: "Advanced Search",
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(

@@ -22,8 +22,9 @@ class StyledScreenMenuWidget extends StatelessWidget {
     final EdgeInsets allOtherButtonsPadding = !(isRow ?? false)
         ? const EdgeInsets.only(top: 4.0, left: 4.0)
         : const EdgeInsets.only(top: 4.0, right: 4.0);
-    final EdgeInsets backPadding =
-        (onMenuPress == null || !onMenuPress!) ? firstButtonPadding : allOtherButtonsPadding;
+    final EdgeInsets backPadding = (onMenuPress == null || !onMenuPress!)
+        ? firstButtonPadding
+        : allOtherButtonsPadding;
     final EdgeInsets refreshPadding =
         (onMenuPress == null || !onMenuPress! && onBackPress == null)
             ? firstButtonPadding
@@ -45,7 +46,7 @@ class StyledScreenMenuWidget extends StatelessWidget {
                   ),
                 )
               : const SizedBox(),
-          onBackPress != null
+          (onBackPress != null && !(onMenuPress != null && onMenuPress!))
               ? Padding(
                   padding: backPadding,
                   child: IconButton(

@@ -11,6 +11,7 @@ class AnimeButton extends StatefulWidget {
     required this.width,
     required this.height,
     required this.horizontalAllignment,
+    this.dontHide,
   });
 
   final String text;
@@ -18,6 +19,7 @@ class AnimeButton extends StatefulWidget {
   final double width;
   final double height;
   final bool horizontalAllignment;
+  final bool? dontHide;
 
   @override
   State<AnimeButton> createState() => _AnimeButtonState();
@@ -42,7 +44,7 @@ class _AnimeButtonState extends State<AnimeButton> {
 
   @override
   Widget build(BuildContext context) {
-    return (bannerImageUrl != null && !buttonsLayout)
+    return (bannerImageUrl != null && (!buttonsLayout || (widget.dontHide ?? false)))
         ? InkWell(
             onTap: widget.onTap,
             child: HoverAnimatedContainer(

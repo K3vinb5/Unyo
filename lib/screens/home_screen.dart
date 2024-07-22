@@ -19,6 +19,8 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
 
 void Function()? updateHomeScreenLists;
+String? bannerImageUrl;
+List<Color> colorList = [];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +31,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState
     extends State<HomeScreen> /*with WidgetsBindingObserver*/ {
-  String? bannerImageUrl;
   String? avatarImageUrl;
   String? userName;
   int? userId;
@@ -40,8 +41,7 @@ class _HomeScreenState
   double adjustedHeight = 0;
   double totalWidth = 0;
   double totalHeight = 0;
-  List<Color> colorList = [];
-  Map<String, Map<String, double>>? userStats;
+    Map<String, Map<String, double>>? userStats;
   int? episodesWatched;
   int? minutesWatched;
   bool isShiftKeyPressed = false;
@@ -140,7 +140,7 @@ class _HomeScreenState
     } catch (error) {
       //If newBannerURL never returns a string use default avatar
     }
-    setBannerPallete(newbannerUrl);
+    setBannerPallete(newbannerUrl, setState);
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
     List<AnimeModel> newWatchingAnimeList =
         await getUserAnimeLists(userId!, "Watching", 0);
@@ -164,31 +164,7 @@ class _HomeScreenState
     showUpdateDialog(context);
   }
 
-  void setBannerPallete(String url) async {
-    ImageProvider image = NetworkImage(url);
-    var newPaletteGenerator = await PaletteGenerator.fromImageProvider(
-      image,
-      maximumColorCount: 20,
-    );
-    List<Color> lightToDarkColors = newPaletteGenerator.colors.toList();
-    List<Color> newColorList = newPaletteGenerator.colors.toList();
-    int lightest = lightToDarkColors.length - 1;
-    while (newColorList.length < 20) {
-      newColorList.addAll(newPaletteGenerator.colors.toList());
-    }
-    lightToDarkColors.sort((color1, color2) =>
-        (color1.computeLuminance() * 10 - color2.computeLuminance() * 10)
-            .toInt());
-
-    setState(() {
-      //NOTE higher the number the lighter the color
-      veryLightBorderColor = lightToDarkColors[lightest];
-      lightBorderColor = lightToDarkColors[10];
-      darkBorderColor = lightToDarkColors[0];
-      colorList = newColorList;
-    });
-  }
-
+  
   void updateUserLists() async {
     List<AnimeModel> newWatchingAnimeList =
         await getUserAnimeLists(userId!, "Watching", 0);
@@ -528,7 +504,6 @@ class _HomeScreenState
                                 AnimeButton(
                                   text: "Animes",
                                   onTap: () {
-                                    resumeAnimePageTimer();
                                     goTo(0);
                                   },
                                   width: adjustedWidth,
@@ -538,7 +513,6 @@ class _HomeScreenState
                                 AnimeButton(
                                   text: "Mangas",
                                   onTap: () {
-                                    resumeMangaPageTimer();
                                     goTo(2);
                                   },
                                   width: adjustedWidth,

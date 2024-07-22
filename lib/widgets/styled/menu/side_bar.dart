@@ -24,7 +24,7 @@ class Sidebar extends StatelessWidget {
           )),
           ListTile(
             title: const Text('Home'),
-            leading: const Icon(Icons.home),
+            leading: const Icon(Icons.home_rounded),
             selected: selectedIndex == 0,
             onTap: () {
               selectIndex(0);
@@ -37,7 +37,7 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Anime'),
-            leading: const Icon(Icons.movie),
+            leading: const Icon(Icons.movie_rounded),
             selected: selectedIndex == 1,
             onTap: () {
               selectIndex(1);
@@ -49,7 +49,7 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Manga'),
-            leading: const Icon(Icons.menu_book),
+            leading: const Icon(Icons.menu_book_rounded),
             selected: selectedIndex == 2,
             onTap: () {
               selectIndex(2);
@@ -61,7 +61,7 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Anime List'),
-            leading: const Icon(Icons.list),
+            leading: const Icon(Icons.movie_edit),
             selected: selectedIndex == 3,
             onTap: () {
               selectIndex(3);
@@ -73,7 +73,7 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Manga List'),
-            leading: const Icon(Icons.book_sharp),
+            leading: const Icon(Icons.edit_note),
             selected: selectedIndex == 4,
             onTap: () {
               selectIndex(4);
@@ -85,7 +85,7 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Calendar'),
-            leading: const Icon(Icons.book_sharp),
+            leading: const Icon(Icons.calendar_month_rounded),
             selected: selectedIndex == 5,
             onTap: () {
               selectIndex(5);

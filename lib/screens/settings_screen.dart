@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
+import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -22,6 +24,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // "German",
     // "Polish",
   ];
+  Map<String, Map<String, Color>?> themes = {
+    "Default (Banner)": null,
+    "Red": redTheme,
+    "Blue": blueTheme,
+    "Green": greenTheme,
+    "Yellow": yellowTheme,
+    "Purple": purpleTheme,
+    "Orange": orangeTheme,
+    "Pink": pinkTheme,
+    "Teal": tealTheme,
+  };
 
   @override
   void initState() {
@@ -121,6 +134,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                     value: (prefs.getBool("display_video_duration") ?? false),
+                  ),
+                  SettingsDropdownOptionWidget(
+                    title: "Select Theme",
+                    width: 150,
+                    onPressed: (int something) async {
+                      if (something == 0) {
+                        String newbannerUrl = "https://i.imgur.com/x6TGK1x.png";
+                        try {
+                          newbannerUrl = await getUserbannerImageUrl(
+                              prefs.getString("useName")!, 0);
+                        } catch (error) {
+                          //If newBannerURL never returns a string use default avatar
+                        }
+                        setBannerPallete(newbannerUrl, setState);
+                      }
+                      ;
+                      setState(() {
+                        veryLightBorderColor = themes.values
+                            .toList()[something]!["veryLightColor"]!;
+                        lightBorderColor =
+                            themes.values.toList()[something]!["lightColor"]!;
+                        darkBorderColor =
+                            themes.values.toList()[something]!["darkColor"]!;
+                        bannerImageUrl = themeWallpapers[something - 1];
+                      });
+                    },
+                    items: themes.entries
+                        .map(
+                          (entry) => Text(
+                            entry.key,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:unyo/screens/screens.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 late StatefulNavigationShell publicNavigationShell;
@@ -7,11 +8,14 @@ late StatefulNavigationShell publicNavigationShell;
 late void Function(int) goTo;
 late void Function(bool) floatingMenu;
 bool menu = false;
+//sidebar
 int selectedIndex = 0;
+
+int navIndex = 1;
 
 class ScaffoldScreen extends StatefulWidget {
   const ScaffoldScreen({super.key, required this.navigationShell});
-  
+
   final StatefulNavigationShell navigationShell;
 
   @override
@@ -19,8 +23,6 @@ class ScaffoldScreen extends StatefulWidget {
 }
 
 class _ScaffoldScreenState extends State<ScaffoldScreen> {
-
-
   @override
   void initState() {
     super.initState();
@@ -28,8 +30,60 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
 
     goTo = (index) {
       publicNavigationShell.goBranch(index);
+      changeScreen(navIndex, index);
+      navIndex = index;
     };
+
     floatingMenu = (input) => menu = input;
+  }
+
+  void changeScreen(int from, int to) {
+    switch (to) {
+      case 0:
+        resumeAnimePageTimer();
+        if (from == 2) {
+          pauseAnimePageTimer();
+        }
+        break;
+      case 1:
+        if (updateHomeScreenLists != null) {
+          updateHomeScreenLists!();
+        }
+        if (from == 0) {
+          pauseAnimePageTimer();
+        } else if (from == 2) {
+          pauseMangaPageTimer();
+        }
+        break;
+      case 2:
+        resumeMangaPageTimer();
+        if (from == 0) {
+          pauseAnimePageTimer();
+        }
+        break;
+      case 3:
+        if (from == 0) {
+          pauseAnimePageTimer();
+        } else if (from == 2) {
+          pauseMangaPageTimer();
+        }
+        break;
+      case 4:
+        if (from == 0) {
+          pauseAnimePageTimer();
+        } else if (from == 2) {
+          pauseMangaPageTimer();
+        }
+        break;
+      case 5:
+        if (from == 0) {
+          pauseAnimePageTimer();
+        } else if (from == 2) {
+          pauseMangaPageTimer();
+        }
+        break;
+      default:
+    }
   }
 
   void setScreen(BuildContext context, int index) {
@@ -46,10 +100,10 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
     );
   }
 
-  void selectIndex(int newIndex){
+  void selectIndex(int newIndex) {
     selectedIndex = newIndex;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +114,11 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
         alignment: Alignment.bottomCenter,
         children: [
           widget.navigationShell,
-           if (menu)  FloattingMenu(setScreen: setScreen, height: 50,),
+          if (menu)
+            FloattingMenu(
+              setScreen: setScreen,
+              height: 50,
+            ),
         ],
       ),
     );

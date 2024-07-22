@@ -101,6 +101,7 @@ class MixedController {
       audioController.addListener(() {
         setState(() {});
       });
+      videoController.setVolume(0);
       audioController.setLooping(false);
       audioController.initialize().then((_) => setState(() {}));
       audioController.play();
