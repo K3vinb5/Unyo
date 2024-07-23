@@ -216,7 +216,7 @@ class VideoProgressSlider extends StatelessWidget {
                             builder: (context) {
                               return AlertDialog(
                                 title: Text(
-                                    "Unyo2gether(${mixedController.mqqtController.connected ? "Connected" : "Not Connected"})",
+                                    "Unyo2gether (${mixedController.mqqtController.connected ? "Connected" : "Not Connected"})",
                                     style:
                                         const TextStyle(color: Colors.white)),
                                 backgroundColor:
@@ -231,7 +231,7 @@ class VideoProgressSlider extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       SelectableText(
-                                          "Your Id:\n${mixedController.mqqtController.topic.substring(mixedController.mqqtController.topic.indexOf("-") + 1)}",
+                                          "Your Id:\n${mixedController.mqqtController.topic.split("-")[1].replaceAll("@", "-")}",
                                           style: const TextStyle(
                                               color: Colors.white)),
                                       const SizedBox(

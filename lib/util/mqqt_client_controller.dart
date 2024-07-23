@@ -31,20 +31,25 @@ class MqqtClientController {
   late MqttServerClient client;
   late String topic;
   late String myId;
+  late String partyId;
   bool firstConnection = true;
   bool firstConfirm = true;
   bool connected = false;
 
   void init() {
-    myId = sha256.convert(utf8.encode(key)).toString().substring(0, 10);
-    topic = "$myId-${generateRandomId()}";
+    myId = generateRandomId();
+    partyId = sha256.convert(utf8.encode(key)).toString().substring(0, 10);
+    topic = "$partyId-${generateRandomId()}";
   }
 
   void connectToPeer(String newTopic) async {
+    if (newTopic.contains("-") || newTopic.contains(":")) {
+      newTopic = newTopic.replaceAll("-", "@").replaceAll(":", "@");
+    }
     if (newTopic.trim() == "") {
       // showErrorDialog(context, "Empty topic");
       // return;
-      newTopic = topic.substring(topic.indexOf("-") + 1);
+      newTopic = topic.split("-")[1];
     }
     if (firstConnection) {
       client = MqttServerClient('ws://kevin-is-awesome.mooo.com', '',
@@ -64,7 +69,7 @@ class MqqtClientController {
       client.unsubscribe(topic);
     }
     connected = true;
-    topic = "$myId-$newTopic";
+    topic = "$partyId-$newTopic";
 
     try {
       await client.connect();
@@ -90,20 +95,20 @@ class MqqtClientController {
 
     client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       final recMess = c![0].payload as MqttPublishMessage;
-      final messageStringAndId =
+      final messageStringAndIds =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message)
               .split("-");
-      if (messageStringAndId[0] == myId) {
+      if (messageStringAndIds[1] != partyId || messageStringAndIds[0] == myId) {
         return;
       }
-      final messageString = messageStringAndId[1];
+      final message = messageStringAndIds[2];
 
-      if (messageString.contains("seekTo")) {
-        double value = double.parse(messageString.split(":")[1]);
+      if (message.contains("seekTo")) {
+        double value = double.parse(message.split(":")[1]);
         mixedController.seekTo(Duration(microseconds: (value * 1000).toInt()));
       }
 
-      switch (messageString) {
+      switch (message) {
         case "pause":
           mixedController.pause();
           break;
@@ -270,7 +275,7 @@ class MqqtClientController {
     );
     for (int i = 1; i < 4; i++) {
       int index = 5 * i + (i - 2);
-      newId = insertCharacter(newId, index, "-");
+      newId = insertCharacter(newId, index, "@");
     }
     return newId;
   }
@@ -291,8 +296,9 @@ class MqqtClientController {
   void sendOrder(String message) {
     if (connected) {
       final builder = MqttClientPayloadBuilder();
-      builder.addString("$myId-$message");
+      builder.addString("$myId-$partyId-$message");
       client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
+      print("sent $message");
     }
   }
 }

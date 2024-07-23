@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:unyo/util/utils.dart';
 
 class StyledDropDown extends StatefulWidget {
   const StyledDropDown({
@@ -30,7 +31,7 @@ class _StyledDropDownState extends State<StyledDropDown> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: veryLightBorderColor),
       ),
       padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
       child: SizedBox(
