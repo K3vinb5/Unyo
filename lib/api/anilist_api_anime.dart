@@ -223,7 +223,7 @@ Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort,
     }
     print(list.length);
     // if ((sort != "Select Sorting")) {
-      // return list.reversed.toList();
+    // return list.reversed.toList();
     // }
     return list;
   }
@@ -321,7 +321,12 @@ Future<String> getUserAvatarImageUrl(String name, int attempt) async {
     return "";
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
-  return jsonResponse["data"]["User"]["avatar"]["medium"];
+  try {
+    String returnString = jsonResponse["data"]["User"]["avatar"]["medium"];
+    return returnString;
+  } catch (e) {
+    return "https://i.imgur.com/EKtChtm.png";
+  }
 }
 
 String capitalize(String s) {

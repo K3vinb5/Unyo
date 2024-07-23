@@ -120,24 +120,6 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
     return rowWidgets;
   }
 
-  double getAdjustedHeight(double value) {
-    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
-    }
-  }
-
-  double getAdjustedWidth(double value) {
-    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
-    }
-  }
-
   void openAnime(AnimeModel currentAnime, String tag) {
     var animeScreen = AnimeDetailsScreen(
       currentAnime: currentAnime,
@@ -179,8 +161,8 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
     //sizes calculations
     double totalWidth = MediaQuery.of(context).size.width;
     double totalHeight = MediaQuery.of(context).size.height;
-    double adjustedWidth = getAdjustedWidth(totalWidth);
-    double adjustedHeight = getAdjustedHeight(totalHeight);
+    double adjustedWidth = getAdjustedWidth(totalWidth, context);
+    double adjustedHeight = getAdjustedHeight(totalHeight, context);
     double calculatedWidth = adjustedWidth * 0.1;
     double calculatedHeight = adjustedHeight * 0.28;
 

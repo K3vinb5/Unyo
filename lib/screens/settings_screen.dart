@@ -95,7 +95,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {
                         buttonsLayout = newValue;
                       });
-
+                      isScreenRefreshed.clear();
                       prefs.setBool("buttons_layout", newValue);
                     },
                     value: (prefs.getBool("buttons_layout") ?? false),

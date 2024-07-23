@@ -135,24 +135,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
     });
   }
 
-  double getAdjustedHeight(double value) {
-    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
-    }
-  }
-
-  double getAdjustedWidth(double value) {
-    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
-    }
-  }
-
+  
   void initUserMangaListsMap() async {
     var newUserMangaLists = await getAllUserMangaLists(userId!, 0);
     setState(() {
@@ -183,8 +166,8 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
     //sizes calculations
     double totalWidth = MediaQuery.of(context).size.width;
     double totalHeight = MediaQuery.of(context).size.height;
-    double adjustedWidth = getAdjustedWidth(totalWidth);
-    double adjustedHeight = getAdjustedHeight(totalHeight);
+    double adjustedWidth = getAdjustedWidth(totalWidth, context);
+    double adjustedHeight = getAdjustedHeight(totalHeight, context);
     double calculatedWidth = adjustedWidth * 0.1;
     double calculatedHeight = adjustedHeight * 0.28;
 
