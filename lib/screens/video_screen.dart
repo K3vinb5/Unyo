@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_acrylic/window.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
-import 'package:window_manager/window_manager.dart';
 
 bool fullScreen = false;
 
@@ -62,8 +62,8 @@ class _VideoScreenState extends State<VideoScreen> {
 
   @override
   void dispose() {
-    _mixedController.dispose();
     _hideControlsTimer?.cancel();
+    _mixedController.dispose();
     super.dispose();
   }
 
@@ -109,7 +109,7 @@ class _VideoScreenState extends State<VideoScreen> {
               "An error occured, try using another source or server/quality",
           onPressedAfterPop: () {
             _mixedController.dispose();
-            WindowManager.instance.setFullScreen(false);
+            Window.exitFullscreen();
             interactScreen(false);
             Navigator.pop(context);
           },

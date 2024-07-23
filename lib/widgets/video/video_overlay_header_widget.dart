@@ -1,8 +1,8 @@
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_acrylic/window.dart';
 import 'package:unyo/util/constants.dart';
 import 'package:unyo/util/mixed_controller.dart';
-import 'package:window_manager/window_manager.dart';
 
 class VideoOverlayHeaderWidget extends StatefulWidget {
   const VideoOverlayHeaderWidget(
@@ -56,7 +56,8 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 // sendEscapeOrder();
-                WindowManager.instance.setFullScreen(false);
+                // WindowManager.instance.setFullScreen(false);
+                Window.exitFullscreen();
                 interactScreen(false);
                 if (widget.mixedController.mqqtController
                             .calculatePercentage() >

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_acrylic/window.dart';
 import 'package:unyo/screens/video_screen.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:unyo/screens/screens.dart';
 
 class VideoProgressSlider extends StatelessWidget {
@@ -349,9 +349,9 @@ class VideoProgressSlider extends StatelessWidget {
                           onPressed: () {
                             fullScreen = !fullScreen;
                             if (fullScreen) {
-                              WindowManager.instance.setFullScreen(true);
+                              Window.enterFullscreen();
                             } else {
-                              WindowManager.instance.setFullScreen(false);
+                              Window.exitFullscreen();
                             }
                           },
                           icon: Icon(fullScreen

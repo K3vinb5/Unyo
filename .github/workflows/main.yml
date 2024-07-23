@@ -58,7 +58,7 @@ jobs:
       - name: Copy appimagetool
         run: cp assets/appimagetool.AppImage .
       - name: Execute appimagetool
-        run: ./appimagetool.AppImage Unyo.AppDir Unyo.AppImage
+        run: ./appimagetool.AppImage Unyo.AppDir Unyo-${{github.ref_name}}-linux.AppImage
       - name: Linux AppImage Release
         uses: softprops/action-gh-release@v1
         env:

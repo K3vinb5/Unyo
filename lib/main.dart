@@ -1,11 +1,14 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_acrylic/window.dart';
 import 'package:unyo/sources/anime/util/embedded_extensions.dart';
 import 'package:unyo/router/router.dart';
 import 'package:fvp/fvp.dart' as fvp;
 
-void main() {
+Future<void> main() async {
   //needed for video player on desktop!!
+  WidgetsFlutterBinding.ensureInitialized();
+  await Window.initialize();
   fvp.registerWith(options: {
     'platforms': ['windows', 'linux', 'macos']
   });
@@ -18,8 +21,6 @@ void main() {
     appWindow.show();
   });
 }
-
-
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});

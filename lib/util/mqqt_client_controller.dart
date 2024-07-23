@@ -5,11 +5,11 @@ import 'package:crypto/crypto.dart';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_acrylic/window.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
-import 'package:window_manager/window_manager.dart';
 
 class MqqtClientController {
   MqqtClientController({
@@ -82,7 +82,8 @@ class MqqtClientController {
       client.disconnect();
       if (!context.mounted) return;
       showErrorDialog(context,
-          exception: 'Client connection failed - disconnecting... status is ${client.connectionStatus}');
+          exception:
+              'Client connection failed - disconnecting... status is ${client.connectionStatus}');
       return;
     }
     client.subscribe(topic, MqttQos.exactlyOnce); //qos 2
@@ -150,7 +151,7 @@ class MqqtClientController {
           }
           break;
         case "escape":
-          WindowManager.instance.setFullScreen(false);
+          Window.exitFullscreen();
           mixedController.dispose();
           interactScreen(false);
           Navigator.pop(context);
@@ -239,12 +240,13 @@ class MqqtClientController {
         break;
       case LogicalKeyboardKey.escape:
         sendOrder("escape");
-        WindowManager.instance.setFullScreen(false);
-        mixedController.dispose();
+        Window.exitFullscreen();
         interactScreen(false);
-        if (calculatePercentage() > 0.8 && (prefs.getBool("update_progress_automatically") ?? false)) {
+        if (calculatePercentage() > 0.8 &&
+            (prefs.getBool("update_progress_automatically") ?? false)) {
           updateEntry();
         }
+        mixedController.dispose();
         Navigator.pop(context);
         break;
       default:
