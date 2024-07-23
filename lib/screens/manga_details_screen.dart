@@ -52,6 +52,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   double totalWidth = 0;
   double totalHeight = 0;
   bool isShiftKeyPressed = false;
+  bool startedWrongTitleDialog = true;
   List<DropdownMenuEntry> wrongTitleEntries = [];
   String oldWrongTitleSearch = "";
   Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 0), () {});
@@ -71,6 +72,10 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
+    if (startedWrongTitleDialog) {
+      oldWrongTitleSearch = searches[0];
+      startedWrongTitleDialog = false;
+    }
     //reset listener
     setDialogState(() {
       wrongTitleEntries = [
@@ -94,6 +99,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
         //TODO generalize search
         if (wrongTitleSearchController.text != oldWrongTitleSearch &&
             wrongTitleSearchController.text != "") {
+          print("updated");
           setSearches(mangaSources[currentSource]!.getMangaTitlesAndIds,
               query: wrongTitleSearchController.text,
               setDialogState: setDialogState);
@@ -289,6 +295,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                   ).show(context);
                   await Future.delayed(const Duration(seconds: 1));
                   currentSearch = searches.indexOf(currentSearchString);
+                  updateSearch(currentSearch);
                   AnimatedSnackBar.material(
                     "Title Updated",
                     type: AnimatedSnackBarType.success,

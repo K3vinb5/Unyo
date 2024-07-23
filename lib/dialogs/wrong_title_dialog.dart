@@ -59,6 +59,7 @@ class WrongTitleDialog extends StatelessWidget {
                     onSelected: onSelected,
                     initialSelection: 0,
                     dropdownMenuEntries: wrongTitleEntries,
+                    menuHeight: height * 0.3,
                   ),
                 ],
               ),

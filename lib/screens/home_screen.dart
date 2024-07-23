@@ -294,7 +294,7 @@ class _HomeScreenState
                         ),
                         const Align(
                           alignment: Alignment.topCenter,
-                          child: WindowBarButtons(startIgnoreWidth: 0),
+                          child: WindowBarButtons(startIgnoreWidth: 30),
                         ),
                       ],
                     )

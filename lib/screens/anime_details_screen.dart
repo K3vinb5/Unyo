@@ -52,6 +52,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   double totalWidth = 0;
   double totalHeight = 0;
   bool isShiftKeyPressed = false;
+  bool startedWrongTitleDialog = true;
   List<DropdownMenuEntry> wrongTitleEntries = [];
   String oldWrongTitleSearch = "";
   Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 500), () {});
@@ -71,6 +72,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
+    if (startedWrongTitleDialog) {
+      oldWrongTitleSearch = searches[0];
+      startedWrongTitleDialog = false;
+    }
     //reset listener
     setDialogState(() {
       wrongTitleEntries = [
@@ -132,10 +137,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     if (setDialogState != null) {
       setState(() {
         currentEpisode = newCurrentEpisode;
-        searches = newSearchesAndIds[0]
-            .sublist(0, min(10, newSearchesAndIds[0].length));
-        searchesId = newSearchesAndIds[1]
-            .sublist(0, min(10, newSearchesAndIds[1].length));
+        searches = newSearchesAndIds[0];
+            // .sublist(0, min(10, newSearchesAndIds[0].length));
+        searchesId = newSearchesAndIds[1];
+            // .sublist(0, min(10, newSearchesAndIds[1].length));
       });
       setDialogState(() {
         wrongTitleEntries = [

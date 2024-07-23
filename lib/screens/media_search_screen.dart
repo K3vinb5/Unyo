@@ -5,6 +5,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
+import 'package:unyo/util/constants.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
@@ -193,10 +195,10 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
               const SizedBox(
                 height: 20,
               ),
-              const Text(
+              Text(
                 "Advanced Search",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: veryLightBorderColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 26,
                 ),
@@ -220,7 +222,7 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                     onChanged: (text) {
                       resetSearchTimer(text);
                     },
-                    color: Colors.white,
+                    color: veryLightBorderColor,
                     hintColor: Colors.grey,
                     hint: "Search...",
                   ),

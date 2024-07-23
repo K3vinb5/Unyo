@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/util/utils.dart';
@@ -10,7 +11,7 @@ import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 
-void Function(void Function()) refreshMangaUserListScreenState = (func){};
+void Function(void Function()) refreshMangaUserListScreenState = (func) {};
 
 class MangaUserListsScreen extends StatefulWidget {
   const MangaUserListsScreen({super.key});
@@ -135,7 +136,6 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
     });
   }
 
-  
   void initUserMangaListsMap() async {
     var newUserMangaLists = await getAllUserMangaLists(userId!, 0);
     setState(() {
@@ -203,7 +203,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "${userName ?? ""} Manga List",
+                          "${userName != null ? "$userName's" : ""} Manga List",
                           style: TextStyle(
                             color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,
@@ -253,47 +253,60 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
               ],
             ),
           ),
-          SizedBox(
-            width: totalWidth,
-            height: totalHeight - 100,
-            child: TabBarView(
-              controller: tabContrller,
-              children: [
-                //TODO temp, must use wrap in the future
-                ...userMangaLists.entries.map(
-                  (entry) {
-                    String title = entry.key;
-                    List<MangaModel> mangaList = entry.value;
-                    List<Widget> rowsList = generateMangaWidgetRows(totalWidth,
-                        2, title, calculatedWidth, calculatedHeight, mangaList);
-                    return SizedBox(
-                      width: totalWidth,
-                      height: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: SizedBox(
-                          width: totalWidth,
-                          height: totalHeight,
-                          child: Center(
-                            child: SmoothListView.builder(
-                              duration: const Duration(milliseconds: 200),
-                              itemCount: rowsList.length,
-                              itemBuilder: (context, index) {
-                                return rowsList[index];
-                              },
+          userMangaLists.isNotEmpty
+              ? SizedBox(
+                  width: totalWidth,
+                  height: totalHeight - 100,
+                  child: TabBarView(
+                    controller: tabContrller,
+                    children: [
+                      //TODO temp, must use wrap in the future
+                      ...userMangaLists.entries.map(
+                        (entry) {
+                          String title = entry.key;
+                          List<MangaModel> mangaList = entry.value;
+                          List<Widget> rowsList = generateMangaWidgetRows(
+                              totalWidth,
+                              2,
+                              title,
+                              calculatedWidth,
+                              calculatedHeight,
+                              mangaList);
+                          return SizedBox(
+                            width: totalWidth,
+                            height: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: SizedBox(
+                                width: totalWidth,
+                                height: totalHeight,
+                                child: Center(
+                                  child: SmoothListView.builder(
+                                    duration: const Duration(milliseconds: 200),
+                                    itemCount: rowsList.length,
+                                    itemBuilder: (context, index) {
+                                      return rowsList[index];
+                                    },
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.only(top: (totalHeight / 4) + 100),
+                  child: Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                        color: Colors.white, size: 30),
+                  ),
                 ),
-              ],
-            ),
-          ),
         ],
       ),
     );

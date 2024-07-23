@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/util/utils.dart';
@@ -10,7 +11,7 @@ import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 
-void Function(void Function()) refreshAnimeUserListScreenState = (func){};
+void Function(void Function()) refreshAnimeUserListScreenState = (func) {};
 
 class AnimeUserListsScreen extends StatefulWidget {
   const AnimeUserListsScreen({super.key});
@@ -199,7 +200,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "${userName ?? ""} Anime List",
+                          "${userName != null ? "$userName's" : ""} Anime List",
                           style: TextStyle(
                             color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,
@@ -211,19 +212,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
                   ],
                 ),
               ),
-              WindowTitleBarBox(
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 70,
-                    ),
-                    Expanded(
-                      child: MoveWindow(),
-                    ),
-                    const WindowButtons(),
-                  ],
-                ),
-              ),
+              const WindowBarButtons(startIgnoreWidth: 70),
             ],
           ),
           SizedBox(
@@ -249,46 +238,59 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
               ],
             ),
           ),
-          SizedBox(
-            width: totalWidth,
-            height: totalHeight - 100,
-            child: TabBarView(
-              controller: tabContrller,
-              children: [
-                ...userAnimeLists.entries.map(
-                  (entry) {
-                    String title = entry.key;
-                    List<AnimeModel> animeList = entry.value;
-                    List<Widget> rowsList = generateAnimeWidgetRows(totalWidth,
-                        2, title, calculatedWidth, calculatedHeight, animeList);
-                    return SizedBox(
-                      width: totalWidth,
-                      height: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: SizedBox(
-                          width: totalWidth,
-                          height: totalHeight,
-                          child: Center(
-                            child: SmoothListView.builder(
-                              duration: const Duration(milliseconds: 200),
-                              itemCount: rowsList.length,
-                              itemBuilder: (context, index) {
-                                return rowsList[index];
-                              },
+          userAnimeLists.isNotEmpty
+              ? SizedBox(
+                  width: totalWidth,
+                  height: totalHeight - 100,
+                  child: TabBarView(
+                    controller: tabContrller,
+                    children: [
+                      ...userAnimeLists.entries.map(
+                        (entry) {
+                          String title = entry.key;
+                          List<AnimeModel> animeList = entry.value;
+                          List<Widget> rowsList = generateAnimeWidgetRows(
+                              totalWidth,
+                              2,
+                              title,
+                              calculatedWidth,
+                              calculatedHeight,
+                              animeList);
+                          return SizedBox(
+                            width: totalWidth,
+                            height: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: SizedBox(
+                                width: totalWidth,
+                                height: totalHeight,
+                                child: Center(
+                                  child: SmoothListView.builder(
+                                    duration: const Duration(milliseconds: 200),
+                                    itemCount: rowsList.length,
+                                    itemBuilder: (context, index) {
+                                      return rowsList[index];
+                                    },
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.only(top: (totalHeight / 4) + 100),
+                  child: Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                        color: Colors.white, size: 30),
+                  ),
                 ),
-              ],
-            ),
-          ),
         ],
       ),
     );

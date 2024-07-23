@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class ReadingScreen extends StatefulWidget {
@@ -111,7 +112,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         return doublePageList(leftToRight, width, height);
       case 2:
         // Needs reworking
-        return scrollingList(width);
+        return scrollingList(width, height);
       default:
         return singlePageList(width, height);
     }
@@ -145,6 +146,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
           }
         },
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             chapterBytes[currentPage] != null
                 ? SizedBox(
@@ -166,7 +168,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                 : BoxFit.fitWidth,
                           ),
                   )
-                : const SizedBox.shrink(),
+                : Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                        color: Colors.white, size: 30),
+                  ),
           ],
         ),
       ),
@@ -198,8 +203,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
           }
         },
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            chapterBytes[currentPage] != null
+            (chapterBytes[currentPage] != null &&
+                    chapterBytes[currentPage + 1] != null)
                 ? SizedBox(
                     height: height,
                     width: width,
@@ -207,7 +214,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
                       child: doublePages(leftToRight),
                     ),
                   )
-                : const SizedBox.shrink(),
+                : Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                        color: Colors.white, size: 30),
+                  ),
           ],
         ),
       ),
@@ -247,21 +257,28 @@ class _ReadingScreenState extends State<ReadingScreen> {
         : doublePage;
   }
 
-  Widget scrollingList(double width) {
+  Widget scrollingList(double width, double height) {
     return SingleChildScrollView(
       child: SizedBox(
         width: width,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ...chapterBytes.mapIndexed((index, element) {
-              return chapterBytes[index] != null
+              return (chapterBytes[index] != null)
                   ? Image.memory(
                       chapterBytes[index]!,
                       fit: currentFittingOption == 0
                           ? BoxFit.fitHeight
                           : BoxFit.fitWidth,
                     )
-                  : const SizedBox.shrink();
+                  : Padding(
+                    padding: EdgeInsets.symmetric(vertical: height / 4),
+                    child: Center(
+                        child: LoadingAnimationWidget.inkDrop(
+                            color: Colors.white, size: 30),
+                      ),
+                  );
             })
           ],
         ),
