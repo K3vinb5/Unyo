@@ -71,34 +71,43 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
       width: widget.adjustedWidth * 0.4,
       height: widget.adjustedHeight * 0.7,
       child: streamData != null
-          ? SmoothListView(
-              duration: const Duration(milliseconds: 200),
-              children: [
-                ...streamData!.qualities.mapIndexed(
-                  (index, text) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 8.0),
-                    child: SizedBox(
-                      height: 60,
-                      child: ElevatedButton(
-                        style: const ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                            Color.fromARGB(255, 37, 37, 37),
-                          ),
-                          foregroundColor: MaterialStatePropertyAll(
-                            Colors.white,
+          ? streamData!.qualities.isNotEmpty
+              ? SmoothListView(
+                  duration: const Duration(milliseconds: 200),
+                  children: [
+                    ...streamData!.qualities.mapIndexed(
+                      (index, text) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 8.0),
+                        child: SizedBox(
+                          height: 60,
+                          child: ElevatedButton(
+                            style: const ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                Color.fromARGB(255, 37, 37, 37),
+                              ),
+                              foregroundColor: MaterialStatePropertyAll(
+                                Colors.white,
+                              ),
+                            ),
+                            onPressed: () {
+                              onStreamSelected(index);
+                            },
+                            child: Text(text),
                           ),
                         ),
-                        onPressed: () {
-                          onStreamSelected(index);
-                        },
-                        child: Text(text),
                       ),
                     ),
+                  ],
+                )
+              : const Center(
+                  child: Text(
+                    "The source returned no results, please try another source or server/quality D:",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ],
-            )
+                )
           : Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
