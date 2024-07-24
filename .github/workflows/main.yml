@@ -52,11 +52,11 @@ jobs:
         with:
           files: build/linux/x64/release/bundle/Unyo-${{github.ref_name}}-linux.zip
       - name: Copy AppDir
-        run: cp -r assets/Unyo.AppDir .
+        run: cp -r linux-appimage/Unyo.AppDir .
       - name: Copy Compiled App
         run: cp -r build/linux/x64/release/bundle/* Unyo.AppDir/.
       - name: Copy appimagetool
-        run: cp assets/appimagetool.AppImage .
+        run: cp linux-appimage/appimagetool.AppImage .
       - name: Execute appimagetool
         run: ./appimagetool.AppImage Unyo.AppDir Unyo-${{github.ref_name}}-linux.AppImage
       - name: Linux AppImage Release
@@ -64,7 +64,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: /home/runner/work/Unyo/Unyo/Unyo.AppImage
+          files: /home/runner/work/Unyo/Unyo/Unyo-${{github.ref_name}}-linux.AppImage
       - name: Activate flutter_to_debian
         run: dart pub global activate flutter_to_debian
       - name: Add Path
@@ -112,16 +112,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/windows/x64/runner/Release/Unyo-${{github.ref_name}}-windows.zip
-      #- name: Windows .msi Release
-      #  uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
-      # - name: Build Msix
-      #   run: flutter pub run msix:create
-      # - name: Windows Msix Release
-      #   uses: softprops/action-gh-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     files: build/windows/x64/runner/Release/unyo.msix
+      - name: Running installer build
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
+        with:
+          path: .\windows-installer\windows-inno-script.iss
+          options: /O+ /dMyAppVersion=${{github.ref_name}}
+      - name: Windows Exe Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build\windows\x64\runner\unyo-${{github.ref_name}}-windows-setup.exe
 
   build-and-release-macos:
     runs-on: macos-14

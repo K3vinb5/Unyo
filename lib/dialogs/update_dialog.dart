@@ -108,6 +108,7 @@ void showUpdateDialog(BuildContext context) async {
   final String markdown = jsonResponse["body"] as String;
   final String newVersion = jsonResponse["tag_name"] as String;
   if (currentVersion == newVersion) return;
+  if (newVersion.contains("ignore")) return;
   showDialog(
     context: context,
     builder: (context) {
