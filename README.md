@@ -35,6 +35,10 @@ You can download the latest version from the [releases](https://github.com/K3vin
 If you are on **Windows**, you can:
 - Download the .zip, extract it and run the executable "unyo.exe"
 
+If you are on **Mac**, you can:
+- Download the .dmg, and install it just like any other mac application.
+- Download the .zip, extract it and run the .app (Not recommended, use the dmg)
+
 If you are on **Linux**, you can:
 - Download the .zip, extract it and run the executable "unyo"
 - Downlaod the .AppImage, and run it (Recommended option)
@@ -47,31 +51,41 @@ The sources for this app are from a custom made api that uses [Aniyomi](https://
 **English**
 
 - Gogogoanime ✅
-- KickAssAnime ✅
 - Animepahe ❌
 - AllAnime ✅
-- AnimeParadise ✅
+- AnimeParadise (No subtitles) ✅
 - NollyVerse ✅ (Low on content)
 
 **Portuguese**
 
-- AnimesGames ❌
+- Animes CX ✅ (Low on content)
+- Animes Digital ✅
+
+**Spanish**
+
+- AnimeYT ✅
+- AnimeMovil ✅
+- AnimeFenix ✅
 
 **Italian**
 
 - AnimesSaturn ✅
 
+**All (Multiple subtitles and/or audios)**
+
+- KickAssAnime ✅
+  
 ## Known Issues
 
-- Some videos streams don't work, and the app won't give you an error, a bit rare to happen on working extensions.
-- Some banners will cause the app to have weird issues, since coloring is based on the banner, if you experience that, go to versin 0.4.8 or 0.4.9
-- In the details screen the images that scroll will start to panick and scroll too much, this has already been notified and will be fixed as soon as possible (tomorrow most likely - 12/07/2024)
+- On Windows and Mac, opening fullscreen or going back from a video (through the escape button or arrow ont the screen) will cause a crash, this has been addressed and will be fixed on the next release.
 
 ## Contributors
 
 [![](https://contrib.rocks/image?repo=K3vinb5/Unyo)](https://github.com/K3vinb5/Unyo/graphs/contributors)
 
 Contributions are always welcome! If you have any ideas or changes that you want to see in the app, submit a pull request. If you have suggestions or issues, feel free to open a issue!
+
+Because this has happened before, I will explicitry write, Contributing to the project means doing a pull request, not proposing a big project which essentially rebranding my app on another repo under your name :D.
 
 ## License
 
