@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class ChapterButton extends StatelessWidget {
@@ -46,7 +47,7 @@ class ChapterButton extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Chapter $chapterNum",
+                  "${context.tr("chapter")} $chapterNum",
                   style: const TextStyle(
                     color: Colors.white,
                   ),

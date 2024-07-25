@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -39,8 +40,8 @@ class WrongTitleDialog extends StatelessWidget {
               SizedBox(
                 height: height * 0.05,
               ),
-              const Text("Please select new title or search for one",
-                  style: TextStyle(color: Colors.white, fontSize: 22)),
+              Text("select_new_title_text".tr(),
+                  style: const TextStyle(color: Colors.white, fontSize: 22)),
               const SizedBox(
                 height: 30,
               ),
@@ -72,7 +73,7 @@ class WrongTitleDialog extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               StyledButton(
-                text: "Confirm",
+                text: "confirm".tr(),
                 onPressed: onPressed,
               ),
             ],

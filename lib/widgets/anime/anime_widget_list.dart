@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
@@ -125,7 +126,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                               ),
                             ),
                             Text(
-                              "  ${animeList.length.toString()} entries",
+                              "  ${animeList.length.toString()} ${context.tr("entries")}",
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.normal,

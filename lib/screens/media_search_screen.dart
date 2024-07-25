@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:collection/collection.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
@@ -196,7 +197,7 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                 height: 20,
               ),
               Text(
-                "Advanced Search",
+                context.tr("advanced_search"),
                 style: TextStyle(
                   color: veryLightBorderColor,
                   fontWeight: FontWeight.bold,
@@ -224,7 +225,7 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                     },
                     color: veryLightBorderColor,
                     hintColor: Colors.grey,
-                    hint: "Search...",
+                    hint: "search".tr(),
                   ),
                   StyledDropDown(
                     width: totalWidth * 0.22,

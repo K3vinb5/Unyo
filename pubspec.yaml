@@ -64,6 +64,7 @@ dependencies:
   video_player: ^2.8.3
   dropdown_button2: ^2.3.9
   flutter_acrylic: ^1.1.4
+  easy_localization: ^3.0.7
 
 icons_launcher:
   image_path: 'assets/logo.png'
@@ -112,6 +113,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/logo.png
+    - assets/languages/
     # - assets/embedded-api-linux
   #   - images/a_dot_ham.jpeg
 

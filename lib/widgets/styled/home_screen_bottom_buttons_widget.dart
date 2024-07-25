@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
@@ -34,7 +35,7 @@ class HomeScreenBottomButtonsWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               AnimeButton(
-                text: "Anime List",
+                text: context.tr("anime_list"),
                 onTap: () {
                   //animeListScreen
                   goTo(3);
@@ -47,7 +48,7 @@ class HomeScreenBottomButtonsWidget extends StatelessWidget {
                 height: 30,
               ),
               AnimeButton(
-                text: "Manga List",
+                text: context.tr("manga_list"),
                 onTap: () {
                   //mangaListScreen
                   goTo(4);
@@ -60,7 +61,7 @@ class HomeScreenBottomButtonsWidget extends StatelessWidget {
                 height: 30,
               ),
               AnimeButton(
-                text: "Calendar",
+                text: context.tr("calendar"),
                 onTap: () {
                   //calendarScreen
                   goTo(5);
@@ -91,7 +92,7 @@ class HomeScreenBottomButtonsWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Text(
-                        "Episodes Watched: ${episodesWatched ?? -1}",
+                        "${context.tr("episodes_watched")}: ${episodesWatched ?? -1}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 19,
@@ -99,7 +100,7 @@ class HomeScreenBottomButtonsWidget extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Hours Watched: ${(minutesWatched! ~/ 60)}",
+                        "${context.tr("hours_watched")}: ${(minutesWatched! ~/ 60)}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 19,

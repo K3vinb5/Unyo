@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
@@ -56,7 +57,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
       updateEntry: () {
         widget.updateEntry(widget.animeEpisode);
       },
-      title: "${widget.animeName}, Episode ${widget.animeEpisode}",
+      title: "${widget.animeName}, ${"episode".tr()} ${widget.animeEpisode}",
     );
     if (!context.mounted) return;
     Navigator.push(
@@ -100,10 +101,10 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
                     ),
                   ],
                 )
-              : const Center(
+              : Center(
                   child: Text(
-                    "The source returned no results, please try another source or server/quality D:",
-                    style: TextStyle(
+                    "quality_no_results".tr(),
+                    style: const TextStyle(
                       color: Colors.white,
                     ),
                   ),
@@ -118,9 +119,9 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
                 const SizedBox(
                   height: 15,
                 ),
-                const Text(
-                  "Please wait, this can take some seconds...",
-                  style: TextStyle(
+                Text(
+                  "please_wait_text".tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                   ),
                 )

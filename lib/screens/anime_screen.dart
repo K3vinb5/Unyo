@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
@@ -279,7 +280,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                                   controller: quickSearchController,
                                   color: Colors.white,
                                   hintColor: Colors.grey,
-                                  label: "Search...",
+                                  label: context.tr("search"),
                                   labelColor: Colors.white,
                                 ),
                                 const SizedBox(
@@ -290,7 +291,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           ),
                           AnimeWidgetList(
                             tag: "anime-details-list1",
-                            title: "Recently Released",
+                            title: context.tr("recently_released"),
                             animeList: recentlyReleased,
                             textColor: Colors.white,
                             loadMore: true,
@@ -301,7 +302,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           ),
                           AnimeWidgetList(
                             tag: "anime-details-list2",
-                            title: "Trending",
+                            title: context.tr("trending"),
                             animeList: trendingAnimeList,
                             textColor: Colors.white,
                             loadMore: true,
@@ -312,7 +313,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           ),
                           AnimeWidgetList(
                             tag: "anime-details-list3",
-                            title: "Season Popular",
+                            title: context.tr("season_popular"),
                             animeList: seasonPopularAnimeList,
                             textColor: Colors.white,
                             loadMore: true,
@@ -330,7 +331,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
                           ),
                           const SizedBox(height: 20),
                           AnimeButton(
-                            text: "Advanced Search",
+                            text: context.tr("advanced_search"),
                             dontHide: true,
                             onTap: () {
                               // pageTimer.cancel();

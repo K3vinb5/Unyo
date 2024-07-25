@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:flutter/material.dart';
@@ -291,7 +292,7 @@ class _MangaScreenState extends State<MangaScreen> {
                                   controller: quickSearchController,
                                   color: Colors.white,
                                   hintColor: Colors.grey,
-                                  label: "Search...",
+                                  label: context.tr("search"),
                                   labelColor: Colors.white,
                                 ),
                                 const SizedBox(
@@ -302,7 +303,7 @@ class _MangaScreenState extends State<MangaScreen> {
                           ),
                           MangaWidgetList(
                             tag: "manga-details-list2",
-                            title: "Trending",
+                            title: context.tr("trending"),
                             mangaList: trendingMangaList,
                             textColor: Colors.white,
                             loadMore: true,
@@ -313,7 +314,7 @@ class _MangaScreenState extends State<MangaScreen> {
                           ),
                           MangaWidgetList(
                             tag: "manga-details-list3",
-                            title: "Yearly Popular",
+                            title: context.tr("yearly_Popular"),
                             mangaList: seasonPopularMangaList,
                             textColor: Colors.white,
                             loadMore: true,
@@ -332,7 +333,7 @@ class _MangaScreenState extends State<MangaScreen> {
                           const SizedBox(height: 20),
                           AnimeButton(
                             dontHide: true,
-                            text: "Advanced Search",
+                            text: context.tr("advanced_search"),
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const MediaSearchScreen(

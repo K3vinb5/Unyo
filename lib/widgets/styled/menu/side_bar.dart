@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/screens/scaffold_screen.dart';
 import 'package:unyo/util/constants.dart';
@@ -29,7 +30,7 @@ class Sidebar extends StatelessWidget {
             ),
           )),
           ListTile(
-            title: const Text('Home'),
+            title: Text(context.tr('home')),
             leading: const Icon(Icons.home_rounded),
             selected: selectedIndex == 0,
             onTap: () {
@@ -43,7 +44,7 @@ class Sidebar extends StatelessWidget {
             iconColor: Colors.white,
           ),
           ListTile(
-            title: const Text('Anime'),
+            title: Text(context.tr('anime')),
             leading: const Icon(Icons.movie_rounded),
             selected: selectedIndex == 1,
             onTap: () {
@@ -56,7 +57,7 @@ class Sidebar extends StatelessWidget {
             iconColor: Colors.white,
           ),
           ListTile(
-            title: const Text('Manga'),
+            title: Text(context.tr('manga')),
             leading: const Icon(Icons.menu_book_rounded),
             selected: selectedIndex == 2,
             onTap: () {
@@ -69,7 +70,7 @@ class Sidebar extends StatelessWidget {
             iconColor: Colors.white,
           ),
           ListTile(
-            title: const Text('Anime List'),
+            title: Text(context.tr('anime_list')),
             leading: const Icon(Icons.movie_edit),
             selected: selectedIndex == 3,
             onTap: () {
@@ -82,7 +83,7 @@ class Sidebar extends StatelessWidget {
             iconColor: Colors.white,
           ),
           ListTile(
-            title: const Text('Manga List'),
+            title: Text(context.tr('manga_list')),
             leading: const Icon(Icons.edit_note),
             selected: selectedIndex == 4,
             onTap: () {
@@ -95,7 +96,7 @@ class Sidebar extends StatelessWidget {
             iconColor: Colors.white,
           ),
           ListTile(
-            title: const Text('Calendar'),
+            title: Text(context.tr('calendar')),
             leading: const Icon(Icons.calendar_month_rounded),
             selected: selectedIndex == 5,
             onTap: () {

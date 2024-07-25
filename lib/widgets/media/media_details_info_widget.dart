@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/models/models.dart';
@@ -123,7 +124,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
                       openWrongTitleDialog(
                           context, adjustedWidth, adjustedHeight, setState);
                     },
-                    text: "Wrong/No Title?",
+                    text: context.tr("wrong_no_title"),
                   ),
                   const SizedBox(
                     width: 16.0,
@@ -132,7 +133,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
                     onPressed: () {
                       openMediaInfoDialog(context);
                     },
-                    text: "Update Entry",
+                    text: context.tr("update_entry"),
                   ),
                 ],
               ),
@@ -190,7 +191,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
                       color: Colors.grey,
                     ),
                     Text(
-                      " ${(episodes ?? currentEpisode)} ${currentAnime != null ? "Episodes" : "Chapters"}",
+                      " ${(episodes ?? currentEpisode)} ${currentAnime != null ? context.tr("episodes") : context.tr("chapters")}",
                       style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
 import 'package:unyo/models/models.dart';
@@ -97,7 +98,7 @@ class EpisodeButton extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Episode $episodeNumber",
+                              "${context.tr("episode")} $episodeNumber",
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -132,8 +133,8 @@ class EpisodeButton extends StatelessWidget {
                       ),
                       Text(
                         latestEpisode >= episodeNumber
-                            ? "Released"
-                            : "Not yet released",
+                            ? context.tr("released")
+                            : context.tr("not_yet_released"),
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: latestEpisode >= episodeNumber

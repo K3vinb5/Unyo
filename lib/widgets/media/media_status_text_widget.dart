@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class MediaStatusTextWidget extends StatelessWidget {
@@ -9,10 +10,10 @@ class MediaStatusTextWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       status == "RELEASING"
-          ? " Releasing"
+          ? " ${context.tr("releasing")}"
           : status == "NOT_YET_RELEASED"
-              ? " Unreleased"
-              : " Finished",
+              ? " ${context.tr("unreleased")}"
+              : " ${context.tr("finished")}",
       style: TextStyle(
         color: status == "RELEASING"
             ? Colors.green

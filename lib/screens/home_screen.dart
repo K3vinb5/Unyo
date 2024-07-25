@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:process_run/shell.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
@@ -520,7 +521,8 @@ class _HomeScreenState
                             watchingList != null
                                 ? AnimeWidgetList(
                                     tag: "home-details-list1",
-                                    title: "Continue Watching",
+                                    title: context.tr("continue_watching"),
+
                                     animeList: watchingList!,
                                     textColor: Colors.white,
                                     loadMore: false,
@@ -534,7 +536,7 @@ class _HomeScreenState
                             readingList != null
                                 ? MangaWidgetList(
                                     tag: "home-details-list2",
-                                    title: "Continue Reading",
+                                    title: context.tr("continue_reading"),
                                     mangaList: readingList!,
                                     textColor: Colors.white,
                                     loadMore: false,

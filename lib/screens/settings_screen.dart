@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/util/utils.dart';
@@ -13,34 +14,18 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   int themesCurrentOption = 0;
   int langCurrentOption = 0;
-  List<String> langs = [
-    "English",
-    "Portuguese",
-    // "French",
-    // "Spanish",
-    // "Italian",
-    // "German",
-    // "Polish",
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    initPrefs();
-  }
-
-  void initPrefs() async {
-    themesCurrentOption = prefs.getInt("themes") ?? 0;
-    langCurrentOption = langs.indexOf(prefs.getString("lang") ?? "English");
-  }
-
-  void selectNewTheme(int index) {
-    prefs.setInt("themes", index);
-  }
-
-  void selectNewLanguage(int lang) {
-    prefs.setString("lang", langs[lang]);
-  }
+  Map<String, String> langs = { 
+    "en" : "English",
+    "pt" : "Portuguese",
+    "fr" : "French",
+    "es" : "Spanish",
+    "it" : "Italian",
+    "de" : "German",
+    // "po" : "Polish",
+    "ru" : "Russian",
+    // "zh-cn" : "Chinese (Traditional)",
+    // "zh-hk" : "Chinese (Simplified)"
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +48,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const WindowBarButtons(startIgnoreWidth: 50),
                 ],
               ),
-              const Text(
-                "Settings",
-                style: TextStyle(
+              Text(
+                context.tr("settings"),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 27,
                   fontWeight: FontWeight.bold,
@@ -79,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   SettingsSwitchOptionWidget(
-                    title: "Update progress automatically",
+                    title: context.tr("update_progress_automatically"),
                     onPressed: (bool newValue) {
                       setState(() {
                         prefs.setBool(
@@ -90,7 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         false),
                   ),
                   SettingsSwitchOptionWidget(
-                    title: "Buttons Layout / Menu Layout",
+                    title: context.tr("buttons_layout_menu_layout"),
                     onPressed: (bool newValue) {
                       setState(() {
                         buttonsLayout = newValue;
@@ -101,10 +86,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: (prefs.getBool("buttons_layout") ?? false),
                   ),
                   SettingsDropdownOptionWidget(
-                    title: "Select Language (Still doesn't work)",
+                    title: context.tr("select_language"),
                     width: 150,
-                    onPressed: (int something) {},
-                    items: langs
+                    value: prefs.getInt("lang") ?? 0,
+                    onPressed: (int selected) {
+                      prefs.setInt("lang", selected);
+                      context.setLocale(Locale(langs.keys.toList()[selected]));
+                      print(langs.keys.toList()[selected]);
+                      print(context.locale.toString());
+                      // isScreenRefreshed.clear();
+                    },
+                    items: langs.values
                         .map(
                           (lang) => Text(
                             lang,
@@ -114,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         .toList(),
                   ),
                   SettingsSwitchOptionWidget(
-                    title: "Display video duration / Display remaining time",
+                    title: context.tr("video_duration_remaining_time"),
                     onPressed: (bool newValue) {
                       setState(() {
                         prefs.setBool("display_video_duration", newValue);
@@ -123,7 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: (prefs.getBool("display_video_duration") ?? false),
                   ),
                   SettingsDropdownOptionWidget(
-                    title: "Select Theme",
+                    title: context.tr("select_theme"),
                     width: 150,
                     value: prefs.getInt("theme") ?? 0,
                     onPressed: (int selected) async {

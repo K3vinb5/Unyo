@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -203,7 +204,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "${userName != null ? "$userName's" : ""} Manga List",
+                          "${userName != null ? "$userName's" : ""} ${context.tr("manga_list")}",
                           style: TextStyle(
                             color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,

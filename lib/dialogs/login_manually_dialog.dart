@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -79,9 +80,9 @@ class LoginManuallyDialog extends StatelessWidget {
                           backgroundColor:
                               MaterialStatePropertyAll(Colors.black12),
                         ),
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(color: Colors.white),
+                        child: Text(
+                          "cancel".tr(),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                       const SizedBox(
@@ -93,9 +94,9 @@ class LoginManuallyDialog extends StatelessWidget {
                           backgroundColor:
                               MaterialStatePropertyAll(Colors.black12),
                         ),
-                        child: const Text(
-                          "Confirm",
-                          style: TextStyle(color: Colors.white),
+                        child: Text(
+                          "confirm".tr(),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                     ],

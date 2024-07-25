@@ -72,7 +72,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
     if (startedWrongTitleDialog) {
-      oldWrongTitleSearch = searches[0];
+      oldWrongTitleSearch = searches.isNotEmpty ? searches[0] : "";
       startedWrongTitleDialog = false;
     }
     //reset listener

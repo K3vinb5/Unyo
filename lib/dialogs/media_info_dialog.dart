@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -86,9 +87,9 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             mainAxisSize: MainAxisSize.max,
             children: [
-              const Text(
-                "Status",
-                style: TextStyle(color: Colors.white),
+              Text(
+                "status".tr(),
+                style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(
                 height: 10,
@@ -110,9 +111,9 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
               const SizedBox(
                 height: 15,
               ),
-              const Text(
-                "Progress",
-                style: TextStyle(color: Colors.white),
+              Text(
+                "progress".tr(),
+                style: const TextStyle(color: Colors.white),
               ),
               Row(
                 children: [
@@ -145,9 +146,9 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
               const SizedBox(
                 height: 15,
               ),
-              const Text(
-                "Score",
-                style: TextStyle(color: Colors.white),
+              Text(
+                context.tr("score"),
+                style: const TextStyle(color: Colors.white),
               ),
               Row(
                 children: [
@@ -178,9 +179,9 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
               const SizedBox(
                 height: 15,
               ),
-              const Text(
-                "Start / End Date",
-                style: TextStyle(color: Colors.white),
+              Text(
+                "start_end_data".tr(),
+                style: const TextStyle(color: Colors.white),
               ),
               Row(
                 children: [
@@ -277,7 +278,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                             );
                             Navigator.of(context).pop();
                           },
-                          child: const Text("Confirm"),
+                          child: Text("confirm".tr()),
                         ),
                         const SizedBox(
                           width: 20,
@@ -294,7 +295,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text("Cancel"),
+                          child: Text("cancel".tr()),
                         ),
                       ],
                     ),

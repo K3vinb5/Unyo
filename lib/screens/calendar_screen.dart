@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
@@ -207,7 +208,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "Animes Calendar",
+                          "${context.tr("anime")} ${context.tr("calendar")}",
                           style: TextStyle(
                             color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,
@@ -244,47 +245,47 @@ class _CalendarScreenState extends State<CalendarScreen>
               unselectedLabelColor: Colors.grey,
               isScrollable: true,
               controller: tabContrller,
-              tabs: const [
+              tabs: [
                 SizedBox(
                   width: 200,
                   child: Tab(
-                    text: "Monday",
+                    text: context.tr("monday"),
                   ),
                 ),
                 SizedBox(
                   width: 200,
                   child: Tab(
-                    text: "Tuesday",
+                    text: context.tr("tuesday"),
                   ),
                 ),
                 SizedBox(
                   width: 200,
                   child: Tab(
-                    text: "Wednesday",
+                    text: context.tr("wednesday"),
                   ),
                 ),
                 SizedBox(
                   width: 200,
                   child: Tab(
-                    text: "Thursday",
+                    text: context.tr("thursday"),
                   ),
                 ),
                 SizedBox(
                   width: 200,
                   child: Tab(
-                    text: "Friday",
+                    text: context.tr("friday"),
                   ),
                 ),
                 SizedBox(
                   width: 200,
                   child: Tab(
-                    text: "Saturday",
+                    text: context.tr("saturday"),
                   ),
                 ),
                 SizedBox(
                   width: 200,
                   child: Tab(
-                    text: "Sunday",
+                    text: context.tr("sunday"),
                   ),
                 ),
               ],
