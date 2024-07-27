@@ -44,6 +44,8 @@ If you are on **Linux**, you can:
 - Downlaod the .AppImage, and run it (Recommended option)
 - Download the .deb, and install the package by running "sudo apt install ./package_name.deb" (Debian based distros only)
 
+It is important when setting up Unyo that your Anilist profile is set to either public or semi-public. Currently Unyo won't be able to pull your anime and manga lists, if you have your account set to private.
+
 ## Available Sources
 
 The sources for this app are from a custom made api that uses [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, this means that if you wish to have a source added you can open a issue saying the name of the extension and I'll try to integrate it. Note that because the orinal project was for android I had to translate a lot of the codebase to work on pc, this means that not all extensions will be working (most likely a skill issue to be honest -_-)
