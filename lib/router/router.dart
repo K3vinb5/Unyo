@@ -16,6 +16,8 @@ final GlobalKey<NavigatorState> _userMangaListScreen =
     GlobalKey<NavigatorState>(debugLabel: 'userMangaList');
 final GlobalKey<NavigatorState> _calendarScreen =
     GlobalKey<NavigatorState>(debugLabel: 'calendarScreen');
+final GlobalKey<NavigatorState> _localExtensionsScreen =
+    GlobalKey<NavigatorState>(debugLabel: 'localExtensinosScreen');
 
 final GoRouter router = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -91,8 +93,17 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
+        StatefulShellBranch(
+          navigatorKey: _localExtensionsScreen,
+          routes: <RouteBase>[
+            GoRoute(
+              path: '/localExtensionsScreen',
+              builder: (BuildContext context, GoRouterState state) =>
+                  const LocalExtensionsScreen(),
+            ),
+          ],
+        ),
       ],
     ),
   ],
 );
-

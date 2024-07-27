@@ -2,9 +2,10 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/window.dart';
-import 'package:unyo/sources/anime/util/embedded_extensions.dart';
 import 'package:unyo/router/router.dart';
 import 'package:fvp/fvp.dart' as fvp;
+import 'package:unyo/util/utils.dart';
+import 'package:flutter_window_close/flutter_window_close.dart';
 
 Future<void> main() async {
   //needed for video player on desktop!!
@@ -54,7 +55,17 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    addEmbeddedAniyomiExtensions();
+    FlutterWindowClose.setWindowShouldCloseHandler(() async {
+      processManager.stopProcess();
+      print("Killed internal server");
+      return true;
+    });
+  }
+
+  @override
+  void dispose() {
+    processManager.stopProcess();
+    super.dispose();
   }
 
   @override

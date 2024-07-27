@@ -12,3 +12,4 @@ export 'anime_user_lists_screen.dart';
 export 'manga_user_lists_screen.dart';
 export 'calendar_screen.dart';
 export 'settings_screen.dart';
+export 'local_extensions.dart';

@@ -27,7 +27,6 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
   void initState() {
     super.initState();
     publicNavigationShell = widget.navigationShell;
-
     goTo = (index) {
       publicNavigationShell.goBranch(index);
       changeScreen(navIndex, index);
@@ -65,8 +64,6 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
           refreshMangaUserListScreenState(() {});
           isScreenRefreshed.add(to);
         }
-        break;
-      case 5:
         break;
       default:
     }
@@ -111,6 +108,13 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
         }
         break;
       case 5:
+        if (from == 0) {
+          pauseAnimePageTimer();
+        } else if (from == 2) {
+          pauseMangaPageTimer();
+        }
+        break;
+      case 6:
         if (from == 0) {
           pauseAnimePageTimer();
         } else if (from == 2) {

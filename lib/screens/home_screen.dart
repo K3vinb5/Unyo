@@ -1,6 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/services.dart';
-import 'package:process_run/shell.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -14,6 +12,7 @@ import 'package:unyo/dialogs/update_dialog.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
+import 'package:unyo/sources/sources.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
@@ -42,8 +41,6 @@ class _HomeScreenState
   Map<String, Map<String, double>>? userStats;
   int? episodesWatched;
   int? minutesWatched;
-  bool isShiftKeyPressed = false;
-  Shell shell = Shell();
 
   Future<void> _startServer() async {
     handler(shelf.Request request) async {
@@ -75,7 +72,7 @@ class _HomeScreenState
 
   void setSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
-    // startEmbeddedServer();
+    startExtensions();
     if (prefs.getString("accessToken") == null) {
       _startServer();
       goToLogin();
@@ -85,23 +82,6 @@ class _HomeScreenState
       userId = prefs.getInt("userId");
       getUserInfo();
     }
-  }
-
-  bool _handleKeyEvent(KeyEvent event) {
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
-      setState(() {
-        isShiftKeyPressed = true;
-      });
-      return true;
-    } else if (event is KeyUpEvent &&
-        event.logicalKey == LogicalKeyboardKey.shiftLeft) {
-      setState(() {
-        isShiftKeyPressed = false;
-      });
-      return true;
-    }
-    return false;
   }
 
   void goToLogin() {
@@ -117,11 +97,17 @@ class _HomeScreenState
   @override
   void initState() {
     super.initState();
-    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
     setSharedPreferences();
     updateHomeScreenLists = () {
       updateUserLists();
     };
+  }
+
+  void startExtensions() {
+    if (prefs.getBool("remote_endpoint") ?? false) {
+      processManager.startProcess();
+    }
+    addEmbeddedAniyomiExtensions();
   }
 
   void getUserInfo() async {
@@ -302,7 +288,6 @@ class _HomeScreenState
                   : SmoothListView(
                       scrollDirection: Axis.vertical,
                       duration: const Duration(milliseconds: 200),
-                      shouldScroll: !isShiftKeyPressed,
                       children: [
                         Column(
                           children: [
@@ -522,7 +507,6 @@ class _HomeScreenState
                                 ? AnimeWidgetList(
                                     tag: "home-details-list1",
                                     title: context.tr("continue_watching"),
-
                                     animeList: watchingList!,
                                     textColor: Colors.white,
                                     loadMore: false,

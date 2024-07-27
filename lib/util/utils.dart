@@ -7,3 +7,4 @@ export 'data/stream_data.dart';
 export 'data/search_data.dart';
 export 'constants.dart';
 export 'settings/vars.dart';
+export 'processes/process_manager.dart';

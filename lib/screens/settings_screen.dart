@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
+import 'package:unyo/sources/sources.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -14,15 +15,15 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   int themesCurrentOption = 0;
   int langCurrentOption = 0;
-  Map<String, String> langs = { 
-    "en" : "English",
-    "pt" : "Portuguese",
-    "fr" : "French",
-    "es" : "Spanish",
-    "it" : "Italian",
-    "de" : "German",
+  Map<String, String> langs = {
+    "en": "English",
+    "pt": "Portuguese",
+    "fr": "French",
+    "es": "Spanish",
+    "it": "Italian",
+    "de": "German",
     // "po" : "Polish",
-    "ru" : "Russian",
+    "ru": "Russian",
     // "zh-cn" : "Chinese (Traditional)",
     // "zh-hk" : "Chinese (Simplified)"
   };
@@ -131,6 +132,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         )
                         .toList(),
+                  ),
+                  SettingsSwitchOptionWidget(
+                    title: context.tr("remote_endpoint"),
+                    onPressed: (bool newValue) async {
+                      setState(() {
+                        prefs.setBool("remote_endpoint", newValue);
+                      });
+                      if (newValue) {
+                        processManager.startProcess();
+                      } else {
+                        processManager.stopProcess();
+
+                        addEmbeddedAniyomiExtensions();
+                      }
+                    },
+                    value: (prefs.getBool("remote_endpoint") ?? false),
                   ),
                 ],
               ),

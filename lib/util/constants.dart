@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/util/utils.dart';
 
 String? accessToken;
 String? refreshToken;
@@ -14,6 +15,17 @@ Color darkBorderColor = Colors.black;
 String? bannerImageUrl;
 List<Color> colorList = [];
 List<int> isScreenRefreshed = [0, 1, 2, 3, 4, 5];
+final ProcessManager processManager = ProcessManager();
+String remoteEndPoint = "https://kevin-is-awesome.mooo.com/api";
+String localEndPoint = "http://localhost:8084";
+
+String getEndpoint() {
+  if (prefs.getBool("remote_endpoint") ?? false) {
+    return localEndPoint;
+  } else {
+    return remoteEndPoint;
+  }
+}
 
 Map<String, Map<String, Color>?> themes = {
   "Default (Banner)": null,

@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   bitsdojo_window_windows
   desktop_keep_screen_on
   flutter_acrylic
+  flutter_window_close
   fvp
   url_launcher_windows
 )

@@ -10,12 +10,11 @@ class EmbeddedSource implements AnimeSource {
 
   final String source;
   final String name;
-  final String embeddedServerEndPoint = "https://kevin-is-awesome.mooo.com/api";
 
   @override
   Future<StreamData> getAnimeStreamAndCaptions(
       String id, int episode, BuildContext context) async {
-    var urlStream = Uri.parse("$embeddedServerEndPoint/unyo/streamAndCaptions");
+    var urlStream = Uri.parse("${getEndpoint()}/unyo/streamAndCaptions");
     Map<String, dynamic> requestBody = {
       "source": source,
       "id": id,
@@ -53,47 +52,39 @@ class EmbeddedSource implements AnimeSource {
             .toList()
         : null;
 
-    List<dynamic>? headersKeys = jsonResponse["headersKeys"] != "null"
+    List<dynamic>? headersKeysResponse = jsonResponse["headersKeys"] != "null"
         ? jsonResponse["headersKeys"]
         : null;
-    List<dynamic>? headersValues = jsonResponse["headersNames"] != "null"
+    List<dynamic>? headersValuesResponse = jsonResponse["headersNames"] != "null"
         ? jsonResponse["headersNames"]
         : null;
     //Not sure about the inner strings conversion, might need to manually cast
-    List<List<String>> headersKeysProcessed = [];
-    List<List<String>> headersValuesProcessed = [];
-    if (headersKeys != null) {
-      for (var headersKey in headersKeys) {
-        headersKeysProcessed.add(
+    List<List<String>> headersKeys = [];
+    List<List<String>> headersValues = [];
+    if (headersKeysResponse != null) {
+      for (var headersKey in headersKeysResponse) {
+        headersKeys.add(
             (headersKey as List<dynamic>).map((e) => e as String).toList());
       }
-      for (var headersValue in headersValues!) {
-        headersValuesProcessed.add(
+      for (var headersValue in headersValuesResponse!) {
+        headersValues.add(
             (headersValue as List<dynamic>).map((e) => e as String).toList());
       }
     }
-// return [
-//       streams.map((e) => e as String).toList(),
-//       captions?.map((e) => e as String).toList(),
-//       headersKeysProcessed,
-//       headersValuesProcessed,
-//       qualities.map((e) => e as String).toList(),
-//       subtracks?.map((e) => e as String).toList(),
-//     ];
     return StreamData(
       streams: streams.map((e) => e as String).toList(),
       qualities: qualities.map((e) => e as String).toList(),
       captions: captions,
       tracks: tracks,
-      headersKeys: headersKeysProcessed,
-      headersValues: headersValuesProcessed,
+      headersKeys: headersKeys,
+      headersValues: headersValues,
     );
   }
 
   @override
   Future<List<List<String>>> getAnimeTitlesAndIds(String query) async {
     var urlStream = Uri.parse(
-        "$embeddedServerEndPoint/unyo/titleAndIds?source=$source&query=$query");
+        "${getEndpoint()}/unyo/titleAndIds?source=$source&query=$query");
     var response = await http.get(urlStream);
 
     if (response.statusCode != 200) {

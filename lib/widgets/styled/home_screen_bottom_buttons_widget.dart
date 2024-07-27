@@ -73,6 +73,19 @@ class HomeScreenBottomButtonsWidget extends StatelessWidget {
               const SizedBox(
                 height: 30,
               ),
+              AnimeButton(
+                text: context.tr("extensions"),
+                onTap: () {
+                  //calendarScreen
+                  goTo(6);
+                },
+                width: adjustedWidth,
+                height: adjustedHeight,
+                horizontalAllignment: false,
+              ),
+              const SizedBox(
+                height: 30,
+              ),
             ],
           ),
         ),

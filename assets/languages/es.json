@@ -58,5 +58,6 @@
   "released": "Lanzado",
   "episode": "Episodio",
   "chapter": "Capítulo",
-  "settings": "Configuraciones"
+  "settings": "Configuraciones",
+  "remote_endpoint": "Extensiones remotas / Extensiones locales"
 }

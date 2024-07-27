@@ -38,7 +38,6 @@ class _MangaScreenState extends State<MangaScreen> {
   double totalHeight = 0;
   ScrollController pageScrollController = ScrollController();
   TextEditingController quickSearchController = TextEditingController();
-  bool isShiftKeyPressed = false;
 
   @override
   void initState() {
@@ -241,7 +240,6 @@ class _MangaScreenState extends State<MangaScreen> {
                   SmoothListView(
                     controller: pageScrollController,
                     duration: const Duration(milliseconds: 200),
-                    shouldScroll: !isShiftKeyPressed,
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,

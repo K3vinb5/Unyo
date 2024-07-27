@@ -108,6 +108,20 @@ class Sidebar extends StatelessWidget {
             selectedColor: lightBorderColor,
             iconColor: Colors.white,
           ),
+          ListTile(
+            title: Text(context.tr('extensions')),
+            leading: const Icon(Icons.extension),
+            selected: selectedIndex == 6,
+            onTap: () {
+              selectIndex(6);
+              goTo(6);
+              Navigator.of(context).pop();
+            },
+            // focusColor: lightBorderColor,
+            textColor: Colors.white,
+            selectedColor: lightBorderColor,
+            iconColor: Colors.white,
+          ),
         ],
       ),
     );

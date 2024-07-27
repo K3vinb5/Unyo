@@ -37,7 +37,6 @@ class _AnimeScreenState extends State<AnimeScreen> {
   double totalWidth = 0;
   double totalHeight = 0;
   ScrollController pageScrollController = ScrollController();
-  bool isShiftKeyPressed = false;
   TextEditingController quickSearchController = TextEditingController();
 
   @override
@@ -233,7 +232,6 @@ class _AnimeScreenState extends State<AnimeScreen> {
                   SmoothListView(
                     controller: pageScrollController,
                     duration: const Duration(milliseconds: 200),
-                    shouldScroll: !isShiftKeyPressed,
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,
