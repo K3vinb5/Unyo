@@ -8,27 +8,32 @@ import 'package:unyo/sources/sources.dart';
 class ProcessManager {
   Process? _process;
   String? _jarPath;
-  final List<String> outputHistory = [];
-  int _totalCharacters = 0;
-  final int _maxCharacters = 5000; // Maximum character limit
+  late Directory supportDirectoryPath;
+  final List<Map<bool, String>> outputHistory = [];
+  int _totalWords = 0;
+  final int _maxCharacters = 100; // Maximum character limit
 
   Future<void> _extractJar() async {
+
+    supportDirectoryPath = await getApplicationSupportDirectory();
+    final jarFile = File('${supportDirectoryPath.path}/extensions.jar');
+
+    if (await jarFile.exists()) {
+      _jarPath = jarFile.path;
+      return;
+    }
+    // if ((await appSupportDir.list().toList())
+    //     .map((e) => e.path)
+    //     .toList()
+    //     .contains("extensions.jar")) {
+    //   return;
+    // }
     final byteData = await rootBundle.load('assets/extensions.jar');
     final buffer = byteData.buffer;
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/extensions.jar');
+    final file = File('${supportDirectoryPath.path}/extensions.jar');
     await file.writeAsBytes(
         buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
     _jarPath = file.path;
-    // final tempDir = await getTemporaryDirectory();
-    // final jarFile = File('${tempDir.path}/extensions.jar');
-    //
-    // if (!await jarFile.exists()) {
-    //   final byteData = await rootBundle.load('assets/extensions.jar');
-    //   final buffer = byteData.buffer;
-    //   await jarFile.writeAsBytes(
-    //       buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-    // }
   }
 
   Future<void> startProcess() async {
@@ -41,50 +46,51 @@ class ProcessManager {
     }
 
     try {
-      _process = await Process.start(
-        'java',
-        ['-jar', _jarPath!],
-        mode: ProcessStartMode.normal
-      );
+      _process = await Process.start('java', ['-jar', _jarPath!, supportDirectoryPath.path],
+          mode: ProcessStartMode.normal);
 
       _process?.stdout.transform(utf8.decoder).listen((data) {
         // print(data);
-        _addOutput(data);
+        _addOutput(data, false);
       });
 
       _process?.stderr.transform(utf8.decoder).listen((data) {
         // print('ERROR: $data');
-        _addOutput('ERROR: $data');
+        _addOutput('ERROR: $data', true);
       });
 
       _process?.exitCode.then((exitCode) {
-        _addOutput('Process exited with code $exitCode');
+        _addOutput('Process exited with code $exitCode', true);
         _process = null;
       });
-      
+
       addEmbeddedAniyomiExtensions();
     } catch (e) {
-      print('Failed to start process: $e');
+      // print('Failed to start process: $e');
+      _addOutput('Failed to start process: $e', true);
     }
   }
 
   void stopProcess() {
     if (_process != null) {
-      print("Killed process");
+      _addOutput("Killed process Successfully", false);
       _process!.kill();
       _process = null;
     }
   }
 
-  void _addOutput(String data) {
+  void _addOutput(String data, bool isError) {
     // Add new data to the output history
-    outputHistory.add(data);
-    _totalCharacters += data.length;
+    if (data.contains("Exception") || data.contains("exception")){
+      isError = true;
+    }
+    outputHistory.add({isError: data});
+    _totalWords ++;
 
-    // Ensure the total characters do not exceed the limit
-    while (_totalCharacters > _maxCharacters) {
-      final removedData = outputHistory.removeAt(0);
-      _totalCharacters -= removedData.length;
+    // Ensure the total words do not exceed the limit
+    while (_totalWords > _maxCharacters) {
+      outputHistory.removeAt(0);
+      _totalWords --;
     }
   }
 }

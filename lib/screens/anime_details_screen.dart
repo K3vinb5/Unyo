@@ -131,7 +131,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     List<List<String>> newSearchesAndIds =
         await getIds(query ?? widget.currentAnime.title!);
     int newCurrentEpisode = widget.currentAnime.status == "RELEASING"
-        ? await getAnimeCurrentEpisode(widget.currentAnime.id)
+        ? await getAnimeCurrentEpisode(widget.currentAnime.id, 0)
         : widget.currentAnime.episodes!;
     if (setDialogState != null) {
       setState(() {

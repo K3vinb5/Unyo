@@ -26,9 +26,10 @@ Future<List<MangaModel>> getMangaModelListTrending(
   );
   if (response.statusCode == 500) {
     if (attempt < 5) {
-      List<MangaModel> returnList =
-          await getMangaModelListTrending(page, n, attempt++);
-      return returnList;
+      print("mangaModelListTrending : $attempt - failure");
+      await Future.delayed(const Duration(milliseconds: 200));
+      int newAttempt = attempt + 1;
+      return await getMangaModelListTrending(page, n, newAttempt);
     }
     return [];
   } else {
@@ -80,9 +81,10 @@ Future<List<MangaModel>> getMangaModelListYearlyPopular(
   );
   if (response.statusCode == 500) {
     if (attempt < 5) {
-      List<MangaModel> returnList =
-          await getMangaModelListRecentlyReleased(page, year, attempt++);
-      return returnList;
+      print("mangaModelListYearlyPopular : $attempt - failure");
+      await Future.delayed(const Duration(milliseconds: 200));
+      int newAttempt = attempt + 1;
+      return await getMangaModelListRecentlyReleased(page, year, newAttempt);
     }
     return [];
   } else {
@@ -129,9 +131,10 @@ Future<List<MangaModel>> getMangaModelListRecentlyReleased(
   );
   if (response.statusCode == 500) {
     if (attempt < 5) {
-      List<MangaModel> returnList =
-          await getMangaModelListRecentlyReleased(page, n, attempt++);
-      return returnList;
+      print("mangaModelListRecentlyReleased : $attempt - failure");
+      await Future.delayed(const Duration(milliseconds: 200));
+      int newAttempt = attempt + 1;
+      return await getMangaModelListRecentlyReleased(page, n, newAttempt);
     }
     return [];
   } else {
@@ -186,12 +189,13 @@ Future<List<MangaModel>> getUserMangaLists(
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
+  if (response.statusCode != 200) {
     print(response.body);
     if (attempt < 5) {
-      List<MangaModel> returnList =
-          await getUserMangaLists(userId, listName, attempt++);
-      return returnList;
+      print("userMangaLists : $attempt - failure");
+      await Future.delayed(const Duration(milliseconds: 200));
+      int newAttempt = attempt + 1;
+      return await getUserMangaLists(userId, listName, newAttempt);
     }
     return [];
   }
@@ -245,12 +249,13 @@ Future<Map<String, List<MangaModel>>> getAllUserMangaLists(
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
+  if (response.statusCode != 200) {
     print(response.body);
     if (attempt < 5) {
-      Map<String, List<MangaModel>> returnList =
-          await getAllUserMangaLists(userId, attempt++);
-      return returnList;
+      print("allUserMangaLists : $attempt - failure");
+      await Future.delayed(const Duration(milliseconds: 200));
+      int newAttempt = attempt + 1;
+      return await getAllUserMangaLists(userId, newAttempt);
     }
     //NOTE empry Map
     return {};
@@ -292,22 +297,6 @@ Future<Map<String, List<MangaModel>>> getAllUserMangaLists(
   return userMangaListsMap;
 }
 
-// Future<int> getMangaCurrentChapter(int mediaId) async{
-//   var url = Uri.parse(anilistEndpoint);
-//   Map<String, dynamic> query = {
-//     "query": "query{ Media(mediaId: $mediaId){ chapters } }",
-//   };
-//   var response = await http.post(
-//     url,
-//     headers: {
-//       "Content-Type": "application/json",
-//       "Accept": "application/json",
-//     },
-//     body: json.encode(query),
-//   );
-//   Map<String, dynamic> jsonResponse = json.decode(response.body);
-//   return jsonResponse["data"]["AiringSchedule"]["episode"];
-// }
 Future<UserMediaModel> getUserMangaInfo(int mediaId, int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
@@ -322,9 +311,12 @@ Future<UserMediaModel> getUserMangaInfo(int mediaId, int attempt) async {
     },
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
+  if (response.statusCode != 200) {
     if (attempt < 5) {
-      return getUserMangaInfo(mediaId, attempt++);
+      print("userMangaInfo : $attempt - failure");
+      await Future.delayed(const Duration(milliseconds: 200));
+      int newAttempt = attempt + 1;
+      return getUserMangaInfo(mediaId, newAttempt);
     }
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);

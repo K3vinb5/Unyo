@@ -28,9 +28,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState
     extends State<HomeScreen> /*with WidgetsBindingObserver*/ {
-  String? avatarImageUrl;
-  String? userName;
-  int? userId;
   late HttpServer server;
   List<AnimeModel>? watchingList;
   List<MangaModel>? readingList;
@@ -49,7 +46,7 @@ class _HomeScreenState
         receivedValid = true;
         accessCode = request.requestedUri.queryParameters['code'];
         //print('Access Code: $accessCode');
-        List<String> codes = await getUserAccessToken(accessCode!);
+        List<String> codes = await getUserAccessToken(accessCode!, 0);
         accessToken = codes[0];
         refreshToken = codes[1];
         //print("AccessToken: $accessToken");
@@ -112,7 +109,7 @@ class _HomeScreenState
 
   void getUserInfo() async {
     if (userName == null || userId == null) {
-      List<String> userNameAndId = await getUserNameAndId(accessToken!);
+      List<String> userNameAndId = await getUserNameAndId(accessToken!, 0);
       userName = userNameAndId[0];
       userId = int.parse(userNameAndId[1]);
       await prefs.setString("userName", userName!);

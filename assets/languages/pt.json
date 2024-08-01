@@ -59,5 +59,7 @@
   "episode": "Episódio",
   "chapter": "Capítulo",
   "settings": "Configurações",
-  "remote_endpoint": "Extensões remotas / Extensões locais"
+  "remote_endpoint": "Extensões remotas / Extensões locais",
+  "extensions" : "Extensões Locais",
+  "console" : "Consola"
 }

@@ -25,7 +25,6 @@ addEmbeddedAniyomiExtensions() async {
     int sourcesLenght = globalAnimesSources.length;
     for (var source in sources) {
       String name = await getSourceNameAndLangAsync(source);
-      print("name: $name - ${getEndpoint()}");
       globalAnimesSources.addAll({
         sourcesLenght: EmbeddedSource(source: source as String, name: name)
       });

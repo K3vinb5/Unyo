@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 const String anilistEndpoint = "https://graphql.anilist.co";
 const String anilistEndPointGetToken =
     "https://anilist.co/api/v2/oauth/authorize?client_id=17550&response_type=token";
+const int maxAttempts = 5;
 
 Future<List<AnimeModel>> getAnimeModelListTrending(
     int page, int n, int attempt) async {
@@ -27,11 +28,12 @@ Future<List<AnimeModel>> getAnimeModelListTrending(
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
-    if (attempt < 5) {
-      List<AnimeModel> returnList =
-          await getAnimeModelListRecentlyReleased(page, n, attempt++);
-      return returnList;
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("Trending list: $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return await getAnimeModelListRecentlyReleased(page, n, newAttempt);
     }
     return [];
   } else {
@@ -74,11 +76,12 @@ Future<List<AnimeModel>> getAnimeModelListRecentlyReleased(
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
-    if (attempt < 5) {
-      List<AnimeModel> returnList =
-          await getAnimeModelListRecentlyReleased(page, n, attempt++);
-      return returnList;
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("Recently released: $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return await getAnimeModelListRecentlyReleased(page, n, newAttempt);
     }
     return [];
   } else {
@@ -136,11 +139,12 @@ Future<List<AnimeModel>> getAnimeModelListSeasonPopular(
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
-    if (attempt < 5) {
-      List<AnimeModel> returnList =
-          await getAnimeModelListRecentlyReleased(page, n, attempt++);
-      return returnList;
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("Season Popular: $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return await getAnimeModelListRecentlyReleased(page, n, newAttempt);
     }
     return [];
   } else {
@@ -235,7 +239,7 @@ Future<String> getRandomAnimeBanner(int attempt) async {
     "query":
         "query(\$page:Int, \$perPage:Int){ Page(page: \$page, perPage: \$perPage) { media(type: ANIME) { bannerImage } } }",
     "variables": {
-      "peraPage": 50,
+      "perPage": 50,
       "page": Random().nextInt(395),
     }
   };
@@ -245,25 +249,26 @@ Future<String> getRandomAnimeBanner(int attempt) async {
     body: json.encode(query),
   );
   int index = Random().nextInt(50);
-  while (attempt < 10) {
-    Map<String, dynamic> jsonResponse = json.decode(response.body);
-    if (response.statusCode == 500) {
-      attempt++;
-      continue;
+  Map<String, dynamic> jsonResponse = json.decode(response.body);
+  if (attempt < maxAttempts) {
+    if (response.statusCode != 200) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      print("Random anime banner: $attempt - failure");
+      int newAttempt = attempt + 1;
+      return getRandomAnimeBanner(newAttempt);
     }
     if (jsonResponse["data"]["Page"]["media"][index]["bannerImage"] == null) {
       index = Random().nextInt(50);
-      attempt++;
-      continue;
-      String capitalize(String s) {
-        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
-      }
+      await Future.delayed(const Duration(milliseconds: 200));
+      print("Random anime banner: $attempt - failure");
+      int newAttempt = attempt + 1;
+      return getRandomAnimeBanner(newAttempt);
     } else {
       return jsonResponse["data"]["Page"]["media"][index]["bannerImage"];
     }
+  } else {
+    return "";
   }
-
-  return getRandomAnimeBanner(0);
 }
 
 getUserToken() async {
@@ -285,13 +290,15 @@ Future<String> getUserbannerImageUrl(String name, int attempt) async {
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
-    print(response.body);
-    if (attempt < 5) {
-      String returnString = await getUserbannerImageUrl(name, attempt++);
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("User banner image: $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      String returnString = await getUserbannerImageUrl(name, newAttempt);
       return returnString;
     }
-    return "";
+    return "https://i.imgur.com/x6TGK1x.png";
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   return jsonResponse["data"]["User"]["bannerImage"];
@@ -312,13 +319,15 @@ Future<String> getUserAvatarImageUrl(String name, int attempt) async {
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
-    print(response.body);
-    if (attempt < 5) {
-      String returnString = await getUserAvatarImageUrl(name, attempt++);
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("User avatar image: $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      String returnString = await getUserAvatarImageUrl(name, newAttempt);
       return returnString;
     }
-    return "";
+    return "https://i.imgur.com/EKtChtm.png";
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   try {
@@ -350,12 +359,13 @@ Future<Map<String, Map<String, double>>> getUserStatsMaps(
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("User stats: $attempt - failure");
     print(response.body);
-    if (attempt < 5) {
-      Map<String, Map<String, double>> returnList =
-          await getUserStatsMaps(userName, attempt++);
-      return returnList;
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return await getUserStatsMaps(userName, newAttempt);
     }
     return {};
   }
@@ -406,7 +416,7 @@ Future<List<AnimeModel>> getUserAnimeLists(
     "query":
         "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
     "variables": {
-      "userId": /*859862*/ userId,
+      "userId": userId,
       "type": "ANIME",
     }
   };
@@ -415,12 +425,12 @@ Future<List<AnimeModel>> getUserAnimeLists(
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
-    print(response.body);
-    if (attempt < 5) {
-      List<AnimeModel> returnList =
-          await getUserAnimeLists(userId, listName, attempt++);
-      return returnList;
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("User anime list $listName : $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return await getUserAnimeLists(userId, listName, newAttempt);
     }
     return [];
   }
@@ -474,12 +484,12 @@ Future<Map<String, List<AnimeModel>>> getAllUserAnimeLists(
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
-    print(response.body);
-    if (attempt < 5) {
-      Map<String, List<AnimeModel>> returnList =
-          await getAllUserAnimeLists(userId, attempt++);
-      return returnList;
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("All user anime lists: $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return await getAllUserAnimeLists(userId, newAttempt);
     }
     //NOTE empry Map
     return {};
@@ -521,7 +531,7 @@ Future<Map<String, List<AnimeModel>>> getAllUserAnimeLists(
   return userAnimeListsMap;
 }
 
-Future<List<String>> getUserAccessToken(String code) async {
+Future<List<String>> getUserAccessToken(String code, int attempt) async {
   var url = Uri.parse("https://anilist.co/api/v2/oauth/token");
   Map<String, dynamic> query = {
     "grant_type": "authorization_code",
@@ -538,13 +548,21 @@ Future<List<String>> getUserAccessToken(String code) async {
     },
     body: json.encode(query),
   );
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("User access token : $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return getUserAccessToken(code, newAttempt);
+    }
+  }
   print("Response: ${response.body}");
   Map<String, dynamic> jsonResponse = json.decode(response.body);
 
   return [jsonResponse["access_token"], jsonResponse["refresh_token"]];
 }
 
-Future<List<String>> getUserNameAndId(String accessToken) async {
+Future<List<String>> getUserNameAndId(String accessToken, int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query": "query {Viewer{name id}}",
@@ -557,6 +575,14 @@ Future<List<String>> getUserNameAndId(String accessToken) async {
     },
     body: json.encode(query),
   );
+  if (response.statusCode != 200) {
+    print(response.body);
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return getUserNameAndId(accessToken, newAttempt);
+    }
+  }
+  print(response.body);
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   return [
     jsonResponse["data"]["Viewer"]["name"],
@@ -578,9 +604,12 @@ Future<UserMediaModel> getUserAnimeInfo(int mediaId, int attempt) async {
     },
     body: json.encode(query),
   );
-  if (response.statusCode == 500) {
-    if (attempt < 5) {
-      return getUserAnimeInfo(mediaId, attempt++);
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("User anime info: $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return getUserAnimeInfo(mediaId, newAttempt);
     }
   }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
@@ -681,7 +710,7 @@ void deleteUserAnime(int mediaId) async {
   print(response.body);
 }
 
-Future<int> getAnimeCurrentEpisode(int mediaId) async {
+Future<int> getAnimeCurrentEpisode(int mediaId, int attempt) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query":
@@ -695,6 +724,14 @@ Future<int> getAnimeCurrentEpisode(int mediaId) async {
     },
     body: json.encode(query),
   );
+  if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("anime current episode: $attempt - failure");
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return getAnimeCurrentEpisode(mediaId, newAttempt);
+    }
+  }
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   return jsonResponse["data"]["AiringSchedule"]["episode"];
 }
@@ -725,9 +762,10 @@ Future<List<AnimeModel>> getAnimeListFromMALIds(
     body: json.encode(query),
   );
 
-  if (response.statusCode == 500) {
-    if (attempt < 5) {
-      return getAnimeListFromMALIds(malIds, name, attempt++);
+  if (response.statusCode != 200) {
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return getAnimeListFromMALIds(malIds, name, newAttempt);
     }
   }
 
@@ -783,9 +821,10 @@ Future<List<int>> getMALIdListFromDay(String day, int attempt) async {
 
   await Future.delayed(const Duration(milliseconds: 350));
 
-  if (response.statusCode == 500) {
-    if (attempt < 5) {
-      return getMALIdListFromDay(day, attempt++);
+  if (response.statusCode != 200) {
+    if (attempt < maxAttempts) {
+      int newAttempt = attempt + 1;
+      return getMALIdListFromDay(day, newAttempt);
     }
   }
 
