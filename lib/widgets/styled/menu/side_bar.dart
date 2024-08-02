@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:unyo/screens/scaffold_screen.dart';
+import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/constants.dart';
 import 'package:unyo/util/utils.dart';
 
@@ -109,7 +109,7 @@ class Sidebar extends StatelessWidget {
             iconColor: Colors.white,
           ),
           ListTile(
-            title: Text(context.tr('extensions')),
+            title: Text(context.tr('local_extensions')),
             leading: const Icon(Icons.extension),
             selected: selectedIndex == 6,
             onTap: () {

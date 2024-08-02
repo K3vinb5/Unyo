@@ -74,7 +74,7 @@ class HomeScreenBottomButtonsWidget extends StatelessWidget {
                 height: 30,
               ),
               AnimeButton(
-                text: context.tr("extensions"),
+                text: context.tr("local_extensions"),
                 onTap: () {
                   //calendarScreen
                   goTo(6);

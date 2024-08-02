@@ -60,6 +60,11 @@
   "chapter" : "Chapter",
   "settings": "Settings",
   "remote_endpoint" : "Remote extensions / Local extensions",
-  "extensions" : "Local Extensions",
-  "console" : "Console"
+  "local_extensions" : "Local Extensions",
+  "extension" : "extension",
+  "extensions" : "Extensions",
+  "change_repo" : "Change repo",
+  "need_help" : "Need help?",
+  "installed" : "Installed",
+  "console" : "Extensions Server Console"
 }

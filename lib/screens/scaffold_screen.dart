@@ -65,6 +65,15 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
           isScreenRefreshed.add(to);
         }
         break;
+      case 6:
+        if (!(prefs.getBool("remote_endpoint") ?? false)) {
+          if (!isScreenRefreshed.contains(to)) {
+            refreshLocalExtensionsScreenState(() {});
+            isScreenRefreshed.add(to);
+          }
+        } else {
+          refreshLocalExtensionsScreenState(() {});
+        }
       default:
     }
   }

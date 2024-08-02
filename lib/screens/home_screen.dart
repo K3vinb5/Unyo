@@ -18,6 +18,7 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
 
 void Function()? updateHomeScreenLists;
+late void Function(void Function()) updateHomeScreenState;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -98,6 +99,7 @@ class _HomeScreenState
     updateHomeScreenLists = () {
       updateUserLists();
     };
+    updateHomeScreenState = setState;
   }
 
   void startExtensions() {
