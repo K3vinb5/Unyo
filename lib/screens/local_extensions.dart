@@ -5,10 +5,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
+import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
-late void Function(void Function()) refreshLocalExtensionsScreenState;
+void Function(void Function())? refreshLocalExtensionsScreenState;
 
 class LocalExtensionsScreen extends StatefulWidget {
   const LocalExtensionsScreen({super.key});
@@ -21,6 +22,7 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
   List<String>? installedExtensions;
   Map<String, dynamic>? availableExtensions;
   Map<String, dynamic>? extensionsLang;
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
@@ -46,11 +48,11 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                 ),
               ],
             )
-          : const Column(
+          : Column(
               children: [
                 Text(
-                  "Local Extensions are not enabled, you can enable them on the settings",
-                  style: TextStyle(
+                  context.tr("extensions_not_enabled_message"),
+                  style: const TextStyle(
                     color: Colors.yellowAccent,
                   ),
                 ),
@@ -88,17 +90,23 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                           ),
                         ),
                         SizedBox(
-                          width: 105,
+                          width: 130,
                           child: !installedExtensions!.contains(source)
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    IconButton(
-                                      onPressed: () {addExtension(source);},
-                                      icon: const Icon(
-                                        Icons.download_rounded,
+                                    Tooltip(
+                                      message: context.tr("download"),
+                                      child: IconButton(
+                                        onPressed: () async {
+                                          addExtension(source);
+                                          processManager.restartProcess();
+                                        },
+                                        icon: const Icon(
+                                          Icons.download_rounded,
+                                        ),
+                                        color: Colors.white,
                                       ),
-                                      color: Colors.white,
                                     ),
                                   ],
                                 )
@@ -108,20 +116,25 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                                       context.tr("installed"),
                                       style: const TextStyle(
                                         color: Colors.white,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     const SizedBox(
                                       width: 5,
                                     ),
-                                    IconButton(
-                                      onPressed: () async {
-                                        removeExtension(source);
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete_rounded,
+                                    Tooltip(
+                                      message: context.tr("delete"),
+                                      child: IconButton(
+                                        onPressed: () async {
+                                          removeExtension(source);
+                                          processManager.restartProcess();
+                                        },
+                                        icon: const Icon(
+                                          Icons.delete_rounded,
+                                        ),
+                                        color: const Color.fromARGB(
+                                            255, 64, 63, 64),
                                       ),
-                                      color:
-                                          const Color.fromARGB(255, 64, 63, 64),
                                     )
                                   ],
                                 ),
@@ -248,7 +261,6 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Stack(
-                      // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Align(
                           alignment: Alignment.center,
@@ -267,14 +279,22 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                               children: [
                                 StyledButton(
                                   text: context.tr("change_repo"),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    showChangeRepoDialog(context, controller);
+                                  },
                                 ),
                                 const SizedBox(
                                   width: 10,
                                 ),
                                 StyledButton(
                                   text: context.tr("need_help"),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    showSimpleDialog(
+                                      context,
+                                      context.tr("need_help_title"),
+                                      context.tr("need_help_message"),
+                                    );
+                                  },
                                 ),
                               ],
                             ),

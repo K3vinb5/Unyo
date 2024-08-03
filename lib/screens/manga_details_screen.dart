@@ -67,7 +67,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     mangaSources = {
       0: MangaHereSource(),
     };
-    updateSource(0);
+    Future.delayed(Duration.zero, (){updateSource(0, context);});
     setUserMangaModel();
   }
 
@@ -191,7 +191,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     }
   }
 
-  void updateSource(int newSource) async {
+  void updateSource(int newSource, BuildContext context) async {
     setState(() {
       currentSource = newSource;
       currentSearch = 0;
@@ -407,7 +407,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           Navigator.of(context).pop();
                         },
                         onRefreshPress: () {
-                          updateSource(0);
+                          updateSource(0, context);
                           setUserMangaModel();
                           AnimatedSnackBar.material(
                             "Refreshing Page",
@@ -447,6 +447,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           adjustedWidth: adjustedWidth,
                           adjustedHeight: adjustedHeight,
                           updateSource: updateSource,
+                          context: context,
                           setState: setState,
                           openWrongTitleDialog: openWrongTitleDialog,
                           openMediaInfoDialog: openMangaInfoDialog,

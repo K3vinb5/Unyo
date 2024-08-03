@@ -6,3 +6,6 @@ export 'delete_user_media_dialog.dart';
 export 'login_manually_dialog.dart';
 export 'connection_successful_dialog.dart';
 export 'error_dialog.dart';
+export 'simple_dialog.dart';
+export 'change_repo_dialog.dart';
+export 'no_extensions_dialog.dart';

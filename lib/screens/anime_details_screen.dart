@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/dialogs/dialogs.dart';
@@ -10,7 +11,6 @@ import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:http/http.dart' as http;
-import 'package:unyo/sources/anime/util/embedded_extensions.dart';
 import 'package:unyo/util/constants.dart';
 
 class AnimeDetailsScreen extends StatefulWidget {
@@ -66,7 +66,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     animeSources = globalAnimesSources;
     mediaContentModel = MediaContentModel(anilistId: widget.currentAnime.id);
     mediaContentModel.init();
-    updateSource(0);
+    Future.delayed(Duration.zero, (){updateSource(0, context);});
     setUserAnimeModel();
   }
 
@@ -137,9 +137,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       setState(() {
         currentEpisode = newCurrentEpisode;
         searches = newSearchesAndIds[0];
-            // .sublist(0, min(10, newSearchesAndIds[0].length));
+        // .sublist(0, min(10, newSearchesAndIds[0].length));
         searchesId = newSearchesAndIds[1];
-            // .sublist(0, min(10, newSearchesAndIds[1].length));
+        // .sublist(0, min(10, newSearchesAndIds[1].length));
       });
       setDialogState(() {
         wrongTitleEntries = [
@@ -179,7 +179,14 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     }
   }
 
-  void updateSource(int newSource) {
+  void updateSource(int newSource, BuildContext context) {
+    if (animeSources.isEmpty) {
+      showNoExtensionsDialog(
+        context,
+      );
+      Navigator.of(context).pop();
+      return;
+    }
     setState(() {
       currentSource = newSource;
       currentSearch = 0;
@@ -250,9 +257,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            "Select quality",
-            style: TextStyle(color: Colors.white),
+          title: Text(
+            context.tr("select_quality"),
+            style: const TextStyle(color: Colors.white),
           ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
           content: VideoQualityDialog(
@@ -408,7 +415,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           Navigator.of(context).pop();
                         },
                         onRefreshPress: () {
-                          updateSource(0);
+                          updateSource(0, context);
                           setUserAnimeModel();
 
                           AnimatedSnackBar.material(
@@ -446,6 +453,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                       adjustedWidth: adjustedWidth,
                       adjustedHeight: adjustedHeight,
                       updateSource: updateSource,
+                      context: context,
                       setState: setState,
                       openWrongTitleDialog: openWrongTitleDialog,
                       openMediaInfoDialog: openAnimeInfoDialog,

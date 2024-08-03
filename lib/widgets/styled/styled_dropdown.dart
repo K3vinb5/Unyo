@@ -9,6 +9,7 @@ class StyledDropDown extends StatefulWidget {
     required this.horizontalPadding,
     required this.onTap,
     required this.width,
+    this.color,
     this.height,
     this.value,
   });
@@ -17,6 +18,7 @@ class StyledDropDown extends StatefulWidget {
   final double horizontalPadding;
   final void Function(int) onTap;
   final double width;
+  final Color? color;
   final double? height;
   final int? value;
 
@@ -25,13 +27,20 @@ class StyledDropDown extends StatefulWidget {
 }
 
 class _StyledDropDownState extends State<StyledDropDown> {
+  late int value;
+
+  @override
+  void initState() {
+    super.initState();
+    value = widget.value ?? 0;
+  }
+
   @override
   Widget build(BuildContext context) {
-    int value = widget.value ?? 0;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: veryLightBorderColor),
+        border: Border.all(color: widget.color ?? veryLightBorderColor),
       ),
       padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
       child: SizedBox(
@@ -45,7 +54,7 @@ class _StyledDropDownState extends State<StyledDropDown> {
           dropdownColor: const Color.fromARGB(255, 38, 37, 38),
           focusColor: Colors.transparent,
           underline: const SizedBox(),
-          value: value, 
+          value: value,
           items: [
             ...widget.items.mapIndexed(
               (index, childWidget) {

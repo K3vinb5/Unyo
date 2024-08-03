@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
+import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -84,7 +85,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       isScreenRefreshed.clear();
                       prefs.setBool("buttons_layout", newValue);
                     },
-                    value: (prefs.getBool("buttons_layout") ?? false),
+                    value: (prefs.getBool("buttons_layout") ?? true),
                   ),
                   SettingsDropdownOptionWidget(
                     title: context.tr("select_language"),
@@ -141,9 +142,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                       if (newValue) {
                         processManager.startProcess();
+                        showSimpleDialog(
+                          context,
+                          context.tr("need_help_title"),
+                          context.tr("need_help_message"),
+                        );
                       } else {
                         processManager.stopProcess();
-
                         addEmbeddedAniyomiExtensions();
                       }
                     },

@@ -14,23 +14,20 @@ class ProcessManager {
   final int _maxCharacters = 100; // Maximum character limit
 
   Future<void> _extractJar() async {
-
     supportDirectoryPath = await getApplicationSupportDirectory();
-    final jarFile = File('${supportDirectoryPath.path}/extensions.jar');
+    final jarFile = File('${supportDirectoryPath.path}//extensions.jar');
+    final extensionsDir = Directory('${supportDirectoryPath.path}//extensions');
 
     if (await jarFile.exists()) {
       _jarPath = jarFile.path;
       return;
     }
-    // if ((await appSupportDir.list().toList())
-    //     .map((e) => e.path)
-    //     .toList()
-    //     .contains("extensions.jar")) {
-    //   return;
-    // }
-    final byteData = await rootBundle.load('assets/extensions.jar');
+    if (!(await extensionsDir.exists())) {
+      extensionsDir.create();
+    }
+    final byteData = await rootBundle.load('assets//extensions.jar');
     final buffer = byteData.buffer;
-    final file = File('${supportDirectoryPath.path}/extensions.jar');
+    final file = File('${supportDirectoryPath.path}//extensions.jar');
     await file.writeAsBytes(
         buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
     _jarPath = file.path;
@@ -46,16 +43,15 @@ class ProcessManager {
     }
 
     try {
-      _process = await Process.start('java', ['-jar', _jarPath!, supportDirectoryPath.path],
+      _process = await Process.start(
+          'java', ['-jar', _jarPath!, supportDirectoryPath.path],
           mode: ProcessStartMode.normal);
 
       _process?.stdout.transform(utf8.decoder).listen((data) {
-        // print(data);
         _addOutput(data, false);
       });
 
       _process?.stderr.transform(utf8.decoder).listen((data) {
-        // print('ERROR: $data');
         _addOutput('ERROR: $data', true);
       });
 
@@ -66,7 +62,6 @@ class ProcessManager {
 
       addEmbeddedAniyomiExtensions();
     } catch (e) {
-      // print('Failed to start process: $e');
       _addOutput('Failed to start process: $e', true);
     }
   }
@@ -79,18 +74,25 @@ class ProcessManager {
     }
   }
 
+  void restartProcess() async {
+    if (_process == null) return;
+    stopProcess();
+    await Future.delayed(const Duration(seconds: 2));
+    await startProcess();
+  }
+
   void _addOutput(String data, bool isError) {
     // Add new data to the output history
-    if (data.contains("Exception") || data.contains("exception")){
+    if (data.contains("Exception") || data.contains("exception")) {
       isError = true;
     }
     outputHistory.add({isError: data});
-    _totalWords ++;
+    _totalWords++;
 
     // Ensure the total words do not exceed the limit
     while (_totalWords > _maxCharacters) {
       outputHistory.removeAt(0);
-      _totalWords --;
+      _totalWords--;
     }
   }
 }

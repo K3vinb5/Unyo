@@ -16,6 +16,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
       required this.adjustedWidth,
       required this.adjustedHeight,
       required this.updateSource,
+      required this.context,
       required this.setState,
       required this.openWrongTitleDialog,
       required this.openMediaInfoDialog,
@@ -34,7 +35,8 @@ class MediaDetailsInfoWidget extends StatelessWidget {
   final MangaModel? currentManga;
   final Map<int, AnimeSource>? animeSources;
   final Map<int, MangaSource>? mangaSources;
-  final void Function(int) updateSource;
+  final void Function(int, BuildContext) updateSource;
+  final BuildContext context;
   final void Function(void Function()) setState;
   final void Function(
           BuildContext, double, double, void Function(void Function()))
@@ -47,7 +49,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
         return DropdownMenuItem(
           value: index,
           onTap: () {
-            updateSource(index);
+            updateSource(index, context);
           },
           child: Text(
             entry.value.getSourceName(),
@@ -60,7 +62,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
         return DropdownMenuItem(
           value: index,
           onTap: () {
-            updateSource(index);
+            updateSource(index, context);
           },
           child: Text(
             entry.value.getSourceName(),

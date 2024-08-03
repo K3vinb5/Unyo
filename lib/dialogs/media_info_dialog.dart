@@ -106,6 +106,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                   query.remove("status");
                   query.addAll({"status": newCurrentStatus});
                 },
+                color: Colors.white,
                 width: widget.totalWidth * 0.4,
               ),
               const SizedBox(

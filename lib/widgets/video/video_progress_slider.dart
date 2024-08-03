@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:unyo/screens/video_screen.dart';
@@ -98,7 +99,7 @@ class VideoProgressSlider extends StatelessWidget {
                 width: 12,
               ),
               Tooltip(
-                message: "Previous Episode",
+                message: context.tr("previous_episode"),
                 child: IconButton(
                   icon: const Icon(
                     Icons.skip_previous_rounded,
@@ -108,7 +109,7 @@ class VideoProgressSlider extends StatelessWidget {
                 ),
               ),
               Tooltip(
-                message: mixedController.isPlaying ? "Pause" : "Play",
+                message: context.tr(mixedController.isPlaying ? "pause" : "play"),
                 child: IconButton(
                   icon: !mixedController.isPlaying
                       ? const Icon(
@@ -130,7 +131,7 @@ class VideoProgressSlider extends StatelessWidget {
                 ),
               ),
               Tooltip(
-                message: "Next Episode",
+                message: context.tr("next_episode"),
                 child: IconButton(
                   icon:
                       const Icon(Icons.skip_next_rounded, color: Colors.white),
@@ -142,7 +143,7 @@ class VideoProgressSlider extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     PopupMenuButton<TrackData>(
-                      tooltip: "Change Audiotrack",
+                      tooltip: context.tr("change_audiotrack"),
                       color: const Color.fromARGB(255, 34, 33, 34),
                       icon: const Icon(
                         Icons.audiotrack,
@@ -172,7 +173,7 @@ class VideoProgressSlider extends StatelessWidget {
                       },
                     ),
                     PopupMenuButton<CaptionData>(
-                      tooltip: "Change Subtitles",
+                      tooltip: context.tr("change_subtitles"),
                       color: const Color.fromARGB(255, 34, 33, 34),
                       icon: const Icon(
                         Icons.subtitles,
@@ -216,7 +217,7 @@ class VideoProgressSlider extends StatelessWidget {
                             builder: (context) {
                               return AlertDialog(
                                 title: Text(
-                                    "Unyo2gether (${mixedController.mqqtController.connected ? "Connected" : "Not Connected"})",
+                                    "Unyo2gether (${context.tr(mixedController.mqqtController.connected ? "connected" : "not_connected")})",
                                     style:
                                         const TextStyle(color: Colors.white)),
                                 backgroundColor:
@@ -237,10 +238,10 @@ class VideoProgressSlider extends StatelessWidget {
                                       const SizedBox(
                                         height: 20,
                                       ),
-                                      const Text(
-                                          "Please paste your buddys peerId, or all of you come up with a new one!",
+                                      Text(
+                                          context.tr("unyo2gether_message"),
                                           style:
-                                              TextStyle(color: Colors.white)),
+                                              const TextStyle(color: Colors.white)),
                                       const SizedBox(
                                         height: 20,
                                       ),
@@ -282,8 +283,8 @@ class VideoProgressSlider extends StatelessWidget {
                                                                 .text);
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: const Text("Confirm",
-                                                      style: TextStyle(
+                                                  child: Text(context.tr("confirm"),
+                                                      style: const TextStyle(
                                                           color: Colors.white)),
                                                 ),
                                                 const SizedBox(
@@ -304,8 +305,8 @@ class VideoProgressSlider extends StatelessWidget {
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: const Text("Cancel",
-                                                      style: TextStyle(
+                                                  child: Text(context.tr("cancel"),
+                                                      style: const TextStyle(
                                                           color: Colors.white)),
                                                 ),
                                               ],
@@ -342,9 +343,9 @@ class VideoProgressSlider extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: 10.0),
                       child: Tooltip(
-                        message: !fullScreen
-                            ? "Enter Fullscreen"
-                            : "Exit Fullscreen",
+                        message: context.tr(!fullScreen
+                            ? "enter_fullscreen"
+                            : "exit_fullscreen"),
                         child: IconButton(
                           onPressed: () {
                             fullScreen = !fullScreen;
