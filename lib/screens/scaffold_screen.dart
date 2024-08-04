@@ -65,6 +65,12 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
           isScreenRefreshed.add(to);
         }
         break;
+      case 5:
+        if (!isScreenRefreshed.contains(to)) {
+          refreshCalendarScreenState(() {});
+          isScreenRefreshed.add(to);
+        }
+        break;
       case 6:
         if (!(prefs.getBool("remote_endpoint") ?? false)) {
           if (!isScreenRefreshed.contains(to)) {

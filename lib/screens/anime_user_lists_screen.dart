@@ -3,7 +3,6 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
@@ -140,7 +139,6 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
   }
 
   void setSharedPreferences() async {
-    var prefs = await SharedPreferences.getInstance();
     if (prefs.getString("accessToken") == null) {
       // _startServer();
       // goToLogin();

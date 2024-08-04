@@ -1,13 +1,16 @@
 import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:unyo/api/anilist_api_anime.dart';
-import 'package:unyo/models/models.dart';
-import 'package:unyo/screens/screens.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/util/utils.dart';
+import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
+import 'package:unyo/screens/screens.dart';
+import 'package:unyo/api/anilist_api_anime.dart';
+
+void Function(void Function()) refreshCalendarScreenState = (func) {};
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -18,42 +21,25 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen>
     with TickerProviderStateMixin {
+  Map<String, List<AnimeModel>> calendarLists = {};
   final double minimumWidth = 124.08;
   final double minimumHeight = 195.44;
   double maximumWidth = 0;
   double maximumHeight = 0;
-  final List<String> weekDays = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday"
-  ];
-  Map<String, List<AnimeModel>> calendarMap = {};
 
   @override
   void initState() {
     super.initState();
+    refreshCalendarScreenState = setState;
+    Future.delayed(Duration.zero, () {
+      initCalendarListMap();
+    });
     //TODO find this value with totalHeight and totalWidth in the future
     maximumWidth = minimumWidth * 1.4;
     maximumHeight = minimumHeight * 1.4;
-    //TODO temp
-    initCalendarMap();
   }
 
-  void initCalendarMap() async {
-    for (int i = 0; i < weekDays.length; i++) {
-      List<int> malIds = await getMALIdListFromDay(weekDays[i], 0);
-      List<AnimeModel> animeList =
-          await getAnimeListFromMALIds(malIds, weekDays[i], 0);
-      setState(() {
-        calendarMap.addAll({weekDays[i]: animeList});
-      });
-    }
-  }
-
+  //horizontalPadding must be given as half of its real value as to avoid multiple divisions
   List<Widget> generateAnimeWidgetRows(
       double totalWidth,
       double horizontalPadding,
@@ -133,24 +119,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     return rowWidgets;
   }
 
-  double getAdjustedHeight(double value) {
-    if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
-    }
-  }
-
-  double getAdjustedWidth(double value) {
-    if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
-      return value;
-    } else {
-      return value *
-          ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
-    }
-  }
-
   void openAnime(AnimeModel currentAnime, String tag) {
     var animeScreen = AnimeDetailsScreen(
       currentAnime: currentAnime,
@@ -162,16 +130,30 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
   }
 
+  void initCalendarListMap() async {
+    var newCalendarLists = await getCalendar(
+        context.locale.toLanguageTag(),
+        {},
+        1,
+        ((DateTime.now().millisecondsSinceEpoch / 1000) - (1 * 60 * 60)).round(),
+        ((DateTime.now().millisecondsSinceEpoch / 1000) + (6 * 24 * 60 * 60)).round(),
+        0);
+    setState(() {
+      calendarLists = newCalendarLists;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     //TODO must calculate both adjustedHeight and adjustedWidth in the future so it doesn't depend on 16/9 aspect ratio
 
-    TabController tabContrller = TabController(length: 7, vsync: this);
+    TabController tabContrller =
+        TabController(length: calendarLists.entries.length, vsync: this);
     //sizes calculations
     double totalWidth = MediaQuery.of(context).size.width;
     double totalHeight = MediaQuery.of(context).size.height;
-    double adjustedWidth = getAdjustedWidth(totalWidth);
-    double adjustedHeight = getAdjustedHeight(totalHeight);
+    double adjustedWidth = getAdjustedWidth(totalWidth, context);
+    double adjustedHeight = getAdjustedHeight(totalHeight, context);
     double calculatedWidth = adjustedWidth * 0.1;
     double calculatedHeight = adjustedHeight * 0.28;
 
@@ -195,7 +177,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         goTo(1);
                       },
                       onRefreshPress: () {
-                        initCalendarMap();
+                        initCalendarListMap();
                         AnimatedSnackBar.material(
                           "Refreshing Page",
                           type: AnimatedSnackBarType.info,
@@ -208,7 +190,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "${context.tr("anime")} ${context.tr("calendar")}",
+                          context.tr("calendar"),
                           style: TextStyle(
                             color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,
@@ -220,19 +202,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                   ],
                 ),
               ),
-              WindowTitleBarBox(
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 70,
-                    ),
-                    Expanded(
-                      child: MoveWindow(),
-                    ),
-                    const WindowButtons(),
-                  ],
-                ),
-              ),
+              const WindowBarButtons(startIgnoreWidth: 70),
             ],
           ),
           SizedBox(
@@ -246,97 +216,71 @@ class _CalendarScreenState extends State<CalendarScreen>
               isScrollable: true,
               controller: tabContrller,
               tabs: [
-                SizedBox(
-                  width: 200,
-                  child: Tab(
-                    text: context.tr("monday"),
-                  ),
-                ),
-                SizedBox(
-                  width: 200,
-                  child: Tab(
-                    text: context.tr("tuesday"),
-                  ),
-                ),
-                SizedBox(
-                  width: 200,
-                  child: Tab(
-                    text: context.tr("wednesday"),
-                  ),
-                ),
-                SizedBox(
-                  width: 200,
-                  child: Tab(
-                    text: context.tr("thursday"),
-                  ),
-                ),
-                SizedBox(
-                  width: 200,
-                  child: Tab(
-                    text: context.tr("friday"),
-                  ),
-                ),
-                SizedBox(
-                  width: 200,
-                  child: Tab(
-                    text: context.tr("saturday"),
-                  ),
-                ),
-                SizedBox(
-                  width: 200,
-                  child: Tab(
-                    text: context.tr("sunday"),
-                  ),
-                ),
+                ...calendarLists.entries.map((entry) {
+                  String title = entry.key;
+                  return SizedBox(
+                    width: 180,
+                    child: Tab(
+                      text: title,
+                    ),
+                  );
+                }),
               ],
             ),
           ),
-          SizedBox(
-            width: totalWidth,
-            height: totalHeight - 100,
-            child: TabBarView(
-              controller: tabContrller,
-              children: [
-                ...calendarMap.entries.map(
-                  (entry) {
-                    String weekDay = entry.key;
-                    List<AnimeModel> animeList = entry.value;
-                    List<Widget> rowsList = generateAnimeWidgetRows(
-                        totalWidth,
-                        2,
-                        weekDay,
-                        calculatedWidth,
-                        calculatedHeight,
-                        animeList);
-                    return SizedBox(
-                      width: totalWidth,
-                      height: double.infinity,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0,
-                            vertical: 8.0,
-                          ),
-                          child: SizedBox(
+          calendarLists.isNotEmpty
+              ? SizedBox(
+                  width: totalWidth,
+                  height: totalHeight - 100,
+                  child: TabBarView(
+                    controller: tabContrller,
+                    children: [
+                      ...calendarLists.entries.map(
+                        (entry) {
+                          String title = entry.key;
+                          List<AnimeModel> animeList = entry.value;
+                          List<Widget> rowsList = generateAnimeWidgetRows(
+                              totalWidth,
+                              2,
+                              title,
+                              calculatedWidth,
+                              calculatedHeight,
+                              animeList);
+                          return SizedBox(
                             width: totalWidth,
-                            height: totalHeight,
-                            child: Center(
-                              child: ListView.builder(
-                                itemCount: rowsList.length,
-                                itemBuilder: (context, index) {
-                                  return rowsList[index];
-                                },
+                            height: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: SizedBox(
+                                width: totalWidth,
+                                height: totalHeight,
+                                child: Center(
+                                  child: SmoothListView.builder(
+                                    duration: const Duration(milliseconds: 200),
+                                    itemCount: rowsList.length,
+                                    itemBuilder: (context, index) {
+                                      return rowsList[index];
+                                    },
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.only(top: (totalHeight / 4) + 100),
+                  child: Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                        color: Colors.white, size: 30),
+                  ),
                 ),
-              ],
-            ),
-          ),
         ],
       ),
     );

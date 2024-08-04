@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:http/http.dart' as http;
@@ -736,110 +737,92 @@ Future<int> getAnimeCurrentEpisode(int mediaId, int attempt) async {
   return jsonResponse["data"]["AiringSchedule"]["episode"];
 }
 
-Future<List<AnimeModel>> getAnimeListFromMALIds(
-    List<int> malIds, String name, int attempt) async {
-  if (malIds.isEmpty) return [];
-
-  List<AnimeModel> returnList = [];
-  List<String> subQueries = [];
-
-  for (int i = 0; i < malIds.length; i++) {
-    subQueries.add(getSingleAnimeQueryFromMALIds("$name$i", malIds[i]));
-  }
-
-  String spreadedSubQueries = subQueries.join("\n");
-
+Future<Map<String, List<AnimeModel>>> getCalendar(
+  String localeTag,
+  Map<String, List<AnimeModel>> calendarListMap,
+  int page,
+  int airingAtGreater,
+  int airingAtLesser,
+  int attempt,
+) async {
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
-    "query": "query{$spreadedSubQueries}",
+    "query":
+        "query{Page(page: $page, perPage: 50) { pageInfo { hasNextPage total } airingSchedules(airingAt_greater: $airingAtGreater, airingAt_lesser: $airingAtLesser, sort: TIME_DESC) { episode airingAt media { id idMal status chapters episodes nextAiringEpisode { episode } isAdult type meanScore isFavourite format bannerImage startDate {day month year} countryOfOrigin coverImage { large } title { english romaji userPreferred } mediaListEntry { progress private score(format: POINT_100) status } } } }}",
   };
   var response = await http.post(
     url,
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    },
+    headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-
   if (response.statusCode != 200) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("Calendar lists: $attempt - failure");
     if (attempt < maxAttempts) {
       int newAttempt = attempt + 1;
-      return getAnimeListFromMALIds(malIds, name, newAttempt);
+      return await getCalendar(localeTag, calendarListMap, page,
+          airingAtGreater, airingAtLesser, newAttempt);
     }
+    //NOTE empry Map
+    return {};
   }
-
   Map<String, dynamic> jsonResponse = json.decode(response.body);
+  List<dynamic> mediaList = jsonResponse["data"]["Page"]["airingSchedules"];
+  List<AnimeModel> animeModelList = [];
 
-  List<dynamic> mapsList = jsonResponse["data"].entries.toList();
-
-  for (int i = 0; i < mapsList.length; i++) {
-    MapEntry mapEntry = mapsList[i] as MapEntry;
-
-    if (!mapEntry.key.contains(name) || mapEntry.value == null) continue;
-
-    Map<String, dynamic> animeEntry = mapEntry.value;
-    if (animeEntry["type"] != "ANIME") continue;
-    returnList.add(AnimeModel(
-        id: animeEntry["id"],
-        title: animeEntry["title"]["userPreferred"],
-        coverImage: animeEntry["coverImage"]["large"],
-        bannerImage: animeEntry["bannerImage"],
+  for (int j = 0; j < mediaList.length; j++) {
+    animeModelList.add(
+      AnimeModel(
+        id: mediaList[j]["media"]["id"],
+        title: mediaList[j]["media"]["title"]["userPreferred"],
+        coverImage: mediaList[j]["media"]["coverImage"]["large"],
+        bannerImage: mediaList[j]["media"]["bannerImage"],
         startDate:
-            "${animeEntry["startDate"]["day"]}/${animeEntry["startDate"]["month"]}/${animeEntry["startDate"]["year"]}",
+            "${mediaList[j]["media"]["startDate"]["day"]}/${mediaList[j]["media"]["startDate"]["month"]}/${mediaList[j]["media"]["startDate"]["year"]}",
         endDate: "",
-        type: animeEntry["type"],
-        status: animeEntry["status"],
-        averageScore: animeEntry["averageScore"],
-        episodes: animeEntry["episodes"],
-        duration: animeEntry["episodes"],
-        description: animeEntry["description"],
-        format: animeEntry["format"]));
+        //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
+        type: mediaList[j]["media"]["type"],
+        description: mediaList[j]["media"]["description"],
+        status: mediaList[j]["media"]["status"],
+        averageScore: mediaList[j]["media"]["averageScore"],
+        episodes: mediaList[j]["media"]["episodes"],
+        duration: mediaList[j]["media"]["episodes"],
+        format: mediaList[j]["media"]["format"],
+      ),
+    );
   }
 
-  return returnList;
+  calendarListMap = formatCalendarListMap(
+      localeTag, calendarListMap, animeModelList, mediaList);
+  if (jsonResponse["data"]["Page"]["pageInfo"]["hasNextPage"]) {
+    int newPage = page + 1;
+    return await getCalendar(localeTag, calendarListMap, newPage,
+        airingAtGreater, airingAtLesser, attempt);
+  } else {
+    return Map.fromEntries(calendarListMap.entries.toList().reversed);
+  }
 }
 
-String getSingleAnimeQueryFromMALIds(String name, int malId) {
-  return "$name: Media(idMal: $malId) { id title {userPreferred} coverImage {large} bannerImage startDate {year month day} description type status averageScore episodes format}";
-}
-
-Future<List<int>> getMALIdListFromDay(String day, int attempt) async {
-  List<int> returnList = [];
-
-  print(day);
-  var url = Uri.parse(
-      "https://api.jikan.moe/v4/schedules?filter=${day}&sfw=true&unapproved=false&page=1&limit=25");
-
-  var response = await http.get(
-    url,
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    },
-  );
-
-  await Future.delayed(const Duration(milliseconds: 350));
-
-  if (response.statusCode != 200) {
-    if (attempt < maxAttempts) {
-      int newAttempt = attempt + 1;
-      return getMALIdListFromDay(day, newAttempt);
+Map<String, List<AnimeModel>> formatCalendarListMap(
+    String locale,
+    Map<String, List<AnimeModel>> calendarListMap,
+    List<AnimeModel> animeModelList,
+    List<dynamic> mediaList) {
+  for (int i = 0; i < animeModelList.length; i++) {
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+        mediaList[i]["airingAt"] * 1000,
+        isUtc: true);
+    DateFormat dateFormat = DateFormat('EEEE, MMMM d y', locale);
+    String listKey = dateFormat.format(dateTime);
+    String formattedListKey =
+        "${listKey[0].toUpperCase()}${listKey.substring(1)}";
+    if (!calendarListMap.containsKey(formattedListKey)) {
+      calendarListMap.addAll({
+        formattedListKey: [animeModelList[i]]
+      });
+    } else {
+      calendarListMap[formattedListKey]!.add(animeModelList[i]);
     }
   }
-
-  List<dynamic> dataList = [];
-
-  if (json.decode(response.body)["data"] != null) {
-    dataList = json.decode(response.body)["data"];
-  } else {
-    return [];
-  }
-
-  for (int i = 0; i < dataList.length; i++) {
-    if (dataList[i]["aired"]["prop"]["from"]["year"] != DateTime.now().year ||
-        returnList.contains(dataList[i]["mal_id"])) continue;
-    returnList.add(dataList[i]["mal_id"]);
-  }
-  return returnList;
+  return calendarListMap;
 }
