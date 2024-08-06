@@ -10,7 +10,9 @@ class WrongTitleDialog extends StatelessWidget {
       required this.wrongTitleSearchController,
       required this.onSelected,
       required this.onPressed,
-      required this.wrongTitleEntries});
+      required this.wrongTitleEntries,
+      required this.manualSelection,
+      });
 
   final double width;
   final double height;
@@ -18,6 +20,7 @@ class WrongTitleDialog extends StatelessWidget {
   final void Function(dynamic)? onSelected;
   final void Function() onPressed;
   final List<DropdownMenuEntry<dynamic>> wrongTitleEntries;
+  final int? manualSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +61,7 @@ class WrongTitleDialog extends StatelessWidget {
                     ),
                     controller: wrongTitleSearchController,
                     onSelected: onSelected,
-                    initialSelection: 0,
+                    initialSelection: manualSelection ?? 0,
                     dropdownMenuEntries: wrongTitleEntries,
                     menuHeight: height * 0.3,
                   ),

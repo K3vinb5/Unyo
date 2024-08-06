@@ -28,8 +28,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   UserMediaModel? userAnimeModel;
   List<String> searches = [];
   List<String> searchesId = [];
-  String currentSearchString = "";
-  late int currentSearch;
+  String? currentSearchId;
+  String? currentSearchString;
+  int? currentSearchIndex;
   int currentSource = 0;
   int currentEpisode = 0;
   late Map<int, AnimeSource> animeSources;
@@ -52,6 +53,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   double totalHeight = 0;
   bool isShiftKeyPressed = false;
   bool startedWrongTitleDialog = true;
+  bool manualTitleSelection = false;
   List<DropdownMenuEntry> wrongTitleEntries = [];
   String oldWrongTitleSearch = "";
   Timer wrongTitleSearchTimer = Timer(const Duration(milliseconds: 500), () {});
@@ -188,9 +190,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       return;
     }
     setState(() {
+      manualTitleSelection = false;
       currentSource = newSource;
-      currentSearch = 0;
-      currentSearchString = "";
+      currentSearchIndex = null;
+      currentSearchString = null;
+      currentSearchId = null;
       setSearches(animeSources[currentSource]!.getAnimeTitlesAndIds);
     });
   }
@@ -293,6 +297,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 height: height,
                 wrongTitleSearchController: wrongTitleSearchController,
                 wrongTitleEntries: wrongTitleEntries,
+                manualSelection: currentSearchIndex,
                 onPressed: () async {
                   wrongTitleSearchTimer.cancel();
                   //NOTE dirty fix for a bug
@@ -303,7 +308,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                     desktopSnackBarPosition: DesktopSnackBarPosition.topCenter,
                   ).show(context);
                   await Future.delayed(const Duration(seconds: 1));
-                  currentSearch = searches.indexOf(currentSearchString);
+                  // currentSearch = searches.indexOf(currentSearchString);
                   AnimatedSnackBar.material(
                     "Title Updated",
                     type: AnimatedSnackBarType.success,
@@ -312,8 +317,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                   Navigator.of(context).pop();
                 },
                 onSelected: (value) {
+                  manualTitleSelection = true;
                   currentSearchString = searches[value];
-                  currentSearch = value!;
+                  currentSearchIndex = value!;
+                  currentSearchId = searchesId[value];
                 },
               ),
             );
@@ -500,8 +507,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               latestEpisodeWatched:
                                   userAnimeModel?.progress ?? 1,
                               videoQualities: openVideoQualities,
-                              currentSearchId: currentSearch < searchesId.length
-                                  ? searchesId[currentSearch]
+                              currentSearchId: manualTitleSelection ? currentSearchId : (currentSearchIndex ?? 0) < searchesId.length
+                                  ? searchesId[currentSearchIndex ?? 0]
                                   : null,
                             );
                           },

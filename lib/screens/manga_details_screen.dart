@@ -284,6 +284,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                 height: height,
                 wrongTitleSearchController: wrongTitleSearchController,
                 wrongTitleEntries: wrongTitleEntries,
+                manualSelection: null,
                 onPressed: () async {
                   wrongTitleSearchTimer.cancel();
                   //NOTE dirty fix for a bug
