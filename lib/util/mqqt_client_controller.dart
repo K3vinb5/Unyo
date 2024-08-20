@@ -156,7 +156,9 @@ class MqqtClientController {
           }
           break;
         case "escape":
-          Window.exitFullscreen();
+          if (prefs.getBool("exit_fullscreen_on_video_exit") ?? false) {
+            Window.exitFullscreen();
+          }
           mixedController.dispose();
           interactScreen(false);
           Navigator.pop(context);
@@ -181,7 +183,7 @@ class MqqtClientController {
           sendOrder("play");
           mixedController.play();
         } else {
-          sendOrder("paused");
+          sendOrder("pause");
           mixedController.pause();
         }
         break;
@@ -244,8 +246,10 @@ class MqqtClientController {
         }
         break;
       case LogicalKeyboardKey.escape:
-        sendOrder("escape");
-        Window.exitFullscreen();
+        // sendOrder("escape");
+        if (prefs.getBool("exit_fullscreen_on_video_exit") ?? true) {
+          Window.exitFullscreen();
+        }
         interactScreen(false);
         if (calculatePercentage() > 0.8 &&
             (prefs.getBool("update_progress_automatically") ?? false)) {

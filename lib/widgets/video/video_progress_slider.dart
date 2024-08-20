@@ -30,6 +30,19 @@ class VideoProgressSlider extends StatelessWidget {
     return utf8.decode(bytes);
   }
 
+  String formatMilliseconds(double milliseconds) {
+    // Calculate total seconds
+    int totalSeconds = milliseconds ~/ 1000;
+
+    // Calculate hours, minutes, and seconds
+    int hours = totalSeconds ~/ 3600;
+    int minutes = (totalSeconds % 3600) ~/ 60;
+    int seconds = totalSeconds % 60;
+
+    // Return the formatted string
+    return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+  }
+
   @override
   Widget build(BuildContext context) {
     final max = duration.inMilliseconds.toDouble();
@@ -63,6 +76,8 @@ class VideoProgressSlider extends StatelessWidget {
                   min: 0,
                   max: max,
                   value: value,
+                  label: formatMilliseconds(value), 
+                  divisions: max > 0 ? max.toInt() : null,
                   onChanged: (value) {
                     // controller.seekTo(Duration(milliseconds: value.toInt()));
                     mixedController
@@ -109,7 +124,8 @@ class VideoProgressSlider extends StatelessWidget {
                 ),
               ),
               Tooltip(
-                message: context.tr(mixedController.isPlaying ? "pause" : "play"),
+                message:
+                    context.tr(mixedController.isPlaying ? "pause" : "play"),
                 child: IconButton(
                   icon: !mixedController.isPlaying
                       ? const Icon(
@@ -238,10 +254,9 @@ class VideoProgressSlider extends StatelessWidget {
                                       const SizedBox(
                                         height: 20,
                                       ),
-                                      Text(
-                                          context.tr("unyo2gether_message"),
-                                          style:
-                                              const TextStyle(color: Colors.white)),
+                                      Text(context.tr("unyo2gether_message"),
+                                          style: const TextStyle(
+                                              color: Colors.white)),
                                       const SizedBox(
                                         height: 20,
                                       ),
@@ -283,7 +298,8 @@ class VideoProgressSlider extends StatelessWidget {
                                                                 .text);
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: Text(context.tr("confirm"),
+                                                  child: Text(
+                                                      context.tr("confirm"),
                                                       style: const TextStyle(
                                                           color: Colors.white)),
                                                 ),
@@ -305,7 +321,8 @@ class VideoProgressSlider extends StatelessWidget {
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: Text(context.tr("cancel"),
+                                                  child: Text(
+                                                      context.tr("cancel"),
                                                       style: const TextStyle(
                                                           color: Colors.white)),
                                                 ),

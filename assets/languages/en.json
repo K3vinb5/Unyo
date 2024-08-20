@@ -86,5 +86,6 @@
   "connected" : "Connected",
   "not_connected" : "Not Connected",
   "delete" : "Delete",
-  "download" : "Download"
+  "download" : "Download",
+  "exit_fullscreen_on_video_exit" : "Exit fullscreen on video exit"
 }

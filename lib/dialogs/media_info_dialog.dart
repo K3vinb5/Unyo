@@ -5,21 +5,21 @@ import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class MediaInfoDialog extends StatefulWidget {
-  const MediaInfoDialog(
-      {super.key,
-      required this.totalWidth,
-      required this.totalHeight,
-      required this.statuses,
-      required this.query,
-      required this.episodes,
-      required this.progress,
-      required this.currentEpisode,
-      required this.score,
-      required this.setUserAnimeModel,
-      required this.startDate,
-      required this.endDate,
-      required this.id,
-     });
+  const MediaInfoDialog({
+    super.key,
+    required this.totalWidth,
+    required this.totalHeight,
+    required this.statuses,
+    required this.query,
+    required this.episodes,
+    required this.progress,
+    required this.currentEpisode,
+    required this.score,
+    required this.setUserAnimeModel,
+    required this.startDate,
+    required this.endDate,
+    required this.id,
+  });
 
   final double totalWidth;
   final double totalHeight;
@@ -129,6 +129,8 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                       max: widget.episodes?.toDouble() ??
                           currentEpisode.toDouble(),
                       value: progress,
+                      label: progress.round().toString(),
+                      divisions: widget.episodes ?? currentEpisode,
                       onChanged: (value) {
                         setState(() {
                           progress =
@@ -163,6 +165,8 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                       min: 0,
                       max: 10,
                       value: score,
+                      divisions: 10,
+                      label: score.round().toString(),
                       onChanged: (value) {
                         setState(() {
                           score =

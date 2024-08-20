@@ -28,7 +28,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState
-    extends State<HomeScreen> /*with WidgetsBindingObserver*/ {
+    extends State<HomeScreen> {
   late HttpServer server;
   List<AnimeModel>? watchingList;
   List<MangaModel>? readingList;
@@ -107,6 +107,7 @@ class _HomeScreenState
       processManager.startProcess();
     }
     addEmbeddedAniyomiExtensions();
+    addEmbeddedTachiyomiExtensions();
   }
 
   void getUserInfo() async {

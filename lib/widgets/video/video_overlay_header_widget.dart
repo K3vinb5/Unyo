@@ -55,9 +55,9 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
             child: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                // sendEscapeOrder();
-                // WindowManager.instance.setFullScreen(false);
-                Window.exitFullscreen();
+                if (prefs.getBool("exit_fullscreen_on_video_exit") ?? true) {
+                  Window.exitFullscreen();
+                }
                 interactScreen(false);
                 if (widget.mixedController.mqqtController
                             .calculatePercentage() >

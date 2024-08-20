@@ -73,12 +73,24 @@ class _AudioSliderWidgetState extends State<AudioSliderWidget> {
               maintainAnimation: true,
               child: RotatedBox(
                 quarterTurns: 3,
-                child: Slider(
-                  activeColor: Colors.white,
-                  min: 0,
-                  max: 1,
-                  value: widget.mixedController.audioController.value.volume,
-                  onChanged: (value) => widget.mixedController.setVolume(value),
+                child: SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    valueIndicatorTextStyle: const TextStyle(
+                      color: Colors
+                          .black, // Changes the text color inside the label
+                    ),
+                  ),
+                  child: Slider(
+                    activeColor: Colors.white,
+                    min: 0,
+                    max: 1,
+                    value: widget.mixedController.audioController.value.volume,
+                    label: "${(widget.mixedController.audioController.value.volume * 100)
+                        .toInt().toString()}%",
+                    divisions: 100,
+                    onChanged: (value) =>
+                        widget.mixedController.setVolume(value),
+                  ),
                 ),
               ),
             ),

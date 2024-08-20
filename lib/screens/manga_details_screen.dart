@@ -64,9 +64,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    mangaSources = {
-      0: MangaHereSource(),
-    };
+    mangaSources = globalMangasSources; 
     Future.delayed(Duration.zero, (){updateSource(0, context);});
     setUserMangaModel();
   }

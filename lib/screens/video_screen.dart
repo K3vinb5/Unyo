@@ -64,6 +64,7 @@ class _VideoScreenState extends State<VideoScreen> {
   void dispose() {
     _hideControlsTimer?.cancel();
     _mixedController.dispose();
+    isVideoPlaying.cancel();
     super.dispose();
   }
 

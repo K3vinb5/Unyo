@@ -116,6 +116,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                     value: (prefs.getBool("display_video_duration") ?? false),
                   ),
+                  SettingsSwitchOptionWidget(
+                    title: context.tr("exit_fullscreen_on_video_exit"),
+                    onPressed: (bool newValue) {
+                      setState(() {
+                        prefs.setBool("exit_fullscreen_on_video_exit", newValue);
+                      });
+                    },
+                    value: (prefs.getBool("exit_fullscreen_on_video_exit") ?? true),
+                  ),
                   SettingsDropdownOptionWidget(
                     title: context.tr("select_theme"),
                     width: 150,

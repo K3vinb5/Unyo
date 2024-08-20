@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/util/utils.dart';
 
-class EmbeddedSource implements AnimeSource {
-  const EmbeddedSource({required this.source, required this.name});
+class EmbeddedAnimeSource implements AnimeSource {
+  const EmbeddedAnimeSource({required this.source, required this.name});
 
   final String source;
   final String name;
@@ -14,7 +14,7 @@ class EmbeddedSource implements AnimeSource {
   @override
   Future<StreamData> getAnimeStreamAndCaptions(
       String id, int episode, BuildContext context) async {
-    var urlStream = Uri.parse("${getEndpoint()}/unyo/streamAndCaptions");
+    var urlStream = Uri.parse("${getEndpoint()}/unyo/anime/streamAndCaptions");
     Map<String, dynamic> requestBody = {
       "source": source,
       "id": id,
@@ -84,7 +84,7 @@ class EmbeddedSource implements AnimeSource {
   @override
   Future<List<List<String>>> getAnimeTitlesAndIds(String query) async {
     var urlStream = Uri.parse(
-        "${getEndpoint()}/unyo/titleAndIds?source=$source&query=$query");
+        "${getEndpoint()}/unyo/anime/titleAndIds?source=$source&query=$query");
     var response = await http.get(urlStream);
 
     if (response.statusCode != 200) {
