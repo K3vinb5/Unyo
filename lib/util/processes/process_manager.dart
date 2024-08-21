@@ -15,8 +15,12 @@ class ProcessManager {
 
   Future<void> _extractJar() async {
     supportDirectoryPath = await getApplicationSupportDirectory();
-    final jarFile = File('${supportDirectoryPath.path}//extensions.jar');
-    final extensionsDir = Directory('${supportDirectoryPath.path}//extensions');
+    final jarFile = Platform.isWindows
+        ? File('${supportDirectoryPath.path}\\extensions.jar')
+        : File('${supportDirectoryPath.path}//extensions.jar');
+    final extensionsDir = Platform.isWindows
+        ? Directory('${supportDirectoryPath.path}\\extensions')
+        : Directory('${supportDirectoryPath.path}//extensions');
 
     if (await jarFile.exists()) {
       _jarPath = jarFile.path;
@@ -25,9 +29,13 @@ class ProcessManager {
     if (!(await extensionsDir.exists())) {
       extensionsDir.create();
     }
-    final byteData = await rootBundle.load('assets//extensions.jar');
+    final byteData = await rootBundle.load(Platform.isWindows
+        ? 'assets\\extensions.jar'
+        : 'assets//extensions.jar');
     final buffer = byteData.buffer;
-    final file = File('${supportDirectoryPath.path}//extensions.jar');
+    final file = Platform.isWindows
+        ? File('${supportDirectoryPath.path}\\extensions.jar')
+        : File('${supportDirectoryPath.path}//extensions.jar');
     await file.writeAsBytes(
         buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
     _jarPath = file.path;
@@ -61,6 +69,7 @@ class ProcessManager {
       });
 
       addEmbeddedAniyomiExtensions();
+      addEmbeddedTachiyomiExtensions();
     } catch (e) {
       _addOutput('Failed to start process: $e', true);
     }

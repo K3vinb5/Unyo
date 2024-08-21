@@ -17,7 +17,7 @@ class MediaDetailsListViewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: totalWidth * 0.5,
-      height: totalHeight * 0.62,
+      height: totalHeight * 0.6,
       child: SmoothListView.builder(
         duration: const Duration(milliseconds: 200),
         itemCount: (totalEpisodes ?? currentEpisode) < 30

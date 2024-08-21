@@ -151,6 +151,7 @@ class _AnimeScreenState extends State<AnimeScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      // color: const Color.fromARGB(255, 34, 33, 34),
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedHeight =

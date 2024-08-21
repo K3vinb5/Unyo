@@ -87,5 +87,14 @@
   "not_connected" : "Not Connected",
   "delete" : "Delete",
   "download" : "Download",
-  "exit_fullscreen_on_video_exit" : "Exit fullscreen on video exit"
+  "exit_fullscreen_on_video_exit" : "Exit fullscreen on video exit",
+  "restore:default" : "Restore default",
+  "resume_from" : "Resume from",
+  "search_from_website" : "Search your title from the website here",
+  "current_selection" : "Current selection",
+  "skip_opening_automatically" : "Skip opening automatically (when available)",
+  "select_intro_skip_time" : "Select default manual intro skip time",
+  "select_default_title_type" : "Select default title type",
+  "change_playback_speed" : "Change playback speed",
+  "select_episode_completed_percentage" : "Select percentage at which episode is completed"
 }

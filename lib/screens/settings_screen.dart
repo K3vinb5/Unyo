@@ -16,18 +16,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   int themesCurrentOption = 0;
   int langCurrentOption = 0;
-  Map<String, String> langs = {
-    "en": "English",
-    "pt": "Portuguese",
-    "fr": "French",
-    "es": "Spanish",
-    "it": "Italian",
-    "de": "German",
-    // "po" : "Polish",
-    "ru": "Russian",
-    // "zh-cn" : "Chinese (Traditional)",
-    // "zh-hk" : "Chinese (Simplified)"
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +95,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         )
                         .toList(),
                   ),
+                  SettingsDropdownOptionWidget(
+                    title: context.tr("select_default_title_type"),
+                    width: 150,
+                    value: prefs.getInt("default_title_type") ?? 0,
+                    onPressed: (int selected) {
+                      prefs.setInt("default_title_type", selected);
+                      isScreenRefreshed.clear();
+                    },
+                    items: defaultTitleTypes
+                        .map(
+                          (titleType) => Text(
+                            titleType,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                        .toList(),
+                  ),
                   SettingsSwitchOptionWidget(
                     title: context.tr("video_duration_remaining_time"),
                     onPressed: (bool newValue) {
@@ -120,10 +125,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: context.tr("exit_fullscreen_on_video_exit"),
                     onPressed: (bool newValue) {
                       setState(() {
-                        prefs.setBool("exit_fullscreen_on_video_exit", newValue);
+                        prefs.setBool(
+                            "exit_fullscreen_on_video_exit", newValue);
                       });
                     },
-                    value: (prefs.getBool("exit_fullscreen_on_video_exit") ?? true),
+                    value: (prefs.getBool("exit_fullscreen_on_video_exit") ??
+                        true),
                   ),
                   SettingsDropdownOptionWidget(
                     title: context.tr("select_theme"),
@@ -138,6 +145,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         .map(
                           (entry) => Text(
                             entry.key,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  SettingsDropdownOptionWidget(
+                    title: context.tr("select_intro_skip_time"),
+                    width: 150,
+                    value: prefs.getInt("intro_skip_time") ?? 2,
+                    onPressed: (int selected) {
+                      prefs.setInt("intro_skip_time", selected);
+                    },
+                    items: skipTimes
+                        .map(
+                          (time) => Text(
+                            "${time.toString()}s",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  SettingsSwitchOptionWidget(
+                    title: context.tr("skip_opening_automatically"),
+                    onPressed: (bool newValue) {
+                      setState(() {
+                        prefs.setBool("skip_opening_automatically", newValue);
+                      });
+                    },
+                    value:
+                        (prefs.getBool("skip_opening_automatically") ?? true),
+                  ),
+                  SettingsDropdownOptionWidget(
+                    title: context.tr("select_episode_completed_percentage"),
+                    width: 150,
+                    value: prefs.getInt("episode_completed_percentage") ?? 0,
+                    onPressed: (int selected) {
+                      prefs.setInt("episode_completed_percentage", selected);
+                    },
+                    items: episodeCompletedOptions.keys 
+                        .map(
+                          (percentageOption) => Text(
+                           percentageOption, 
                             style: const TextStyle(color: Colors.white),
                           ),
                         )
@@ -159,6 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       } else {
                         processManager.stopProcess();
                         addEmbeddedAniyomiExtensions();
+                        addEmbeddedTachiyomiExtensions();
                       }
                     },
                     value: (prefs.getBool("remote_endpoint") ?? false),

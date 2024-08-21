@@ -29,11 +29,48 @@ class PageBannerWidget extends StatelessWidget {
         ImageGradient.linear(
           image: Image.network(
             animeModel.bannerImage ?? animeModel.coverImage!,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                // Image is fully loaded, start fading in
+                // return AnimatedOpacity(
+                //   opacity: 1.0,
+                //   duration: const Duration(milliseconds: 200),
+                //   curve: Curves.easeIn,
+                //   child: child,
+                // );
+                return Container(
+                  width: width,
+                  height: height,
+                  color: const Color.fromARGB(255, 34, 33, 34),
+                  child: AnimatedOpacity(
+                    opacity: 1.0,
+                    duration: const Duration(milliseconds: 100),
+                    curve: Curves.easeIn,
+                    child: child,
+                  ),
+                );
+              } else {
+                // Keep the image transparent while loading
+                return Container(
+                  width: width,
+                  height: height,
+                  color: const Color.fromARGB(255, 34, 33, 34),
+                  child: AnimatedOpacity(
+                    opacity: 0.0,
+                    duration: const Duration(milliseconds: 0),
+                    child: child,
+                  ),
+                );
+              }
+            },
             width: width,
             height: height,
             fit: BoxFit.cover,
           ),
-          colors: const [Colors.white, Colors.black87],
+          colors: const [
+            Colors.white,
+            Colors.black87 /* Color.fromARGB(255, 34, 33, 34) */
+          ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -60,16 +97,17 @@ class PageBannerWidget extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.only(
-                    bottom: (height - ((adjustedHeight * 0.28) > minimumHeight
-                        ? (adjustedHeight * 0.28)
-                        : minimumHeight)),
+                    bottom: (height -
+                        ((adjustedHeight * 0.28) > minimumHeight
+                            ? (adjustedHeight * 0.28)
+                            : minimumHeight)),
                     left: 25),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      animeModel.title!,
+                      animeModel.getDefaultTitle(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 21,
@@ -78,7 +116,7 @@ class PageBannerWidget extends StatelessWidget {
                     Text(
                       animeModel.status!.replaceAll("_", " "),
                       style: TextStyle(
-                        color: lightBorderColor, 
+                        color: lightBorderColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

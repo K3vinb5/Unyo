@@ -174,7 +174,7 @@ class _MangaScreenState extends State<MangaScreen> {
                                 return PageBannerWidget(
                                   animeModel: AnimeModel(
                                       id: mangaModel.id,
-                                      title: mangaModel.title,
+                                      userPreferedTitle: mangaModel.title,
                                       coverImage: mangaModel.coverImage,
                                       bannerImage: mangaModel.bannerImage,
                                       startDate: mangaModel.startDate,
@@ -312,7 +312,7 @@ class _MangaScreenState extends State<MangaScreen> {
                           ),
                           MangaWidgetList(
                             tag: "manga-details-list3",
-                            title: context.tr("yearly_Popular"),
+                            title: context.tr("yearly_popular"),
                             mangaList: seasonPopularMangaList,
                             textColor: Colors.white,
                             loadMore: true,

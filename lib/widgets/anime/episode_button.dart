@@ -24,7 +24,7 @@ class EpisodeButton extends StatelessWidget {
   final num latestEpisodeWatched;
   final String? currentSearchId;
   final AnimeModel currentAnime;
-  final void Function(String, int, String) videoQualities;
+  final void Function(String, int, String, String) videoQualities;
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +50,11 @@ class EpisodeButton extends StatelessWidget {
           ? () {
               if (currentSearchId == null) return;
               videoQualities(
-                  currentSearchId!,
-                  (index + 1 + currentEpisodeGroup * 30),
-                  currentAnime.title ?? "");
+                currentSearchId!,
+                (index + 1 + currentEpisodeGroup * 30),
+                currentAnime.userPreferedTitle ?? "",
+                (currentAnime.idMal ?? -1).toString()
+              );
             }
           : null,
       child: Column(

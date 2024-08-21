@@ -251,7 +251,9 @@ class MqqtClientController {
           Window.exitFullscreen();
         }
         interactScreen(false);
-        if (calculatePercentage() > 0.8 &&
+        if (calculatePercentage() >
+                episodeCompletedOptions.values.toList()[
+                    prefs.getInt("episode_completed_percentage") ?? 0] &&
             (prefs.getBool("update_progress_automatically") ?? false)) {
           updateEntry();
         }

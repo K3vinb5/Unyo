@@ -320,7 +320,7 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                           return Hero(
                             tag: "${"grid-view"}-$index",
                             child: AnimeWidget(
-                              title: mediaModel.title,
+                              title: (widget.type == "MANGA") ? mediaModel.title : mediaModel.getDefaultTitle(),
                               score: mediaModel.averageScore,
                               coverImage: mediaModel.coverImage,
                               onTap: () {

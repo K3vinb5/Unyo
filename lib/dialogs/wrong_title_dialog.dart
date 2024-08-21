@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class WrongTitleDialog extends StatelessWidget {
-  const WrongTitleDialog(
-      {super.key,
-      required this.width,
-      required this.height,
-      required this.wrongTitleSearchController,
-      required this.onSelected,
-      required this.onPressed,
-      required this.wrongTitleEntries,
-      required this.manualSelection,
-      });
+  const WrongTitleDialog({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.wrongTitleSearchController,
+    required this.onSelected,
+    required this.onPressed,
+    required this.wrongTitleEntries,
+    required this.manualSelection,
+    required this.currentSearchString,
+  });
 
   final double width;
   final double height;
@@ -21,6 +22,7 @@ class WrongTitleDialog extends StatelessWidget {
   final void Function() onPressed;
   final List<DropdownMenuEntry<dynamic>> wrongTitleEntries;
   final int? manualSelection;
+  final String currentSearchString;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,7 @@ class WrongTitleDialog extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   DropdownMenu(
+                    // hintText: context.tr("search_from_website"),
                     width: width * 0.4,
                     textStyle: const TextStyle(color: Colors.white),
                     menuStyle: const MenuStyle(
@@ -61,7 +64,7 @@ class WrongTitleDialog extends StatelessWidget {
                     ),
                     controller: wrongTitleSearchController,
                     onSelected: onSelected,
-                    initialSelection: manualSelection ?? 0,
+                    initialSelection: /*manualSelection ?? 0*/ null,
                     dropdownMenuEntries: wrongTitleEntries,
                     menuHeight: height * 0.3,
                   ),
@@ -69,8 +72,12 @@ class WrongTitleDialog extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(
-            height: 30,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
+              "${context.tr("current_selection")}: $currentSearchString",
+              style: const TextStyle(color: Colors.grey, fontSize: 18),
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

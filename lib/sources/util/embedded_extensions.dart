@@ -39,7 +39,7 @@ void addEmbeddedAniyomiExtensions() async {
 
 void addEmbeddedTachiyomiExtensions() async {
   globalMangasSources = {};
-  // print("restarted extensions");
+  print("restarted manga extensions");
   var urlStream = Uri.parse("${getEndpoint()}/unyo/manga/sources");
   late Response response;
   try {
@@ -57,7 +57,7 @@ void addEmbeddedTachiyomiExtensions() async {
     int sourcesLenght = globalAnimesSources.length;
     for (var source in sources) {
       String name = await getSourceNameAndLangAsync(source, "manga");
-      // print(name);
+      print(name);
       globalMangasSources.addAll({
         sourcesLenght: EmbeddedMangaSource(source: source as String, name: name)
       });

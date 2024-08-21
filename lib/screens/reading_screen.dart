@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:collection/collection.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -44,12 +45,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
     downloadChapterPages();
   }
 
-  //Thos should not be moved to the consumet file since you want it to show pages as soon as it downloads them one at a time, instead of alll at once
   void downloadChapterPages() async {
-    Map<String, String> headers = {"Referer": "http://www.mangahere.cc/"};
     for (int i = 0; i < totalPages; i++) {
       var response =
-          await http.get(Uri.parse(chapterPages[i]), headers: headers);
+          await http.get(Uri.parse(chapterPages[i]));
       Uint8List bytes = response.bodyBytes;
       setState(() {
         chapterBytes[i] = bytes;
@@ -211,7 +210,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                     height: height,
                     width: width,
                     child: Center(
-                      child: doublePages(leftToRight),
+                      child: doublePages(leftToRight, width),
                     ),
                   )
                 : Center(
@@ -224,7 +223,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
     );
   }
 
-  Widget doublePages(bool leftToRight) {
+  Widget doublePages(bool leftToRight, double width) {
     if (currentPage == chapterBytes.length) {
       //last chapter page
       return Image.memory(
@@ -237,16 +236,32 @@ class _ReadingScreenState extends State<ReadingScreen> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.memory(
-          chapterBytes[leftToRight ? currentPage : currentPage + 1]!,
-          fit: currentFittingOption == 0 ? BoxFit.fitHeight : BoxFit.fitWidth,
+        SizedBox(
+          width: (width * 0.5) - 2.5,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Image.memory(
+              chapterBytes[leftToRight ? currentPage : currentPage + 1]!,
+              fit: currentFittingOption == 0
+                  ? BoxFit.fitHeight
+                  : BoxFit.fitWidth,
+            ),
+          ),
         ),
         const SizedBox(
           width: 5,
         ),
-        Image.memory(
-          chapterBytes[leftToRight ? currentPage + 1 : currentPage]!,
-          fit: currentFittingOption == 0 ? BoxFit.fitHeight : BoxFit.fitWidth,
+        SizedBox(
+          width: (width * 0.5) - 2.5,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Image.memory(
+              chapterBytes[leftToRight ? currentPage + 1 : currentPage]!,
+              fit: currentFittingOption == 0
+                  ? BoxFit.fitHeight
+                  : BoxFit.fitWidth,
+            ),
+          ),
         ),
       ],
     );
@@ -273,12 +288,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
                           : BoxFit.fitWidth,
                     )
                   : Padding(
-                    padding: EdgeInsets.symmetric(vertical: height / 4),
-                    child: Center(
+                      padding: EdgeInsets.symmetric(vertical: height / 4),
+                      child: Center(
                         child: LoadingAnimationWidget.inkDrop(
                             color: Colors.white, size: 30),
                       ),
-                  );
+                    );
             })
           ],
         ),

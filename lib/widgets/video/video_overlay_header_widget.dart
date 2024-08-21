@@ -61,7 +61,9 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
                 interactScreen(false);
                 if (widget.mixedController.mqqtController
                             .calculatePercentage() >
-                        0.8 &&
+                        episodeCompletedOptions.values.toList()[
+                            prefs.getInt("episode_completed_percentage") ??
+                                0] &&
                     (prefs.getBool("update_progress_automatically") ?? false)) {
                   widget.updateEntry();
                 }

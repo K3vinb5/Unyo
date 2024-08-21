@@ -26,7 +26,8 @@ String getEndpoint() {
   if (prefs.getBool("remote_endpoint") ?? false) {
     return localEndPoint;
   } else {
-    return remoteEndPoint;
+    return localEndPoint;
+    // return remoteEndPoint;
   }
 }
 
@@ -40,6 +41,31 @@ Map<String, Map<String, Color>?> themes = {
   "Orange": orangeTheme,
   "Pink": pinkTheme,
   "Teal": tealTheme,
+};
+Map<String, String> langs = {
+  "en": "English",
+  "pt": "Portuguese",
+  "fr": "French",
+  "es": "Spanish",
+  "it": "Italian",
+  "de": "German",
+  // "po" : "Polish",
+  "ru": "Russian",
+  // "zh-cn" : "Chinese (Traditional)",
+  // "zh-hk" : "Chinese (Simplified)"
+};
+
+List<int> skipTimes = [75, 80, 85, 90, 95];
+List<String> defaultTitleTypes = [
+  "Default titles",
+  "English titles",
+  "Romaji titles"
+];
+Map<String, double> episodeCompletedOptions = {
+  "80%": 0.8,
+  "85%": 0.85,
+  "90%": 0.9,
+  "95%": 0.95,
 };
 
 void setBannerPallete(

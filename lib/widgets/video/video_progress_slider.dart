@@ -56,6 +56,31 @@ class VideoProgressSlider extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              StyledButton(
+                onPressed: () {},
+                backgroundColor: lightBorderColor,
+                child: SizedBox(
+                  height: 45,
+                  child: Row(
+                    children: [
+                      Text(
+                          "+ ${skipTimes[prefs.getInt("intro_skip_time") ?? 2]} "),
+                      const Icon(Icons.fast_forward_rounded),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
             children: [
               const SizedBox(
                 width: 24,
@@ -76,7 +101,7 @@ class VideoProgressSlider extends StatelessWidget {
                   min: 0,
                   max: max,
                   value: value,
-                  label: formatMilliseconds(value), 
+                  label: formatMilliseconds(value),
                   divisions: max > 0 ? max.toInt() : null,
                   onChanged: (value) {
                     // controller.seekTo(Duration(milliseconds: value.toInt()));
@@ -339,6 +364,32 @@ class VideoProgressSlider extends StatelessWidget {
                           );
                         },
                       ),
+                    ),
+                    PopupMenuButton<double>(
+                      tooltip: context.tr("change_playback_speed"),
+                      color: const Color.fromARGB(255, 34, 33, 34),
+                      icon: const Icon(
+                        Icons.speed,
+                        color: Colors.white,
+                      ),
+                      onSelected: (newPlaybackspeed) {
+                        mixedController.setPlaybackSpeed(newPlaybackspeed);
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
+                            .map((newPlaybackspeed) => PopupMenuItem<double>(
+                                  value: newPlaybackspeed,
+                                  child: SizedBox(
+                                    width: 200,
+                                    child: Text(
+                                      "${newPlaybackspeed.toString()}x",
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ))
+                            .toList();
+                      },
                     ),
                     MouseRegion(
                       onEnter: (_) {

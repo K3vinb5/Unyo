@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class MediaDetailsCoverImageWidget extends StatelessWidget {
@@ -24,36 +25,36 @@ class MediaDetailsCoverImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return coverImage != null
         ? SizedBox(
-            height: totalHeight * 0.35,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0, left: 50.0),
-                  child: Hero(
-                    tag: tag,
-                    child: AnimeWidget(
-                      title: "",
-                      coverImage: coverImage,
-                      score: null,
-                      onTap: null,
-                      textColor: Colors.white,
-                      height: (adjustedHeight * 0.28) > minimumHeight
-                          ? (adjustedHeight * 0.28)
-                          : minimumHeight,
-                      width: (adjustedWidth * 0.1) > minimumWidth
-                          ? (adjustedWidth * 0.1)
-                          : minimumWidth,
-                      status: status,
-                      year: null,
-                      format: null,
-                    ),
+          height: totalHeight * 0.35,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, left: 50.0),
+                child: Hero(
+                  tag: tag,
+                  child: AnimeWidget(
+                    title: "",
+                    coverImage: coverImage,
+                    score: null,
+                    onTap: null,
+                    textColor: Colors.white,
+                    height: (adjustedHeight * 0.28) > minimumHeight
+                        ? (adjustedHeight * 0.28)
+                        : minimumHeight,
+                    width: (adjustedWidth * 0.1) > minimumWidth
+                        ? (adjustedWidth * 0.1)
+                        : minimumWidth,
+                    status: status,
+                    year: null,
+                    format: null,
                   ),
                 ),
-              ],
-            ),
-          )
+              ),
+            ],
+          ),
+        )
         : const SizedBox();
   }
 }

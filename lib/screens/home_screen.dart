@@ -451,7 +451,7 @@ class _HomeScreenState
                                                     );
                                                   },
                                                   icon: const Icon(
-                                                    Icons.person,
+                                                    Icons.logout,
                                                     color: Colors.white,
                                                   ),
                                                 ),

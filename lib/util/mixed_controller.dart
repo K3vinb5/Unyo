@@ -181,6 +181,13 @@ class MixedController {
     sync();
   }
 
+  void setPlaybackSpeed(double newSpeed) {
+    if (audioSeparate) {
+      audioController.setPlaybackSpeed(newSpeed);
+    }
+    videoController.setPlaybackSpeed(newSpeed);
+  }
+
   void play({bool? sendCommand}) {
     isPlaying = true;
     if (audioSeparate) {

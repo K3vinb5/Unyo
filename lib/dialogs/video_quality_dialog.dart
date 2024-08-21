@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
+import 'package:unyo/api/aniskip_api.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/util/utils.dart';
@@ -16,7 +17,8 @@ class VideoQualityDialog extends StatefulWidget {
     required this.animeEpisode,
     required this.animeName,
     required this.currentAnimeSource,
-    required this.consumetId,
+    required this.id,
+    required this.idMal,
   });
 
   final double adjustedWidth;
@@ -25,7 +27,8 @@ class VideoQualityDialog extends StatefulWidget {
   final String animeName;
   final void Function(int) updateEntry;
   final AnimeSource currentAnimeSource;
-  final String consumetId;
+  final String id;
+  final String idMal;
 
   @override
   State<VideoQualityDialog> createState() => _VideoQualityDialogState();
@@ -44,11 +47,11 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
 
   void getStreamInfo() async {
     streamData = await widget.currentAnimeSource.getAnimeStreamAndCaptions(
-        widget.consumetId, widget.animeEpisode, context);
+        widget.id, widget.animeEpisode, context);
     setState(() {});
   }
 
-  void onStreamSelected(int selected) {
+  void onStreamSelected(int selected, Map<String, double> timestamps) {
     source = selected;
     Navigator.of(context).pop();
     videoScreen = VideoScreen(
@@ -58,6 +61,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
         widget.updateEntry(widget.animeEpisode);
       },
       title: "${widget.animeName}, ${"episode".tr()} ${widget.animeEpisode}",
+      timestamps: timestamps,
     );
     if (!context.mounted) return;
     Navigator.push(
@@ -91,8 +95,11 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
                                 Colors.white,
                               ),
                             ),
-                            onPressed: () {
-                              onStreamSelected(index);
+                            onPressed: () async {
+                              Map<String, double> timestamps =
+                                  await getOpeningSkipTimeStamps(
+                                      widget.idMal, widget.animeEpisode.toString());
+                              onStreamSelected(index, timestamps);
                             },
                             child: Text(text),
                           ),

@@ -156,7 +156,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
                         return Hero(
                           tag: "${widget.tag}-$index",
                           child: AnimeWidget(
-                            title: animeModel.title,
+                            title: animeModel.getDefaultTitle(),
                             score: animeModel.averageScore,
                             coverImage: animeModel.coverImage,
                             onTap: () {

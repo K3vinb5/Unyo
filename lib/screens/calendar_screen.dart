@@ -97,7 +97,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         child: Hero(
           tag: "${"user-anime-list-$title-view"}-$j",
           child: AnimeWidget(
-            title: animeList[j].title,
+            title: animeList[j].getDefaultTitle(),
             score: animeList[j].averageScore,
             coverImage: animeList[j].coverImage,
             onTap: () {

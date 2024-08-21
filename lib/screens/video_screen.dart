@@ -17,12 +17,14 @@ class VideoScreen extends StatefulWidget {
     required this.streamData,
     required this.updateEntry,
     required this.title,
+    required this.timestamps,
   });
 
   final int source;
   final StreamData streamData;
   final void Function() updateEntry;
   final String title;
+  final Map<String, double> timestamps;
 
   @override
   State<VideoScreen> createState() => _VideoScreenState();

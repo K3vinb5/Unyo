@@ -85,7 +85,7 @@ class MediaDetailsInfoWidget extends StatelessWidget {
     String? status =
         currentAnime != null ? currentAnime!.status : currentManga!.status;
     String? title =
-        currentAnime != null ? currentAnime!.title : currentManga!.title;
+        currentAnime != null ? currentAnime!.getDefaultTitle() : currentManga!.title;
     String? description = currentAnime != null
         ? currentAnime!.description
         : currentManga!.description;

@@ -16,7 +16,7 @@ Future<List<AnimeModel>> getAnimeModelListTrending(
     int page, int n, int attempt) async {
   Map<String, dynamic> query = {
     "query":
-        "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id title{userPreferred}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
+        "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id idMal title{userPreferred english romaji}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
     "variables": {
       "page": page,
       "type": "ANIME",
@@ -42,23 +42,7 @@ Future<List<AnimeModel>> getAnimeModelListTrending(
     List<AnimeModel> list = [];
     for (int i = 0; i < n; i++) {
       Map<String, dynamic> json = media[i];
-      list.add(AnimeModel(
-        id: json["id"],
-        title: json["title"]["userPreferred"],
-        coverImage: json["coverImage"]["large"],
-        bannerImage: json["bannerImage"],
-        startDate:
-            "${json["startDate"]["day"]}/${json["startDate"]["month"]}/${json["startDate"]["year"]}",
-        endDate:
-            "${json["endDate"]["day"]}/${json["endDate"]["month"]}/${json["endDate"]["year"]}",
-        type: json["type"],
-        description: json["description"],
-        status: json["status"],
-        averageScore: json["averageScore"],
-        episodes: json["episodes"],
-        duration: json["duration"],
-        format: json["format"],
-      ));
+      list.add(AnimeModel.fromJson(json));
     }
     return list;
   }
@@ -68,7 +52,7 @@ Future<List<AnimeModel>> getAnimeModelListRecentlyReleased(
     int page, int n, int attempt) async {
   Map<String, dynamic> query = {
     "query":
-        "query{ Page(page: $page, perPage: $n) { airingSchedules (sort: TIME_DESC, notYetAired: false) {episode media { id title { userPreferred } coverImage { large } bannerImage format startDate { year month day } endDate { year month day } type description status averageScore episodes duration}}}}"
+        "query{ Page(page: $page, perPage: $n) { airingSchedules (sort: TIME_DESC, notYetAired: false) {episode media { id idMal title { userPreferred romaji english} coverImage { large } bannerImage format startDate { year month day } endDate { year month day } type description status averageScore episodes duration}}}}"
   };
 
   var url = Uri.parse(anilistEndpoint);
@@ -91,24 +75,8 @@ Future<List<AnimeModel>> getAnimeModelListRecentlyReleased(
     List<AnimeModel> list = [];
     for (int i = 0; i < media.length; i++) {
       var currentMedia = media[i]["media"];
-      list.add(AnimeModel(
-        id: currentMedia["id"],
-        title: currentMedia["title"]["userPreferred"],
-        coverImage: currentMedia["coverImage"]["large"],
-        bannerImage: currentMedia["bannerImage"],
-        startDate:
-            "${currentMedia["startDate"]["day"]}/${currentMedia["startDate"]["month"]}/${currentMedia["startDate"]["year"]}",
-        endDate:
-            "${currentMedia["endDate"]["day"]}/${currentMedia["endDate"]["month"]}/${currentMedia["endDate"]["year"]}",
-        type: currentMedia["type"],
-        status: currentMedia["status"],
-        averageScore: currentMedia["averageScore"],
-        episodes: currentMedia["episodes"],
-        currentEpisode: media[i]["episode"],
-        duration: currentMedia["duration"],
-        description: currentMedia["description"],
-        format: currentMedia["format"],
-      ));
+      
+      list.add(AnimeModel.fromJson(currentMedia));
     }
     for (int i = 0; i < list.length; i++) {
       for (int j = i + 1; j < list.length - 1; j++) {
@@ -125,7 +93,7 @@ Future<List<AnimeModel>> getAnimeModelListSeasonPopular(
     int page, int n, int year, String season, int attempt) async {
   Map<String, dynamic> query = {
     "query":
-        "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id title{userPreferred}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
+        "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$search:String \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source search:\$search onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id idMal title{userPreferred english romaji}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
     "variables": {
       "page": page,
       "type": "ANIME",
@@ -153,23 +121,8 @@ Future<List<AnimeModel>> getAnimeModelListSeasonPopular(
     List<AnimeModel> list = [];
     for (int i = 0; i < n; i++) {
       Map<String, dynamic> json = media[i];
-      list.add(AnimeModel(
-        id: json["id"],
-        title: json["title"]["userPreferred"],
-        coverImage: json["coverImage"]["large"],
-        bannerImage: json["bannerImage"],
-        startDate:
-            "${json["startDate"]["day"]}/${json["startDate"]["month"]}/${json["startDate"]["year"]}",
-        endDate:
-            "${json["endDate"]["day"]}/${json["endDate"]["month"]}/${json["endDate"]["year"]}",
-        type: json["type"],
-        description: json["description"],
-        status: json["status"],
-        averageScore: json["averageScore"],
-        episodes: json["episodes"],
-        duration: json["duration"],
-        format: json["format"],
-      ));
+      
+      list.add(AnimeModel.fromJson(json));
     }
     return list;
   }
@@ -180,7 +133,7 @@ Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort,
   String finalSearch = search.isNotEmpty ? "search:\"$search\"" : "";
   Map<String, dynamic> query = {
     "query":
-        "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source $finalSearch onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id title{userPreferred}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
+        "query(\$page:Int = 1 \$id:Int \$type:MediaType \$isAdult:Boolean = false \$format:[MediaFormat]\$status:MediaStatus \$countryOfOrigin:CountryCode \$source:MediaSource \$season:MediaSeason \$seasonYear:Int \$year:String \$onList:Boolean \$yearLesser:FuzzyDateInt \$yearGreater:FuzzyDateInt \$episodeLesser:Int \$episodeGreater:Int \$durationLesser:Int \$durationGreater:Int \$chapterLesser:Int \$chapterGreater:Int \$volumeLesser:Int \$volumeGreater:Int \$licensedBy:[Int]\$isLicensed:Boolean \$genres:[String]\$excludedGenres:[String]\$tags:[String]\$excludedTags:[String]\$minimumTagRank:Int \$sort:[MediaSort]=[POPULARITY_DESC,SCORE_DESC]){Page(page:\$page,perPage:$n){pageInfo{total perPage currentPage lastPage hasNextPage}media(id:\$id type:\$type season:\$season format_in:\$format status:\$status countryOfOrigin:\$countryOfOrigin source:\$source $finalSearch onList:\$onList seasonYear:\$seasonYear startDate_like:\$year startDate_lesser:\$yearLesser startDate_greater:\$yearGreater episodes_lesser:\$episodeLesser episodes_greater:\$episodeGreater duration_lesser:\$durationLesser duration_greater:\$durationGreater chapters_lesser:\$chapterLesser chapters_greater:\$chapterGreater volumes_lesser:\$volumeLesser volumes_greater:\$volumeGreater licensedById_in:\$licensedBy isLicensed:\$isLicensed genre_in:\$genres genre_not_in:\$excludedGenres tag_in:\$tags tag_not_in:\$excludedTags minimumTagRank:\$minimumTagRank sort:\$sort isAdult:\$isAdult){id idMal title{userPreferred english romaji}coverImage{extraLarge large color}startDate{year month day}endDate{year month day}bannerImage season seasonYear description type format status(version:2)episodes duration chapters volumes genres isAdult averageScore popularity nextAiringEpisode{airingAt timeUntilAiring episode}mediaListEntry{id status}studios(isMain:true){edges{isMain node{id name}}}}}}",
     "variables": {
       "page": 1,
       "type": "ANIME",
@@ -208,23 +161,7 @@ Future<List<AnimeModel>> getAnimeModelListSearch(String search, String sort,
     List<AnimeModel> list = [];
     for (int i = 0; i < media.length; i++) {
       Map<String, dynamic> json = media[i];
-      list.add(AnimeModel(
-        id: json["id"],
-        title: json["title"]["userPreferred"],
-        coverImage: json["coverImage"]["large"],
-        bannerImage: json["bannerImage"],
-        startDate:
-            "${json["startDate"]["day"]}/${json["startDate"]["month"]}/${json["startDate"]["year"]}",
-        endDate:
-            "${json["endDate"]["day"]}/${json["endDate"]["month"]}/${json["endDate"]["year"]}",
-        type: json["type"],
-        description: json["description"],
-        status: json["status"],
-        averageScore: json["averageScore"],
-        episodes: json["episodes"],
-        duration: json["duration"],
-        format: json["format"],
-      ));
+      list.add(AnimeModel.fromJson(json));
     }
     print(list.length);
     // if ((sort != "Select Sorting")) {
@@ -415,7 +352,7 @@ Future<List<AnimeModel>> getUserAnimeLists(
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query":
-        "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type,sort:UPDATED_TIME_DESC){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
+        "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type,sort:UPDATED_TIME_DESC){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{year month day}}}",
     "variables": {
       "userId": userId,
       "type": "ANIME",
@@ -443,25 +380,9 @@ Future<List<AnimeModel>> getUserAnimeLists(
     if (animeLists[i]["name"] == listName) {
       List<dynamic> wantedList = animeLists[i]["entries"];
       for (int i = 0; i < wantedList.length; i++) {
-        animeModelList.add(
-          AnimeModel(
-            id: wantedList[i]["media"]["id"],
-            title: wantedList[i]["media"]["title"]["userPreferred"],
-            coverImage: wantedList[i]["media"]["coverImage"]["large"],
-            bannerImage: wantedList[i]["media"]["bannerImage"],
-            startDate:
-                "${wantedList[i]["media"]["startDate"]["day"]}/${wantedList[i]["media"]["startDate"]["month"]}/${wantedList[i]["media"]["startDate"]["year"]}",
-            endDate: "",
-            //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
-            type: wantedList[i]["media"]["type"],
-            description: wantedList[i]["media"]["description"],
-            status: wantedList[i]["media"]["status"],
-            averageScore: wantedList[i]["media"]["averageScore"],
-            episodes: wantedList[i]["media"]["episodes"],
-            duration: wantedList[i]["media"]["episodes"],
-            format: wantedList[i]["media"]["format"],
-          ),
-        );
+        Map<String, dynamic> json = wantedList[i]["media"];
+        
+        animeModelList.add(AnimeModel.fromJson(json));
       }
       break;
     }
@@ -474,9 +395,9 @@ Future<Map<String, List<AnimeModel>>> getAllUserAnimeLists(
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query":
-        "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
+        "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english }coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{day month year}}}",
     "variables": {
-      "userId": /*859862*/ userId,
+      "userId": userId,
       "type": "ANIME",
     }
   };
@@ -505,25 +426,9 @@ Future<Map<String, List<AnimeModel>>> getAllUserAnimeLists(
     List<AnimeModel> animeModelList = [];
 
     for (int j = 0; j < currentList.length; j++) {
-      animeModelList.add(
-        AnimeModel(
-          id: currentList[j]["media"]["id"],
-          title: currentList[j]["media"]["title"]["userPreferred"],
-          coverImage: currentList[j]["media"]["coverImage"]["large"],
-          bannerImage: currentList[j]["media"]["bannerImage"],
-          startDate:
-              "${currentList[j]["media"]["startDate"]["day"]}/${currentList[j]["media"]["startDate"]["month"]}/${currentList[j]["media"]["startDate"]["year"]}",
-          endDate: "",
-          //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
-          type: currentList[j]["media"]["type"],
-          description: currentList[j]["media"]["description"],
-          status: currentList[j]["media"]["status"],
-          averageScore: currentList[j]["media"]["averageScore"],
-          episodes: currentList[j]["media"]["episodes"],
-          duration: currentList[j]["media"]["episodes"],
-          format: currentList[j]["media"]["format"],
-        ),
-      );
+      Map<String, dynamic> json = currentList[j]["media"];
+
+      animeModelList.add(AnimeModel.fromJson(json));
     }
 
     userAnimeListsMap.addAll({userAnimeLists[i]["name"]: animeModelList});
@@ -748,7 +653,7 @@ Future<Map<String, List<AnimeModel>>> getCalendar(
   var url = Uri.parse(anilistEndpoint);
   Map<String, dynamic> query = {
     "query":
-        "query{Page(page: $page, perPage: 50) { pageInfo { hasNextPage total } airingSchedules(airingAt_greater: $airingAtGreater, airingAt_lesser: $airingAtLesser, sort: TIME_DESC) { episode airingAt media { id idMal status chapters episodes nextAiringEpisode { episode } isAdult type meanScore isFavourite format bannerImage startDate {day month year} countryOfOrigin coverImage { large } title { english romaji userPreferred } mediaListEntry { progress private score(format: POINT_100) status } } } }}",
+        "query{Page(page: $page, perPage: 50) { pageInfo { hasNextPage total } airingSchedules(airingAt_greater: $airingAtGreater, airingAt_lesser: $airingAtLesser, sort: TIME_DESC) { episode airingAt media { id idMal status chapters episodes nextAiringEpisode { episode } isAdult type meanScore isFavourite format bannerImage startDate {day month year} endDate {day month year} countryOfOrigin coverImage { large } title { english romaji userPreferred } mediaListEntry { progress private score(format: POINT_100) status } } } }}",
   };
   var response = await http.post(
     url,
@@ -771,25 +676,8 @@ Future<Map<String, List<AnimeModel>>> getCalendar(
   List<AnimeModel> animeModelList = [];
 
   for (int j = 0; j < mediaList.length; j++) {
-    animeModelList.add(
-      AnimeModel(
-        id: mediaList[j]["media"]["id"],
-        title: mediaList[j]["media"]["title"]["userPreferred"],
-        coverImage: mediaList[j]["media"]["coverImage"]["large"],
-        bannerImage: mediaList[j]["media"]["bannerImage"],
-        startDate:
-            "${mediaList[j]["media"]["startDate"]["day"]}/${mediaList[j]["media"]["startDate"]["month"]}/${mediaList[j]["media"]["startDate"]["year"]}",
-        endDate: "",
-        //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
-        type: mediaList[j]["media"]["type"],
-        description: mediaList[j]["media"]["description"],
-        status: mediaList[j]["media"]["status"],
-        averageScore: mediaList[j]["media"]["averageScore"],
-        episodes: mediaList[j]["media"]["episodes"],
-        duration: mediaList[j]["media"]["episodes"],
-        format: mediaList[j]["media"]["format"],
-      ),
-    );
+    Map<String, dynamic> json = mediaList[j]["media"];
+    animeModelList.add(AnimeModel.fromJson(json));
   }
 
   calendarListMap = formatCalendarListMap(

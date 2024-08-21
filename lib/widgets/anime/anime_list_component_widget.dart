@@ -83,7 +83,7 @@ class AnimeListComponentWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    animeModel.title!,
+                    animeModel.getDefaultTitle(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

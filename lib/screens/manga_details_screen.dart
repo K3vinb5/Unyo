@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:collection/collection.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:unyo/dialogs/dialogs.dart';
@@ -32,7 +33,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   String currentSearchString = "";
   late int currentSearch;
   int currentSource = 0;
-  int currentEpisode = 0;
+  int latestReleasedChapter = 0;
   late Map<int, MangaSource> mangaSources;
   late double progress;
   late double score;
@@ -64,14 +65,16 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    mangaSources = globalMangasSources; 
-    Future.delayed(Duration.zero, (){updateSource(0, context);});
+    mangaSources = globalMangasSources;
+    Future.delayed(Duration.zero, () {
+      updateSource(0, context);
+    });
     setUserMangaModel();
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
     if (startedWrongTitleDialog) {
-      oldWrongTitleSearch = searches[0];
+      oldWrongTitleSearch = searches.isNotEmpty ? searches[0] : "";
       startedWrongTitleDialog = false;
     }
     //reset listener
@@ -137,7 +140,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
         : widget.currentManga.chapters!;
     if (setDialogState != null) {
       setState(() {
-        currentEpisode = newCurrentEpisode;
+        latestReleasedChapter = newCurrentEpisode;
         searches = newSearchesAndIds[0]
             .sublist(0, min(10, newSearchesAndIds[0].length));
         searchesId = newSearchesAndIds[1]
@@ -160,7 +163,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       });
     } else {
       setState(() {
-        currentEpisode = newCurrentEpisode;
+        latestReleasedChapter = newCurrentEpisode;
         searches = newSearches[0];
         searchesId = newSearches[1];
       });
@@ -174,6 +177,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
             timer.cancel();
           }
         });
+        currentSearchString = searches[0];
         AnimatedSnackBar.material(
           "Found \"${searches[0]}\"! :D",
           type: AnimatedSnackBarType.success,
@@ -273,39 +277,50 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             setWrongTitleSearch(setState);
-            return AlertDialog(
-              title: const Text("Select Title",
-                  style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 44, 44, 44),
-              content: WrongTitleDialog(
-                width: width,
-                height: height,
-                wrongTitleSearchController: wrongTitleSearchController,
-                wrongTitleEntries: wrongTitleEntries,
-                manualSelection: null,
-                onPressed: () async {
+            return PopScope(
+              onPopInvoked: (didPop) {
+                if (didPop) {
                   wrongTitleSearchTimer.cancel();
-                  //NOTE dirty fix for a bug
-                  if (!mounted) return;
-                  AnimatedSnackBar.material(
-                    "Updating Title, don't close...",
-                    type: AnimatedSnackBarType.warning,
-                    desktopSnackBarPosition: DesktopSnackBarPosition.topCenter,
-                  ).show(context);
-                  await Future.delayed(const Duration(seconds: 1));
-                  currentSearch = searches.indexOf(currentSearchString);
-                  updateSearch(currentSearch);
-                  AnimatedSnackBar.material(
-                    "Title Updated",
-                    type: AnimatedSnackBarType.success,
-                    desktopSnackBarPosition: DesktopSnackBarPosition.topCenter,
-                  ).show(context);
-                  Navigator.of(context).pop();
-                },
-                onSelected: (value) {
-                  currentSearchString = searches[value];
-                  currentSearch = value!;
-                },
+                }
+              },
+              canPop: true,
+              child: AlertDialog(
+                title: const Text("Select Title",
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: const Color.fromARGB(255, 44, 44, 44),
+                content: WrongTitleDialog(
+                  width: width,
+                  height: height,
+                  wrongTitleSearchController: wrongTitleSearchController,
+                  wrongTitleEntries: wrongTitleEntries,
+                  manualSelection: null,
+                  currentSearchString: currentSearchString,
+                  onPressed: () async {
+                    wrongTitleSearchTimer.cancel();
+                    //NOTE dirty fix for a bug
+                    if (!mounted) return;
+                    AnimatedSnackBar.material(
+                      "Updating Title, don't close...",
+                      type: AnimatedSnackBarType.warning,
+                      desktopSnackBarPosition:
+                          DesktopSnackBarPosition.topCenter,
+                    ).show(context);
+                    await Future.delayed(const Duration(seconds: 1));
+                    currentSearch = searches.indexOf(currentSearchString);
+                    updateSearch(currentSearch);
+                    AnimatedSnackBar.material(
+                      "Title Updated",
+                      type: AnimatedSnackBarType.success,
+                      desktopSnackBarPosition:
+                          DesktopSnackBarPosition.topCenter,
+                    ).show(context);
+                    Navigator.of(context).pop();
+                  },
+                  onSelected: (value) {
+                    currentSearchString = searches[value];
+                    currentSearch = value!;
+                  },
+                ),
               ),
             );
           },
@@ -350,7 +365,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
             statuses: statuses,
             query: query,
             progress: progress,
-            currentEpisode: currentEpisode,
+            currentEpisode: latestReleasedChapter,
             score: score,
             setUserAnimeModel: setUserMangaModel,
             startDate: startDate,
@@ -364,7 +379,10 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: (widget.currentManga.bannerImage != null &&
+              widget.currentManga.coverImage != null)
+          ? Colors.black
+          : Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedWidth =
@@ -386,6 +404,24 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                         image: Image.network(
                           widget.currentManga.bannerImage ??
                               widget.currentManga.coverImage!,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              // Image is fully loaded, start fading in
+                              return AnimatedOpacity(
+                                opacity: 1.0,
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeIn,
+                                child: child,
+                              );
+                            } else {
+                              // Keep the image transparent while loading
+                              return AnimatedOpacity(
+                                opacity: 0.0,
+                                duration: const Duration(milliseconds: 0),
+                                child: child,
+                              );
+                            }
+                          },
                           width: totalWidth,
                           height: totalHeight * 0.35,
                           fit: BoxFit.cover,
@@ -456,16 +492,32 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                       ],
                     ),
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: totalHeight * 0.22,
+                        MediaResumeFromWidget(
+                          totalWidth: totalWidth,
+                          text:
+                              "${context.tr("resume_from")} Ch.${((userMangaModel?.progress ?? 0) + 1)}",
+                          onPressed: () {
+                            int chapterNum =
+                                ((userMangaModel?.progress ?? 0) + 1).toInt();
+                            if (searches.isEmpty ||
+                                (latestReleasedChapter + 1) <= chapterNum) {
+                              return;
+                            }
+                            ((userMangaModel?.progress ?? 0) + 1).toInt();
+                            openManga(chaptersId[chapterNum - 1], chapterNum,
+                                widget.currentManga.title ?? "");
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                         MediaDetailsListNavigationWidget(
                           totalWidth: totalWidth,
                           currentEpisodeGroup: currentChapterGroup,
-                          currentEpisode: currentEpisode,
+                          currentEpisode: latestReleasedChapter,
                           totalEpisodes: chaptersId.length,
                           episodeGroupBack: () {
                             setState(() {
@@ -483,7 +535,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           totalHeight: totalHeight,
                           totalEpisodes: chaptersId.length,
                           currentEpisodeGroup: currentChapterGroup,
-                          currentEpisode: currentEpisode,
+                          currentEpisode: latestReleasedChapter,
                           itemBuilder: (context, index) {
                             return ChapterButton(
                               index: index,

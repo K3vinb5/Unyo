@@ -32,7 +32,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   String? currentSearchString;
   int? currentSearchIndex;
   int currentSource = 0;
-  int currentEpisode = 0;
+  int latestReleasedEpisode = 0;
   late Map<int, AnimeSource> animeSources;
   late double progress;
   late double score;
@@ -68,7 +68,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     animeSources = globalAnimesSources;
     mediaContentModel = MediaContentModel(anilistId: widget.currentAnime.id);
     mediaContentModel.init();
-    Future.delayed(Duration.zero, (){updateSource(0, context);});
+    Future.delayed(Duration.zero, () {
+      updateSource(0, context);
+    });
     setUserAnimeModel();
   }
 
@@ -131,13 +133,13 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   void setSearches(Future<List<List<String>>> Function(String) getIds,
       {String? query, void Function(void Function())? setDialogState}) async {
     List<List<String>> newSearchesAndIds =
-        await getIds(query ?? widget.currentAnime.title!);
+        await getIds(query ?? widget.currentAnime.userPreferedTitle!);
     int newCurrentEpisode = widget.currentAnime.status == "RELEASING"
         ? await getAnimeCurrentEpisode(widget.currentAnime.id, 0)
         : widget.currentAnime.episodes!;
     if (setDialogState != null) {
       setState(() {
-        currentEpisode = newCurrentEpisode;
+        latestReleasedEpisode = newCurrentEpisode;
         searches = newSearchesAndIds[0];
         // .sublist(0, min(10, newSearchesAndIds[0].length));
         searchesId = newSearchesAndIds[1];
@@ -160,7 +162,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       });
     } else {
       setState(() {
-        currentEpisode = newCurrentEpisode;
+        latestReleasedEpisode = newCurrentEpisode;
         searches = newSearchesAndIds[0];
         searchesId = newSearchesAndIds[1];
       });
@@ -255,7 +257,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void openVideoQualities(
-      String consumetId, int animeEpisode, String animeName) async {
+      String id, int animeEpisode, String animeName, String idMal) async {
     if (!mounted) return;
     showDialog(
       context: context,
@@ -272,7 +274,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             updateEntry: updateEntry,
             animeEpisode: animeEpisode,
             animeName: animeName,
-            consumetId: consumetId,
+            id: id,
+            idMal: idMal,
             currentAnimeSource: animeSources[currentSource]!,
           ),
         );
@@ -298,6 +301,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 wrongTitleSearchController: wrongTitleSearchController,
                 wrongTitleEntries: wrongTitleEntries,
                 manualSelection: currentSearchIndex,
+                currentSearchString: manualTitleSelection
+                    ? currentSearchString!
+                    : searches.isNotEmpty
+                        ? searches[0]
+                        : "",
                 onPressed: () async {
                   wrongTitleSearchTimer.cancel();
                   //NOTE dirty fix for a bug
@@ -366,7 +374,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             statuses: statuses,
             query: query,
             progress: progress,
-            currentEpisode: currentEpisode,
+            currentEpisode: latestReleasedEpisode,
             score: score,
             setUserAnimeModel: setUserAnimeModel,
             startDate: startDate,
@@ -380,7 +388,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: (widget.currentAnime.bannerImage != null &&
+              widget.currentAnime.coverImage != null)
+          ? Colors.black
+          : Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedWidth =
@@ -400,6 +411,24 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                     children: [
                       ImageGradient.linear(
                         image: Image.network(
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              // Image is fully loaded, start fading in
+                              return AnimatedOpacity(
+                                opacity: 1.0,
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeIn,
+                                child: child,
+                              );
+                            } else {
+                              // Keep the image transparent while loading
+                              return AnimatedOpacity(
+                                opacity: 0.0,
+                                duration: const Duration(milliseconds: 0),
+                                child: child,
+                              );
+                            }
+                          },
                           widget.currentAnime.bannerImage ??
                               widget.currentAnime.coverImage!,
                           width: totalWidth,
@@ -465,19 +494,40 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                       openWrongTitleDialog: openWrongTitleDialog,
                       openMediaInfoDialog: openAnimeInfoDialog,
                       currentAnime: widget.currentAnime,
-                      currentEpisode: currentEpisode,
+                      currentEpisode: latestReleasedEpisode,
                     ),
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: totalHeight * 0.22,
+                        MediaResumeFromWidget(
+                          totalWidth: totalWidth,
+                          text:
+                              "${context.tr("resume_from")} Ep.${((userAnimeModel?.progress ?? 0) + 1)}",
+                          onPressed: () {
+                            int episodeNum =
+                                ((userAnimeModel?.progress ?? 0) + 1).toInt();
+                            if (searches.isEmpty ||
+                                (latestReleasedEpisode + 1) <= episodeNum) {
+                              return;
+                            }
+                            openVideoQualities(
+                              manualTitleSelection
+                                  ? currentSearchId!
+                                  : searchesId[0],
+                              episodeNum,
+                              widget.currentAnime.userPreferedTitle ?? "",
+                              widget.currentAnime.idMal?.toString() ?? "-1",
+                            );
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                         MediaDetailsListNavigationWidget(
                           totalWidth: totalWidth,
                           currentEpisodeGroup: currentEpisodeGroup,
-                          currentEpisode: currentEpisode,
+                          currentEpisode: latestReleasedEpisode,
                           totalEpisodes: widget.currentAnime.episodes,
                           episodeGroupBack: () {
                             setState(() {
@@ -494,7 +544,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           totalWidth: totalWidth,
                           totalHeight: totalHeight,
                           currentEpisodeGroup: currentEpisodeGroup,
-                          currentEpisode: currentEpisode,
+                          currentEpisode: latestReleasedEpisode,
                           totalEpisodes: widget.currentAnime.episodes,
                           itemBuilder: (context, index) {
                             return EpisodeButton(
@@ -503,13 +553,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               currentAnime: widget.currentAnime,
                               userAnimeModel: userAnimeModel,
                               mediaContentModel: mediaContentModel,
-                              latestEpisode: currentEpisode,
+                              latestEpisode: latestReleasedEpisode,
                               latestEpisodeWatched:
                                   userAnimeModel?.progress ?? 1,
                               videoQualities: openVideoQualities,
-                              currentSearchId: manualTitleSelection ? currentSearchId : (currentSearchIndex ?? 0) < searchesId.length
-                                  ? searchesId[currentSearchIndex ?? 0]
-                                  : null,
+                              currentSearchId: manualTitleSelection
+                                  ? currentSearchId
+                                  : (currentSearchIndex ?? 0) <
+                                          searchesId.length
+                                      ? searchesId[currentSearchIndex ?? 0]
+                                      : null,
                             );
                           },
                         ),
