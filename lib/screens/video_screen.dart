@@ -41,6 +41,7 @@ class _VideoScreenState extends State<VideoScreen> {
   final FocusNode _screenFocusNode = FocusNode();
   final double captionsBorder = 2;
   bool keyDelay = false;
+  bool hasTimestamps = false;
 
   @override
   void initState() {
@@ -60,6 +61,7 @@ class _VideoScreenState extends State<VideoScreen> {
     _resetHideControlsTimer();
     interactScreen(true);
     _screenFocusNode.requestFocus();
+    hasTimestamps = widget.timestamps["start"] != -1 && widget.timestamps["end"] != -1;
   }
 
   @override
@@ -169,6 +171,8 @@ class _VideoScreenState extends State<VideoScreen> {
                       source: widget.source,
                       delayedPaused: delayedPaused,
                       mixedController: _mixedController,
+                      hasTimestamps: hasTimestamps,
+                      timestamps: widget.timestamps,
                     ),
                   ],
                 ),

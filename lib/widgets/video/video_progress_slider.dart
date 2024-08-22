@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:unyo/screens/video_screen.dart';
 import 'package:unyo/util/utils.dart';
@@ -15,6 +16,8 @@ class VideoProgressSlider extends StatelessWidget {
     required this.mixedController,
     required this.source,
     required this.onTap,
+    required this.hasTimeStamps,
+    required this.timestamps,
   });
 
   final Duration position;
@@ -22,6 +25,8 @@ class VideoProgressSlider extends StatelessWidget {
   final MixedController mixedController;
   final int source;
   final void Function() onTap;
+  final bool hasTimeStamps;
+  final Map<String, double> timestamps;
 
   final TextEditingController textFieldcontroller = TextEditingController();
 
@@ -43,6 +48,21 @@ class VideoProgressSlider extends StatelessWidget {
     return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
   }
 
+  String getSkipOpeningText() {
+    double currentSeconds =
+        mixedController.videoController.value.position.inSeconds.toDouble();
+    if (hasTimeStamps) {
+      if (currentSeconds <= timestamps["end"]! &&
+          currentSeconds >= timestamps["start"]!) {
+        return " Skip opening";
+      } else {
+        return "+ ${skipTimes[prefs.getInt("intro_skip_time") ?? 2]} ";
+      }
+    } else {
+      return "+ ${skipTimes[prefs.getInt("intro_skip_time") ?? 2]} ";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final max = duration.inMilliseconds.toDouble();
@@ -58,17 +78,47 @@ class VideoProgressSlider extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              StyledButton(
-                onPressed: () {},
-                backgroundColor: lightBorderColor,
-                child: SizedBox(
-                  height: 45,
-                  child: Row(
-                    children: [
-                      Text(
-                          "+ ${skipTimes[prefs.getInt("intro_skip_time") ?? 2]} "),
-                      const Icon(Icons.fast_forward_rounded),
-                    ],
+              Opacity(
+                opacity: 0.7,
+                child: StyledButton(
+                  onPressed: () {
+                    double currentSeconds = mixedController
+                        .videoController.value.position.inSeconds
+                        .toDouble();
+                    if (hasTimeStamps) {
+                      if (currentSeconds <= timestamps["end"]! &&
+                          currentSeconds >= timestamps["start"]!) {
+                        mixedController.seekTo(Duration(
+                            milliseconds: (timestamps["end"]! * 1000).toInt()));
+                      } else {
+                        mixedController.seekTo(
+                          Duration(
+                              milliseconds: mixedController.videoController.value
+                                      .position.inMilliseconds +
+                                  (skipTimes[
+                                      prefs.getInt("intro_skip_time") ?? 2] * 1000)),
+                        );
+                      }
+                    } else {
+                      mixedController.seekTo(
+                        Duration(
+                            milliseconds: mixedController.videoController.value
+                                    .position.inMilliseconds +
+                                (skipTimes[
+                                      prefs.getInt("intro_skip_time") ?? 2] * 1000)),
+                      );
+                    }
+                  },
+                  backgroundColor: lightBorderColor,
+                  child: SizedBox(
+                    height: 45,
+                    child: Row(
+                      children: [
+                        Text(
+                            getSkipOpeningText()),
+                        const Icon(Icons.fast_forward_rounded),
+                      ],
+                    ),
                   ),
                 ),
               ),

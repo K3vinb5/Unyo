@@ -56,11 +56,13 @@ Map<String, String> langs = {
 };
 
 List<int> skipTimes = [75, 80, 85, 90, 95];
+
 List<String> defaultTitleTypes = [
   "Default titles",
   "English titles",
   "Romaji titles"
 ];
+
 Map<String, double> episodeCompletedOptions = {
   "80%": 0.8,
   "85%": 0.85,

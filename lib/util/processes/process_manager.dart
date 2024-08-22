@@ -18,16 +18,22 @@ class ProcessManager {
     final jarFile = Platform.isWindows
         ? File('${supportDirectoryPath.path}\\extensions.jar')
         : File('${supportDirectoryPath.path}//extensions.jar');
-    final extensionsDir = Platform.isWindows
-        ? Directory('${supportDirectoryPath.path}\\extensions')
-        : Directory('${supportDirectoryPath.path}//extensions');
+    final animeExtensionsDir = Platform.isWindows
+        ? Directory('${supportDirectoryPath.path}\\extensions\\anime')
+        : Directory('${supportDirectoryPath.path}//extensions//anime');
+    final mangaExtensionsDir = Platform.isWindows
+        ? Directory('${supportDirectoryPath.path}\\extensions\\manga')
+        : Directory('${supportDirectoryPath.path}//extensions//manga');
 
     if (await jarFile.exists()) {
       _jarPath = jarFile.path;
       return;
     }
-    if (!(await extensionsDir.exists())) {
-      extensionsDir.create();
+    if (!(await animeExtensionsDir.exists())) {
+      animeExtensionsDir.create();
+    }
+    if (!(await mangaExtensionsDir.exists())) {
+      mangaExtensionsDir.create();
     }
     final byteData = await rootBundle.load(Platform.isWindows
         ? 'assets\\extensions.jar'

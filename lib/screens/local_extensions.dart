@@ -19,17 +19,47 @@ class LocalExtensionsScreen extends StatefulWidget {
 }
 
 class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
-  List<String>? installedExtensions;
-  Map<String, dynamic>? availableExtensions;
-  Map<String, dynamic>? extensionsLang;
+  List<String>? installedAnimeExtensions;
+  List<String>? installedMangaExtensions;
+  Map<String, dynamic>? availableAnimeExtensions;
+  Map<String, dynamic>? availableMangaExtensions;
+  Map<String, dynamic>? animeExtensionsLang;
+  Map<String, dynamic>? mangaExtensionsLang;
   TextEditingController controller = TextEditingController();
+  bool selectedExtensions = false;
 
   @override
   void initState() {
     super.initState();
-    updateInstalledExtensions();
-    updateAvailableExtensions();
+    updateAnimeInstalledExtensions();
+    updateAnimeAvailableExtensions();
+    updateMangaInstalledExtensions();
+    updateMangaAvailableExtensions();
     refreshLocalExtensionsScreenState = setState;
+  }
+
+  List<String>? getInstalledExtensions() {
+    if (selectedExtensions) {
+      return installedMangaExtensions;
+    } else {
+      return installedAnimeExtensions;
+    }
+  }
+
+  Map<String, dynamic>? getAvailableExtensions() {
+    if (selectedExtensions) {
+      return availableMangaExtensions;
+    } else {
+      return availableAnimeExtensions;
+    }
+  }
+
+  Map<String, dynamic>? getExtensionsLang() {
+    if (selectedExtensions) {
+      return mangaExtensionsLang;
+    } else {
+      return animeExtensionsLang;
+    }
   }
 
   Widget consoleWidget() {
@@ -61,11 +91,14 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
     );
   }
 
-  List<Widget> sourcesWidgets() {
+  List<Widget> sourcesWidgets(
+      List<String>? installedExtensions,
+      Map<String, dynamic>? extensionsLang,
+      Map<String, dynamic>? availableExtensions) {
     return installedExtensions != null &&
             extensionsLang != null &&
             availableExtensions != null
-        ? availableExtensions!.keys
+        ? availableExtensions.keys
             .map(
               (source) => Column(
                 children: [
@@ -85,13 +118,13 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                         SizedBox(
                           width: 200,
                           child: Text(
-                            "${source[0].toUpperCase()}${source.substring(1)} ( ${extensionsLang![source]} )",
+                            "${source[0].toUpperCase()}${source.substring(1)} ( ${extensionsLang[source]} )",
                             style: TextStyle(color: veryLightBorderColor),
                           ),
                         ),
                         SizedBox(
                           width: 130,
-                          child: !installedExtensions!.contains(source)
+                          child: !installedExtensions.contains(source)
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -99,7 +132,7 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                                       message: context.tr("download"),
                                       child: IconButton(
                                         onPressed: () async {
-                                          addExtension(source);
+                                          addAnimeExtension(source);
                                           processManager.restartProcess();
                                         },
                                         icon: const Icon(
@@ -126,7 +159,7 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                                       message: context.tr("delete"),
                                       child: IconButton(
                                         onPressed: () async {
-                                          removeExtension(source);
+                                          removeAnimeExtension(source);
                                           processManager.restartProcess();
                                         },
                                         icon: const Icon(
@@ -149,47 +182,104 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
         : [];
   }
 
-  void updateInstalledExtensions() async {
-    Directory supportDirectory = await getApplicationSupportDirectory();
-    Directory extensionsDir = Directory("${supportDirectory.path}//extensions");
-    List<String> updatedinstalledExtensions = await extensionsDir
+  void updateAnimeInstalledExtensions() async {
+    Directory supportDirectoryPath = await getApplicationSupportDirectory();
+    final animeExtensionsDir = Platform.isWindows
+        ? Directory('${supportDirectoryPath.path}\\extensions\\anime')
+        : Directory('${supportDirectoryPath.path}//extensions//anime');
+    List<String> updatedinstalledExtensions = await animeExtensionsDir
         .list()
         .map((fileSystemEntity) => fileSystemEntity.path
             .substring(fileSystemEntity.path.lastIndexOf("/") + 1)
             .replaceFirst(".jar", ""))
         .toList();
     setState(() {
-      installedExtensions = updatedinstalledExtensions;
+      installedAnimeExtensions = updatedinstalledExtensions;
     });
   }
 
-  void updateAvailableExtensions() async {
+  void updateMangaInstalledExtensions() async {
+    Directory supportDirectoryPath = await getApplicationSupportDirectory();
+    final mangaExtensionsDir = Platform.isWindows
+        ? Directory('${supportDirectoryPath.path}\\extensions\\manga')
+        : Directory('${supportDirectoryPath.path}//extensions//manga');
+    List<String> updatedinstalledExtensions = await mangaExtensionsDir
+        .list()
+        .map((fileSystemEntity) => fileSystemEntity.path
+            .substring(fileSystemEntity.path.lastIndexOf("/") + 1)
+            .replaceFirst(".jar", ""))
+        .toList();
+    setState(() {
+      installedMangaExtensions = updatedinstalledExtensions;
+    });
+  }
+
+  void updateAnimeAvailableExtensions() async {
     var url = Uri.parse(prefs.getString("extensions_json_url") ??
         "https://raw.githubusercontent.com/K3vinb5/Unyo-Extensions/main/index.json");
     var response = await http.get(url);
-    List<String> jsons = response.body.split("#");
-    Map<String, dynamic> newAvailableExtensions = json.decode(jsons[0]);
-    Map<String, dynamic> newExtensionsLang = json.decode(jsons[1]);
+    Map<String, dynamic> newAnimeAvailableExtensions =
+        json.decode(response.body)["animeAvailableExtensions"];
+    Map<String, dynamic> newAnimeExtensionsLang =
+        json.decode(response.body)["animeExtensionsLang"];
     setState(() {
-      availableExtensions = newAvailableExtensions;
-      extensionsLang = newExtensionsLang;
+      availableAnimeExtensions = newAnimeAvailableExtensions;
+      animeExtensionsLang = newAnimeExtensionsLang;
     });
   }
 
-  void removeExtension(String source) async {
-    Directory supportDirectory = await getApplicationSupportDirectory();
-    File jarFile = File("${supportDirectory.path}//extensions//$source.jar");
-    await jarFile.delete();
-    updateInstalledExtensions();
+  void updateMangaAvailableExtensions() async {
+    var url = Uri.parse(prefs.getString("extensions_json_url") ??
+        "https://raw.githubusercontent.com/K3vinb5/Unyo-Extensions/main/index.json");
+    var response = await http.get(url);
+    Map<String, dynamic> newMangaAvailableExtensions =
+        json.decode(response.body)["mangaAvailableExtensions"];
+    Map<String, dynamic> newMangaExtensionsLang =
+        json.decode(response.body)["mangaExtensionsLang"];
+    setState(() {
+      availableMangaExtensions = newMangaAvailableExtensions;
+      mangaExtensionsLang = newMangaExtensionsLang;
+    });
   }
 
-  void addExtension(String source) async {
-    var url = Uri.parse(availableExtensions![source]);
+  void removeAnimeExtension(String source) async {
+    Directory supportDirectory = await getApplicationSupportDirectory();
+    File jarFile = Platform.isWindows
+        ? File("${supportDirectory.path}\\extensions\\anime\\$source.jar")
+        : File("${supportDirectory.path}//extensions//anime//$source.jar");
+    await jarFile.delete();
+    updateAnimeInstalledExtensions();
+  }
+
+  void removeMangaExtension(String source) async {
+    Directory supportDirectory = await getApplicationSupportDirectory();
+    File jarFile = Platform.isWindows
+        ? File("${supportDirectory.path}\\extensions\\manga\\$source.jar")
+        : File("${supportDirectory.path}//extensions//manga//$source.jar");
+    await jarFile.delete();
+    updateMangaInstalledExtensions();
+  }
+
+  void addAnimeExtension(String source) async {
+    var url = Uri.parse(availableAnimeExtensions![source]);
     var response = await http.get(url);
     Directory supportDirectory = await getApplicationSupportDirectory();
-    File jarFile = File("${supportDirectory.path}//extensions//$source.jar");
+    File jarFile = Platform.isWindows
+        ? File("${supportDirectory.path}\\extensions\\anime\\$source.jar")
+        : File("${supportDirectory.path}//extensions//anime//$source.jar");
     await jarFile.writeAsBytes(response.bodyBytes);
-    updateInstalledExtensions();
+    updateAnimeInstalledExtensions();
+  }
+
+  void addMangaExtension(String source) async {
+    var url = Uri.parse(availableMangaExtensions![source]);
+    var response = await http.get(url);
+    Directory supportDirectory = await getApplicationSupportDirectory();
+    File jarFile = Platform.isWindows
+        ? File("${supportDirectory.path}\\extensions\\manga\\$source.jar")
+        : File("${supportDirectory.path}//extensions//manga//$source.jar");
+    await jarFile.writeAsBytes(response.bodyBytes);
+    updateMangaInstalledExtensions();
   }
 
   @override
@@ -262,43 +352,104 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                   children: [
                     Stack(
                       children: [
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            context.tr("extensions"),
-                            style: TextStyle(
-                                color: veryLightBorderColor, fontSize: 23),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 48.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Row(
                               children: [
-                                StyledButton(
-                                  text: context.tr("change_repo"),
-                                  onPressed: () {
-                                    showChangeRepoDialog(context, controller);
-                                  },
+                                Container(
+                                  width: 80,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: !selectedExtensions
+                                        ? lightBorderColor.withOpacity(0.65)
+                                        : Colors.transparent,
+                                    border: Border.all(
+                                        color: Colors.white, width: 1.5),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      bottomLeft: Radius.circular(20),
+                                    ),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedExtensions = false;
+                                      });
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        context.tr("anime"),
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                StyledButton(
-                                  text: context.tr("need_help"),
-                                  onPressed: () {
-                                    showSimpleDialog(
-                                      context,
-                                      context.tr("need_help_title"),
-                                      context.tr("need_help_message"),
-                                    );
-                                  },
+                                Container(
+                                  width: 80,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: selectedExtensions
+                                        ? lightBorderColor.withOpacity(0.65)
+                                        : Colors.transparent,
+                                    border: Border.all(
+                                        color: Colors.white, width: 1.5),
+                                    borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      bottomRight: Radius.circular(20),
+                                    ),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedExtensions = true;
+                                      });
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        context.tr("manga"),
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
+                            Text(
+                              context.tr("extensions"),
+                              style: TextStyle(
+                                  color: veryLightBorderColor, fontSize: 23),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 48.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  StyledButton(
+                                    text: context.tr("change_repo"),
+                                    onPressed: () {
+                                      showChangeRepoDialog(context, controller);
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  StyledButton(
+                                    text: context.tr("need_help"),
+                                    onPressed: () {
+                                      showSimpleDialog(
+                                        context,
+                                        context.tr("need_help_title"),
+                                        context.tr("need_help_message"),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -314,7 +465,11 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                         child: SmoothListView(
                           duration: const Duration(milliseconds: 200),
                           children: [
-                            ...sourcesWidgets(),
+                            ...sourcesWidgets(
+                              getInstalledExtensions(),
+                              getExtensionsLang(),
+                              getAvailableExtensions(),
+                            ),
                           ],
                         ),
                       ),

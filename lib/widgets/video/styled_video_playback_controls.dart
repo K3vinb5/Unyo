@@ -12,6 +12,8 @@ class StyledVideoPlaybackControls extends StatefulWidget {
     required this.delayedPaused,
     required this.mixedController,
     required this.source,
+    required this.hasTimestamps,
+    required this.timestamps,
   });
 
   final void Function() controlsOverlayOnTap;
@@ -20,6 +22,8 @@ class StyledVideoPlaybackControls extends StatefulWidget {
   final bool showControls;
   final bool paused;
   final bool delayedPaused;
+  final bool hasTimestamps;
+  final Map<String, double> timestamps;
 
   @override
   State<StyledVideoPlaybackControls> createState() =>
@@ -76,6 +80,8 @@ class _StyledVideoPlaybackControlsState
                 position: progress,
                 duration: duration,
                 onTap: widget.controlsOverlayOnTap,
+                hasTimeStamps: widget.hasTimestamps,
+                timestamps: widget.timestamps,
               );
             },
           ),
