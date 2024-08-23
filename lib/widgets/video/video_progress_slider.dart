@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:unyo/screens/video_screen.dart';
 import 'package:unyo/util/utils.dart';
@@ -27,8 +26,8 @@ class VideoProgressSlider extends StatelessWidget {
   final void Function() onTap;
   final bool hasTimeStamps;
   final Map<String, double> timestamps;
-
   final TextEditingController textFieldcontroller = TextEditingController();
+  // bool hasSkippedAutomatically = false;
 
   String getUtf8Text(String text) {
     List<int> bytes = text.codeUnits;
@@ -54,6 +53,21 @@ class VideoProgressSlider extends StatelessWidget {
     if (hasTimeStamps) {
       if (currentSeconds <= timestamps["end"]! &&
           currentSeconds >= timestamps["start"]!) {
+        //NOTE kinda sketchy
+        if (prefs.getBool("skip_opening_automatically") ?? false) {
+          prefs.setBool("skip_opening_automatically", false);
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            mixedController.seekTo(
+              Duration(
+                  milliseconds: mixedController
+                          .videoController.value.position.inMilliseconds +
+                      (skipTimes[prefs.getInt("intro_skip_time") ?? 2] * 1000)),
+            );
+            Future.delayed(const Duration(milliseconds: 4000), () {
+              prefs.setBool("skip_opening_automatically", true);
+            });
+          });
+        }
         return " Skip opening";
       } else {
         return "+ ${skipTimes[prefs.getInt("intro_skip_time") ?? 2]} ";
@@ -93,10 +107,11 @@ class VideoProgressSlider extends StatelessWidget {
                       } else {
                         mixedController.seekTo(
                           Duration(
-                              milliseconds: mixedController.videoController.value
-                                      .position.inMilliseconds +
-                                  (skipTimes[
-                                      prefs.getInt("intro_skip_time") ?? 2] * 1000)),
+                              milliseconds: mixedController.videoController
+                                      .value.position.inMilliseconds +
+                                  (skipTimes[prefs.getInt("intro_skip_time") ??
+                                          2] *
+                                      1000)),
                         );
                       }
                     } else {
@@ -105,7 +120,8 @@ class VideoProgressSlider extends StatelessWidget {
                             milliseconds: mixedController.videoController.value
                                     .position.inMilliseconds +
                                 (skipTimes[
-                                      prefs.getInt("intro_skip_time") ?? 2] * 1000)),
+                                        prefs.getInt("intro_skip_time") ?? 2] *
+                                    1000)),
                       );
                     }
                   },
@@ -114,8 +130,7 @@ class VideoProgressSlider extends StatelessWidget {
                     height: 45,
                     child: Row(
                       children: [
-                        Text(
-                            getSkipOpeningText()),
+                        Text(getSkipOpeningText()),
                         const Icon(Icons.fast_forward_rounded),
                       ],
                     ),

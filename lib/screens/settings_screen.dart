@@ -122,6 +122,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: (prefs.getBool("display_video_duration") ?? false),
                   ),
                   SettingsSwitchOptionWidget(
+                    title: context.tr("enable_open_subtitles"),
+                    onPressed: (bool newValue) {
+                      setState(() {
+                        prefs.setBool("open_subtitles", newValue);
+                      });
+                    },
+                    value: (prefs.getBool("open_subtitles") ?? true),
+                  ),
+                  SettingsSwitchOptionWidget(
                     title: context.tr("exit_fullscreen_on_video_exit"),
                     onPressed: (bool newValue) {
                       setState(() {
@@ -174,7 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                     value:
-                        (prefs.getBool("skip_opening_automatically") ?? true),
+                        (prefs.getBool("skip_opening_automatically") ?? false),
                   ),
                   SettingsDropdownOptionWidget(
                     title: context.tr("select_episode_completed_percentage"),
@@ -183,10 +192,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onPressed: (int selected) {
                       prefs.setInt("episode_completed_percentage", selected);
                     },
-                    items: episodeCompletedOptions.keys 
+                    items: episodeCompletedOptions.keys
                         .map(
                           (percentageOption) => Text(
-                           percentageOption, 
+                            percentageOption,
                             style: const TextStyle(color: Colors.white),
                           ),
                         )

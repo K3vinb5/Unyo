@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/aniskip_api.dart';
+import 'package:unyo/models/models.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/util/utils.dart';
@@ -15,7 +16,7 @@ class VideoQualityDialog extends StatefulWidget {
     required this.adjustedHeight,
     required this.updateEntry,
     required this.animeEpisode,
-    required this.animeName,
+    required this.animeModel,
     required this.currentAnimeSource,
     required this.id,
     required this.idMal,
@@ -24,7 +25,7 @@ class VideoQualityDialog extends StatefulWidget {
   final double adjustedWidth;
   final double adjustedHeight;
   final int animeEpisode;
-  final String animeName;
+  final AnimeModel animeModel;
   final void Function(int) updateEntry;
   final AnimeSource currentAnimeSource;
   final String id;
@@ -47,7 +48,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
 
   void getStreamInfo() async {
     streamData = await widget.currentAnimeSource.getAnimeStreamAndCaptions(
-        widget.id, widget.animeEpisode, context);
+        widget.id, widget.animeModel.englishTitle ?? "", widget.animeEpisode, context);
     setState(() {});
   }
 
@@ -60,7 +61,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
       updateEntry: () {
         widget.updateEntry(widget.animeEpisode);
       },
-      title: "${widget.animeName}, ${"episode".tr()} ${widget.animeEpisode}",
+      title: "${widget.animeModel.getDefaultTitle()}, ${"episode".tr()} ${widget.animeEpisode}",
       timestamps: timestamps,
     );
     if (!context.mounted) return;

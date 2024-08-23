@@ -257,6 +257,10 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   }
 
   void openManga(String chapterId, int chapterNum, String mangaName) async {
+    if (searches.isEmpty) {
+      showErrorDialog(context, exception: context.tr("no_title_found_dialog"));
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -359,7 +363,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
           content: MediaInfoDialog(
             id: widget.currentManga.id,
-            episodes: widget.currentManga.chapters,
+            episodes: chaptersId.length,
             totalWidth: totalWidth,
             totalHeight: totalHeight,
             statuses: statuses,
@@ -502,8 +506,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           onPressed: () {
                             int chapterNum =
                                 ((userMangaModel?.progress ?? 0) + 1).toInt();
-                            if (searches.isEmpty ||
-                                (latestReleasedChapter + 1) <= chapterNum) {
+                            if (searches.isEmpty /*||
+                                (latestReleasedChapter + 1) <= chapterNum*/) {
                               return;
                             }
                             ((userMangaModel?.progress ?? 0) + 1).toInt();

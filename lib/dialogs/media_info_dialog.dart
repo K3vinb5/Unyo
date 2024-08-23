@@ -130,7 +130,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                           currentEpisode.toDouble(),
                       value: progress,
                       label: progress.round().toString(),
-                      divisions: widget.episodes ?? currentEpisode,
+                      divisions: widget.episodes ?? (currentEpisode > 0 ? currentEpisode : 1),
                       onChanged: (value) {
                         setState(() {
                           progress =

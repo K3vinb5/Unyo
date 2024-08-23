@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:collection/collection.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -27,6 +26,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   int currentPageOption = 0;
   int currentFittingOption = 0;
+  int currentInverseModeOption = 0;
   int currentOrientationOption = 0;
 
   @override
@@ -47,8 +47,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   void downloadChapterPages() async {
     for (int i = 0; i < totalPages; i++) {
-      var response =
-          await http.get(Uri.parse(chapterPages[i]));
+      var response = await http.get(Uri.parse(chapterPages[i]));
       Uint8List bytes = response.bodyBytes;
       setState(() {
         chapterBytes[i] = bytes;
@@ -87,6 +86,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
   void setNewFittingPageOption(int newFittingOption) {
     setState(() {
       currentFittingOption = newFittingOption;
+    });
+  }
+
+  void setNewInverseModeOption(int newIverseModeOption) {
+    setState(() {
+      currentInverseModeOption = newIverseModeOption;
     });
   }
 
@@ -155,6 +160,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
                         ? SingleChildScrollView(
                             child: Image.memory(
                               chapterBytes[currentPage]!,
+                              color: currentInverseModeOption == 0
+                                  ? Colors.black
+                                  : Colors.white,
+                              colorBlendMode: BlendMode.difference,
                               fit: currentFittingOption == 0
                                   ? BoxFit.fitHeight
                                   : BoxFit.fitWidth,
@@ -162,6 +171,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
                           )
                         : Image.memory(
                             chapterBytes[currentPage]!,
+                            color: currentInverseModeOption == 0
+                                ? Colors.black
+                                : Colors.white,
+                            colorBlendMode: BlendMode.difference,
                             fit: currentFittingOption == 0
                                 ? BoxFit.fitHeight
                                 : BoxFit.fitWidth,
@@ -242,6 +255,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
             alignment: Alignment.centerRight,
             child: Image.memory(
               chapterBytes[leftToRight ? currentPage : currentPage + 1]!,
+              color:
+                  currentInverseModeOption == 0 ? Colors.black : Colors.white,
+              colorBlendMode: BlendMode.difference,
               fit: currentFittingOption == 0
                   ? BoxFit.fitHeight
                   : BoxFit.fitWidth,
@@ -257,6 +273,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
             alignment: Alignment.centerLeft,
             child: Image.memory(
               chapterBytes[leftToRight ? currentPage + 1 : currentPage]!,
+              color:
+                  currentInverseModeOption == 0 ? Colors.black : Colors.white,
+              colorBlendMode: BlendMode.difference,
               fit: currentFittingOption == 0
                   ? BoxFit.fitHeight
                   : BoxFit.fitWidth,
@@ -283,6 +302,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
               return (chapterBytes[index] != null)
                   ? Image.memory(
                       chapterBytes[index]!,
+                      color: currentInverseModeOption == 0
+                          ? Colors.black
+                          : Colors.white,
+                      colorBlendMode: BlendMode.difference,
                       fit: currentFittingOption == 0
                           ? BoxFit.fitHeight
                           : BoxFit.fitWidth,
@@ -326,6 +349,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 setNewFittingOption: setNewFittingPageOption,
                 orientationOption: currentOrientationOption,
                 setNewOrientationOption: setNewOrientationOption,
+                inverseModeOption: currentInverseModeOption,
+                setNewInverseModeOption: setNewInverseModeOption,
                 goBackPage: goBackPage,
                 goForwardPage: goForwardPage,
               ),

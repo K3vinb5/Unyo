@@ -31,13 +31,7 @@ class PageBannerWidget extends StatelessWidget {
             animeModel.bannerImage ?? animeModel.coverImage!,
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) {
-                // Image is fully loaded, start fading in
-                // return AnimatedOpacity(
-                //   opacity: 1.0,
-                //   duration: const Duration(milliseconds: 200),
-                //   curve: Curves.easeIn,
-                //   child: child,
-                // );
+                // Image is fully loaded, start fading in 
                 return Container(
                   width: width,
                   height: height,

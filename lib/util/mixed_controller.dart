@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
@@ -109,17 +113,30 @@ class MixedController {
   }
 
   Future<ClosedCaptionFile> loadCaptions(String url) async {
-    var response =
-        await http.get(Uri.parse(url), headers: streamData.getHeaders(source));
-    if (response.statusCode != 200) {
-      if (context.mounted) {
-        showErrorDialog(context, exception: null);
-      }
+    if (url == "-1") {
       return WebVTTCaptionFile("");
     }
-    var bytes = response.bodyBytes;
-    String content = String.fromCharCodes(bytes);
-    return WebVTTCaptionFile(formatCaptions(content));
+    if (!url.contains("opensubtitles")) {
+      //anime website subtitles
+      var response = await http.get(Uri.parse(url),
+          headers: streamData.getHeaders(source));
+      if (response.statusCode != 200) {
+        if (context.mounted) {
+          showErrorDialog(context, exception: null);
+        }
+        return WebVTTCaptionFile("");
+      }
+      var bytes = response.bodyBytes;
+      String content = String.fromCharCodes(bytes);
+      return WebVTTCaptionFile(formatCaptions(getUtf8Text(content)));
+    } else {
+      //opensubtitlesorg subtitles
+      String content = await downloadExtractAndReadSrt(url) ?? "";
+      return SubRipCaptionFile(content
+          .replaceAll("<i>", "")
+          .replaceAll("</i>", "")
+          .replaceAll("{\\an8}", ""));
+    }
   }
 
   String formatCaptions(String captions) {
@@ -133,6 +150,65 @@ class MixedController {
     String formattedCaptions = formattedPieces.join('\n\n');
 
     return formattedCaptions;
+  }
+
+  String getUtf8Text(String text) {
+    List<int> bytes = text.codeUnits;
+    return utf8.decode(bytes);
+  }
+
+  Future<String?> downloadExtractAndReadSrt(String url) async {
+    var client = HttpClient();
+
+    HttpClientRequest request = await client.getUrl(Uri.parse(url));
+    request.followRedirects = true;
+    request.maxRedirects = 100;
+    HttpClientResponse response = await request.close();
+    // final response = await http.get(Uri.parse(url));
+    if (response.statusCode != 200) {
+      print("error, code: ${response.statusCode}");
+      return null;
+    }
+    // final archive = ZipDecoder().decodeBytes(response.bodyBytes);
+    final archive = ZipDecoder()
+        .decodeBytes(await consolidateHttpClientResponseBytes(response));
+
+    for (final file in archive) {
+      if (file.isFile && file.name.endsWith('.srt')) {
+        Uint8List bytes = file.content as Uint8List;
+        final srtContent =
+            const Utf8Decoder(allowMalformed: false).convert(bytes);
+        return srtContent;
+      }
+    }
+    return null;
+  }
+
+  Future<Uint8List> consolidateHttpClientResponseBytes(
+      HttpClientResponse response) async {
+    final Completer<Uint8List> completer = Completer<Uint8List>();
+    final List<List<int>> chunks = <List<int>>[];
+    int contentLength = 0;
+
+    response.listen(
+      (List<int> chunk) {
+        chunks.add(chunk);
+        contentLength += chunk.length;
+      },
+      onDone: () {
+        final Uint8List bytes = Uint8List(contentLength);
+        int offset = 0;
+        for (List<int> chunk in chunks) {
+          bytes.setRange(offset, offset + chunk.length, chunk);
+          offset += chunk.length;
+        }
+        completer.complete(bytes);
+      },
+      onError: completer.completeError,
+      cancelOnError: true,
+    );
+
+    return completer.future;
   }
 
   String replaceSecond(String original, String pattern, String replacement) {
@@ -197,6 +273,10 @@ class MixedController {
     if (sendCommand != null && sendCommand) {
       mqqtController.sendOrder("play");
     }
+  }
+
+  void setCaptionsOffset(int duration) {
+    videoController.setCaptionOffset(Duration(milliseconds: duration));
   }
 
   void pause({bool? sendCommand}) {

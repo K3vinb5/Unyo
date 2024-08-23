@@ -96,5 +96,7 @@
   "select_intro_skip_time" : "Select default manual intro skip time",
   "select_default_title_type" : "Select default title type",
   "change_playback_speed" : "Change playback speed",
-  "select_episode_completed_percentage" : "Select percentage at which episode is completed"
+  "select_episode_completed_percentage" : "Select percentage at which episode is marked as completed",
+  "enable_open_subtitles" : "Enable opensubtitles.org subtitles (when available/found)",
+  "no_title_found_dialog" : "No title was found, try the Wrong/No Title menu or another source"
 }

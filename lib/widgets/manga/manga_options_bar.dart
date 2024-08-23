@@ -16,6 +16,8 @@ class MangaOptionsBar extends StatefulWidget {
     required this.setNewOrientationOption,
     required this.goForwardPage,
     required this.goBackPage,
+    required this.inverseModeOption,
+    required this.setNewInverseModeOption,
   });
 
   final double width;
@@ -26,10 +28,12 @@ class MangaOptionsBar extends StatefulWidget {
   final int pageOption;
   final int fittingOption;
   final int orientationOption;
+  final int inverseModeOption;
 
   final void Function(int) setNewPageOption;
   final void Function(int) setNewFittingOption;
   final void Function(int) setNewOrientationOption;
+  final void Function(int) setNewInverseModeOption;
 
   final void Function() goForwardPage;
   final void Function() goBackPage;
@@ -52,6 +56,11 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
     ["Left to Right", Icons.arrow_right_rounded],
     ["Right to Left", Icons.arrow_left_rounded],
   ];
+  List<List<dynamic>> inverseButtonOptions = const [
+    ["Light Mode", Icons.remove_red_eye_outlined],
+    ["Dark Mode", Icons.remove_red_eye],
+  ];
+
   List<String> fittingButtonOptions = const [
     "Fit Height",
     "Fit Width",
@@ -59,6 +68,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
   late int currentPageOption;
   late int currentFittingOption;
   late int currentOrientationOption;
+  late int currentInverseOption;
 
   @override
   void initState() {
@@ -68,6 +78,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
     currentPageOption = widget.pageOption;
     currentFittingOption = widget.fittingOption;
     currentOrientationOption = widget.orientationOption;
+    currentInverseOption = widget.inverseModeOption;
   }
 
   @override
@@ -210,6 +221,31 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                             "${orientationButtonOptions[currentOrientationOption][0]}  "),
                         Icon(orientationButtonOptions[currentOrientationOption]
                             [1]),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Row(
+                children: [
+                  StyledButton(
+                    onPressed: () {
+                      setState(() {
+                        currentInverseOption++;
+                        if (currentInverseOption > 1) {
+                          currentInverseOption = 0;
+                        }
+                        widget.setNewInverseModeOption(currentInverseOption);
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                            "${inverseButtonOptions[currentInverseOption][0]}  "),
+                        Icon(inverseButtonOptions[currentInverseOption][1]),
                       ],
                     ),
                   ),

@@ -27,8 +27,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState
-    extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   late HttpServer server;
   List<AnimeModel>? watchingList;
   List<MangaModel>? readingList;
@@ -237,6 +236,39 @@ class _HomeScreenState
                             ImageGradient.linear(
                               image: Image.network(
                                 bannerImageUrl!,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    // Image is fully loaded, start fading in
+                                    return Container(
+                                      width: totalWidth,
+                                      height: totalHeight * 0.35,
+                                      color:
+                                          const Color.fromARGB(255, 34, 33, 34),
+                                      child: AnimatedOpacity(
+                                        opacity: 1.0,
+                                        duration:
+                                            const Duration(milliseconds: 100),
+                                        curve: Curves.easeIn,
+                                        child: child,
+                                      ),
+                                    );
+                                  } else {
+                                    // Keep the image transparent while loading
+                                    return Container(
+                                      width: totalWidth,
+                                      height: totalHeight * 0.35,
+                                      color:
+                                          const Color.fromARGB(255, 34, 33, 34),
+                                      child: AnimatedOpacity(
+                                        opacity: 0.0,
+                                        duration:
+                                            const Duration(milliseconds: 0),
+                                        child: child,
+                                      ),
+                                    );
+                                  }
+                                },
                                 width: totalWidth,
                                 height: totalHeight * 0.35,
                                 fit: BoxFit.cover,

@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:unyo/util/utils.dart';
@@ -7,12 +6,7 @@ class VideoSubtitles extends StatelessWidget {
   const VideoSubtitles({super.key, required this.mixedController});
 
   final double captionsBorder = 2;
-  final MixedController mixedController;
-
-  String getUtf8Text(String text) {
-    List<int> bytes = text.codeUnits;
-    return utf8.decode(bytes);
-  }
+  final MixedController mixedController; 
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +15,7 @@ class VideoSubtitles extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 80, left: 50, right: 50),
         child: Text(
-          getUtf8Text(mixedController.videoController.value.caption.text),
+          mixedController.videoController.value.caption.text,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 40.0,

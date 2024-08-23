@@ -258,6 +258,11 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
 
   void openVideoQualities(
       String id, int animeEpisode, String animeName, String idMal) async {
+    if (searches.isEmpty) {
+      showErrorDialog(context, exception: context.tr("no_title_found_dialog"));
+      return;
+    }
+
     if (!mounted) return;
     showDialog(
       context: context,
@@ -273,7 +278,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             adjustedHeight: adjustedHeight,
             updateEntry: updateEntry,
             animeEpisode: animeEpisode,
-            animeName: animeName,
+            animeModel: widget.currentAnime,
             id: id,
             idMal: idMal,
             currentAnimeSource: animeSources[currentSource]!,
@@ -507,14 +512,13 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                           onPressed: () {
                             int episodeNum =
                                 ((userAnimeModel?.progress ?? 0) + 1).toInt();
-                            if (searches.isEmpty ||
-                                (latestReleasedEpisode + 1) <= episodeNum) {
+                            if ((latestReleasedEpisode + 1) <= episodeNum) {
                               return;
                             }
                             openVideoQualities(
                               manualTitleSelection
                                   ? currentSearchId!
-                                  : searchesId[0],
+                                  : searchesId.isNotEmpty ? searchesId[0] : "",
                               episodeNum,
                               widget.currentAnime.userPreferedTitle ?? "",
                               widget.currentAnime.idMal?.toString() ?? "-1",
@@ -562,7 +566,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                                   : (currentSearchIndex ?? 0) <
                                           searchesId.length
                                       ? searchesId[currentSearchIndex ?? 0]
-                                      : null,
+                                      : "",
                             );
                           },
                         ),
