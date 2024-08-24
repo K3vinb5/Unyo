@@ -11,7 +11,6 @@ import 'package:image_gradient/image_gradient.dart';
 import 'package:unyo/dialogs/update_dialog.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
-import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/models/models.dart';
@@ -39,38 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int? episodesWatched;
   int? minutesWatched;
 
-  Future<void> _startServer() async {
-    handler(shelf.Request request) async {
-      // Extract access token from request URL
-      if (!receivedValid) {
-        receivedValid = true;
-        accessCode = request.requestedUri.queryParameters['code'];
-        //print('Access Code: $accessCode');
-        List<String> codes = await getUserAccessToken(accessCode!, 0);
-        accessToken = codes[0];
-        refreshToken = codes[1];
-        //print("AccessToken: $accessToken");
-        getUserInfo();
-        await prefs.setString("accessCode", accessCode!);
-        await prefs.setString("refreshToken", refreshToken!);
-        await prefs.setString("accessToken", accessToken!);
-      } else {
-        //TODO showDialog
-      }
-      // Return a response to close the connection
-      return shelf.Response.ok(
-          'Authorization successful. You can close this window.');
-    }
-
-    // Start the local web server
-    server = await shelfio.serve(handler, 'localhost', 9999);
-    // print('Local server running on port ${server.port}');
-  }
-
   void setSharedPreferences() async {
-    prefs = await SharedPreferences.getInstance();
+    prefs = PreferencesModel(await SharedPreferences.getInstance());
+    prefs.init();
     startExtensions();
-    if (prefs.getString("accessToken") == null) {
+    if (!prefs.isUserLogged()) {
       _startServer();
       goToLogin();
     } else {
@@ -101,6 +73,34 @@ class _HomeScreenState extends State<HomeScreen> {
     updateHomeScreenState = setState;
   }
 
+  Future<void> _startServer() async {
+    handler(shelf.Request request) async {
+      // Extract access token from request URL
+      if (!receivedValid) {
+        receivedValid = true;
+        accessCode = request.requestedUri.queryParameters['code'];
+        //print('Access Code: $accessCode');
+        List<String> codes = await getUserAccessToken(accessCode!, 0);
+        accessToken = codes[0];
+        refreshToken = codes[1];
+        //print("AccessToken: $accessToken");
+        getUserInfo();
+        prefs.setString("accessCode", accessCode!);
+        prefs.setString("refreshToken", refreshToken!);
+        prefs.setString("accessToken", accessToken!);
+      } else {
+        //TODO showDialog
+      }
+      // Return a response to close the connection
+      return shelf.Response.ok(
+          'Authorization successful. You can close this window.');
+    }
+
+    // Start the local web server
+    server = await shelfio.serve(handler, 'localhost', 9999);
+    // print('Local server running on port ${server.port}');
+  }
+
   void startExtensions() {
     if (prefs.getBool("remote_endpoint") ?? false) {
       processManager.startProcess();
@@ -114,8 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
       List<String> userNameAndId = await getUserNameAndId(accessToken!, 0);
       userName = userNameAndId[0];
       userId = int.parse(userNameAndId[1]);
-      await prefs.setString("userName", userName!);
-      await prefs.setInt("userId", userId!);
+      prefs.setString("userName", userName!);
+      prefs.setInt("userId", userId!);
     }
     initThemes(prefs.getInt("theme") ?? 0, setState);
     String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
@@ -444,8 +444,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     StyledButton(
                                                                       onPressed:
                                                                           () {
-                                                                        prefs
-                                                                            .clear();
                                                                         setState(
                                                                             () {
                                                                           //TODO updateLists on logout, maybe extract method

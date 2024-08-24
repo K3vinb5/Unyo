@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/widgets.dart';
@@ -18,20 +17,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  late SharedPreferences prefs;
   final String clientId = '17550';
   final String redirectUri = 'http://localhost:9999/auth';
   TextEditingController manualLoginController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    setSharedPreferences();
-  }
-
-  void setSharedPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-  }
 
   Future<void> login() async {
     final String authUrl =

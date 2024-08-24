@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
 
 String? accessToken;
@@ -11,7 +10,8 @@ String? avatarImageUrl;
 String? userName;
 int? userId;
 bool receivedValid = false;
-late SharedPreferences prefs;
+late PreferencesModel prefs;
+late UserModel loggedUserModel;
 Color veryLightBorderColor = Colors.white;
 Color lightBorderColor = Colors.grey;
 Color darkBorderColor = Colors.black;
