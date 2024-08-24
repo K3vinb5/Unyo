@@ -1,16 +1,28 @@
-import 'dart:typed_data';
+import 'dart:async';
+
 import 'package:collection/collection.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class ReadingScreen extends StatefulWidget {
   const ReadingScreen(
-      {super.key, required this.chapterId, required this.getMangaChapterPages});
+      {super.key,
+      required this.chapterId,
+      required this.getMangaChapterPages,
+      required this.updateEntry, 
+      required this.currentChapter, 
+      required this.chaptersId,
+      });
 
   final String chapterId;
+  final int currentChapter;
+  final List<String> chaptersId; 
   final Future<List<String>> Function(String) getMangaChapterPages;
+  final void Function() updateEntry;
 
   @override
   State<ReadingScreen> createState() => _ReadingScreenState();
@@ -23,7 +35,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
   int totalPages = 0;
   late List<String> chapterPages;
   List<Uint8List?> chapterBytes = [null];
-
+  final FocusNode _screenFocusNode = FocusNode();
+  bool keyDelay = false;
   int currentPageOption = 0;
   int currentFittingOption = 0;
   int currentInverseModeOption = 0;
@@ -32,11 +45,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
   @override
   void initState() {
     super.initState();
-    initPages();
+    initPages(widget.chapterId);
+    _screenFocusNode.requestFocus();
   }
 
-  void initPages() async {
-    chapterPages = await widget.getMangaChapterPages(widget.chapterId);
+  void initPages(String chapterId) async {
+    chapterPages = await widget.getMangaChapterPages(chapterId);
     setState(() {
       totalPages = chapterPages.length;
       //kinda scuffed
@@ -81,6 +95,46 @@ class _ReadingScreenState extends State<ReadingScreen> {
         currentPage++;
       }
     });
+  }
+
+  void onReceivedKeys(LogicalKeyboardKey logicalKey) {
+    switch (logicalKey) {
+      case LogicalKeyboardKey.space:
+        goForwardPage();
+        break;
+      case LogicalKeyboardKey.arrowLeft:
+        goBackPage();
+        break;
+      case LogicalKeyboardKey.arrowRight:
+        goForwardPage();
+        break;
+      case LogicalKeyboardKey.arrowUp:
+        goBackPage();
+        break;
+      case LogicalKeyboardKey.arrowDown:
+        goForwardPage();
+        break;
+      case LogicalKeyboardKey.keyL:
+        goForwardPage();
+        break;
+      case LogicalKeyboardKey.keyJ:
+        goBackPage();
+        break;
+      case LogicalKeyboardKey.escape:
+        if (calculatePercentage() >
+                chapterCompletedOptions.values.toList()[
+                    prefs.getInt("chapter_completed_percentage") ?? 3] &&
+            (prefs.getBool("update_progress_automatically") ?? false)) {
+          widget.updateEntry();
+        }
+        Navigator.pop(context);
+        break;
+      default:
+    }
+  }
+
+  double calculatePercentage() {
+    return currentPage / totalPages;
   }
 
   void setNewFittingPageOption(int newFittingOption) {
@@ -332,38 +386,61 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
     return Material(
       color: const Color.fromARGB(255, 34, 33, 34),
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              MangaOptionsBar(
-                width: totalWidth,
-                height: barHeight,
-                currentPage: currentPage,
-                totalPages: totalPages,
-                pageOption: currentPageOption,
-                setNewPageOption: setNewPageOption,
-                fittingOption: currentFittingOption,
-                setNewFittingOption: setNewFittingPageOption,
-                orientationOption: currentOrientationOption,
-                setNewOrientationOption: setNewOrientationOption,
-                inverseModeOption: currentInverseModeOption,
-                setNewInverseModeOption: setNewInverseModeOption,
-                goBackPage: goBackPage,
-                goForwardPage: goForwardPage,
-              ),
-              SizedBox(
-                width: totalWidth,
-                height: usableHeight,
-                child: listPages(
-                    currentOrientationOption == 0, totalWidth, usableHeight),
-              ),
-            ],
-          ),
-          const WindowBarButtons(startIgnoreWidth: 650),
-        ],
+      child: KeyboardListener(
+        focusNode: _screenFocusNode,
+        onKeyEvent: (keyEnvent) {
+          // print("key received");
+          if (keyDelay) {
+            return;
+          }
+          keyDelay = true;
+          Timer(
+            const Duration(milliseconds: 200),
+            () {
+              keyDelay = false;
+            },
+          );
+          onReceivedKeys(keyEnvent.logicalKey);
+        },
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                FocusScope(
+                  canRequestFocus: false,
+                  child: MangaOptionsBar(
+                    width: totalWidth,
+                    height: barHeight,
+                    currentPage: currentPage,
+                    totalPages: totalPages,
+                    pageOption: currentPageOption,
+                    currentChapter: widget.currentChapter,
+                    chaptersId: widget.chaptersId,
+                    setNewPageOption: setNewPageOption,
+                    fittingOption: currentFittingOption,
+                    setNewFittingOption: setNewFittingPageOption,
+                    orientationOption: currentOrientationOption,
+                    setNewOrientationOption: setNewOrientationOption,
+                    inverseModeOption: currentInverseModeOption,
+                    setNewInverseModeOption: setNewInverseModeOption,
+                    initPages: initPages,
+                    goBackPage: goBackPage,
+                    goForwardPage: goForwardPage,
+                  ),
+                ),
+                SizedBox(
+                  width: totalWidth,
+                  height: usableHeight,
+                  child: listPages(
+                      currentOrientationOption == 0, totalWidth, usableHeight),
+                ),
+              ],
+            ),
+            const WindowBarButtons(startIgnoreWidth: 1100),
+          ],
+        ),
       ),
     );
   }

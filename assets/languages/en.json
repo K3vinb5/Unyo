@@ -96,7 +96,19 @@
   "select_intro_skip_time" : "Select default manual intro skip time",
   "select_default_title_type" : "Select default title type",
   "change_playback_speed" : "Change playback speed",
-  "select_episode_completed_percentage" : "Select percentage at which episode is marked as completed",
+  "select_episode_completed_percentage" : "Select percentage at which an episode is marked as completed",
+  "select_chapter_completed_percentage" : "Select percentage at which a chapter is marked as completed",
   "enable_open_subtitles" : "Enable opensubtitles.org subtitles (when available/found)",
-  "no_title_found_dialog" : "No title was found, try the Wrong/No Title menu or another source"
+  "no_title_found_dialog" : "No title was found, try the Wrong/No Title menu or another source",
+  "page" : "Page",
+  "show_chapters" : "Show chapters",
+  "single_page" : "Single Page",
+  "double_page" : "Double Page",
+  "long_strip" : "Long Strip",
+  "left_to_right" : "Left to Right",
+  "right_to_left" : "Right to Left",
+  "light_mode" : "Light Mode",
+  "dart_mode" : "Dark Mode",
+  "fit_height" : "Fit Height",
+  "fit_width" : "Fit Width"
 }

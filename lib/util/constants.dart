@@ -70,6 +70,14 @@ Map<String, double> episodeCompletedOptions = {
   "95%": 0.95,
 };
 
+Map<String, double> chapterCompletedOptions = {
+  "80%": 0.8,
+  "85%": 0.85,
+  "90%": 0.9,
+  "95%": 0.95,
+  "100%": 1.0,
+};
+
 void setBannerPallete(
     String url, void Function(void Function()) setState) async {
   ImageProvider image = NetworkImage(url);

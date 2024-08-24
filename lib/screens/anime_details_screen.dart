@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import 'package:unyo/widgets/widgets.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:collection/collection.dart';
 import 'package:unyo/sources/sources.dart';
-import 'package:http/http.dart' as http;
 import 'package:unyo/util/constants.dart';
 
 class AnimeDetailsScreen extends StatefulWidget {
@@ -134,6 +132,14 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       {String? query, void Function(void Function())? setDialogState}) async {
     List<List<String>> newSearchesAndIds =
         await getIds(query ?? widget.currentAnime.userPreferedTitle!);
+    if (newSearchesAndIds[0].isEmpty && query == null) {
+      newSearchesAndIds =
+          await getIds(widget.currentAnime.englishTitle ?? "");
+      if (newSearchesAndIds[0].isEmpty) {
+        newSearchesAndIds =
+            await getIds(widget.currentAnime.japaneseTitle ?? "");
+      }
+    }
     int newCurrentEpisode = widget.currentAnime.status == "RELEASING"
         ? await getAnimeCurrentEpisode(widget.currentAnime.id, 0)
         : widget.currentAnime.episodes!;
@@ -199,19 +205,6 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       currentSearchId = null;
       setSearches(animeSources[currentSource]!.getAnimeTitlesAndIds);
     });
-  }
-
-//TODO temp, this is a mess
-  Future<String> getSourceNameAndLangAsync(String source) async {
-    var urlStream = Uri.parse(
-        "https://kevin-is-awesome.mooo.com/api/unyo/sources/name?source=$source");
-    var response = await http.get(urlStream);
-
-    if (response.statusCode != 200) {
-      return "";
-    }
-    Map<String, dynamic> jsonResponse = json.decode(response.body);
-    return jsonResponse["name"] ?? "";
   }
 
   void askForDeleteUserMedia() {
@@ -518,7 +511,9 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                             openVideoQualities(
                               manualTitleSelection
                                   ? currentSearchId!
-                                  : searchesId.isNotEmpty ? searchesId[0] : "",
+                                  : searchesId.isNotEmpty
+                                      ? searchesId[0]
+                                      : "",
                               episodeNum,
                               widget.currentAnime.userPreferedTitle ?? "",
                               widget.currentAnime.idMal?.toString() ?? "-1",

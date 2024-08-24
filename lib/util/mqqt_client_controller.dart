@@ -175,7 +175,7 @@ class MqqtClientController {
     sendOrder("connected");
   }
 
-  void onReceivedKeys(LogicalKeyboardKey logicalKey) {
+  void onReceivedKeys(LogicalKeyboardKey logicalKey) async {
     switch (logicalKey) {
       case LogicalKeyboardKey.space:
         controlsOverlayOnTap();
@@ -259,6 +259,13 @@ class MqqtClientController {
         }
         mixedController.dispose();
         Navigator.pop(context);
+        break;
+      case LogicalKeyboardKey.keyF:
+        if (await Window.isWindowFullscreened()) {
+          Window.exitFullscreen();
+        } else {
+          Window.enterFullscreen();
+        }
         break;
       default:
     }

@@ -201,6 +201,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         )
                         .toList(),
                   ),
+                  SettingsDropdownOptionWidget(
+                    title: context.tr("select_chapter_completed_percentage"),
+                    width: 150,
+                    value: prefs.getInt("chapter_completed_percentage") ?? 3,
+                    onPressed: (int selected) {
+                      prefs.setInt("chapter_completed_percentage", selected);
+                    },
+                    items: chapterCompletedOptions.keys
+                        .map(
+                          (percentageOption) => Text(
+                            percentageOption,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                        .toList(),
+                  ),
                   SettingsSwitchOptionWidget(
                     title: context.tr("remote_endpoint"),
                     onPressed: (bool newValue) async {
