@@ -110,7 +110,7 @@ void initThemes(int selected, void Function(void Function()) setState) async {
     String newbannerUrl = "https://i.imgur.com/x6TGK1x.png";
     try {
       newbannerUrl =
-          await getUserbannerImageUrl(prefs.getString("userName")!, 0);
+          await loggedUserModel.getUserbannerImageUrl(prefs.getString("userName")!);
     } catch (error) {
       //If newBannerURL never returns a string use default avatar
     }

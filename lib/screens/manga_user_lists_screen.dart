@@ -10,7 +10,6 @@ import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
-import 'package:unyo/api/anilist_api_manga.dart';
 
 void Function(void Function()) refreshMangaUserListScreenState = (func) {};
 
@@ -138,7 +137,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
   }
 
   void initUserMangaListsMap() async {
-    var newUserMangaLists = await getAllUserMangaLists(userId!, 0);
+    var newUserMangaLists = await loggedUserModel.getAllUserMangaLists(userId!);
     setState(() {
       userMangaLists = newUserMangaLists;
     });

@@ -2,25 +2,33 @@ import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesModel {
-  late SharedPreferences sharedPreferences;
 
-  PreferencesModel(this.sharedPreferences);
+  late SharedPreferences sharedPreferences;
   late Box box;
   String? userName;
 
-  void init() async {
+  Future<void> init() async {
+    sharedPreferences = await SharedPreferences.getInstance();
     userName = sharedPreferences.getString("user_logged");
-    if (userName != null) {
+    print("logged user: $userName");
+    if (userName != null || userName == "null") {
       box = await Hive.openBox(userName!);
     }
   }
 
+  Future<void> loginUser(String user) async{
+    sharedPreferences.setString("user_logged", user);
+    box = await Hive.openBox(userName!);
+
+  }
+
   bool isUserLogged() {
-    return userName != null;
+    return userName != null || userName != "null";
   }
 
   void clear() {
-    box.clear();
+    userName = null;
+    sharedPreferences.setString("user_logged", "null");
   }
 
   String? getString(String key) {

@@ -3,10 +3,6 @@ import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shelf/shelf.dart' as shelf;
-import 'package:shelf/shelf_io.dart' as shelfio;
-import 'dart:io';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:unyo/dialogs/update_dialog.dart';
 import 'package:unyo/screens/screens.dart';
@@ -27,7 +23,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late HttpServer server;
   List<AnimeModel>? watchingList;
   List<MangaModel>? readingList;
   double adjustedWidth = 0;
@@ -39,25 +34,26 @@ class _HomeScreenState extends State<HomeScreen> {
   int? minutesWatched;
 
   void setSharedPreferences() async {
-    prefs = PreferencesModel(await SharedPreferences.getInstance());
-    prefs.init();
-    startExtensions();
+    prefs = PreferencesModel();
+    await prefs.init();
     if (!prefs.isUserLogged()) {
-      _startServer();
-      goToLogin();
+      Future.delayed(Duration.zero, () {
+        goToLogin();
+      });
     } else {
       accessToken = prefs.getString("accessToken");
       userName = prefs.getString("userName");
       userId = prefs.getInt("userId");
-      getUserInfo();
+      //change function bellow for when logged already
+      setUserInfo(0);
     }
   }
 
   void goToLogin() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => LoginPage(
-          updateUserInfo: getUserInfo,
+        builder: (context) => LoginScreen(
+          setUserInfo: setUserInfo,
         ),
       ),
     );
@@ -73,34 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
     updateHomeScreenState = setState;
   }
 
-  Future<void> _startServer() async {
-    handler(shelf.Request request) async {
-      // Extract access token from request URL
-      if (!receivedValid) {
-        receivedValid = true;
-        accessCode = request.requestedUri.queryParameters['code'];
-        //print('Access Code: $accessCode');
-        List<String> codes = await getUserAccessToken(accessCode!, 0);
-        accessToken = codes[0];
-        refreshToken = codes[1];
-        //print("AccessToken: $accessToken");
-        getUserInfo();
-        prefs.setString("accessCode", accessCode!);
-        prefs.setString("refreshToken", refreshToken!);
-        prefs.setString("accessToken", accessToken!);
-      } else {
-        //TODO showDialog
-      }
-      // Return a response to close the connection
-      return shelf.Response.ok(
-          'Authorization successful. You can close this window.');
-    }
-
-    // Start the local web server
-    server = await shelfio.serve(handler, 'localhost', 9999);
-    // print('Local server running on port ${server.port}');
-  }
-
   void startExtensions() {
     if (prefs.getBool("remote_endpoint") ?? false) {
       processManager.startProcess();
@@ -109,20 +77,28 @@ class _HomeScreenState extends State<HomeScreen> {
     addEmbeddedTachiyomiExtensions();
   }
 
-  void getUserInfo() async {
-    if (userName == null || userId == null) {
-      List<String> userNameAndId = await getUserNameAndId(accessToken!, 0);
+  void setUserInfo(int userModelType) async {
+    loggedUserModel = AnilistUserModel();
+    if (!prefs.isUserLogged()) {
+      List<String> userNameAndId =
+          await loggedUserModel.getUserNameAndId(accessToken!);
       userName = userNameAndId[0];
+      await prefs.loginUser(userName!);
       userId = int.parse(userNameAndId[1]);
       prefs.setString("userName", userName!);
       prefs.setInt("userId", userId!);
+      prefs.setString("accessCode", accessCode!);
+      prefs.setString("refreshToken", refreshToken!);
+      prefs.setString("accessToken", accessToken!);
     }
+    startExtensions();
     initThemes(prefs.getInt("theme") ?? 0, setState);
-    String newavatarUrl = await getUserAvatarImageUrl(userName!, 0);
+    String newavatarUrl =
+        await loggedUserModel.getUserAvatarImageUrl(userName!);
     List<AnimeModel> newWatchingAnimeList =
-        await getUserAnimeLists(userId!, "Watching", 0);
+        await loggedUserModel.getUserAnimeLists(userId!, "Watching");
     List<MangaModel> newReadingMangaList =
-        await getUserMangaLists(userId!, "Reading", 0);
+        await loggedUserModel.getUserMangaLists(userId!, "Reading");
     Map<String, Map<String, double>> newUserStats =
         await getUserStatsMaps(userName!, 0);
     episodesWatched =
@@ -142,9 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void updateUserLists() async {
     List<AnimeModel> newWatchingAnimeList =
-        await getUserAnimeLists(userId!, "Watching", 0);
+        await loggedUserModel.getUserAnimeLists(userId!, "Watching");
     List<MangaModel> newReadingMangaList =
-        await getUserMangaLists(userId!, "Reading", 0);
+        await loggedUserModel.getUserMangaLists(userId!, "Reading");
     setState(() {
       watchingList = newWatchingAnimeList;
       readingList = newReadingMangaList;

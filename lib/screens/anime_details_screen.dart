@@ -111,7 +111,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
 
   void setUserAnimeModel() async {
     UserMediaModel newUserAnimeModel =
-        await getUserAnimeInfo(widget.currentAnime.id, 0);
+        await loggedUserModel.getUserAnimeInfo(widget.currentAnime.id);
     setState(() {
       userAnimeModel = newUserAnimeModel;
     });
@@ -219,7 +219,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             totalHeight: totalHeight,
             totalWidth: totalWidth,
             currentMediaId: widget.currentAnime.id,
-            deleteUserAnime: deleteUserAnime,
+            deleteUserAnime: loggedUserModel.deleteUserAnime,
           ),
         );
       },
@@ -238,7 +238,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       progress = newProgress.toDouble();
       query.remove("progress");
       query.addAll({"progress": progress.toInt().toString()});
-      setUserAnimeInfo(widget.currentAnime.id, query);
+      loggedUserModel.setUserAnimeInfo(widget.currentAnime.id, query);
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
         const Duration(milliseconds: 1000),

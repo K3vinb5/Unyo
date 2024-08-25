@@ -11,7 +11,6 @@ import 'package:unyo/sources/sources.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
-import 'package:unyo/api/anilist_api_manga.dart';
 
 class MangaDetailsScreen extends StatefulWidget {
   const MangaDetailsScreen(
@@ -113,7 +112,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
 
   void setUserMangaModel() async {
     UserMediaModel newUserMangaModel =
-        await getUserMangaInfo(widget.currentManga.id, 0);
+        await loggedUserModel.getUserMangaInfo(widget.currentManga.id);
     setState(() {
       userMangaModel = newUserMangaModel;
     });
@@ -226,7 +225,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
             totalHeight: totalHeight,
             totalWidth: totalWidth,
             currentMediaId: widget.currentManga.id,
-            deleteUserAnime: deleteUserManga,
+            deleteUserAnime: loggedUserModel.deleteUserManga,
           ),
         );
       },
@@ -245,7 +244,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       progress = newProgress.toDouble();
       query.remove("progress");
       query.addAll({"progress": progress.toInt().toString()});
-      setUserMangaInfo(widget.currentManga.id, query);
+      loggedUserModel.setUserMangaInfo(widget.currentManga.id, query);
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
         const Duration(milliseconds: 1000),

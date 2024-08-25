@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:unyo/api/anilist_api_anime.dart';
+import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class MediaInfoDialog extends StatefulWidget {
@@ -274,7 +274,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                             ),
                           ),
                           onPressed: () {
-                            setUserAnimeInfo(widget.id, query);
+                            loggedUserModel.setUserAnimeInfo(widget.id, query);
                             Timer(
                               const Duration(milliseconds: 1500),
                               () {

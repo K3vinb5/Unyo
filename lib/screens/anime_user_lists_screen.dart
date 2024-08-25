@@ -8,7 +8,6 @@ import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
-import 'package:unyo/api/anilist_api_anime.dart';
 
 void Function(void Function()) refreshAnimeUserListScreenState = (func) {};
 
@@ -132,7 +131,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
   }
 
   void initUserAnimeListsMap() async {
-    var newUserAnimeLists = await getAllUserAnimeLists(userId!, 0);
+    var newUserAnimeLists = await loggedUserModel.getAllUserAnimeLists(userId!);
     setState(() {
       userAnimeLists = newUserAnimeLists;
     });

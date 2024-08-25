@@ -1,25 +1,62 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:shelf/shelf.dart' as shelf;
+import 'package:shelf/shelf_io.dart' as shelfio;
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/widgets.dart';
 import 'package:unyo/util/utils.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.updateUserInfo});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key, required this.setUserInfo});
 
-  final void Function() updateUserInfo;
+  final void Function(int) setUserInfo;
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
   final String clientId = '17550';
   final String redirectUri = 'http://localhost:9999/auth';
   TextEditingController manualLoginController = TextEditingController();
+  late HttpServer server;
+
+  @override
+  void initState() {
+    super.initState();
+    _startServer();
+  }
+
+  Future<void> _startServer() async {
+    handler(shelf.Request request) async {
+      // Extract access token from request URL
+      if (!receivedValid) {
+        receivedValid = true;
+        accessCode = request.requestedUri.queryParameters['code'];
+        //print('Access Code: $accessCode');
+        List<String> codes = await getUserAccessToken(accessCode!, 0);
+        accessToken = codes[0];
+        refreshToken = codes[1];
+        //print("AccessToken: $accessToken");
+        widget.setUserInfo(0);
+        goToMainScreen();
+        server.close();
+      } else {
+        //TODO showDialog
+      }
+      // Return a response to close the connection
+      return shelf.Response.ok(
+          'Authorization successful. You can close this window.');
+    }
+
+    // Start the local web server
+    server = await shelfio.serve(handler, 'localhost', 9999);
+  }
 
   Future<void> login() async {
     final String authUrl =
@@ -30,10 +67,10 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       throw 'Could not launch $authUrl';
     }
-    goToMainScreen();
+    // goToMainScreen();
   }
 
-  void manualLaunchUrl() async {
+  void manualLoginLaunchUrl() async {
     String authUrl =
         'https://anilist.co/api/v2/oauth/authorize?client_id=18959&redirect_urihttps://anilist.co/api/v2/oauth/pin=&response_type=code';
     if (await canLaunchUrl(Uri.parse(authUrl))) {
@@ -70,10 +107,10 @@ class _LoginPageState extends State<LoginPage> {
     accessToken = codes[0];
     refreshToken = codes[1];
     accessCode = code;
-    widget.updateUserInfo();
-    await prefs.setString("accessCode", accessCode!);
-    await prefs.setString("refreshToken", refreshToken!);
-    await prefs.setString("accessToken", accessToken!);
+    prefs.setString("accessCode", accessCode!);
+    prefs.setString("refreshToken", refreshToken!);
+    prefs.setString("accessToken", accessToken!);
+    widget.setUserInfo(0);
     goToMainScreen();
   }
 
@@ -145,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                             builder: (context) {
                               return LoginManuallyDialog(
                                 manualLoginController: manualLoginController,
-                                getCodeFunction: manualLaunchUrl,
+                                getCodeFunction: manualLoginLaunchUrl,
                                 loginFunction: () async {
                                   manualLogin(manualLoginController.text);
                                   Navigator.of(context).pop();
