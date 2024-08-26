@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:unyo/models/adapters/anilist_user_model_adapter.dart';
+import 'package:unyo/models/adapters/local_user_model_adapter.dart';
 import 'package:unyo/router/router.dart';
 import 'package:fvp/fvp.dart' as fvp;
 import 'package:unyo/util/utils.dart';
@@ -15,8 +17,10 @@ Future<void> main() async {
   await Window.initialize();
   await EasyLocalization.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
-  final dir = await getApplicationDocumentsDirectory();
+  final dir = await getApplicationSupportDirectory();
   Hive.init(dir.path);
+  Hive.registerAdapter(AnilistUserModelAdapter());
+  Hive.registerAdapter(LocalUserModelAdapter());
   fvp.registerWith(options: {
     'platforms': ['windows', 'linux', 'macos']
   });

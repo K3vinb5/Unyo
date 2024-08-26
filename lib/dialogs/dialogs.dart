@@ -9,3 +9,5 @@ export 'error_dialog.dart';
 export 'simple_dialog.dart';
 export 'change_repo_dialog.dart';
 export 'no_extensions_dialog.dart';
+export 'log_out_dialog.dart';
+export 'create_local_account_dialog.dart';

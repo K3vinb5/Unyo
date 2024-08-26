@@ -110,7 +110,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void setUserAnimeModel() async {
-    UserMediaModel newUserAnimeModel =
+    UserMediaModel? newUserAnimeModel =
         await loggedUserModel.getUserAnimeInfo(widget.currentAnime.id);
     setState(() {
       userAnimeModel = newUserAnimeModel;
@@ -238,7 +238,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       progress = newProgress.toDouble();
       query.remove("progress");
       query.addAll({"progress": progress.toInt().toString()});
-      loggedUserModel.setUserAnimeInfo(widget.currentAnime.id, query);
+      loggedUserModel.setUserAnimeInfo(widget.currentAnime.id, query, animeModel: widget.currentAnime);
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
         const Duration(milliseconds: 1000),

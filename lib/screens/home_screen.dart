@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:image_gradient/image_gradient.dart';
-import 'package:unyo/dialogs/update_dialog.dart';
+import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/sources/sources.dart';
@@ -23,8 +23,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<AnimeModel>? watchingList;
-  List<MangaModel>? readingList;
   double adjustedWidth = 0;
   double adjustedHeight = 0;
   double totalWidth = 0;
@@ -33,17 +31,19 @@ class _HomeScreenState extends State<HomeScreen> {
   int? episodesWatched;
   int? minutesWatched;
 
-  void setSharedPreferences() async {
+  void attemptLogin() async {
     prefs = PreferencesModel();
     await prefs.init();
     if (!prefs.isUserLogged()) {
       Future.delayed(Duration.zero, () {
+        // prefs.getUsers(setState);
         goToLogin();
       });
     } else {
       accessToken = prefs.getString("accessToken");
       userName = prefs.getString("userName");
       userId = prefs.getInt("userId");
+      userName = prefs.userName!;
       //change function bellow for when logged already
       setUserInfo(0);
     }
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    setSharedPreferences();
+    attemptLogin();
     updateHomeScreenLists = () {
       updateUserLists();
     };
@@ -78,27 +78,35 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void setUserInfo(int userModelType) async {
-    loggedUserModel = AnilistUserModel();
+    switch (userModelType) {
+      case 0:
+        loggedUserModel = AnilistUserModel();
+        break;
+      case 1:
+        loggedUserModel = LocalUserModel();
+        break;
+      default:
+    }
     if (!prefs.isUserLogged()) {
-      List<String> userNameAndId =
-          await loggedUserModel.getUserNameAndId(accessToken!);
+      List<String> userNameAndId = await loggedUserModel.getUserNameAndId();
       userName = userNameAndId[0];
       await prefs.loginUser(userName!);
       userId = int.parse(userNameAndId[1]);
       prefs.setString("userName", userName!);
       prefs.setInt("userId", userId!);
-      prefs.setString("accessCode", accessCode!);
-      prefs.setString("refreshToken", refreshToken!);
       prefs.setString("accessToken", accessToken!);
+    } else {
+      if (accessToken != null) {
+        await loggedUserModel.getUserNameAndId();
+      }
     }
     startExtensions();
     initThemes(prefs.getInt("theme") ?? 0, setState);
-    String newavatarUrl =
-        await loggedUserModel.getUserAvatarImageUrl(userName!);
+    String newavatarUrl = await loggedUserModel.getUserAvatarImageUrl();
     List<AnimeModel> newWatchingAnimeList =
-        await loggedUserModel.getUserAnimeLists(userId!, "Watching");
+        await loggedUserModel.getUserAnimeLists("Watching");
     List<MangaModel> newReadingMangaList =
-        await loggedUserModel.getUserMangaLists(userId!, "Reading");
+        await loggedUserModel.getUserMangaLists("Reading");
     Map<String, Map<String, double>> newUserStats =
         await getUserStatsMaps(userName!, 0);
     episodesWatched =
@@ -112,15 +120,16 @@ class _HomeScreenState extends State<HomeScreen> {
       readingList = newReadingMangaList;
       userStats = newUserStats;
     });
+    prefs.saveUser(loggedUserModel);
     if (!mounted) return;
     showUpdateDialog(context);
   }
 
   void updateUserLists() async {
     List<AnimeModel> newWatchingAnimeList =
-        await loggedUserModel.getUserAnimeLists(userId!, "Watching");
+        await loggedUserModel.getUserAnimeLists("Watching");
     List<MangaModel> newReadingMangaList =
-        await loggedUserModel.getUserMangaLists(userId!, "Reading");
+        await loggedUserModel.getUserMangaLists("Reading");
     setState(() {
       watchingList = newWatchingAnimeList;
       readingList = newReadingMangaList;
@@ -366,94 +375,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                                 IconButton(
                                                   onPressed: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) {
-                                                        return AlertDialog(
-                                                          title: const Text(
-                                                              "Do you wanna log out?",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white)),
-                                                          backgroundColor:
-                                                              const Color
-                                                                  .fromARGB(255,
-                                                                  44, 44, 44),
-                                                          content: SizedBox(
-                                                            width:
-                                                                adjustedWidth *
-                                                                    0.15,
-                                                            height:
-                                                                adjustedHeight *
-                                                                    0.15,
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: [
-                                                                const Text(
-                                                                  "Are you sure you want to log out?",
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white),
-                                                                ),
-                                                                Row(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .end,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                    StyledButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                      },
-                                                                      text:
-                                                                          "Cancel",
-                                                                    ),
-                                                                    const SizedBox(
-                                                                      width: 20,
-                                                                    ),
-                                                                    StyledButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        setState(
-                                                                            () {
-                                                                          //TODO updateLists on logout, maybe extract method
-                                                                          bannerImageUrl =
-                                                                              null;
-                                                                          avatarImageUrl =
-                                                                              null;
-                                                                          watchingList =
-                                                                              null;
-                                                                          readingList =
-                                                                              null;
-                                                                          userName =
-                                                                              null;
-                                                                          userId =
-                                                                              null;
-                                                                          accessToken =
-                                                                              null;
-                                                                          refreshToken =
-                                                                              null;
-                                                                        });
-                                                                        setSharedPreferences();
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                      },
-                                                                      text:
-                                                                          "Confirm",
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
+                                                    showLogOutDialog(
+                                                      context,
+                                                      setState,
+                                                      attemptLogin,
+                                                      adjustedHeight,
+                                                      adjustedWidth,
                                                     );
                                                   },
                                                   icon: const Icon(

@@ -111,7 +111,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   }
 
   void setUserMangaModel() async {
-    UserMediaModel newUserMangaModel =
+    UserMediaModel? newUserMangaModel =
         await loggedUserModel.getUserMangaInfo(widget.currentManga.id);
     setState(() {
       userMangaModel = newUserMangaModel;
@@ -244,7 +244,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       progress = newProgress.toDouble();
       query.remove("progress");
       query.addAll({"progress": progress.toInt().toString()});
-      loggedUserModel.setUserMangaInfo(widget.currentManga.id, query);
+      loggedUserModel.setUserMangaInfo(widget.currentManga.id, query, mangaModel: widget.currentManga);
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
         const Duration(milliseconds: 1000),

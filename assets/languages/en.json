@@ -88,7 +88,6 @@
   "delete" : "Delete",
   "download" : "Download",
   "exit_fullscreen_on_video_exit" : "Exit fullscreen on video exit",
-  "restore:default" : "Restore default",
   "resume_from" : "Resume from",
   "search_from_website" : "Search your title from the website here",
   "current_selection" : "Current selection",
@@ -110,5 +109,9 @@
   "light_mode" : "Light Mode",
   "dart_mode" : "Dark Mode",
   "fit_height" : "Fit Height",
-  "fit_width" : "Fit Width"
+  "fit_width" : "Fit Width",
+  "logout_title" : "Do you wanna log out?",
+  "logout_text" : "Are you sure you want to log out?",
+  "logged_users" : "Logged Users",
+  "restore_default" : "Restore default"
 }

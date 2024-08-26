@@ -74,7 +74,7 @@ Future<List<AnimeModel>> getAnimeModelListRecentlyReleased(
     List<AnimeModel> list = [];
     for (int i = 0; i < media.length; i++) {
       var currentMedia = media[i]["media"];
-      
+
       list.add(AnimeModel.fromJson(currentMedia));
     }
     for (int i = 0; i < list.length; i++) {
@@ -120,7 +120,7 @@ Future<List<AnimeModel>> getAnimeModelListSeasonPopular(
     List<AnimeModel> list = [];
     for (int i = 0; i < n; i++) {
       Map<String, dynamic> json = media[i];
-      
+
       list.add(AnimeModel.fromJson(json));
     }
     return list;
@@ -185,7 +185,6 @@ Future<String> getRandomAnimeBanner(int attempt) async {
     headers: {"Content-Type": "application/json"},
     body: json.encode(query),
   );
-  int index = Random().nextInt(50);
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   if (attempt < maxAttempts) {
     if (response.statusCode != 200) {
@@ -194,15 +193,17 @@ Future<String> getRandomAnimeBanner(int attempt) async {
       int newAttempt = attempt + 1;
       return getRandomAnimeBanner(newAttempt);
     }
-    if (jsonResponse["data"]["Page"]["media"][index]["bannerImage"] == null) {
-      index = Random().nextInt(50);
-      await Future.delayed(const Duration(milliseconds: 200));
-      print("Random anime banner: $attempt - failure");
-      int newAttempt = attempt + 1;
-      return getRandomAnimeBanner(newAttempt);
-    } else {
-      return jsonResponse["data"]["Page"]["media"][index]["bannerImage"];
+    for (int i = 0; i < 50; i++) {
+      if (jsonResponse["data"]["Page"]["media"][i]["bannerImage"] == null) {
+        continue;
+      } else {
+        return jsonResponse["data"]["Page"]["media"][i]["bannerImage"];
+      }
     }
+    await Future.delayed(const Duration(milliseconds: 200));
+    print("Random anime banner: $attempt - failure");
+    int newAttempt = attempt + 1;
+    return getRandomAnimeBanner(newAttempt);
   } else {
     return "";
   }
@@ -380,7 +381,7 @@ Future<Map<String, Map<String, double>>> getUserStatsMaps(
 //       List<dynamic> wantedList = animeLists[i]["entries"];
 //       for (int i = 0; i < wantedList.length; i++) {
 //         Map<String, dynamic> json = wantedList[i]["media"];
-//         
+//
 //         animeModelList.add(AnimeModel.fromJson(json));
 //       }
 //       break;

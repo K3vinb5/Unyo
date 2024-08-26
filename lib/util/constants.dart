@@ -4,18 +4,19 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
 
 String? accessToken;
-String? refreshToken;
-String? accessCode;
 String? avatarImageUrl;
+String? bannerImageUrl;
 String? userName;
 int? userId;
 bool receivedValid = false;
+List<AnimeModel>? watchingList;
+List<MangaModel>? readingList;
 late PreferencesModel prefs;
 late UserModel loggedUserModel;
+List<UserModel>? users;
 Color veryLightBorderColor = Colors.white;
 Color lightBorderColor = Colors.grey;
 Color darkBorderColor = Colors.black;
-String? bannerImageUrl;
 List<Color> colorList = [];
 List<int> isScreenRefreshed = [0, 1, 2, 3, 4, 5];
 final ProcessManager processManager = ProcessManager();
@@ -109,8 +110,7 @@ void initThemes(int selected, void Function(void Function()) setState) async {
   if (selected == 0) {
     String newbannerUrl = "https://i.imgur.com/x6TGK1x.png";
     try {
-      newbannerUrl =
-          await loggedUserModel.getUserbannerImageUrl(prefs.getString("userName")!);
+      newbannerUrl = await loggedUserModel.getUserbannerImageUrl();
     } catch (error) {
       //If newBannerURL never returns a string use default avatar
     }

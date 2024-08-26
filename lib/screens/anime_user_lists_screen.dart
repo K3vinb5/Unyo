@@ -131,7 +131,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
   }
 
   void initUserAnimeListsMap() async {
-    var newUserAnimeLists = await loggedUserModel.getAllUserAnimeLists(userId!);
+    var newUserAnimeLists = await loggedUserModel.getAllUserAnimeLists();
     setState(() {
       userAnimeLists = newUserAnimeLists;
     });

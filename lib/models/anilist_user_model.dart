@@ -1,15 +1,28 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:unyo/models/models.dart';
-import 'package:unyo/util/constants.dart';
+import 'package:unyo/util/constants.dart' as constants;
 
-class AnilistUserModel implements UserModel{
+class AnilistUserModel implements UserModel {
   final String anilistEndpoint = "https://graphql.anilist.co";
   final maxAttempts = 5;
+  @override
+  String? avatarImage;
+  @override
+  String? bannerImage;
+  @override
+  String? userName;
+  @override
+  int? userId;
+
+  AnilistUserModel(
+      {this.avatarImage, this.bannerImage, this.userName, this.userId});
 
   @override
-  Future<List<String>> getUserNameAndId(String accessToken,
-      {int? newAttempt}) async {
+  Future<List<String>> getUserNameAndId({int? newAttempt}) async {
+    if (userName != null && userId != null) {
+      return [userName!, userId!.toString()];
+    }
     int attempt = newAttempt ?? 0;
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
@@ -19,7 +32,7 @@ class AnilistUserModel implements UserModel{
       url,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        "Authorization": "Bearer ${constants.accessToken}"
       },
       body: json.encode(query),
     );
@@ -27,11 +40,12 @@ class AnilistUserModel implements UserModel{
       print(response.body);
       if (attempt < maxAttempts) {
         int newAttempt = attempt + 1;
-        return getUserNameAndId(accessToken, newAttempt: newAttempt);
+        return getUserNameAndId(newAttempt: newAttempt);
       }
     }
-    print(response.body);
     Map<String, dynamic> jsonResponse = json.decode(response.body);
+    userName = jsonResponse["data"]["Viewer"]["name"] as String?;
+    userId = jsonResponse["data"]["Viewer"]["id"] as int?;
     return [
       jsonResponse["data"]["Viewer"]["name"],
       jsonResponse["data"]["Viewer"]["id"].toString()
@@ -39,15 +53,17 @@ class AnilistUserModel implements UserModel{
   }
 
   @override
-  Future<String> getUserbannerImageUrl(String name, {int? newAttempt}) async {
+  Future<String> getUserbannerImageUrl({int? newAttempt}) async {
+    if (bannerImage != null) {
+      return bannerImage!;
+    }
     int attempt = newAttempt ?? 0;
-
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query (\$id: Int \$name: String){User(id: \$id, name: \$name){bannerImage}}",
       "variables": {
-        "name": name,
+        "name": constants.userName,
       }
     };
     var response = await http.post(
@@ -61,25 +77,28 @@ class AnilistUserModel implements UserModel{
       if (attempt < maxAttempts) {
         int newAttempt = attempt + 1;
         String returnString =
-            await getUserbannerImageUrl(name, newAttempt: newAttempt);
+            await getUserbannerImageUrl(newAttempt: newAttempt);
         return returnString;
       }
       return "https://i.imgur.com/x6TGK1x.png";
     }
     Map<String, dynamic> jsonResponse = json.decode(response.body);
+    bannerImage = jsonResponse["data"]["User"]["bannerImage"] as String?;
     return jsonResponse["data"]["User"]["bannerImage"];
   }
 
   @override
-  Future<String> getUserAvatarImageUrl(String name, {int? newAttempt}) async {
+  Future<String> getUserAvatarImageUrl({int? newAttempt}) async {
+    if (avatarImage != null) {
+      return avatarImage!;
+    }
     int attempt = newAttempt ?? 0;
-
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query (\$id: Int \$name: String){User(id: \$id, name: \$name){avatar {medium}}}",
       "variables": {
-        "name": name,
+        "name": constants.userName,
       }
     };
 
@@ -94,7 +113,7 @@ class AnilistUserModel implements UserModel{
       if (attempt < maxAttempts) {
         int newAttempt = attempt + 1;
         String returnString =
-            await getUserAvatarImageUrl(name, newAttempt: newAttempt);
+            await getUserAvatarImageUrl(newAttempt: newAttempt);
         return returnString;
       }
       return "https://i.imgur.com/EKtChtm.png";
@@ -102,6 +121,7 @@ class AnilistUserModel implements UserModel{
     Map<String, dynamic> jsonResponse = json.decode(response.body);
     try {
       String returnString = jsonResponse["data"]["User"]["avatar"]["medium"];
+      avatarImage = returnString as String?;
       return returnString;
     } catch (e) {
       return "https://i.imgur.com/EKtChtm.png";
@@ -109,7 +129,7 @@ class AnilistUserModel implements UserModel{
   }
 
   @override
-  Future<List<AnimeModel>> getUserAnimeLists(int userId, String listName,
+  Future<List<AnimeModel>> getUserAnimeLists(String listName,
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
 
@@ -118,7 +138,7 @@ class AnilistUserModel implements UserModel{
       "query":
           "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type,sort:UPDATED_TIME_DESC){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{year month day}}}",
       "variables": {
-        "userId": userId,
+        "userId": constants.userId,
         "type": "ANIME",
       }
     };
@@ -132,8 +152,7 @@ class AnilistUserModel implements UserModel{
       print("User anime list $listName : $attempt - failure");
       if (attempt < maxAttempts) {
         int newAttempt = attempt + 1;
-        return await getUserAnimeLists(userId, listName,
-            newAttempt: newAttempt);
+        return await getUserAnimeLists(listName, newAttempt: newAttempt);
       }
       return [];
     }
@@ -156,7 +175,7 @@ class AnilistUserModel implements UserModel{
   }
 
   @override
-  Future<Map<String, List<AnimeModel>>> getAllUserAnimeLists(int userId,
+  Future<Map<String, List<AnimeModel>>> getAllUserAnimeLists(
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
 
@@ -165,7 +184,7 @@ class AnilistUserModel implements UserModel{
       "query":
           "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english }coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{day month year}}}",
       "variables": {
-        "userId": userId,
+        "userId": constants.userId,
         "type": "ANIME",
       }
     };
@@ -179,7 +198,7 @@ class AnilistUserModel implements UserModel{
       print("All user anime lists: $attempt - failure");
       if (attempt < maxAttempts) {
         int newAttempt = attempt + 1;
-        return await getAllUserAnimeLists(userId, newAttempt: newAttempt);
+        return await getAllUserAnimeLists(newAttempt: newAttempt);
       }
       //NOTE empry Map
       return {};
@@ -205,7 +224,7 @@ class AnilistUserModel implements UserModel{
   }
 
   @override
-  Future<UserMediaModel> getUserAnimeInfo(int mediaId,
+  Future<UserMediaModel?> getUserAnimeInfo(int mediaId,
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
 
@@ -217,14 +236,14 @@ class AnilistUserModel implements UserModel{
     var response = await http.post(
       url,
       headers: {
-        "Authorization": "Bearer $accessToken",
+        "Authorization": "Bearer ${constants.accessToken}",
         "Content-Type": "application/json",
       },
       body: json.encode(query),
     );
     if (response.statusCode != 200) {
       await Future.delayed(const Duration(milliseconds: 200));
-      print("User anime info: $attempt - failure");
+      print("User anime info: $attempt - failure {$response.body}");
       if (attempt < maxAttempts) {
         int newAttempt = attempt + 1;
         return getUserAnimeInfo(mediaId, newAttempt: newAttempt);
@@ -258,15 +277,15 @@ class AnilistUserModel implements UserModel{
   }
 
   @override
-  Future<List<MangaModel>> getUserMangaLists(
-      int userId, String listName, {int? newAttempt}) async {
+  Future<List<MangaModel>> getUserMangaLists(String listName,
+      {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type,sort:UPDATED_TIME_DESC){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
       "variables": {
-        "userId": userId,
+        "userId": constants.userId,
         "type": "MANGA",
       }
     };
@@ -281,7 +300,8 @@ class AnilistUserModel implements UserModel{
         print("userMangaLists : $attempt - failure");
         await Future.delayed(const Duration(milliseconds: 200));
         int newAttempt = attempt + 1;
-        return await getUserMangaLists(userId, listName, newAttempt: newAttempt);
+        return await getUserMangaLists(listName,
+            newAttempt: newAttempt);
       }
       return [];
     }
@@ -321,14 +341,14 @@ class AnilistUserModel implements UserModel{
 
   @override
   Future<Map<String, List<MangaModel>>> getAllUserMangaLists(
-      int userId, {int? newAttempt}) async {
+      {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
       "variables": {
-        "userId": /*859862*/ userId,
+        "userId": constants.userId,
         "type": "MANGA",
       }
     };
@@ -343,7 +363,7 @@ class AnilistUserModel implements UserModel{
         print("allUserMangaLists : $attempt - failure");
         await Future.delayed(const Duration(milliseconds: 200));
         int newAttempt = attempt + 1;
-        return await getAllUserMangaLists(userId, newAttempt: newAttempt);
+        return await getAllUserMangaLists(newAttempt: newAttempt);
       }
       //NOTE empry Map
       return {};
@@ -386,7 +406,8 @@ class AnilistUserModel implements UserModel{
   }
 
   @override
-  Future<UserMediaModel> getUserMangaInfo(int mediaId, {int? newAttempt}) async {
+  Future<UserMediaModel?> getUserMangaInfo(int mediaId,
+      {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
@@ -396,7 +417,7 @@ class AnilistUserModel implements UserModel{
     var response = await http.post(
       url,
       headers: {
-        "Authorization": "Bearer $accessToken",
+        "Authorization": "Bearer ${constants.accessToken}",
         "Content-Type": "application/json",
       },
       body: json.encode(query),
@@ -437,7 +458,8 @@ class AnilistUserModel implements UserModel{
   }
 
   @override
-  void setUserAnimeInfo(int mediaId, Map<String, String> receivedQuery) async {
+  void setUserAnimeInfo(int mediaId, Map<String, String> receivedQuery,
+      {AnimeModel? animeModel}) async {
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
@@ -462,7 +484,7 @@ class AnilistUserModel implements UserModel{
     var response = await http.post(
       url,
       headers: {
-        "Authorization": "Bearer $accessToken",
+        "Authorization": "Bearer ${constants.accessToken}",
         "Content-Type": "application/json",
       },
       body: json.encode(query),
@@ -483,7 +505,7 @@ class AnilistUserModel implements UserModel{
     var response1 = await http.post(
       url,
       headers: {
-        "Authorization": "Bearer $accessToken",
+        "Authorization": "Bearer ${constants.accessToken}",
         "Content-Type": "application/json",
       },
       body: json.encode(query1),
@@ -501,7 +523,7 @@ class AnilistUserModel implements UserModel{
     var response = await http.post(
       url,
       headers: {
-        "Authorization": "Bearer $accessToken",
+        "Authorization": "Bearer ${constants.accessToken}",
         "Content-Type": "application/json",
       },
       body: json.encode(query),
@@ -522,7 +544,7 @@ class AnilistUserModel implements UserModel{
     var response1 = await http.post(
       url,
       headers: {
-        "Authorization": "Bearer $accessToken",
+        "Authorization": "Bearer ${constants.accessToken}",
         "Content-Type": "application/json",
       },
       body: json.encode(query1),
@@ -540,7 +562,7 @@ class AnilistUserModel implements UserModel{
     var response = await http.post(
       url,
       headers: {
-        "Authorization": "Bearer $accessToken",
+        "Authorization": "Bearer ${constants.accessToken}",
         "Content-Type": "application/json",
       },
       body: json.encode(query),
@@ -549,7 +571,8 @@ class AnilistUserModel implements UserModel{
   }
 
   @override
-  void setUserMangaInfo(int mediaId, Map<String, String> receivedQuery) async {
+  void setUserMangaInfo(int mediaId, Map<String, String> receivedQuery,
+      {MangaModel? mangaModel}) async {
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
@@ -574,7 +597,7 @@ class AnilistUserModel implements UserModel{
     var response = await http.post(
       url,
       headers: {
-        "Authorization": "Bearer $accessToken",
+        "Authorization": "Bearer ${constants.accessToken}",
         "Content-Type": "application/json",
       },
       body: json.encode(query),

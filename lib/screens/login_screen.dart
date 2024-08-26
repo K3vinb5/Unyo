@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelfio;
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/dialogs/dialogs.dart';
+import 'package:unyo/models/models.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/widgets.dart';
 import 'package:unyo/util/utils.dart';
@@ -14,7 +16,8 @@ import 'package:unyo/util/utils.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.setUserInfo});
 
-  final void Function(int) setUserInfo;
+  final void Function(int)
+      setUserInfo;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -30,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _startServer();
+    prefs.getUsers(setState);
   }
 
   Future<void> _startServer() async {
@@ -37,11 +41,10 @@ class _LoginScreenState extends State<LoginScreen> {
       // Extract access token from request URL
       if (!receivedValid) {
         receivedValid = true;
-        accessCode = request.requestedUri.queryParameters['code'];
+        String accessCode = request.requestedUri.queryParameters['code'] ?? "";
         //print('Access Code: $accessCode');
-        List<String> codes = await getUserAccessToken(accessCode!, 0);
+        List<String> codes = await getUserAccessToken(accessCode, 0);
         accessToken = codes[0];
-        refreshToken = codes[1];
         //print("AccessToken: $accessToken");
         widget.setUserInfo(0);
         goToMainScreen();
@@ -105,11 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
     ];
 
     accessToken = codes[0];
-    refreshToken = codes[1];
-    accessCode = code;
-    prefs.setString("accessCode", accessCode!);
-    prefs.setString("refreshToken", refreshToken!);
-    prefs.setString("accessToken", accessToken!);
     widget.setUserInfo(0);
     goToMainScreen();
   }
@@ -120,6 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double totalHeight = MediaQuery.of(context).size.height;
     return Material(
       color: const Color.fromARGB(255, 44, 44, 44),
       child: Stack(
@@ -134,15 +133,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 "assets/logo.png",
                 scale: 0.75,
               ),
-              const SizedBox(
-                height: 30,
+              SizedBox(
+                height: totalHeight * 0.1,
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 50,
+                  SizedBox(
+                    height: totalHeight * 0.1,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -165,9 +164,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(
-                    height: 20,
                   ),
                   const SizedBox(
                     width: 20,
@@ -206,20 +202,113 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  StyledButton(
+                    onPressed: () {
+                      showCreateLocalAccoutDialog(
+                        context,
+                        widget.setUserInfo,
+                        goToMainScreen,
+                      );
+                    },
+                    text: "Create Local Account",
+                  ),
                 ],
+              ),
+              SizedBox(height: totalHeight * 0.1),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        context.tr("logged_users"),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          height: totalHeight * 0.2,
+                          width: 500,
+                          child: SmoothListView(
+                            scrollDirection: Axis.horizontal,
+                            duration: const Duration(milliseconds: 200),
+                            children: users != null
+                                ? users!
+                                    .map((user) => SizedBox(
+                                        height: totalHeight * 0.15,
+                                        width: totalHeight * 0.15,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 16.0),
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  await prefs.loginUser(
+                                                      user.userName!);
+                                                  if (user
+                                                      is AnilistUserModel) {
+                                                    userName = user.userName;
+                                                    userId = user.userId;
+                                                    accessToken = prefs.getString("accessToken"); 
+                                                    widget.setUserInfo(0);
+                                                  } else if (user
+                                                      is LocalUserModel) {
+                                                      userName = user.userName;
+                                                    widget.setUserInfo(1);
+                                                  }
+                                                  goToMainScreen();
+                                                },
+                                                child: CircleAvatar(
+                                                  radius: totalHeight * 0.075,
+                                                  backgroundImage: NetworkImage(
+                                                      user.avatarImage ??
+                                                          "https://i.imgur.com/EKtChtm.png"),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              user.userName ?? "null",
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ],
+                                        )))
+                                    .toList()
+                                : [
+                                    const Text(
+                                      "empty",
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                  ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          WindowTitleBarBox(
-            child: Row(
-              children: [
-                Expanded(
-                  child: MoveWindow(),
-                ),
-                const WindowButtons(),
-              ],
-            ),
-          ),
+          const WindowBarButtons(startIgnoreWidth: 0),
         ],
       ),
     );

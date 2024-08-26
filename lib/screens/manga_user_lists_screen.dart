@@ -137,7 +137,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
   }
 
   void initUserMangaListsMap() async {
-    var newUserMangaLists = await loggedUserModel.getAllUserMangaLists(userId!);
+    var newUserMangaLists = await loggedUserModel.getAllUserMangaLists();
     setState(() {
       userMangaLists = newUserMangaLists;
     });
