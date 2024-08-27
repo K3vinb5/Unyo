@@ -99,7 +99,6 @@ You need java 17 or later installed on your machine to run the local extensions,
   
 ## Known Issues
 
-- On Windows and Mac, opening fullscreen or going back from a video (through the escape button or arrow ont the screen) will cause a crash, this has been addressed and will be fixed on the next release.
 
 ## Contributors
 
