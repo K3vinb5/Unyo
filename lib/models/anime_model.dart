@@ -67,7 +67,9 @@ class AnimeModel {
     return {
       'id': id,
       'malId': idMal,
-      'title': userPreferedTitle,
+      'userPreferedTitle': userPreferedTitle,
+      'englishTitle': englishTitle,
+      'japaneseTitle': japaneseTitle,
       'coverImage': coverImage,
       'bannerImage': bannerImage,
       'startDate': startDate,
@@ -99,6 +101,6 @@ class AnimeModel {
 
   @override
   String toString() {
-    return "$id $coverImage";
+    return "$id $userPreferedTitle";
   }
 }

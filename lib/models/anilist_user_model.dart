@@ -283,7 +283,7 @@ class AnilistUserModel implements UserModel {
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
-          "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type,sort:UPDATED_TIME_DESC){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
+          "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type,sort:UPDATED_TIME_DESC){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{year month day}}}",
       "variables": {
         "userId": constants.userId,
         "type": "MANGA",
@@ -300,8 +300,7 @@ class AnilistUserModel implements UserModel {
         print("userMangaLists : $attempt - failure");
         await Future.delayed(const Duration(milliseconds: 200));
         int newAttempt = attempt + 1;
-        return await getUserMangaLists(listName,
-            newAttempt: newAttempt);
+        return await getUserMangaLists(listName, newAttempt: newAttempt);
       }
       return [];
     }
@@ -313,25 +312,27 @@ class AnilistUserModel implements UserModel {
       if (animeLists[i]["name"] == listName) {
         List<dynamic> wantedList = animeLists[i]["entries"];
         for (int i = 0; i < wantedList.length; i++) {
-          animeModelList.add(
-            MangaModel(
-              id: wantedList[i]["media"]["id"],
-              title: wantedList[i]["media"]["title"]["userPreferred"],
-              coverImage: wantedList[i]["media"]["coverImage"]["large"],
-              bannerImage: wantedList[i]["media"]["bannerImage"],
-              startDate:
-                  "${wantedList[i]["media"]["startDate"]["day"]}/${wantedList[i]["media"]["startDate"]["month"]}/${wantedList[i]["media"]["startDate"]["year"]}",
-              endDate: "",
-              //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
-              type: wantedList[i]["media"]["type"],
-              description: wantedList[i]["media"]["description"],
-              status: wantedList[i]["media"]["status"],
-              averageScore: wantedList[i]["media"]["averageScore"],
-              chapters: wantedList[i]["media"]["chapters"],
-              duration: wantedList[i]["media"]["episodes"],
-              format: wantedList[i]["media"]["format"],
-            ),
-          );
+          var json = wantedList[i]["media"];
+          animeModelList.add(MangaModel.fromJson(json));
+          // animeModelList.add(
+          //   MangaModel(
+          //     id: wantedList[i]["media"]["id"],
+          //     title: wantedList[i]["media"]["title"]["userPreferred"],
+          //     coverImage: wantedList[i]["media"]["coverImage"]["large"],
+          //     bannerImage: wantedList[i]["media"]["bannerImage"],
+          //     startDate:
+          //         "${wantedList[i]["media"]["startDate"]["day"]}/${wantedList[i]["media"]["startDate"]["month"]}/${wantedList[i]["media"]["startDate"]["year"]}",
+          //     endDate: "",
+          //     //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
+          //     type: wantedList[i]["media"]["type"],
+          //     description: wantedList[i]["media"]["description"],
+          //     status: wantedList[i]["media"]["status"],
+          //     averageScore: wantedList[i]["media"]["averageScore"],
+          //     chapters: wantedList[i]["media"]["chapters"],
+          //     duration: wantedList[i]["media"]["episodes"],
+          //     format: wantedList[i]["media"]["format"],
+          //   ),
+          // );
         }
         break;
       }
@@ -346,7 +347,7 @@ class AnilistUserModel implements UserModel {
     var url = Uri.parse(anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
-          "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id title{userPreferred romaji english native}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day}}}",
+          "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{year month day}}}",
       "variables": {
         "userId": constants.userId,
         "type": "MANGA",
@@ -378,25 +379,27 @@ class AnilistUserModel implements UserModel {
       List<MangaModel> mangaModelList = [];
 
       for (int j = 0; j < currentList.length; j++) {
-        mangaModelList.add(
-          MangaModel(
-            id: currentList[j]["media"]["id"],
-            title: currentList[j]["media"]["title"]["userPreferred"],
-            coverImage: currentList[j]["media"]["coverImage"]["large"],
-            bannerImage: currentList[j]["media"]["bannerImage"],
-            startDate:
-                "${currentList[j]["media"]["startDate"]["day"]}/${currentList[j]["media"]["startDate"]["month"]}/${currentList[j]["media"]["startDate"]["year"]}",
-            endDate: "",
-            //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
-            type: currentList[j]["media"]["type"],
-            description: currentList[j]["media"]["description"],
-            status: currentList[j]["media"]["status"],
-            averageScore: currentList[j]["media"]["averageScore"],
-            chapters: currentList[j]["media"]["chapters"],
-            duration: currentList[j]["media"]["episodes"],
-            format: currentList[j]["media"]["format"],
-          ),
-        );
+        var json = currentList[j]["media"];
+        mangaModelList.add(MangaModel.fromJson(json));
+        // mangaModelList.add(
+        //   MangaModel(
+        //     id: currentList[j]["media"]["id"],
+        //     title: currentList[j]["media"]["title"]["userPreferred"],
+        //     coverImage: currentList[j]["media"]["coverImage"]["large"],
+        //     bannerImage: currentList[j]["media"]["bannerImage"],
+        //     startDate:
+        //         "${currentList[j]["media"]["startDate"]["day"]}/${currentList[j]["media"]["startDate"]["month"]}/${currentList[j]["media"]["startDate"]["year"]}",
+        //     endDate: "",
+        //     //"${wantedList[i]["media"]["endDate"]["day"]}/${wantedList[i]["media"]["endDate"]["month"]}/${wantedList[i]["media"]["endDate"]["year"]}",
+        //     type: currentList[j]["media"]["type"],
+        //     description: currentList[j]["media"]["description"],
+        //     status: currentList[j]["media"]["status"],
+        //     averageScore: currentList[j]["media"]["averageScore"],
+        //     chapters: currentList[j]["media"]["chapters"],
+        //     duration: currentList[j]["media"]["episodes"],
+        //     format: currentList[j]["media"]["format"],
+        //   ),
+        // );
       }
 
       userMangaListsMap.addAll({userMangaLists[i]["name"]: mangaModelList});

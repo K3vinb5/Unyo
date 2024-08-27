@@ -4,7 +4,6 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
@@ -23,8 +22,6 @@ class MangaUserListsScreen extends StatefulWidget {
 class _MangaUserListsScreenState extends State<MangaUserListsScreen>
     with TickerProviderStateMixin {
   Map<String, List<MangaModel>> userMangaLists = {};
-  String? userName;
-  int? userId;
   final double minimumWidth = 124.08;
   final double minimumHeight = 195.44;
   double maximumWidth = 0;
@@ -33,8 +30,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
   @override
   void initState() {
     super.initState();
-    setSharedPreferences();
-    // initUserMangaListsMap();
+    initUserMangaListsMap();
     //TODO find this value with totalHeight and totalWidth in the future
     refreshMangaUserListScreenState = setState;
     maximumWidth = minimumWidth * 1.4;
@@ -99,7 +95,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
         child: Hero(
           tag: "${"user-manga-list-$title-view"}-$j",
           child: MangaWidget(
-            title: mangaList[j].title,
+            title: mangaList[j].getDefaultTitle(),
             score: mangaList[j].averageScore,
             coverImage: mangaList[j].coverImage,
             onTap: () {
@@ -143,20 +139,6 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
     });
   }
 
-  void setSharedPreferences() async {
-    var prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("accessToken") == null) {
-      // _startServer();
-      // goToLogin();
-      return;
-    } else {
-      // accessToken = prefs.getString("accessToken");
-      userName = prefs.getString("userName");
-      userId = prefs.getInt("userId");
-      initUserMangaListsMap();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     //TODO must calculate both adjustedHeight and adjustedWidth in the future so it doesn't depend on 16/9 aspect ratio
@@ -190,7 +172,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                         goTo(1);
                       },
                       onRefreshPress: () {
-                        setSharedPreferences();
+                        initUserMangaListsMap();
                         AnimatedSnackBar.material(
                           "Refreshing Page",
                           type: AnimatedSnackBarType.info,
@@ -203,7 +185,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "${userName != null ? "$userName's" : ""} ${context.tr("manga_list")}",
+                          "${userName != null ? "$userName" : ""} ${context.tr("manga_list")}",
                           style: TextStyle(
                             color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,

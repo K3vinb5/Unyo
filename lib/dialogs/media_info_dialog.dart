@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -15,10 +16,12 @@ class MediaInfoDialog extends StatefulWidget {
     required this.progress,
     required this.currentEpisode,
     required this.score,
-    required this.setUserAnimeModel,
+    required this.setUserMediaModel,
     required this.startDate,
     required this.endDate,
     required this.id,
+    this.animeModel,
+    this.mangaModel,
   });
 
   final double totalWidth;
@@ -32,7 +35,9 @@ class MediaInfoDialog extends StatefulWidget {
   final double score;
   final String startDate;
   final String endDate;
-  final void Function() setUserAnimeModel;
+  final void Function() setUserMediaModel;
+  final AnimeModel? animeModel;
+  final MangaModel? mangaModel;
 
   @override
   State<MediaInfoDialog> createState() => _MediaInfoDialogState();
@@ -130,7 +135,8 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                           currentEpisode.toDouble(),
                       value: progress,
                       label: progress.round().toString(),
-                      divisions: widget.episodes ?? (currentEpisode > 0 ? currentEpisode : 1),
+                      divisions: widget.episodes ??
+                          (currentEpisode > 0 ? currentEpisode : 1),
                       onChanged: (value) {
                         setState(() {
                           progress =
@@ -274,11 +280,17 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                             ),
                           ),
                           onPressed: () {
-                            loggedUserModel.setUserAnimeInfo(widget.id, query);
+                            if (widget.animeModel != null) {
+                              loggedUserModel.setUserAnimeInfo(widget.id, query,
+                                  animeModel: widget.animeModel);
+                            } else {
+                              loggedUserModel.setUserMangaInfo(widget.id, query,
+                                  mangaModel: widget.mangaModel);
+                            }
                             Timer(
                               const Duration(milliseconds: 1500),
                               () {
-                                widget.setUserAnimeModel();
+                                widget.setUserMediaModel();
                               },
                             );
                             Navigator.of(context).pop();

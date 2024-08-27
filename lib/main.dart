@@ -5,7 +5,10 @@ import 'package:flutter_acrylic/window.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:unyo/models/adapters/anilist_user_model_adapter.dart';
+import 'package:unyo/models/adapters/anime_model_adapter.dart';
 import 'package:unyo/models/adapters/local_user_model_adapter.dart';
+import 'package:unyo/models/adapters/manga_model_adapter.dart';
+import 'package:unyo/models/adapters/user_media_model_adapter.dart';
 import 'package:unyo/router/router.dart';
 import 'package:fvp/fvp.dart' as fvp;
 import 'package:unyo/util/utils.dart';
@@ -21,6 +24,9 @@ Future<void> main() async {
   Hive.init(dir.path);
   Hive.registerAdapter(AnilistUserModelAdapter());
   Hive.registerAdapter(LocalUserModelAdapter());
+  Hive.registerAdapter(UserMediaModelAdapter());
+  Hive.registerAdapter(MangaModelAdapter());
+  Hive.registerAdapter(AnimeModelAdapter());
   fvp.registerWith(options: {
     'platforms': ['windows', 'linux', 'macos']
   });

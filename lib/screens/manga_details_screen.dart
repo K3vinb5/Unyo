@@ -131,9 +131,9 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
 
   void setSearches(Future<List<List<String>>> Function(String) getIds,
       {String? query, void Function(void Function())? setDialogState}) async {
-    List<List<String>> newSearches = await getIds(widget.currentManga.title!);
+    List<List<String>> newSearches = await getIds(widget.currentManga.userPreferedTitle!);
     List<List<String>> newSearchesAndIds =
-        await getIds(query ?? widget.currentManga.title!);
+        await getIds(query ?? widget.currentManga.userPreferedTitle!);
     int newCurrentEpisode = widget.currentManga.status == "RELEASING"
         ? chaptersId.length
         : widget.currentManga.chapters!;
@@ -245,6 +245,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       query.remove("progress");
       query.addAll({"progress": progress.toInt().toString()});
       loggedUserModel.setUserMangaInfo(widget.currentManga.id, query, mangaModel: widget.currentManga);
+      print(query);
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
         const Duration(milliseconds: 1000),
@@ -373,9 +374,10 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
             progress: progress,
             currentEpisode: latestReleasedChapter,
             score: score,
-            setUserAnimeModel: setUserMangaModel,
+            setUserMediaModel: setUserMangaModel,
             startDate: startDate,
             endDate: endDate,
+            mangaModel: widget.currentManga
           ),
         );
       },
@@ -514,7 +516,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                             }
                             ((userMangaModel?.progress ?? 0) + 1).toInt();
                             openManga(chaptersId[chapterNum - 1], chapterNum,
-                                widget.currentManga.title ?? "");
+                                widget.currentManga.getDefaultTitle());
                           },
                         ),
                         const SizedBox(
@@ -548,7 +550,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                               userProgress: userMangaModel?.progress,
                               currentChapterGroup: currentChapterGroup,
                               chaptersId: chaptersId,
-                              chapterTitle: widget.currentManga.title,
+                              chapterTitle: widget.currentManga.getDefaultTitle(),
                               openManga: openManga,
                             );
                           },

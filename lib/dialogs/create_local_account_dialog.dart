@@ -27,13 +27,13 @@ class CreateLocalAccountDialog extends StatelessWidget {
         style: const TextStyle(color: Colors.white),
       ),
       content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.3,
-        height: MediaQuery.of(context).size.height * 0.3,
+        width: MediaQuery.of(context).size.width * 0.4,
+        height: MediaQuery.of(context).size.height * 0.25,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             StyledTextField(
-              width: 150,
+              width: 300,
               controller: controller,
               color: Colors.white,
               hintColor: Colors.grey,
@@ -44,12 +44,14 @@ class CreateLocalAccountDialog extends StatelessWidget {
                 if (controller.text.trim() != "") {
                   await prefs.loginUser(controller.text.trim());
                   userName = controller.text.trim();
+                  prefs.setString("userName", userName!);
                   setUserInfo(1);
                   goToMainMenu();
                   if(!context.mounted) return;
                   Navigator.of(context).pop();
                 }
               },
+              text: context.tr("confirm"),
             ),
           ],
         ),

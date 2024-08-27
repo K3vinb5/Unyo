@@ -13,6 +13,14 @@ class PreferencesModel {
     userName = sharedPreferences.getString("user_logged");
     if (userName != null && userName != "null") {
       box = await Hive.openBox(userName!);
+      var userBox = await Hive.openBox("users");
+      List<dynamic> anilistSavedUsers = userBox.get("anilistUsers") ?? [];
+      List<dynamic> localSavedUsers = userBox.get("localUsers") ?? [];
+
+      List<UserModel> savedUsers =
+          List.from(anilistSavedUsers.map((e) => e as AnilistUserModel));
+      savedUsers.addAll(localSavedUsers.map((e) => e as LocalUserModel));
+      users = savedUsers;
     }
   }
 
@@ -34,8 +42,7 @@ class PreferencesModel {
   void saveUser(UserModel user) async {
     print("Saving user: ${user.userName}");
     var userBox = await Hive.openBox("users");
-    List<dynamic> anilistSavedUsers =
-        userBox.get("anilistUsers") ?? [];
+    List<dynamic> anilistSavedUsers = userBox.get("anilistUsers") ?? [];
     List<dynamic> localSavedUsers = userBox.get("localUsers") ?? [];
 
     List<UserModel> savedUsers =

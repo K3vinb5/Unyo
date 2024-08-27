@@ -107,11 +107,14 @@
   "left_to_right" : "Left to Right",
   "right_to_left" : "Right to Left",
   "light_mode" : "Light Mode",
-  "dart_mode" : "Dark Mode",
+  "dark_mode" : "Dark Mode",
   "fit_height" : "Fit Height",
   "fit_width" : "Fit Width",
   "logout_title" : "Do you wanna log out?",
   "logout_text" : "Are you sure you want to log out?",
-  "logged_users" : "Logged Users",
-  "restore_default" : "Restore default"
+  "select_user" : "Who's Watching?",
+  "restore_default" : "Restore default",
+  "create_local_account" : "Create Local Account",
+  "create_local_account_title" : "New Account",
+  "insert_new_name" : "Insert username"
 }

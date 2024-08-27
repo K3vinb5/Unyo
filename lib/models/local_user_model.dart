@@ -26,28 +26,38 @@ class LocalUserModel implements UserModel {
 
   @override
   Future<Map<String, List<AnimeModel>>> getAllUserAnimeLists() async {
-    return (prefs.box.get("allUserAnimeLists")
-            as Map<String, List<AnimeModel>>?) ??
+    return (prefs.box.get("allUserAnimeLists") as Map<dynamic, dynamic>?)?.map(
+            (key, value) =>
+                MapEntry(key as String, (value as List).cast<AnimeModel>())) ??
         {};
   }
 
   @override
   Future<Map<String, List<MangaModel>>> getAllUserMangaLists() async {
-    return (prefs.box.get("allUserAnimeLists")
-            as Map<String, List<MangaModel>>?) ??
+    return (prefs.box.get("allUserMangaLists") as Map<dynamic, dynamic>?)?.map(
+            (key, value) =>
+                MapEntry(key as String, (value as List).cast<MangaModel>())) ??
         {};
   }
 
   @override
   Future<UserMediaModel?> getUserAnimeInfo(int mediaId) async {
-    return prefs.box.get("userAnimeInfo-$mediaId") as UserMediaModel?;
+    return prefs.box.get("userAnimeInfo-$mediaId") as UserMediaModel? ??
+        UserMediaModel(
+            score: 0,
+            progress: 0,
+            repeat: null,
+            priority: null,
+            status: "NOT SET",
+            startDate: null,
+            endDate: null);
   }
 
   @override
-  Future<List<AnimeModel>> getUserAnimeLists(
-      String listName) async {
-    return (prefs.box.get("allUserAnimeLists")
-            as Map<String, List<AnimeModel>>?)?[listName] ??
+  Future<List<AnimeModel>> getUserAnimeLists(String listName) async {
+    return (prefs.box.get("allUserAnimeLists")?[listName] as List<dynamic>?)
+            ?.map((e) => e as AnimeModel)
+            .toList() ??
         [];
   }
 
@@ -60,14 +70,23 @@ class LocalUserModel implements UserModel {
 
   @override
   Future<UserMediaModel?> getUserMangaInfo(int mediaId) async {
-    return prefs.box.get("userMangaInfo-$mediaId") as UserMediaModel?;
+    return prefs.box.get("userMangaInfo-$mediaId") as UserMediaModel? ??
+        UserMediaModel(
+            score: 0,
+            progress: 0,
+            repeat: null,
+            priority: null,
+            status: "NOT SET",
+            startDate: null,
+            endDate: null);
+
   }
 
   @override
-  Future<List<MangaModel>> getUserMangaLists(
-      String listName) async {
-    return (prefs.box.get("allUserMangaLists")
-            as Map<String, List<MangaModel>>?)?[listName] ??
+  Future<List<MangaModel>> getUserMangaLists(String listName) async {
+    return (prefs.box.get("allUserMangaLists")?[listName] as List<dynamic>?)
+            ?.map((e) => e as MangaModel)
+            .toList() ??
         [];
   }
 
@@ -78,10 +97,7 @@ class LocalUserModel implements UserModel {
     }
     userName = prefs.box.get("userName") as String?;
     userId = prefs.box.get("userId") as int?;
-    return [
-      prefs.box.get("userName") as String,
-      (prefs.box.get("userId") as int).toString(),
-    ];
+    return [prefs.box.get("userName") as String, ""];
   }
 
   @override
@@ -106,10 +122,15 @@ class LocalUserModel implements UserModel {
           "${receivedQuery["endDateDay"]}/${receivedQuery["endDateMonth"]}/${receivedQuery["endDateYear"]}",
     );
     prefs.box.put("userAnimeInfo-$mediaId", userMediaModel);
-    Map<String, List<AnimeModel>>? userAnimeLists =
-        prefs.box.get("allUserAnimeLists") as Map<String, List<AnimeModel>>?;
+    Map<String, List<AnimeModel>>? userAnimeLists = (prefs.box
+                .get("allUserAnimeLists") as Map<dynamic, dynamic>?)
+            ?.map((key, value) =>
+                MapEntry(key as String, (value as List).cast<AnimeModel>())) ??
+        {};
 
-    userAnimeLists ??= {};
+    for (var animeModelList in userAnimeLists.values) {
+      animeModelList.remove(animeModel);
+    }
 
     switch (receivedQuery["status"]) {
       case "CURRENT":
@@ -156,18 +177,25 @@ class LocalUserModel implements UserModel {
           "${receivedQuery["endDateDay"]}/${receivedQuery["endDateMonth"]}/${receivedQuery["endDateYear"]}",
     );
     prefs.box.put("userMangaInfo-$mediaId", userMediaModel);
-    Map<String, List<MangaModel>>? userMangaLists =
-        prefs.box.get("allUserMangaLists") as Map<String, List<MangaModel>>?;
+    Map<String, List<MangaModel>>? userMangaLists = (prefs.box
+                .get("allUserMangaLists") as Map<dynamic, dynamic>?)
+            ?.map((key, value) =>
+                MapEntry(key as String, (value as List).cast<MangaModel>())) ??
+        {};
 
-    userMangaLists ??= {};
+    for (var mangaModelList in userMangaLists.values) {
+      mangaModelList.remove(mangaModel!);
+    }
 
     switch (receivedQuery["status"]) {
       case "CURRENT":
         // if (userMangaLists["Watching"] == null){
         // userMangaLists["Watching"] = [];
         // }
+        print("added");
         userMangaLists["Reading"] ??= [];
         userMangaLists["Reading"]!.add(mangaModel!);
+        print(userMangaLists["Reading"]);
         break;
       case "COMPLETED":
         userMangaLists["Completed"] ??= [];

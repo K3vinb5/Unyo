@@ -38,3 +38,4 @@ export 'video/video_subtitles.dart';
 export 'styled/custom/column_or_row.dart';
 export 'styled/menu/side_bar.dart';
 export 'media/media_resume_from_widget.dart';
+export 'login/logged_user_widget.dart';

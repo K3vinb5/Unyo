@@ -97,7 +97,7 @@ class _SearchingMangaMenuState extends State<SearchingMangaMenu> {
                 height: 95,
               ),
               labelWidget: Text(
-                animeModel.title ?? "",
+                animeModel.getDefaultTitle(),
                 style: const TextStyle(
                     color: Colors.white, overflow: TextOverflow.ellipsis),
               ),

@@ -374,9 +374,10 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
             progress: progress,
             currentEpisode: latestReleasedEpisode,
             score: score,
-            setUserAnimeModel: setUserAnimeModel,
+            setUserMediaModel: setUserAnimeModel,
             startDate: startDate,
             endDate: endDate,
+            animeModel: widget.currentAnime
           ),
         );
       },
@@ -554,7 +555,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                               mediaContentModel: mediaContentModel,
                               latestEpisode: latestReleasedEpisode,
                               latestEpisodeWatched:
-                                  userAnimeModel?.progress ?? 1,
+                                  userAnimeModel?.progress ?? 0,
                               videoQualities: openVideoQualities,
                               currentSearchId: manualTitleSelection
                                   ? currentSearchId

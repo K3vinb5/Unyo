@@ -8,7 +8,6 @@ String? avatarImageUrl;
 String? bannerImageUrl;
 String? userName;
 int? userId;
-bool receivedValid = false;
 List<AnimeModel>? watchingList;
 List<MangaModel>? readingList;
 late PreferencesModel prefs;

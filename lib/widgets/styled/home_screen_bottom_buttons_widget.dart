@@ -105,7 +105,7 @@ class HomeScreenBottomButtonsWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Text(
-                        "${context.tr("episodes_watched")}: ${episodesWatched ?? -1}",
+                        "${context.tr("episodes_watched")}: ${episodesWatched ?? 0}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 19,

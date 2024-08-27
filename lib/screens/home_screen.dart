@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
       userId = prefs.getInt("userId");
       userName = prefs.userName!;
       //change function bellow for when logged already
-      setUserInfo(0);
+      setUserInfo(users!.where((user) => user.userName == userName && user is AnilistUserModel).isNotEmpty ? 0 : 1);
     }
   }
 
@@ -96,9 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
       prefs.setInt("userId", userId!);
       prefs.setString("accessToken", accessToken!);
     } else {
-      if (accessToken != null) {
-        await loggedUserModel.getUserNameAndId();
-      }
+      await loggedUserModel.getUserNameAndId();
     }
     startExtensions();
     initThemes(prefs.getInt("theme") ?? 0, setState);
@@ -107,8 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
         await loggedUserModel.getUserAnimeLists("Watching");
     List<MangaModel> newReadingMangaList =
         await loggedUserModel.getUserMangaLists("Reading");
+    //TODO fix stats 
     Map<String, Map<String, double>> newUserStats =
-        await getUserStatsMaps(userName!, 0);
+        (loggedUserModel is AnilistUserModel) ? await getUserStatsMaps() : {};
     episodesWatched =
         newUserStats["watchedStatistics"]?["episodesWatched"]?.toInt() ?? -1;
     minutesWatched =

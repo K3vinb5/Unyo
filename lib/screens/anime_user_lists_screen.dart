@@ -21,8 +21,6 @@ class AnimeUserListsScreen extends StatefulWidget {
 class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
     with TickerProviderStateMixin {
   Map<String, List<AnimeModel>> userAnimeLists = {};
-  String? userName;
-  int? userId;
   final double minimumWidth = 124.08;
   final double minimumHeight = 195.44;
   double maximumWidth = 0;
@@ -31,8 +29,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
   @override
   void initState() {
     super.initState();
-    setSharedPreferences();
-    // initUserAnimeListsMap();
+    initUserAnimeListsMap();
     refreshAnimeUserListScreenState = setState;
     //TODO find this value with totalHeight and totalWidth in the future
     maximumWidth = minimumWidth * 1.4;
@@ -137,19 +134,6 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
     });
   }
 
-  void setSharedPreferences() async {
-    if (prefs.getString("accessToken") == null) {
-      // _startServer();
-      // goToLogin();
-      return;
-    } else {
-      // accessToken = prefs.getString("accessToken");
-      userName = prefs.getString("userName");
-      userId = prefs.getInt("userId");
-      initUserAnimeListsMap();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     //TODO must calculate both adjustedHeight and adjustedWidth in the future so it doesn't depend on 16/9 aspect ratio
@@ -184,7 +168,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
                         goTo(1);
                       },
                       onRefreshPress: () {
-                        setSharedPreferences();
+                        initUserAnimeListsMap();
                         AnimatedSnackBar.material(
                           "Refreshing Page",
                           type: AnimatedSnackBarType.info,
@@ -197,7 +181,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "${userName != null ? "$userName's" : ""} ${context.tr("anime_list")}",
+                          "${userName != null ? "$userName" : ""} ${context.tr("anime_list")}",
                           style: TextStyle(
                             color: veryLightBorderColor,
                             fontWeight: FontWeight.bold,

@@ -155,7 +155,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
                         return Hero(
                           tag: "${widget.tag}-$index",
                           child: MangaWidget(
-                            title: mangaModel.title,
+                            title: mangaModel.getDefaultTitle(),
                             score: mangaModel.averageScore,
                             coverImage: mangaModel.coverImage,
                             onTap: () {

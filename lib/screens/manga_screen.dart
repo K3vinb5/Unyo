@@ -174,7 +174,7 @@ class _MangaScreenState extends State<MangaScreen> {
                                 return PageBannerWidget(
                                   animeModel: AnimeModel(
                                       id: mangaModel.id,
-                                      userPreferedTitle: mangaModel.title,
+                                      userPreferedTitle: mangaModel.getDefaultTitle(),
                                       coverImage: mangaModel.coverImage,
                                       bannerImage: mangaModel.bannerImage,
                                       startDate: mangaModel.startDate,
