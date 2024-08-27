@@ -195,7 +195,7 @@ class AnimeWidget extends StatelessWidget {
                               style: TextStyle(
                                 color: veryLightBorderColor.withOpacity(0.8),
                                 overflow: TextOverflow.ellipsis,
-                                fontSize: format == "TV_SHORT" ? 10 : 14,
+                                fontSize: format == "TV_SHORT"  || format == "SPECIAL"? 10 : 14,
                               ),
                             ),
                             Icon(

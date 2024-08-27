@@ -116,5 +116,7 @@
   "restore_default" : "Restore default",
   "create_local_account" : "Create Local Account",
   "create_local_account_title" : "New Account",
-  "insert_new_name" : "Insert username"
+  "add_account" : "Add Account",
+  "insert_new_name" : "Insert username",
+  "sign_int_title" : "Add a new account"
 }

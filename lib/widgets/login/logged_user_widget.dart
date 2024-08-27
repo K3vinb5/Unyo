@@ -76,7 +76,7 @@ class LoggedUserWidget extends StatelessWidget {
             Text(
               user != null
                   ? "${user!.userName}     "
-                  : "${context.tr("create_local_account_title")}     ",
+                  : "${context.tr("add_account")}     ",
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
