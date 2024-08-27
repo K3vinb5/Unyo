@@ -202,6 +202,32 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                         context: context,
                         firstDate: DateTime(1970, 1, 1),
                         lastDate: DateTime.now(),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.dark(
+                                // Use ColorScheme.dark to reflect a dark theme
+                                primary: Color.fromARGB(
+                                    255, 44, 44, 44), // Header background color
+                                onPrimary: Colors.white, // Header text color
+                                surface: Color.fromARGB(
+                                    255, 55, 44, 55), // Dialog background color
+                                onSurface: Colors.white, // Body text color
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(255, 37,
+                                      37, 37), // Button background color
+                                  foregroundColor:
+                                      Colors.white, // Button text color
+                                ),
+                              ),
+                              dialogBackgroundColor: const Color.fromARGB(255,
+                                  44, 44, 44), // Entire dialog background color
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (chosenDateTime != null) {
                         setState(() {
@@ -239,6 +265,32 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                         context: context,
                         firstDate: DateTime(1970, 1, 1),
                         lastDate: DateTime.now(),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.light(
+                                // Use ColorScheme.dark to reflect a dark theme
+                                primary: Color.fromARGB(
+                                    255, 44, 44, 44), // Header background color
+                                onPrimary: Colors.white, // Header text color
+                                surface: Color.fromARGB(
+                                    255, 55, 44, 55), // Dialog background color
+                                onSurface: Colors.white, // Body text color
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(255, 37,
+                                      37, 37), // Button background color
+                                  foregroundColor:
+                                      Colors.white, // Button text color
+                                ),
+                              ),
+                              dialogBackgroundColor: const Color.fromARGB(255,
+                                  44, 44, 44), // Entire dialog background color
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (chosenDateTime != null) {
                         setState(() {

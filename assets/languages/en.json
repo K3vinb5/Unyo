@@ -118,5 +118,9 @@
   "create_local_account_title" : "New Account",
   "add_account" : "Add Account",
   "insert_new_name" : "Insert username",
-  "sign_int_title" : "Add a new account"
+  "sign_int_title" : "Add a new account",
+  "previous_chapter" : "Previous Chapter",
+  "next_chapter" : "Next Chapter",
+  "next_page" : "Next Page",
+  "previous_page" : "Previous Page"
 }

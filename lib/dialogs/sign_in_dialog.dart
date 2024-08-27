@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:unyo/icons/anilist_icons.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -56,14 +57,30 @@ class SignInDialog extends StatelessWidget {
         height: totalHeight * 0.5,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             StyledButton(
               onPressed: () {
                 login();
                 Navigator.of(context).pop();
               },
-              text: "Login to Anilist",
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 50.0),
+                child: SizedBox(
+                  width: 240,
+                  height: 70,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Login to Anilist  ",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Icon(Anilist.anilist),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(
               height: 20,
@@ -85,7 +102,23 @@ class SignInDialog extends StatelessWidget {
                   },
                 );
               },
-              text: "Login to Anilist (Copying Code) ",
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 50.0),
+                child: SizedBox(
+                  width: 240,
+                  height: 70,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Login to Anilist (Copying Code)  ",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Icon(Anilist.anilist),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(
               height: 20,
@@ -99,7 +132,23 @@ class SignInDialog extends StatelessWidget {
                   goToMainScreen,
                 );
               },
-              text: context.tr("create_local_account"),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: SizedBox(
+                  width: 240,
+                  height: 70,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${context.tr("create_local_account")}  ",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      const Icon(Icons.computer_rounded),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),

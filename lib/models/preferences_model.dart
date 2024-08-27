@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unyo/models/models.dart';
-import 'package:unyo/util/constants.dart';
+import 'package:unyo/util/utils.dart';
 
 class PreferencesModel {
   late SharedPreferences sharedPreferences;
@@ -22,6 +22,11 @@ class PreferencesModel {
       savedUsers.addAll(localSavedUsers.map((e) => e as LocalUserModel));
       users = savedUsers;
     }
+    String? version = sharedPreferences.getString("version");
+    if(version == null || version != currentVersion){
+      processManager.downloadNewCore();
+    }
+    sharedPreferences.setString("version", currentVersion);
   }
 
   void getUsers(void Function(void Function()) setState) async {

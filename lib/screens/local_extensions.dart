@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -132,8 +133,13 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                                       message: context.tr("download"),
                                       child: IconButton(
                                         onPressed: () async {
-                                          addAnimeExtension(source);
-                                          processManager.restartProcess();
+                                          if (!selectedExtensions) {
+                                            addAnimeExtension(source);
+                                            processManager.restartProcess();
+                                          } else {
+                                            addMangaExtension(source);
+                                            processManager.restartProcess();
+                                          }
                                         },
                                         icon: const Icon(
                                           Icons.download_rounded,
@@ -184,9 +190,8 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
 
   void updateAnimeInstalledExtensions() async {
     Directory supportDirectoryPath = await getApplicationSupportDirectory();
-    final animeExtensionsDir = Platform.isWindows
-        ? Directory('${supportDirectoryPath.path}\\extensions\\anime')
-        : Directory('${supportDirectoryPath.path}//extensions//anime');
+    final animeExtensionsDir =
+        Directory(p.join(supportDirectoryPath.path, "extensions", "anime"));
     List<String> updatedinstalledExtensions = await animeExtensionsDir
         .list()
         .map((fileSystemEntity) => fileSystemEntity.path
@@ -200,9 +205,8 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
 
   void updateMangaInstalledExtensions() async {
     Directory supportDirectoryPath = await getApplicationSupportDirectory();
-    final mangaExtensionsDir = Platform.isWindows
-        ? Directory('${supportDirectoryPath.path}\\extensions\\manga')
-        : Directory('${supportDirectoryPath.path}//extensions//manga');
+    final mangaExtensionsDir =
+        Directory(p.join(supportDirectoryPath.path, "extensions", "manga"));
     List<String> updatedinstalledExtensions = await mangaExtensionsDir
         .list()
         .map((fileSystemEntity) => fileSystemEntity.path
@@ -244,18 +248,16 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
 
   void removeAnimeExtension(String source) async {
     Directory supportDirectory = await getApplicationSupportDirectory();
-    File jarFile = Platform.isWindows
-        ? File("${supportDirectory.path}\\extensions\\anime\\$source.jar")
-        : File("${supportDirectory.path}//extensions//anime//$source.jar");
+    File jarFile = File(
+        p.join(supportDirectory.path, "extensions", "anime", "$source.jar"));
     await jarFile.delete();
     updateAnimeInstalledExtensions();
   }
 
   void removeMangaExtension(String source) async {
     Directory supportDirectory = await getApplicationSupportDirectory();
-    File jarFile = Platform.isWindows
-        ? File("${supportDirectory.path}\\extensions\\manga\\$source.jar")
-        : File("${supportDirectory.path}//extensions//manga//$source.jar");
+    File jarFile = File(
+        p.join(supportDirectory.path, "extensions", "manga", "$source.jar"));
     await jarFile.delete();
     updateMangaInstalledExtensions();
   }
@@ -264,9 +266,8 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
     var url = Uri.parse(availableAnimeExtensions![source]);
     var response = await http.get(url);
     Directory supportDirectory = await getApplicationSupportDirectory();
-    File jarFile = Platform.isWindows
-        ? File("${supportDirectory.path}\\extensions\\anime\\$source.jar")
-        : File("${supportDirectory.path}//extensions//anime//$source.jar");
+    File jarFile = File(
+        p.join(supportDirectory.path, "extensions", "anime", "$source.jar"));
     await jarFile.writeAsBytes(response.bodyBytes);
     updateAnimeInstalledExtensions();
   }
@@ -275,9 +276,8 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
     var url = Uri.parse(availableMangaExtensions![source]);
     var response = await http.get(url);
     Directory supportDirectory = await getApplicationSupportDirectory();
-    File jarFile = Platform.isWindows
-        ? File("${supportDirectory.path}\\extensions\\manga\\$source.jar")
-        : File("${supportDirectory.path}//extensions//manga//$source.jar");
+    File jarFile = File(
+        p.join(supportDirectory.path, "extensions", "manga", "$source.jar"));
     await jarFile.writeAsBytes(response.bodyBytes);
     updateMangaInstalledExtensions();
   }

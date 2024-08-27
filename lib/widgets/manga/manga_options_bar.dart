@@ -16,6 +16,7 @@ class MangaOptionsBar extends StatefulWidget {
     required this.setNewFittingOption,
     required this.orientationOption,
     required this.setNewOrientationOption,
+    required this.updateUserMediaModel,
     required this.goForwardPage,
     required this.goBackPage,
     required this.inverseModeOption,
@@ -42,6 +43,7 @@ class MangaOptionsBar extends StatefulWidget {
   final void Function(int) setNewInverseModeOption;
   final void Function(String) initPages;
 
+  final void Function() updateUserMediaModel;
   final void Function() goForwardPage;
   final void Function() goBackPage;
 
@@ -140,6 +142,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                     //Go Back
                     IconButton(
                       onPressed: () {
+                        widget.updateUserMediaModel();
                         Navigator.of(context).pop();
                       },
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -158,23 +161,26 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            iconSize: 20,
-                            onPressed: () {
-                              //go previous chapter
-                              int index = currentChapter - 1;
-                              goToChapter(index);
-                            },
-                            icon: const Icon(
-                              Icons.arrow_left,
-                              color: Colors.white,
+                          Tooltip(
+                            message: context.tr("previous_chapter"),
+                            child: IconButton(
+                              iconSize: 20,
+                              onPressed: () {
+                                //go previous chapter
+                                int index = currentChapter - 1;
+                                goToChapter(index);
+                              },
+                              icon: const Icon(
+                                Icons.arrow_left,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                           const SizedBox(
                             width: 10,
                           ),
                           PopupMenuButton<String>(
-                            // tooltip: context.tr("show_chapters"),
+                            tooltip: context.tr("show_chapters"),
                             color: const Color.fromARGB(255, 34, 33, 34),
                             itemBuilder: (BuildContext context) {
                               return widget.chaptersId
@@ -207,15 +213,18 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                           const SizedBox(
                             width: 10,
                           ),
-                          IconButton(
-                            iconSize: 20,
-                            onPressed: () {
-                              //go next chapter
-                              int index = currentChapter + 1;
-                              goToChapter(index);
-                            },
-                            icon: const Icon(Icons.arrow_right,
-                                color: Colors.white),
+                          Tooltip(
+                            message: context.tr("next_chapter"),
+                            child: IconButton(
+                              iconSize: 20,
+                              onPressed: () {
+                                //go next chapter
+                                int index = currentChapter + 1;
+                                goToChapter(index);
+                              },
+                              icon: const Icon(Icons.arrow_right,
+                                  color: Colors.white),
+                            ),
                           ),
                         ],
                       ),
@@ -239,18 +248,23 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            iconSize: 20,
-                            onPressed: () {
-                              if (currentOrientationOption != 0) {
-                                widget.goForwardPage();
-                              } else {
-                                widget.goBackPage();
-                              }
-                            },
-                            icon: const Icon(
-                              Icons.arrow_left,
-                              color: Colors.white,
+                          Tooltip(
+                            message: currentOrientationOption != 0
+                                ? context.tr("next_page")
+                                : context.tr("previous_page"),
+                            child: IconButton(
+                              iconSize: 20,
+                              onPressed: () {
+                                if (currentOrientationOption != 0) {
+                                  widget.goForwardPage();
+                                } else {
+                                  widget.goBackPage();
+                                }
+                              },
+                              icon: const Icon(
+                                Icons.arrow_left,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                           const SizedBox(
@@ -263,17 +277,22 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                           const SizedBox(
                             width: 10,
                           ),
-                          IconButton(
-                            iconSize: 20,
-                            onPressed: () {
-                              if (currentOrientationOption != 0) {
-                                widget.goBackPage();
-                              } else {
-                                widget.goForwardPage();
-                              }
-                            },
-                            icon: const Icon(Icons.arrow_right,
-                                color: Colors.white),
+                          Tooltip(
+                            message: currentOrientationOption == 0
+                                ? context.tr("next_page")
+                                : context.tr("previous_page"),
+                            child: IconButton(
+                              iconSize: 20,
+                              onPressed: () {
+                                if (currentOrientationOption != 0) {
+                                  widget.goBackPage();
+                                } else {
+                                  widget.goForwardPage();
+                                }
+                              },
+                              icon: const Icon(Icons.arrow_right,
+                                  color: Colors.white),
+                            ),
                           ),
                         ],
                       ),

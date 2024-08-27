@@ -68,6 +68,8 @@ dependencies:
   flutter_window_close: ^1.0.0
   archive: ^3.6.1
   hive: ^2.2.3
+  path: ^1.9.0
+  fluttericon: ^2.0.0
 
 icons_launcher:
   image_path: 'assets/logo.png'
@@ -89,6 +91,11 @@ msix_config:
   display_name: Unyo
   publisher_display_name: K3vinb5
   logo_path: ./assets/logo.png
+
+fonts:
+      - family: Anilist 
+        fonts:
+          - asset: fonts/Anilist.ttf
 
 dev_dependencies:
   flutter_test:

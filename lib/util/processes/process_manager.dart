@@ -4,52 +4,77 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:unyo/sources/sources.dart';
+import 'package:path/path.dart' as p;
 
 class ProcessManager {
   Process? _process;
   String? _jarPath;
+  bool _extensionsDirPath = false;
   late Directory supportDirectoryPath;
   final List<Map<bool, String>> outputHistory = [];
   int _totalWords = 0;
   final int _maxCharacters = 100; // Maximum character limit
 
-  Future<void> _extractJar() async {
+  Future<void> _extractJar({bool ignore = false}) async {
     supportDirectoryPath = await getApplicationSupportDirectory();
-    final jarFile = Platform.isWindows
+    final jarFile = File(p.join(supportDirectoryPath.path,
+        "extensions.jar")); /*Platform.isWindows
         ? File('${supportDirectoryPath.path}\\extensions.jar')
-        : File('${supportDirectoryPath.path}//extensions.jar');
-    final animeExtensionsDir = Platform.isWindows
-        ? Directory('${supportDirectoryPath.path}\\extensions\\anime')
-        : Directory('${supportDirectoryPath.path}//extensions//anime');
-    final mangaExtensionsDir = Platform.isWindows
-        ? Directory('${supportDirectoryPath.path}\\extensions\\manga')
-        : Directory('${supportDirectoryPath.path}//extensions//manga');
+        : File('${supportDirectoryPath.path}//extensions.jar');*/
 
-    if (await jarFile.exists()) {
+    if (await jarFile.exists() && !ignore) {
       _jarPath = jarFile.path;
       return;
     }
-    if (!(await animeExtensionsDir.exists())) {
-      animeExtensionsDir.create();
-    }
-    if (!(await mangaExtensionsDir.exists())) {
-      mangaExtensionsDir.create();
-    }
-    final byteData = await rootBundle.load(Platform.isWindows
+
+    final byteData = await rootBundle.load(p.join("assets",
+            "extensions.jar") /*Platform.isWindows
         ? 'assets\\extensions.jar'
-        : 'assets//extensions.jar');
+        : 'assets//extensions.jar'*/
+        );
     final buffer = byteData.buffer;
-    final file = Platform.isWindows
+    final file = File(p.join(supportDirectoryPath.path,
+        "extensions.jar")); /*Platform.isWindows
         ? File('${supportDirectoryPath.path}\\extensions.jar')
-        : File('${supportDirectoryPath.path}//extensions.jar');
+        : File('${supportDirectoryPath.path}//extensions.jar');*/
     await file.writeAsBytes(
         buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
     _jarPath = file.path;
   }
 
+  Future<void> _initExtensionsDirectories() async {
+    supportDirectoryPath = await getApplicationSupportDirectory();
+    final animeExtensionsDir =
+        Directory(p.join(supportDirectoryPath.path, "extensions", "anime"));
+    final mangaExtensionsDir =
+        Directory(p.join(supportDirectoryPath.path, "extensions", "manga"));
+
+    if (!(await animeExtensionsDir.exists())) {
+      animeExtensionsDir.create(recursive: true);
+    }
+    if (!(await mangaExtensionsDir.exists())) {
+      mangaExtensionsDir.create(recursive: true);
+    }
+    _extensionsDirPath = true;
+  }
+
+  Future<void> downloadNewCore() async {
+    if (_process != null) {
+      stopProcess();
+      await _extractJar(ignore: true);
+      startProcess();
+    } else {
+      await _extractJar(ignore: true);
+    }
+  }
+
   Future<void> startProcess() async {
     if (_process != null) {
       return;
+    }
+
+    if (!_extensionsDirPath) {
+      await _initExtensionsDirectories();
     }
 
     if (_jarPath == null) {

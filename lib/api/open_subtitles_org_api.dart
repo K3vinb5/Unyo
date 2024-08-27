@@ -1,5 +1,4 @@
 import 'dart:convert';
-// import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +18,7 @@ class OpenSubtitlesApi {
     }
     List<List<String>> seasons = await getAnimeEpisodes(animeId);
     print(seasons);
-    if(seasons.isEmpty){
+    if(seasons.isEmpty || seasons.length < season || seasons[season - 1].length < episode){
       return {};
     }
     String episodeSubtitlesUrl = seasons[season - 1][episode - 1];

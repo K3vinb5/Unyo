@@ -26,8 +26,7 @@ String getEndpoint() {
   if (prefs.getBool("remote_endpoint") ?? false) {
     return localEndPoint;
   } else {
-    return localEndPoint;
-    // return remoteEndPoint;
+    return remoteEndPoint;
   }
 }
 

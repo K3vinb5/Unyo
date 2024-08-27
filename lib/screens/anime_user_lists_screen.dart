@@ -9,6 +9,7 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
 
+void Function() refreshUserAnimeLists = () {};
 void Function(void Function()) refreshAnimeUserListScreenState = (func) {};
 
 class AnimeUserListsScreen extends StatefulWidget {
@@ -25,12 +26,19 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
   final double minimumHeight = 195.44;
   double maximumWidth = 0;
   double maximumHeight = 0;
+  String? userNameOnList;
 
   @override
   void initState() {
     super.initState();
     initUserAnimeListsMap();
+    userNameOnList = userName;
     refreshAnimeUserListScreenState = setState;
+    refreshUserAnimeLists = () {
+      if (userNameOnList != userName) {
+        initUserAnimeListsMap();
+      }
+    };
     //TODO find this value with totalHeight and totalWidth in the future
     maximumWidth = minimumWidth * 1.4;
     maximumHeight = minimumHeight * 1.4;
@@ -128,6 +136,9 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
   }
 
   void initUserAnimeListsMap() async {
+    setState(() {
+      userAnimeLists = {};
+    });
     var newUserAnimeLists = await loggedUserModel.getAllUserAnimeLists();
     setState(() {
       userAnimeLists = newUserAnimeLists;

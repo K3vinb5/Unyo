@@ -109,9 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
     Map<String, Map<String, double>> newUserStats =
         (loggedUserModel is AnilistUserModel) ? await getUserStatsMaps() : {};
     episodesWatched =
-        newUserStats["watchedStatistics"]?["episodesWatched"]?.toInt() ?? -1;
+        newUserStats["watchedStatistics"]?["episodesWatched"]?.toInt() ?? 0;
     minutesWatched =
-        newUserStats["watchedStatistics"]?["minutesWatched"]?.toInt() ?? -1;
+        newUserStats["watchedStatistics"]?["minutesWatched"]?.toInt() ?? 0;
     newUserStats.remove("watchedStatistics");
     setState(() {
       avatarImageUrl = newavatarUrl;

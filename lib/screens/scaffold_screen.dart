@@ -118,6 +118,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
         } else if (from == 2) {
           pauseMangaPageTimer();
         }
+        refreshUserAnimeLists();
         break;
       case 4:
         if (from == 0) {
@@ -125,6 +126,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
         } else if (from == 2) {
           pauseMangaPageTimer();
         }
+        refreshUserMangaLists();
         break;
       case 5:
         if (from == 0) {

@@ -64,6 +64,9 @@ class LogOutDialog extends StatelessWidget {
                 StyledButton(
                   onPressed: () {
                     prefs.logOut();
+                    if (prefs.getBool("remote_endpoint") ?? false) {
+                      processManager.stopProcess();
+                    }
                     setState(() {
                       bannerImageUrl = null;
                       avatarImageUrl = null;

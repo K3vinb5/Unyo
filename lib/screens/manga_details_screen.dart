@@ -131,9 +131,18 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
 
   void setSearches(Future<List<List<String>>> Function(String) getIds,
       {String? query, void Function(void Function())? setDialogState}) async {
-    List<List<String>> newSearches = await getIds(widget.currentManga.userPreferedTitle!);
+    List<List<String>> newSearches =
+        await getIds(widget.currentManga.userPreferedTitle!);
     List<List<String>> newSearchesAndIds =
         await getIds(query ?? widget.currentManga.userPreferedTitle!);
+    if (newSearchesAndIds[0].isEmpty && query == null) {
+      newSearchesAndIds = await getIds(widget.currentManga.englishTitle ?? "");
+      if (newSearchesAndIds[0].isEmpty) {
+        newSearchesAndIds =
+            await getIds(widget.currentManga.japaneseTitle ?? "");
+      }
+    }
+
     int newCurrentEpisode = widget.currentManga.status == "RELEASING"
         ? chaptersId.length
         : widget.currentManga.chapters!;
@@ -193,6 +202,14 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   }
 
   void updateSource(int newSource, BuildContext context) async {
+    if (mangaSources.isEmpty) {
+      showNoExtensionsDialog(
+        context,
+      );
+      Navigator.of(context).pop();
+      return;
+    }
+
     setState(() {
       currentSource = newSource;
       currentSearch = 0;
@@ -244,7 +261,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       progress = newProgress.toDouble();
       query.remove("progress");
       query.addAll({"progress": progress.toInt().toString()});
-      loggedUserModel.setUserMangaInfo(widget.currentManga.id, query, mangaModel: widget.currentManga);
+      loggedUserModel.setUserMangaInfo(widget.currentManga.id, query,
+          mangaModel: widget.currentManga);
       print(query);
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
@@ -267,7 +285,9 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
         builder: (context) => ReadingScreen(
           currentChapter: chapterNum,
           chaptersId: chaptersId,
-          updateEntry: (){updateEntry(chapterNum);},
+          updateEntry: () {
+            updateEntry(chapterNum);
+          },
           chapterId: chapterId,
           getMangaChapterPages:
               mangaSources[currentSource]!.getMangaChapterPages,
@@ -365,20 +385,19 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
           ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
           content: MediaInfoDialog(
-            id: widget.currentManga.id,
-            episodes: chaptersId.length,
-            totalWidth: totalWidth,
-            totalHeight: totalHeight,
-            statuses: statuses,
-            query: query,
-            progress: progress,
-            currentEpisode: latestReleasedChapter,
-            score: score,
-            setUserMediaModel: setUserMangaModel,
-            startDate: startDate,
-            endDate: endDate,
-            mangaModel: widget.currentManga
-          ),
+              id: widget.currentManga.id,
+              episodes: chaptersId.length,
+              totalWidth: totalWidth,
+              totalHeight: totalHeight,
+              statuses: statuses,
+              query: query,
+              progress: progress,
+              currentEpisode: latestReleasedChapter,
+              score: score,
+              setUserMediaModel: setUserMangaModel,
+              startDate: startDate,
+              endDate: endDate,
+              mangaModel: widget.currentManga),
         );
       },
     );
@@ -510,8 +529,10 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                           onPressed: () {
                             int chapterNum =
                                 ((userMangaModel?.progress ?? 0) + 1).toInt();
-                            if (searches.isEmpty /*||
-                                (latestReleasedChapter + 1) <= chapterNum*/) {
+                            if (searches
+                                    .isEmpty /*||
+                                (latestReleasedChapter + 1) <= chapterNum*/
+                                ) {
                               return;
                             }
                             ((userMangaModel?.progress ?? 0) + 1).toInt();
@@ -550,7 +571,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                               userProgress: userMangaModel?.progress,
                               currentChapterGroup: currentChapterGroup,
                               chaptersId: chaptersId,
-                              chapterTitle: widget.currentManga.getDefaultTitle(),
+                              chapterTitle:
+                                  widget.currentManga.getDefaultTitle(),
                               openManga: openManga,
                             );
                           },

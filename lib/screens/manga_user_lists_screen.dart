@@ -10,6 +10,7 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
 
+void Function() refreshUserMangaLists = () {};
 void Function(void Function()) refreshMangaUserListScreenState = (func) {};
 
 class MangaUserListsScreen extends StatefulWidget {
@@ -26,13 +27,21 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
   final double minimumHeight = 195.44;
   double maximumWidth = 0;
   double maximumHeight = 0;
+  String? userNameOnList;
 
   @override
   void initState() {
     super.initState();
     initUserMangaListsMap();
+    userNameOnList = userName;
     //TODO find this value with totalHeight and totalWidth in the future
     refreshMangaUserListScreenState = setState;
+    refreshUserMangaLists = () {
+      if (userNameOnList != userName) {
+        initUserMangaListsMap();
+      }
+    };
+
     maximumWidth = minimumWidth * 1.4;
     maximumHeight = minimumHeight * 1.4;
   }
@@ -133,6 +142,9 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
   }
 
   void initUserMangaListsMap() async {
+    setState(() {
+      userMangaLists = {};
+    });
     var newUserMangaLists = await loggedUserModel.getAllUserMangaLists();
     setState(() {
       userMangaLists = newUserMangaLists;

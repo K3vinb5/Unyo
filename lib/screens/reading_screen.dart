@@ -9,18 +9,18 @@ import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 class ReadingScreen extends StatefulWidget {
-  const ReadingScreen(
-      {super.key,
-      required this.chapterId,
-      required this.getMangaChapterPages,
-      required this.updateEntry, 
-      required this.currentChapter, 
-      required this.chaptersId,
-      });
+  const ReadingScreen({
+    super.key,
+    required this.chapterId,
+    required this.getMangaChapterPages,
+    required this.updateEntry,
+    required this.currentChapter,
+    required this.chaptersId,
+  });
 
   final String chapterId;
   final int currentChapter;
-  final List<String> chaptersId; 
+  final List<String> chaptersId;
   final Future<List<String>> Function(String) getMangaChapterPages;
   final void Function() updateEntry;
 
@@ -121,12 +121,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         goBackPage();
         break;
       case LogicalKeyboardKey.escape:
-        if (calculatePercentage() >
-                chapterCompletedOptions.values.toList()[
-                    prefs.getInt("chapter_completed_percentage") ?? 3] &&
-            (prefs.getBool("update_progress_automatically") ?? false)) {
-          widget.updateEntry();
-        }
+        updateUserMediaModel();
         Navigator.pop(context);
         break;
       default:
@@ -134,7 +129,18 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   double calculatePercentage() {
+    double result = currentPage / totalPages;
+    print("resut: $result");
     return currentPage / totalPages;
+  }
+
+  void updateUserMediaModel() {
+    if (calculatePercentage() >
+            chapterCompletedOptions.values
+                .toList()[prefs.getInt("chapter_completed_percentage") ?? 3] &&
+        (prefs.getBool("update_progress_automatically") ?? false)) {
+      widget.updateEntry();
+    }
   }
 
   void setNewFittingPageOption(int newFittingOption) {
@@ -426,6 +432,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                     inverseModeOption: currentInverseModeOption,
                     setNewInverseModeOption: setNewInverseModeOption,
                     initPages: initPages,
+                    updateUserMediaModel: updateUserMediaModel,
                     goBackPage: goBackPage,
                     goForwardPage: goForwardPage,
                   ),

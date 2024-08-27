@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -32,16 +33,14 @@ class UpdateDialog extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          Theme(
-            data: Theme.of(context).copyWith(
-                textTheme:
-                    Theme.of(context).textTheme.apply(bodyColor: Colors.white)),
-            child: MarkdownBody(data: markdown),
+          SingleChildScrollView(
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                  textTheme:
+                      Theme.of(context).textTheme.apply(bodyColor: Colors.white)),
+              child: MarkdownBody(data: markdown),
+            ),
           ),
-          // Text(
-          //   markdown,
-          //   style: const TextStyle(color: Colors.white),
-          // ),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.max,

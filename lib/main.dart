@@ -11,6 +11,7 @@ import 'package:unyo/models/adapters/manga_model_adapter.dart';
 import 'package:unyo/models/adapters/user_media_model_adapter.dart';
 import 'package:unyo/router/router.dart';
 import 'package:fvp/fvp.dart' as fvp;
+import 'package:path/path.dart' as p;
 import 'package:unyo/util/utils.dart';
 import 'package:flutter_window_close/flutter_window_close.dart';
 
@@ -21,7 +22,7 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   final dir = await getApplicationSupportDirectory();
-  Hive.init(dir.path);
+  Hive.init(p.join(dir.path, "data"));
   Hive.registerAdapter(AnilistUserModelAdapter());
   Hive.registerAdapter(LocalUserModelAdapter());
   Hive.registerAdapter(UserMediaModelAdapter());
