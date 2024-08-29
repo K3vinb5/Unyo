@@ -40,8 +40,9 @@ If you are on **Mac**, you can:
 - Download the .zip, extract it and run the .app (Not recommended, use the dmg)
 
 If you are on **Linux**, you can:
+- Install the app using the (AM package manager)[https://github.com/ivan-hc/AM] by running "am -i unyo", you can also update it from here by running "am -u unyo" (Recommended option)
 - Download the .zip, extract it and run the executable "unyo"
-- Downlaod the .AppImage, and run it (Recommended option)
+- Downlaod the .AppImage, and run it
 - Download the .deb, and install the package by running "sudo apt install ./package_name.deb" (Debian based distros only)
 
 It is important when setting up Unyo that your Anilist profile is set to either public or semi-public. Currently Unyo won't be able to pull your anime and manga lists, if you have your account set to private.
