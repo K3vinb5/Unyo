@@ -40,7 +40,7 @@ If you are on **Mac**, you can:
 - Download the .zip, extract it and run the .app (Not recommended, use the dmg)
 
 If you are on **Linux**, you can:
-- Install the app using the (AM package manager)[https://github.com/ivan-hc/AM] by running "am -i unyo", you can also update it from here by running "am -u unyo" (Recommended option)
+- Install the app using the [AM package manager](https://github.com/ivan-hc/AM) by running "am -i unyo", you can also update it from here by running "am -u unyo" (Recommended option)
 - Download the .zip, extract it and run the executable "unyo"
 - Downlaod the .AppImage, and run it
 - Download the .deb, and install the package by running "sudo apt install ./package_name.deb" (Debian based distros only)
