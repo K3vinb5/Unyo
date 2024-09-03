@@ -6,13 +6,11 @@ class ControlsOverlay extends StatefulWidget {
     required this.mixedControllers,
     required this.onTap,
     required this.paused,
-    required this.delayedPaused, 
   });
 
   final MixedController mixedControllers;
   final void Function() onTap;
   final bool paused;
-  final bool delayedPaused;
 
   @override
   State<ControlsOverlay> createState() => _ControlsOverlayState();
@@ -42,6 +40,7 @@ class _ControlsOverlayState extends State<ControlsOverlay>
     if (oldWidget.paused != widget.paused) {
       _controller.stop();
       isPaused = !isPaused;
+      print("isPaused: $isPaused");
       if (isPaused) {
         _controller.value = 1.0;
         _controller.animateTo(0.0);

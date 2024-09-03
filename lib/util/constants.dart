@@ -1,3 +1,4 @@
+import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:unyo/models/models.dart';
@@ -21,6 +22,8 @@ List<int> isScreenRefreshed = [0, 1, 2, 3, 4, 5];
 final ProcessManager processManager = ProcessManager();
 String remoteEndPoint = "https://kevin-is-awesome.mooo.com/api";
 String localEndPoint = "http://localhost:8084";
+Future<List<CastDevice>> devices = CastDiscoveryService().search();
+
 
 String getEndpoint() {
   if (prefs.getBool("remote_endpoint") ?? false) {

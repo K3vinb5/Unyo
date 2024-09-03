@@ -6,6 +6,7 @@ import FlutterMacOS
 import Foundation
 
 import bitsdojo_window_macos
+import bonsoir_darwin
 import desktop_keep_screen_on
 import flutter_window_close
 import fvp
@@ -17,6 +18,7 @@ import video_player_avfoundation
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   BitsdojoWindowPlugin.register(with: registry.registrar(forPlugin: "BitsdojoWindowPlugin"))
+  SwiftBonsoirPlugin.register(with: registry.registrar(forPlugin: "SwiftBonsoirPlugin"))
   DesktopKeepScreenOnPlugin.register(with: registry.registrar(forPlugin: "DesktopKeepScreenOnPlugin"))
   FlutterWindowClosePlugin.register(with: registry.registrar(forPlugin: "FlutterWindowClosePlugin"))
   FvpPlugin.register(with: registry.registrar(forPlugin: "FvpPlugin"))

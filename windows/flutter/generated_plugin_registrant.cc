@@ -7,6 +7,7 @@
 #include "generated_plugin_registrant.h"
 
 #include <bitsdojo_window_windows/bitsdojo_window_plugin.h>
+#include <bonsoir_windows/bonsoir_windows_plugin_c_api.h>
 #include <desktop_keep_screen_on/desktop_keep_screen_on_plugin_c_api.h>
 #include <flutter_acrylic/flutter_acrylic_plugin.h>
 #include <flutter_window_close/flutter_window_close_plugin.h>
@@ -16,6 +17,8 @@
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   BitsdojoWindowPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("BitsdojoWindowPlugin"));
+  BonsoirWindowsPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("BonsoirWindowsPluginCApi"));
   DesktopKeepScreenOnPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("DesktopKeepScreenOnPluginCApi"));
   FlutterAcrylicPluginRegisterWithRegistrar(

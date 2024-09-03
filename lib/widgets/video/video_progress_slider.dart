@@ -244,6 +244,7 @@ class VideoProgressSlider extends StatelessWidget {
                   onPressed: () {},
                 ),
               ),
+              VolumeButton(controller: mixedController),
               Expanded(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -456,22 +457,9 @@ class VideoProgressSlider extends StatelessWidget {
                             .toList();
                       },
                     ),
-                    MouseRegion(
-                      onEnter: (_) {
-                        if (onEnterSound == null) return;
-                        onEnterSound!();
-                      },
-                      onExit: (_) {
-                        if (onExitSound == null) return;
-                        onExitSound!();
-                      },
-                      child: IconButton(
-                        icon: const Icon(Icons.volume_up_rounded,
-                            color: Colors.white),
-                        onPressed: () {
-                          //TODO mute / unmute
-                        },
-                      ),
+                    CastPopupMenuButton(
+                      title: "",
+                      url: mixedController.videoController.dataSource,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 10.0),

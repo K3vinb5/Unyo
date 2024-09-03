@@ -36,7 +36,6 @@ class _VideoScreenState extends State<VideoScreen> {
   late Timer isVideoPlaying;
   bool _showControls = true;
   bool paused = false;
-  bool delayedPaused = false;
   String? captions;
   final FocusNode _screenFocusNode = FocusNode();
   final double captionsBorder = 2;
@@ -62,6 +61,7 @@ class _VideoScreenState extends State<VideoScreen> {
     interactScreen(true);
     _screenFocusNode.requestFocus();
     hasTimestamps = widget.timestamps["start"] != -1 && widget.timestamps["end"] != -1;
+
   }
 
   @override
@@ -80,8 +80,6 @@ class _VideoScreenState extends State<VideoScreen> {
   void controlsOverlayOnTap() {
     _hideControlsTimer?.cancel();
     paused = !paused;
-    Timer(const Duration(milliseconds: 300),
-        () => delayedPaused = !delayedPaused);
     if (paused) {
       _showControls = true;
     } else {
@@ -169,7 +167,6 @@ class _VideoScreenState extends State<VideoScreen> {
                       showControls: _showControls,
                       paused: paused,
                       source: widget.source,
-                      delayedPaused: delayedPaused,
                       mixedController: _mixedController,
                       hasTimestamps: hasTimestamps,
                       timestamps: widget.timestamps,

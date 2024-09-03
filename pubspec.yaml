@@ -70,6 +70,7 @@ dependencies:
   hive: ^2.2.3
   path: ^1.9.0
   fluttericon: ^2.0.0
+  cast: ^2.1.0
 
 icons_launcher:
   image_path: 'assets/logo.png'

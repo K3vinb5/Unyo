@@ -9,7 +9,6 @@ class StyledVideoPlaybackControls extends StatefulWidget {
     required this.controlsOverlayOnTap,
     required this.showControls,
     required this.paused,
-    required this.delayedPaused,
     required this.mixedController,
     required this.source,
     required this.hasTimestamps,
@@ -21,7 +20,6 @@ class StyledVideoPlaybackControls extends StatefulWidget {
   final MixedController mixedController;
   final bool showControls;
   final bool paused;
-  final bool delayedPaused;
   final bool hasTimestamps;
   final Map<String, double> timestamps;
 
@@ -34,14 +32,12 @@ class _StyledVideoPlaybackControlsState
     extends State<StyledVideoPlaybackControls> {
   late bool showControls;
   late bool paused;
-  late bool delayedPaused;
 
   @override
   void initState() {
     super.initState();
     showControls = widget.showControls;
     paused = widget.paused;
-    delayedPaused = widget.delayedPaused;
   }
 
   @override
@@ -51,9 +47,7 @@ class _StyledVideoPlaybackControlsState
       showControls = widget.showControls;
     } else if (oldWidget.paused != widget.paused) {
       paused = widget.paused;
-    } else if (oldWidget.delayedPaused != widget.delayedPaused) {
-      delayedPaused = widget.delayedPaused;
-    }
+    } 
   }
 
   @override
@@ -67,23 +61,24 @@ class _StyledVideoPlaybackControlsState
           ControlsOverlay(
             mixedControllers: widget.mixedController,
             paused: paused,
-            delayedPaused: delayedPaused,
             onTap: widget.controlsOverlayOnTap,
           ),
-          AudioSliderWidget(mixedController: widget.mixedController),
-          SmoothVideoProgress(
-            controller: widget.mixedController.videoController,
-            builder: (context, progress, duration, child) {
-              return VideoProgressSlider(
-                mixedController: widget.mixedController,
-                source: widget.source,
-                position: progress,
-                duration: duration,
-                onTap: widget.controlsOverlayOnTap,
-                hasTimeStamps: widget.hasTimestamps,
-                timestamps: widget.timestamps,
-              );
-            },
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SmoothVideoProgress(
+              controller: widget.mixedController.videoController,
+              builder: (context, progress, duration, child) {
+                return VideoProgressSlider(
+                  mixedController: widget.mixedController,
+                  source: widget.source,
+                  position: progress,
+                  duration: duration,
+                  onTap: widget.controlsOverlayOnTap,
+                  hasTimeStamps: widget.hasTimestamps,
+                  timestamps: widget.timestamps,
+                );
+              },
+            ),
           ),
         ],
       ),
