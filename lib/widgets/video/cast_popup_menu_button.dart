@@ -3,6 +3,8 @@ import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/util/constants.dart';
 
+String? sessionId;
+
 class CastPopupMenuButton extends StatelessWidget {
   const CastPopupMenuButton(
       {super.key, required this.title, required this.url});
@@ -12,6 +14,8 @@ class CastPopupMenuButton extends StatelessWidget {
 
   Future<void> _connectAndPlayMedia(
       BuildContext context, CastDevice object) async {
+    if (sessionId != null) await CastSessionManager().endSession(sessionId!);
+
     final session = await CastSessionManager()
         .startSession(object, const Duration(seconds: 10));
 
@@ -23,6 +27,7 @@ class CastPopupMenuButton extends StatelessWidget {
           desktopSnackBarPosition: DesktopSnackBarPosition.topCenter,
         ).show(context);
       }
+      sessionId = session.sessionId;
     });
 
     var index = 0;
@@ -46,29 +51,77 @@ class CastPopupMenuButton extends StatelessWidget {
     });
   }
 
+  // Future<void> _connectAndPlayMedia(
+  //     BuildContext context, CastDevice object) async {
+  //   try {
+  //     if (sessionId != null) await CastSessionManager().endSession(sessionId!);
+  //     final session = await CastSessionManager()
+  //         .startSession(object, const Duration(seconds: 10));
+  //
+  //     // Listen for session state changes
+  //     session.stateStream.listen((state) {
+  //       if (state == CastSessionState.connected) {
+  //         // Show a success message when connected
+  //         AnimatedSnackBar.material(
+  //           "Connected! :D",
+  //           type: AnimatedSnackBarType.success,
+  //           desktopSnackBarPosition: DesktopSnackBarPosition.topCenter,
+  //         ).show(context);
+  //
+  //         // Delay slightly to ensure session is fully ready
+  //         Future.delayed(const Duration(seconds: 1)).then((_) {
+  //           // Send a request to launch the receiver app
+  //           session.sendMessage(CastSession.kNamespaceReceiver, {
+  //             'type': 'LAUNCH',
+  //             'appId':
+  //                 'CC1AD845', // Use the correct app ID for default media receiver
+  //           });
+  //         });
+  //         sessionId = session.sessionId;
+  //       }
+  //     });
+  //
+  //     // Listen for messages from the Chromecast device
+  //     session.messageStream.listen((message) {
+  //       print('Received message: $message');
+  //
+  //       if (message['type'] == 'RECEIVER_STATUS' &&
+  //           message['status']['applications'] != null) {
+  //         // Check if the receiver app has been launched and is ready
+  //         _sendMessagePlayVideo(session); // Start playing the video
+  //       }
+  //     });
+  //   } catch (error) {
+  //     print('Error connecting to Chromecast: $error');
+  //     AnimatedSnackBar.material(
+  //       "Failed to connect :(",
+  //       type: AnimatedSnackBarType.error,
+  //       desktopSnackBarPosition: DesktopSnackBarPosition.topCenter,
+  //     ).show(context);
+  //   }
+  // }
+ 
   void _sendMessagePlayVideo(CastSession session) {
     Map<String, String> contentTypeAndStreamType =
         getContentTypeAndStreamType(url);
-    print(contentTypeAndStreamType);
+
     var message = {
-      // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-      'contentId': url,
-      'contentType': /*'video/mp4'*/ contentTypeAndStreamType['contentType'],
-      'streamType': /*'BUFFERED'*/
-          contentTypeAndStreamType['streamType'],
-      // Title and cover displayed while buffering
+      'contentId': url, // The URL of the media to play
+      'contentType': contentTypeAndStreamType['contentType'],
+      'streamType': contentTypeAndStreamType['streamType'],
       'metadata': {
         'type': 0,
         'metadataType': 0,
-        'title': /*"Big Buck Bunny"*/ title,
+        'title': title, // The title of the media
         'images': [
           {
-            'url': "https://i.imgur.com/tF7Hv84.png"
+            'url': "https://i.imgur.com/tF7Hv84.png" // Cover image URL
           }
         ]
       }
     };
 
+    // Send the LOAD message to Chromecast
     session.sendMessage(CastSession.kNamespaceMedia, {
       'type': 'LOAD',
       'autoPlay': true,

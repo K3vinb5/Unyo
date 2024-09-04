@@ -109,6 +109,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
             coverImage: mangaList[j].coverImage,
             onTap: () {
               openMangaDetails(
+                context,
                 mangaList[j],
                 "${"user-manga-list-$title-view"}-$j",
               );
@@ -125,22 +126,7 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
     }
     return rowWidgets;
   }
-
-  void openMangaDetails(MangaModel currentManga, String tag) {
-    var mangaScreen = MangaDetailsScreen(
-      currentManga: currentManga,
-      tag: tag,
-    );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => mangaScreen),
-    ).then((_) {
-      // if (widget.updateHomeScreenLists != null) {
-      // widget.updateHomeScreenLists!();
-      // }
-    });
-  }
-
+ 
   void initUserMangaListsMap() async {
     setState(() {
       userMangaLists = {};

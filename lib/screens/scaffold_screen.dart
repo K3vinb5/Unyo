@@ -44,32 +44,38 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
           refreshAnimeScreenState(() {});
           isScreenRefreshed.add(to);
         }
+        discordRPC.setPageActivity("Anime Screen");
         break;
       case 1:
+        discordRPC.setPageActivity("Home Screen");
         break;
       case 2:
         if (!isScreenRefreshed.contains(to)) {
           refreshMangaScreenState(() {});
           isScreenRefreshed.add(to);
         }
+        discordRPC.setPageActivity("Manga Screen");
         break;
       case 3:
         if (!isScreenRefreshed.contains(to)) {
           refreshAnimeUserListScreenState(() {});
           isScreenRefreshed.add(to);
         }
+        discordRPC.setPageActivity("Anime List Screen");
         break;
       case 4:
         if (!isScreenRefreshed.contains(to)) {
           refreshMangaUserListScreenState(() {});
           isScreenRefreshed.add(to);
         }
+        discordRPC.setPageActivity("Manga List Screen");
         break;
       case 5:
         if (!isScreenRefreshed.contains(to)) {
           refreshCalendarScreenState(() {});
           isScreenRefreshed.add(to);
         }
+        discordRPC.setPageActivity("Calendar Screen");
         break;
       case 6:
         if (!(prefs.getBool("remote_endpoint") ?? false)) {
@@ -84,6 +90,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
             refreshLocalExtensionsScreenState!(() {});
           }
         }
+        discordRPC.setPageActivity("Local Extensions Screen");
       default:
     }
   }

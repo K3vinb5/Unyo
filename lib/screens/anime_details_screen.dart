@@ -133,8 +133,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
     List<List<String>> newSearchesAndIds =
         await getIds(query ?? widget.currentAnime.userPreferedTitle!);
     if (newSearchesAndIds[0].isEmpty && query == null) {
-      newSearchesAndIds =
-          await getIds(widget.currentAnime.englishTitle ?? "");
+      newSearchesAndIds = await getIds(widget.currentAnime.englishTitle ?? "");
       if (newSearchesAndIds[0].isEmpty) {
         newSearchesAndIds =
             await getIds(widget.currentAnime.japaneseTitle ?? "");
@@ -238,7 +237,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       progress = newProgress.toDouble();
       query.remove("progress");
       query.addAll({"progress": progress.toInt().toString()});
-      loggedUserModel.setUserAnimeInfo(widget.currentAnime.id, query, animeModel: widget.currentAnime);
+      loggedUserModel.setUserAnimeInfo(widget.currentAnime.id, query,
+          animeModel: widget.currentAnime);
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
         const Duration(milliseconds: 1000),
@@ -255,7 +255,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       showErrorDialog(context, exception: context.tr("no_title_found_dialog"));
       return;
     }
-
+    discordRPC.setWatchingAnimeActivity(widget.currentAnime, animeEpisode, mediaContentModel);
     if (!mounted) return;
     showDialog(
       context: context,
@@ -365,20 +365,19 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
           ),
           backgroundColor: const Color.fromARGB(255, 44, 44, 44),
           content: MediaInfoDialog(
-            id: widget.currentAnime.id,
-            episodes: widget.currentAnime.episodes,
-            totalWidth: totalWidth,
-            totalHeight: totalHeight,
-            statuses: statuses,
-            query: query,
-            progress: progress,
-            currentEpisode: latestReleasedEpisode,
-            score: score,
-            setUserMediaModel: setUserAnimeModel,
-            startDate: startDate,
-            endDate: endDate,
-            animeModel: widget.currentAnime
-          ),
+              id: widget.currentAnime.id,
+              episodes: widget.currentAnime.episodes,
+              totalWidth: totalWidth,
+              totalHeight: totalHeight,
+              statuses: statuses,
+              query: query,
+              progress: progress,
+              currentEpisode: latestReleasedEpisode,
+              score: score,
+              setUserMediaModel: setUserAnimeModel,
+              startDate: startDate,
+              endDate: endDate,
+              animeModel: widget.currentAnime),
         );
       },
     );

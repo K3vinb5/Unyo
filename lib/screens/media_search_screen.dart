@@ -133,33 +133,6 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
     }
   }
 
-  void openMangaDetails(MangaModel currentManga, String tag) {
-    var mangaScreen = MangaDetailsScreen(
-      currentManga: currentManga,
-      tag: tag,
-    );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => mangaScreen),
-    ) /*.then((_) {
-      if (widget.updateHomeScreenLists != null){
-        widget.updateHomeScreenLists!();
-      }
-    })*/
-        ;
-  }
-
-  void openAnime(AnimeModel currentAnime, String tag) {
-    var animeScreen = AnimeDetailsScreen(
-      currentAnime: currentAnime,
-      tag: tag,
-    );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => animeScreen),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     adjustedHeight = getAdjustedHeight(MediaQuery.of(context).size.height);
@@ -320,15 +293,24 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                           return Hero(
                             tag: "${"grid-view"}-$index",
                             child: AnimeWidget(
-                              title: (widget.type == "MANGA") ? mediaModel.title : mediaModel.getDefaultTitle(),
+                              title: (widget.type == "MANGA")
+                                  ? mediaModel.title
+                                  : mediaModel.getDefaultTitle(),
                               score: mediaModel.averageScore,
                               coverImage: mediaModel.coverImage,
                               onTap: () {
                                 if (widget.type == "ANIME") {
-                                  openAnime(mediaModel, "grid-view-$index");
+                                  openAnime(
+                                    context,
+                                    mediaModel,
+                                    "grid-view-$index",
+                                  );
                                 } else {
                                   openMangaDetails(
-                                      mediaModel, "grid-view-$index");
+                                    context,
+                                    mediaModel,
+                                    "grid-view-$index",
+                                  );
                                 }
                               },
                               textColor: Colors.white,

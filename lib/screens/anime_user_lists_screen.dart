@@ -107,6 +107,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
             coverImage: animeList[j].coverImage,
             onTap: () {
               openAnime(
+                context,
                 animeList[j],
                 "${"user-anime-list-$title-view"}-$j",
               );
@@ -123,18 +124,7 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
     }
     return rowWidgets;
   }
-
-  void openAnime(AnimeModel currentAnime, String tag) {
-    var animeScreen = AnimeDetailsScreen(
-      currentAnime: currentAnime,
-      tag: tag,
-    );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => animeScreen),
-    );
-  }
-
+ 
   void initUserAnimeListsMap() async {
     setState(() {
       userAnimeLists = {};

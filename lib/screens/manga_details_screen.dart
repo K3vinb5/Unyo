@@ -9,6 +9,7 @@ import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/screens/screens.dart';
+import 'package:unyo/util/constants.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -279,6 +280,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       showErrorDialog(context, exception: context.tr("no_title_found_dialog"));
       return;
     }
+    discordRPC.setReadingMangaActivity(widget.currentManga, chapterNum);
     Navigator.push(
       context,
       MaterialPageRoute(

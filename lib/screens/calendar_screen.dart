@@ -102,6 +102,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             coverImage: animeList[j].coverImage,
             onTap: () {
               openAnime(
+                context,
                 animeList[j],
                 "${"user-anime-list-$title-view"}-$j",
               );
@@ -119,24 +120,15 @@ class _CalendarScreenState extends State<CalendarScreen>
     return rowWidgets;
   }
 
-  void openAnime(AnimeModel currentAnime, String tag) {
-    var animeScreen = AnimeDetailsScreen(
-      currentAnime: currentAnime,
-      tag: tag,
-    );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => animeScreen),
-    );
-  }
-
   void initCalendarListMap() async {
     var newCalendarLists = await getCalendar(
         context.locale.toLanguageTag(),
         {},
         1,
-        ((DateTime.now().millisecondsSinceEpoch / 1000) - (1 * 60 * 60)).round(),
-        ((DateTime.now().millisecondsSinceEpoch / 1000) + (6 * 24 * 60 * 60)).round(),
+        ((DateTime.now().millisecondsSinceEpoch / 1000) - (1 * 60 * 60))
+            .round(),
+        ((DateTime.now().millisecondsSinceEpoch / 1000) + (6 * 24 * 60 * 60))
+            .round(),
         0);
     setState(() {
       calendarLists = newCalendarLists;

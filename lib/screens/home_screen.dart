@@ -45,7 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
       userId = prefs.getInt("userId");
       userName = prefs.userName!;
       //change function bellow for when logged already
-      setUserInfo(users!.where((user) => user.userName == userName && user is AnilistUserModel).isNotEmpty ? 0 : 1);
+      setUserInfo(users!
+              .where((user) =>
+                  user.userName == userName && user is AnilistUserModel)
+              .isNotEmpty
+          ? 0
+          : 1);
     }
   }
 
@@ -67,6 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
       updateUserLists();
     };
     updateHomeScreenState = setState;
+
+    discordRPC.initDiscordRPC();
+    discordRPC.setPageActivity("Home Screen");
   }
 
   void startExtensions() {
@@ -105,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
         await loggedUserModel.getUserAnimeLists("Watching");
     List<MangaModel> newReadingMangaList =
         await loggedUserModel.getUserMangaLists("Reading");
-    //TODO fix stats 
+    //TODO fix stats
     Map<String, Map<String, double>> newUserStats =
         (loggedUserModel is AnilistUserModel) ? await getUserStatsMaps() : {};
     episodesWatched =

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
+import 'package:unyo/screens/screens.dart';
 
 String? accessToken;
 String? avatarImageUrl;
@@ -23,7 +24,7 @@ final ProcessManager processManager = ProcessManager();
 String remoteEndPoint = "https://kevin-is-awesome.mooo.com/api";
 String localEndPoint = "http://localhost:8084";
 Future<List<CastDevice>> devices = CastDiscoveryService().search();
-
+DiscordRPC discordRPC = DiscordRPC();
 
 String getEndpoint() {
   if (prefs.getBool("remote_endpoint") ?? false) {
@@ -134,6 +135,31 @@ void initThemes(int selected, void Function(void Function()) setState) async {
     bannerImageUrl = themeWallpapers[selected - 1];
     colorList = newColorList;
   });
+}
+
+void openMangaDetails(
+    BuildContext context, MangaModel currentManga, String tag) {
+  discordRPC.setNavigatingMangaActivity(currentManga);
+  var mangaScreen = MangaDetailsScreen(
+    currentManga: currentManga,
+    tag: tag,
+  );
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => mangaScreen),
+  );
+}
+
+void openAnime(BuildContext context, AnimeModel currentAnime, String tag) {
+  discordRPC.setNavigatingAnimeActivity(currentAnime);
+  var animeScreen = AnimeDetailsScreen(
+    currentAnime: currentAnime,
+    tag: tag,
+  );
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => animeScreen),
+  );
 }
 
 List<String> themeWallpapers = [
