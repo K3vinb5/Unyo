@@ -33,49 +33,64 @@ class UpdateDialog extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          SingleChildScrollView(
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                  textTheme:
-                      Theme.of(context).textTheme.apply(bodyColor: Colors.white)),
-              child: MarkdownBody(data: markdown),
-            ),
-          ),
+          // SingleChildScrollView(
+          //   child: Theme(
+          //     data: Theme.of(context).copyWith(
+          //         textTheme:
+          //             Theme.of(context).textTheme.apply(bodyColor: Colors.white)),
+          //     child: MarkdownBody(data: markdown),
+          //   ),
+          // ),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                      style: const ButtonStyle(
-                        foregroundColor: MaterialStatePropertyAll(Colors.white),
-                        backgroundColor: MaterialStatePropertyAll(
-                            Color.fromARGB(255, 37, 37, 37)),
+                Expanded(
+                  flex: 8,
+                  child: SingleChildScrollView(
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                          textTheme: Theme.of(context)
+                              .textTheme
+                              .apply(bodyColor: Colors.white)),
+                      child: MarkdownBody(data: markdown),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        style: const ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll(Colors.white),
+                          backgroundColor: MaterialStatePropertyAll(
+                              Color.fromARGB(255, 37, 37, 37)),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Later"),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Later"),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    ElevatedButton(
-                      style: const ButtonStyle(
-                        foregroundColor: MaterialStatePropertyAll(Colors.white),
-                        backgroundColor: MaterialStatePropertyAll(
-                            Color.fromARGB(255, 37, 37, 37)),
+                      const SizedBox(
+                        width: 20,
                       ),
-                      onPressed: () {
-                        goToLatestRelease();
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Download Update"),
-                    ),
-                  ],
+                      ElevatedButton(
+                        style: const ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll(Colors.white),
+                          backgroundColor: MaterialStatePropertyAll(
+                              Color.fromARGB(255, 37, 37, 37)),
+                        ),
+                        onPressed: () {
+                          goToLatestRelease();
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Download Update"),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

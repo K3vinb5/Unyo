@@ -135,11 +135,10 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                                         onPressed: () async {
                                           if (!selectedExtensions) {
                                             addAnimeExtension(source);
-                                            processManager.restartProcess();
                                           } else {
                                             addMangaExtension(source);
-                                            processManager.restartProcess();
                                           }
+                                          processManager.restartProcess();
                                         },
                                         icon: const Icon(
                                           Icons.download_rounded,
@@ -165,7 +164,11 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                                       message: context.tr("delete"),
                                       child: IconButton(
                                         onPressed: () async {
-                                          removeAnimeExtension(source);
+                                          if (!selectedExtensions) {
+                                            removeAnimeExtension(source);
+                                          } else {
+                                            removeMangaExtension(source);
+                                          }
                                           processManager.restartProcess();
                                         },
                                         icon: const Icon(

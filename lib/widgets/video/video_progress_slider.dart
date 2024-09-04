@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -203,16 +204,16 @@ class VideoProgressSlider extends StatelessWidget {
               const SizedBox(
                 width: 12,
               ),
-              Tooltip(
-                message: context.tr("previous_episode"),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.skip_previous_rounded,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {},
-                ),
-              ),
+              // Tooltip(
+              //   message: context.tr("previous_episode"),
+              //   child: IconButton(
+              //     icon: const Icon(
+              //       Icons.skip_previous_rounded,
+              //       color: Colors.white,
+              //     ),
+              //     onPressed: () {},
+              //   ),
+              // ),
               Tooltip(
                 message:
                     context.tr(mixedController.isPlaying ? "pause" : "play"),
@@ -236,14 +237,14 @@ class VideoProgressSlider extends StatelessWidget {
                   },
                 ),
               ),
-              Tooltip(
-                message: context.tr("next_episode"),
-                child: IconButton(
-                  icon:
-                      const Icon(Icons.skip_next_rounded, color: Colors.white),
-                  onPressed: () {},
-                ),
-              ),
+              // Tooltip(
+              //   message: context.tr("next_episode"),
+              //   child: IconButton(
+              //     icon:
+              //         const Icon(Icons.skip_next_rounded, color: Colors.white),
+              //     onPressed: () {},
+              //   ),
+              // ),
               VolumeButton(controller: mixedController),
               Expanded(
                 child: Row(
@@ -468,13 +469,13 @@ class VideoProgressSlider extends StatelessWidget {
                             ? "enter_fullscreen"
                             : "exit_fullscreen"),
                         child: IconButton(
-                          onPressed: () {
-                            fullScreen = !fullScreen;
+                          onPressed: () async {
                             if (fullScreen) {
-                              Window.enterFullscreen();
+                              await Window.exitFullscreen();
                             } else {
-                              Window.exitFullscreen();
+                              await Window.enterFullscreen();
                             }
+                            fullScreen = !fullScreen;
                           },
                           icon: Icon(fullScreen
                               ? Icons.fullscreen

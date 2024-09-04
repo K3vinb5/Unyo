@@ -189,10 +189,17 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   void updateSource(int newSource, BuildContext context) {
-    if (animeSources.isEmpty) {
+    if (animeSources.isEmpty && (prefs.getBool("remote_endpoint") ?? false)) {
       showNoExtensionsDialog(
         context,
       );
+      Navigator.of(context).pop();
+      return;
+    } else if (animeSources.isEmpty &&
+        !(prefs.getBool("remote_endpoint") ?? false)) {
+      showErrorDialog(context,
+          exception:
+              "The server is down, please report at http://github.com/K3vinb5/Unyo, by opening an issue");
       Navigator.of(context).pop();
       return;
     }
@@ -255,7 +262,8 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       showErrorDialog(context, exception: context.tr("no_title_found_dialog"));
       return;
     }
-    discordRPC.setWatchingAnimeActivity(widget.currentAnime, animeEpisode, mediaContentModel);
+    discordRPC.setWatchingAnimeActivity(
+        widget.currentAnime, animeEpisode, mediaContentModel);
     if (!mounted) return;
     showDialog(
       context: context,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -9,6 +10,7 @@ import 'package:flutter_acrylic/window.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:unyo/dialogs/dialogs.dart';
+import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 
 class MqqtClientController {
@@ -35,6 +37,7 @@ class MqqtClientController {
   bool firstConnection = true;
   bool firstConfirm = true;
   bool connected = false;
+  bool fullscreenDelay = false;
 
   void init() {
     myId = generateRandomId();
@@ -110,9 +113,12 @@ class MqqtClientController {
 
       switch (message) {
         case "pause":
+          controlsOverlayOnTap();
+
           mixedController.pause();
           break;
         case "play":
+          controlsOverlayOnTap();
           mixedController.play();
           break;
         case "fifteenplus":
@@ -149,7 +155,10 @@ class MqqtClientController {
           break;
         case "confirmed":
           mixedController.seekTo(const Duration(milliseconds: 0));
-          mixedController.pause();
+          if (mixedController.isPlaying) {
+            controlsOverlayOnTap();
+            mixedController.pause();
+          }
           if (firstConfirm) {
             showConnectionSuccessfulDialog(context);
             firstConfirm = false;
@@ -167,7 +176,10 @@ class MqqtClientController {
           firstConfirm = false;
           sendOrder("confirmed");
           mixedController.seekTo(const Duration(milliseconds: 0));
-          mixedController.pause();
+          if (mixedController.isPlaying) {
+            controlsOverlayOnTap();
+            mixedController.pause();
+          }
           showConnectionSuccessfulDialog(context);
           break;
       }
@@ -261,11 +273,24 @@ class MqqtClientController {
         Navigator.pop(context);
         break;
       case LogicalKeyboardKey.keyF:
-        if (await Window.isWindowFullscreened()) {
-          Window.exitFullscreen();
-        } else {
-          Window.enterFullscreen();
+        print("pressed F");
+        print("fullscreenDelay : $fullscreenDelay");
+        if (fullscreenDelay) {
+          return;
         }
+        fullscreenDelay = true;
+        Timer(
+          const Duration(milliseconds: 1000),
+          () {
+            fullscreenDelay = false;
+          },
+        );
+        if (fullScreen) {
+          await Window.exitFullscreen();
+        } else {
+          await Window.enterFullscreen();
+        }
+        fullScreen = !fullScreen;
         break;
       default:
     }
