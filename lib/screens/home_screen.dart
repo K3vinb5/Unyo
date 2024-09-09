@@ -72,10 +72,8 @@ class _HomeScreenState extends State<HomeScreen> {
       updateUserLists();
     };
     updateHomeScreenState = setState;
-
-    discordRPC.initDiscordRPC();
-    discordRPC.setPageActivity("Home Screen");
-  }
+    discordRPC.initDiscordRPC(); 
+  } 
 
   void startExtensions() {
     if (prefs.getBool("remote_endpoint") ?? false) {

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:unyo/api/open_subtitles_org_api.dart';
@@ -102,7 +101,7 @@ class EmbeddedAnimeSource implements AnimeSource {
       headersValues: headersValues,
     );
   }
-
+ 
   @override
   Future<List<List<String>>> getAnimeTitlesAndIds(String query) async {
     var urlStream = Uri.parse(

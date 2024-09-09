@@ -9,19 +9,21 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: '3.19.5'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.1'
       - name: apt update
         run: sudo apt-get update
       - name: Install dependencies
         run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev locate libfuse2
       - name: Install project dependencies
-        run: flutter pub get
+        run: flutter pub get 
       - name: Generate intermediates
         run: flutter pub run build_runner build --delete-conflicting-outputs
       # - uses: graalvm/setup-graalvm@v1
@@ -39,6 +41,12 @@ jobs:
         run: flutter config --enable-linux-desktop
       - name: Build artifacts
         run: flutter build linux --release
+      - name: Build go dependencies
+        run: |
+          mkdir -p linux/bundle/lib
+          cd go/binding/desktop
+          go build -o ../../../build/linux/x64/release/bundle/lib/libmtorrentserver.so -buildmode=c-shared main.go
+          cd ../../..
       - name: Archive app
         uses: thedoctor0/zip-release@master
         with:
@@ -72,7 +80,7 @@ jobs:
       - name: Build deb package
         run: flutter_to_debian
       - name: Rename deb file
-        run: cp build/linux/x64/release/debian/unyo_0.0.0_amd64.deb build/linux/x64/release/debian/unyo-${{github.ref_name}}-amd64.deb
+        run: cp build/linux/x64/release/debian/unyo_0.0.0_amd64.deb build/linux/x64/release/debian/unyo-${{github.ref_name}}-linux.deb
       - name: Linux Debain package Release
         uses: softprops/action-gh-release@v1
         env:
@@ -85,21 +93,28 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: '3.19.5'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.1'
       - name: Install project dependencies
-        run: flutter pub get
+        run: flutter pub get 
       - name: Generate intermediates
         run: flutter pub run build_runner build --delete-conflicting-outputs
       - name: Enable windows builwindowsd
         run: flutter config --enable-windows-desktop
       - name: Build artifacts
         run: flutter build windows --release
+      - name: Build go dependencies
+        run: |
+          cd go\binding\desktop
+          go build -o ..\..\..\build\windows\runner\Release\libmtorrentserver.dll -buildmode=c-shared main.go
+          cd ..\..\..
       - name: Archive App
         uses: thedoctor0/zip-release@master
         with:
@@ -129,21 +144,29 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: '3.19.5'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.1'
       - name: Install project dependencies
-        run: flutter pub get
+        run: flutter pub get 
       - name: Generate intermediates
         run: flutter pub run build_runner build --delete-conflicting-outputs
       - name: Enable macOS build
         run: flutter config --enable-macos-desktop
       - name: Build artifacts
         run: flutter build macos --release
+      - name: Build go dependencies
+        run: |
+          mkdir -p macos/Frameworks
+          cd go/binding/desktop
+          go build -o ../../../build/macos/Build/Products/Release/Frameworks/libmtorrentserver.dylib -buildmode=c-shared main.go
+          cd ../../..
       - name: Archive App
         uses: thedoctor0/zip-release@master
         with:

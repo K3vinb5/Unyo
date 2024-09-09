@@ -18,11 +18,13 @@ class MixedController {
     required this.setState,
     required this.streamData,
     required this.source,
+    required this.episode,
     required this.key,
   });
   final BuildContext context;
   final StreamData streamData;
   final int source;
+  final int episode;
   final String key;
   final void Function() controlsOverlayOnTap;
   final void Function() resetHideControlsTimer;
@@ -37,6 +39,7 @@ class MixedController {
 
   bool isPlaying = true;
   bool firstInit = true;
+  bool isInitialized = false;
   Future<ClosedCaptionFile>? closedCaptionFile;
 
   void init() {
@@ -54,20 +57,24 @@ class MixedController {
     mqqtController.init();
   }
 
-  void initControllers() {
+  void initControllers() async {
+    String videoUrl = streamData.streams[source];
+    if (videoUrl.contains("magnet")) {
+      videoUrl = await getMagnetUrls(videoUrl);
+    }
     closedCaptionFile = streamData.captions != null
         ? loadCaptions(streamData.captions![source][0].file)
         : null;
     if (streamData.getHeaders(source) != null) {
       videoController = VideoPlayerController.networkUrl(
-        Uri.parse(streamData.streams[source]),
+        Uri.parse(videoUrl),
         httpHeaders: streamData.getHeaders(source)!,
         closedCaptionFile: closedCaptionFile,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     } else {
       videoController = VideoPlayerController.networkUrl(
-        Uri.parse(streamData.streams[source]),
+        Uri.parse(videoUrl),
         closedCaptionFile: closedCaptionFile,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
@@ -90,6 +97,7 @@ class MixedController {
     } else {
       audioController = videoController;
     }
+    isInitialized = true;
     videoController.addListener(() {
       setState(() {});
     });
@@ -109,6 +117,17 @@ class MixedController {
       audioController.setLooping(false);
       audioController.initialize().then((_) => setState(() {}));
       audioController.play();
+    }
+  }
+
+ 
+
+  Future<String> getMagnetUrls(String magnet) async {
+    List<String?> urls = await torrentServer.getTorrentPlaylist(magnet, null);
+    if (urls.length > 1){
+      return urls[episode - 1] ?? ""; 
+    }else{
+      return urls[0] ?? "";
     }
   }
 

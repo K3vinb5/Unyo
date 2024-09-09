@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/window.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
+
 
 bool fullScreen = false;
 
@@ -17,6 +19,8 @@ class VideoScreen extends StatefulWidget {
     required this.streamData,
     required this.updateEntry,
     required this.title,
+    required this.mqqtKey,
+    required this.episode,
     required this.timestamps,
   });
 
@@ -24,6 +28,8 @@ class VideoScreen extends StatefulWidget {
   final StreamData streamData;
   final void Function() updateEntry;
   final String title;
+  final String mqqtKey;
+  final int episode;
   final Map<String, double> timestamps;
 
   @override
@@ -46,11 +52,12 @@ class _VideoScreenState extends State<VideoScreen> {
   void initState() {
     super.initState();
     _mixedController = MixedController(
-      key: widget.title,
+      key: widget.mqqtKey,
       context: context,
       setState: setState,
       streamData: widget.streamData,
       source: widget.source,
+      episode: widget.episode,
       updateEntry: widget.updateEntry,
       resetHideControlsTimer: _resetHideControlsTimer,
       controlsOverlayOnTap: controlsOverlayOnTap,
@@ -60,8 +67,8 @@ class _VideoScreenState extends State<VideoScreen> {
     _resetHideControlsTimer();
     interactScreen(true);
     _screenFocusNode.requestFocus();
-    hasTimestamps = widget.timestamps["start"] != -1 && widget.timestamps["end"] != -1;
-
+    hasTimestamps =
+        widget.timestamps["start"] != -1 && widget.timestamps["end"] != -1;
   }
 
   @override
@@ -104,6 +111,9 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   void setIsvideoPlayingTimer() {
+    if (!_mixedController.isInitialized){
+      return;
+    }
     isVideoPlaying = Timer(const Duration(seconds: 5), () {
       if (_mixedController.videoController.value.duration.inSeconds == 0) {
         showErrorDialog(
@@ -158,7 +168,12 @@ class _VideoScreenState extends State<VideoScreen> {
                       VideoPlayer(_mixedController.audioController),
                     AspectRatio(
                       aspectRatio: 16 / 9,
-                      child: VideoPlayer(_mixedController.videoController),
+                      child: _mixedController.isInitialized 
+                          ? VideoPlayer(_mixedController.videoController)
+                          : Center(
+                              child: LoadingAnimationWidget.inkDrop(
+                                  color: Colors.white, size: 30),
+                            ),
                     ),
                     VideoSubtitles(mixedController: _mixedController),
                     //Overlay controls, and slider

@@ -3,13 +3,21 @@ import 'package:unyo/models/models.dart';
 
 class DiscordRPC {
   late DateTime initTime;
+  late bool discordFound; 
 
   void initDiscordRPC() {
-    FlutterDiscordRPC.instance.connect();
-    initTime = DateTime.now();
+    try {
+      FlutterDiscordRPC.instance.connect();
+      initTime = DateTime.now();
+      setPageActivity("Home Screen");
+    } catch (e) {
+      print("No Discord instance was found");
+      discordFound = false;
+    }
   }
 
   void setPageActivity(String page) {
+    if (!discordFound) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
@@ -29,6 +37,7 @@ class DiscordRPC {
   }
 
   void setNavigatingAnimeActivity(AnimeModel animeModel) {
+    if (!discordFound) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
@@ -48,6 +57,7 @@ class DiscordRPC {
   }
 
   void setNavigatingMangaActivity(MangaModel mangaModel) {
+    if (!discordFound) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
@@ -68,6 +78,7 @@ class DiscordRPC {
 
   void setWatchingAnimeActivity(
       AnimeModel animeModel, int episode, MediaContentModel mediaContentModel) {
+    if (!discordFound) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
@@ -97,6 +108,7 @@ class DiscordRPC {
   }
 
   void setReadingMangaActivity(MangaModel mangaModel, int chapter) {
+    if (!discordFound) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(

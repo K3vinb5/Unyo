@@ -2,6 +2,7 @@ import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/util/torrent_server.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/screens/screens.dart';
 
@@ -25,6 +26,7 @@ String remoteEndPoint = "https://kevin-is-awesome.mooo.com/api";
 String localEndPoint = "http://localhost:8084";
 Future<List<CastDevice>> devices = CastDiscoveryService().search();
 DiscordRPC discordRPC = DiscordRPC();
+MTorrentServer torrentServer = MTorrentServer();
 
 String getEndpoint() {
   if (prefs.getBool("remote_endpoint") ?? false) {

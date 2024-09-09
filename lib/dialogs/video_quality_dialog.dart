@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,10 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
 
   void getStreamInfo() async {
     streamData = await widget.currentAnimeSource.getAnimeStreamAndCaptions(
-        widget.id, widget.animeModel.englishTitle ?? "", widget.animeEpisode, context);
+        widget.id,
+        widget.animeModel.englishTitle ?? "",
+        widget.animeEpisode,
+        context);
     setState(() {});
   }
 
@@ -61,7 +66,11 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
       updateEntry: () {
         widget.updateEntry(widget.animeEpisode);
       },
-      title: "${widget.animeModel.getDefaultTitle()}, ${"episode".tr()} ${widget.animeEpisode}",
+      title:
+          "${widget.animeModel.getDefaultTitle()}, ${"episode".tr()} ${widget.animeEpisode}",
+      mqqtKey:
+          "${widget.animeModel.userPreferedTitle}-ep${widget.animeEpisode}",
+      episode: widget.animeEpisode,
       timestamps: timestamps,
     );
     if (!context.mounted) return;
@@ -69,6 +78,11 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
       context,
       MaterialPageRoute(builder: (context) => videoScreen!),
     );
+  }
+
+  String getUtf8Text(String text) {
+    List<int> bytes = text.codeUnits;
+    return utf8.decode(bytes);
   }
 
   @override
@@ -86,7 +100,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12.0, vertical: 8.0),
                         child: SizedBox(
-                          height: 60,
+                          // height: 60,
                           child: ElevatedButton(
                             style: const ButtonStyle(
                               backgroundColor: MaterialStatePropertyAll(
@@ -98,11 +112,15 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
                             ),
                             onPressed: () async {
                               Map<String, double> timestamps =
-                                  await getOpeningSkipTimeStamps(
-                                      widget.idMal, widget.animeEpisode.toString());
+                                  await getOpeningSkipTimeStamps(widget.idMal,
+                                      widget.animeEpisode.toString());
                               onStreamSelected(index, timestamps);
                             },
-                            child: Text(text),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 20.0, horizontal: 3.0),
+                              child: Text(getUtf8Text(text)),
+                            ),
                           ),
                         ),
                       ),
