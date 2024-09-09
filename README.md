@@ -100,7 +100,7 @@ You need java 17 or later installed on your machine to run the local extensions,
   
 ## Known Issues
 
-
+- Sometimes having the opensubtitles.org subtitles active may cause the extension not to retrieve anything, if that happens please turn it off, should be fixed in the next versions
 ## Contributors
 
 [![](https://contrib.rocks/image?repo=K3vinb5/Unyo)](https://github.com/K3vinb5/Unyo/graphs/contributors)
