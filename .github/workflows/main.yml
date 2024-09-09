@@ -130,7 +130,7 @@ jobs:
       - name: Running installer build
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
         with:
-          path: .\windows-installer\windows-inno-script.iss
+          path: .\windows-inno-script.iss
           options: /O+ /dMyAppVersion=${{github.ref_name}}
       - name: Windows Exe Release
         uses: softprops/action-gh-release@v1
