@@ -151,17 +151,17 @@ class VideoProgressSlider extends StatelessWidget {
               const SizedBox(
                 width: 24,
               ),
-              ValueListenableBuilder(
+              /*ValueListenableBuilder(
                 builder: (context, value, child) {
-                  return Text(
+                  return */Text(
                     mixedController.videoController.value.position
                         .toString()
                         .substring(0, 7),
                     style: const TextStyle(color: Colors.white, fontSize: 16),
-                  );
+                  )/*;
                 },
                 valueListenable: mixedController.videoController,
-              ),
+              )*/,
               Expanded(
                 child: Slider(
                   min: 0,

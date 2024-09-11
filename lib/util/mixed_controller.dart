@@ -8,6 +8,7 @@ import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
+import 'package:unyo/widgets/video/m_video_player_controller.dart' as my;
 
 class MixedController {
   MixedController({
@@ -33,8 +34,8 @@ class MixedController {
 
   late Timer syncTimer;
   late MqqtClientController mqqtController;
-  late VideoPlayerController videoController;
-  late VideoPlayerController audioController;
+  late my.VideoPlayerController videoController;
+  late my.VideoPlayerController audioController;
   late bool audioSeparate;
 
   bool isPlaying = true;
@@ -66,32 +67,32 @@ class MixedController {
         ? loadCaptions(streamData.captions![source][0].file)
         : null;
     if (streamData.getHeaders(source) != null) {
-      videoController = VideoPlayerController.networkUrl(
-        Uri.parse(videoUrl),
+      videoController = my.VideoPlayerController.networkUrl(
+        /*Uri.parse(*/videoUrl/*)*/,
         httpHeaders: streamData.getHeaders(source)!,
-        closedCaptionFile: closedCaptionFile,
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        closedCaptionFile: await closedCaptionFile,
+        // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     } else {
-      videoController = VideoPlayerController.networkUrl(
-        Uri.parse(videoUrl),
-        closedCaptionFile: closedCaptionFile,
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      videoController = my.VideoPlayerController.networkUrl(
+        /*Uri.parse(*/videoUrl/*)*/,
+        closedCaptionFile: await closedCaptionFile,
+        // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     }
     if (streamData.tracks != null /*&& audioStream != ""*/) {
       if (streamData.getHeaders(source) != null) {
-        audioController = VideoPlayerController.networkUrl(
-          Uri.parse(streamData.tracks![source][0].file),
+        audioController = my.VideoPlayerController.networkUrl(
+         /* Uri.parse(*/streamData.tracks![source][0].file/*)*/,
           httpHeaders: streamData.getHeaders(source)!,
-          closedCaptionFile: closedCaptionFile,
-          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+          closedCaptionFile: await closedCaptionFile,
+          // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
         );
       } else {
-        audioController = VideoPlayerController.networkUrl(
-          Uri.parse(streamData.tracks![source][0].file),
-          closedCaptionFile: closedCaptionFile,
-          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        audioController = my.VideoPlayerController.networkUrl(
+          /*Uri.parse(*/streamData.tracks![source][0].file/*)*/,
+          closedCaptionFile: await closedCaptionFile,
+          // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
         );
       }
     } else {
@@ -241,12 +242,12 @@ class MixedController {
     return original;
   }
 
-  void changeCaption(int pos) {
+  void changeCaption(int pos) async{
     Future<ClosedCaptionFile>? newClosedCaptionFile =
         streamData.captions != null
             ? loadCaptions(streamData.captions![source][pos].file)
             : null;
-    videoController.setClosedCaptionFile(newClosedCaptionFile);
+    videoController.setClosedCaptionFile(await newClosedCaptionFile);
   }
 
   void changeSubTrack(int pos) async {
@@ -254,17 +255,17 @@ class MixedController {
     if (!audioSeparate) return;
     audioController.dispose();
     if (streamData.getHeaders(source) != null) {
-      audioController = VideoPlayerController.networkUrl(
-        Uri.parse(streamData.tracks![source][pos].file),
+      audioController = my.VideoPlayerController.networkUrl(
+        /*Uri.parse(*/streamData.tracks![source][pos].file/*)*/,
         httpHeaders: streamData.getHeaders(source)!,
-        closedCaptionFile: closedCaptionFile,
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        closedCaptionFile: await closedCaptionFile,
+        // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     } else {
-      audioController = VideoPlayerController.networkUrl(
-        Uri.parse(streamData.tracks![source][pos].file),
-        closedCaptionFile: closedCaptionFile,
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      audioController = my.VideoPlayerController.networkUrl(
+        /*Uri.parse(*/streamData.tracks![source][pos].file/*)*/,
+        closedCaptionFile: await closedCaptionFile,
+        // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     }
     audioController.addListener(() {

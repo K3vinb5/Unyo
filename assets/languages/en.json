@@ -122,5 +122,7 @@
   "previous_chapter" : "Previous Chapter",
   "next_chapter" : "Next Chapter",
   "next_page" : "Next Page",
-  "previous_page" : "Previous Page"
+  "previous_page" : "Previous Page",
+  "video_loading" : "Please wait, the video is loading",
+  "cast_to_tv" : "Cast to TV"
 }

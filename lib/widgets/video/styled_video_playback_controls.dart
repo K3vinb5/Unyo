@@ -65,20 +65,20 @@ class _StyledVideoPlaybackControlsState
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: SmoothVideoProgress(
+            child: /*SmoothVideoProgress(
               controller: widget.mixedController.videoController,
               builder: (context, progress, duration, child) {
-                return VideoProgressSlider(
+                return */VideoProgressSlider(
                   mixedController: widget.mixedController,
                   source: widget.source,
-                  position: progress,
-                  duration: duration,
+                  position: /*progress*/widget.mixedController.videoController.value.position,
+                  duration: /*duration*/widget.mixedController.videoController.value.duration,
                   onTap: widget.controlsOverlayOnTap,
                   hasTimeStamps: widget.hasTimestamps,
                   timestamps: widget.timestamps,
-                );
+                )/*;
               },
-            ),
+            )*/,
           ),
         ],
       ),

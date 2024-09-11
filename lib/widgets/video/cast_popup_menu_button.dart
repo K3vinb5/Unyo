@@ -1,5 +1,6 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cast/cast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/util/constants.dart';
 
@@ -250,7 +251,7 @@ class CastPopupMenuButton extends StatelessWidget {
       future: devices,
       builder: (context, snapshot) {
         return PopupMenuButton<CastDevice>(
-          tooltip: "Cast to Tv",
+          tooltip: context.tr("cast_to_tv"),
           color: const Color.fromARGB(255, 34, 33, 34),
           icon: const Icon(
             Icons.cast,

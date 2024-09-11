@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
+import 'package:unyo/widgets/video/m_video_player.dart' as my;
 import 'package:unyo/widgets/widgets.dart';
-import 'package:video_player/video_player.dart';
-
+// import 'package:video_player/video_player.dart';
 
 bool fullScreen = false;
 
@@ -111,7 +112,8 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   void setIsvideoPlayingTimer() {
-    if (!_mixedController.isInitialized){
+    if (!_mixedController.isInitialized) {
+      isVideoPlaying = Timer(Duration.zero, () {});
       return;
     }
     isVideoPlaying = Timer(const Duration(seconds: 5), () {
@@ -161,33 +163,49 @@ class _VideoScreenState extends State<VideoScreen> {
                 cursor: _showControls
                     ? SystemMouseCursors.basic
                     : SystemMouseCursors.none,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (widget.streamData.tracks != null)
-                      VideoPlayer(_mixedController.audioController),
-                    AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: _mixedController.isInitialized 
-                          ? VideoPlayer(_mixedController.videoController)
-                          : Center(
-                              child: LoadingAnimationWidget.inkDrop(
-                                  color: Colors.white, size: 30),
+                child: _mixedController.isInitialized
+                    ? Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          if (widget.streamData.tracks != null)
+                            my.VideoPlayer(_mixedController.audioController),
+                          AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: my.VideoPlayer(
+                                  _mixedController.videoController)),
+                          VideoSubtitles(mixedController: _mixedController),
+                          //Overlay controls, and slider
+                          StyledVideoPlaybackControls(
+                            controlsOverlayOnTap: controlsOverlayOnTap,
+                            showControls: _showControls,
+                            paused: paused,
+                            source: widget.source,
+                            mixedController: _mixedController,
+                            hasTimestamps: hasTimestamps,
+                            timestamps: widget.timestamps,
+                          ),
+                        ],
+                      )
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            LoadingAnimationWidget.inkDrop(
+                              color: Colors.white,
+                              size: 30,
                             ),
-                    ),
-                    VideoSubtitles(mixedController: _mixedController),
-                    //Overlay controls, and slider
-                    StyledVideoPlaybackControls(
-                      controlsOverlayOnTap: controlsOverlayOnTap,
-                      showControls: _showControls,
-                      paused: paused,
-                      source: widget.source,
-                      mixedController: _mixedController,
-                      hasTimestamps: hasTimestamps,
-                      timestamps: widget.timestamps,
-                    ),
-                  ],
-                ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Text(
+                              context.tr("video_loading"),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
               ),
               //Video Header (top)
               VideoOverlayHeaderWidget(
