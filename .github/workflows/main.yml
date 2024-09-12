@@ -113,7 +113,7 @@ jobs:
       - name: Build go dependencies
         run: |
           cd go\binding\desktop
-          go build -o ..\..\..\build\windows\x64\Release\libmtorrentserver.dll -buildmode=c-shared main.go
+          go build -o ..\..\..\build\windows\x64\runner\Release\libmtorrentserver.dll -buildmode=c-shared main.go
           cd ..\..\..
       - name: Archive App
         uses: thedoctor0/zip-release@master
