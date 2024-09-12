@@ -24,11 +24,13 @@ class VideoPlayerController extends ChangeNotifier {
   final Map<String, String>? httpHeaders;
 
   late final player = mdk.Player();
+  late Timer timer;
   late final VideoPlayerValue value;
 
   Future<void> initialize() async {
     //video url
     player.media = videoUrl;
+    setHttpHeaders(httpHeaders);
     //No loop
     player.loop = 0;
     //Start paused
@@ -38,6 +40,23 @@ class VideoPlayerController extends ChangeNotifier {
         VideoCaptionFile(player: player, closedCaptionFile: closedCaptionFile);
     caption.init();
     value = VideoPlayerValue(player: player, caption: caption);
+    _startNotifyingTimer();
+  }
+
+  void _startNotifyingTimer() {
+    timer = Timer.periodic(const Duration(milliseconds: 300), (timer) {
+      notifyListeners();
+    });
+  }
+
+  void setHttpHeaders(Map<String, String>? httpHeaders) {
+    if (httpHeaders != null && httpHeaders.isNotEmpty) {
+      String headers = '';
+      httpHeaders.forEach((key, value) {
+        headers += '$key: $value\r\n';
+      });
+      player.setProperty('avio.headers', headers);
+    }
   }
 
   void play() {
@@ -80,9 +99,15 @@ class VideoPlayerController extends ChangeNotifier {
 
   @override
   void dispose() {
-    super.dispose();
-    value.caption.dispose();
-    player.dispose();
+    try {
+      Future.delayed(Duration.zero, () {
+        timer.cancel();
+        player.dispose();
+        super.dispose();
+      });
+    } catch (e) {
+      print("error: $e");
+    }
   }
 }
 
@@ -109,46 +134,26 @@ class VideoCaptionFile {
   final mdk.Player player;
   final ClosedCaptionFile? closedCaptionFile;
   late List<Caption> captions;
-  late Timer timer;
-  ValueNotifier<String> text = ValueNotifier<String>("");
+  // String text = "";
 
   VideoCaptionFile({required this.player, required this.closedCaptionFile});
 
   void init() {
     captions = closedCaptionFile?.captions ?? [];
-    _startCaptionTimer();
   }
 
-  void _startCaptionTimer() {
-    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      _updateCurrentCaption();
-    });
-  }
-
-  void _updateCurrentCaption() {
+  String get text {
     int currentMilliseconds = player.position;
-    String newText = "";
-
     for (Caption caption in captions) {
-      // print(
-          // "${caption.start.inMilliseconds} -> $currentMilliseconds <- ${caption.end.inMilliseconds} == ${(caption.start.inMilliseconds >= currentMilliseconds && caption.end.inMilliseconds <= currentMilliseconds)}");
       if (caption.start.inMilliseconds <= currentMilliseconds &&
           caption.end.inMilliseconds >= currentMilliseconds) {
-        newText = caption.text;
-        break; // Exit loop once we find the current caption
+        return caption.text;
       }
     }
-    if (newText != text.value) {
-      text.value = newText; // Update the ValueNotifier
-    }
+    return "";
   }
 
   void setNewCaptionFile(ClosedCaptionFile? newClosedCaptionFile) {
     captions = newClosedCaptionFile?.captions ?? [];
-    text.value = ""; // Reset current text when changing captions
-  }
-
-  void dispose() {
-    timer.cancel();
   }
 }

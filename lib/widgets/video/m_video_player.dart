@@ -27,15 +27,22 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Expanded(
-        child: ValueListenableBuilder<int?>(
-          valueListenable: videoPlayerController.player.textureId,
-          builder: (context, id, _) =>
-              id == null ? const SizedBox.shrink() : Texture(textureId: id),
+    return Column(
+      children: [
+        Expanded(
+          child: ValueListenableBuilder<int?>(
+            valueListenable: videoPlayerController.player.textureId,
+            builder: (context, id, _) =>
+                id == null ? const SizedBox.shrink() : Texture(textureId: id),
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }

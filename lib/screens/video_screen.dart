@@ -7,7 +7,7 @@ import 'package:flutter_acrylic/window.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
-import 'package:unyo/widgets/video/m_video_player.dart' as my;
+import 'package:unyo/widgets/video/m_video_player.dart';
 import 'package:unyo/widgets/widgets.dart';
 // import 'package:video_player/video_player.dart';
 
@@ -40,7 +40,7 @@ class VideoScreen extends StatefulWidget {
 class _VideoScreenState extends State<VideoScreen> {
   late MixedController _mixedController;
   Timer? _hideControlsTimer;
-  late Timer isVideoPlaying;
+  Timer? isVideoPlaying;
   bool _showControls = true;
   bool paused = false;
   String? captions;
@@ -60,6 +60,7 @@ class _VideoScreenState extends State<VideoScreen> {
       source: widget.source,
       episode: widget.episode,
       updateEntry: widget.updateEntry,
+      cancelTimers: cancelTimers,
       resetHideControlsTimer: _resetHideControlsTimer,
       controlsOverlayOnTap: controlsOverlayOnTap,
     );
@@ -74,10 +75,15 @@ class _VideoScreenState extends State<VideoScreen> {
 
   @override
   void dispose() {
-    _hideControlsTimer?.cancel();
-    _mixedController.dispose();
-    isVideoPlaying.cancel();
     super.dispose();
+    _hideControlsTimer?.cancel();
+    isVideoPlaying?.cancel();
+    _mixedController.dispose();
+  }
+
+  void cancelTimers() {
+    _hideControlsTimer?.cancel();
+    isVideoPlaying?.cancel();
   }
 
   String getUtf8Text(String text) {
@@ -123,6 +129,9 @@ class _VideoScreenState extends State<VideoScreen> {
           exception:
               "An error occured, try using another source or server/quality",
           onPressedAfterPop: () {
+            if (!_mixedController.canDispose) return;
+            _hideControlsTimer?.cancel();
+            isVideoPlaying?.cancel();
             _mixedController.dispose();
             Window.exitFullscreen();
             interactScreen(false);
@@ -158,6 +167,7 @@ class _VideoScreenState extends State<VideoScreen> {
             children: [
               MouseRegion(
                 onHover: (event) {
+                  // print("hover");
                   _resetHideControlsTimer();
                 },
                 cursor: _showControls
@@ -168,11 +178,12 @@ class _VideoScreenState extends State<VideoScreen> {
                         alignment: Alignment.center,
                         children: [
                           if (widget.streamData.tracks != null)
-                            my.VideoPlayer(_mixedController.audioController),
+                            VideoPlayer(_mixedController.audioController),
                           AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: my.VideoPlayer(
-                                  _mixedController.videoController)),
+                            aspectRatio: 16 / 9,
+                            child:
+                                VideoPlayer(_mixedController.videoController),
+                          ),
                           VideoSubtitles(mixedController: _mixedController),
                           //Overlay controls, and slider
                           StyledVideoPlaybackControls(
@@ -212,6 +223,7 @@ class _VideoScreenState extends State<VideoScreen> {
                   showControls: _showControls,
                   title: widget.title,
                   mixedController: _mixedController,
+                  cancelTimers: cancelTimers,
                   updateEntry: widget.updateEntry),
               !fullScreen
                   ? const WindowBarButtons(startIgnoreWidth: 70)

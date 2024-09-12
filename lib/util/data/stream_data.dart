@@ -13,7 +13,7 @@ class StreamData {
   StreamData.empy({
     this.streams = const [],
     this.qualities = const [],
-    this.captions,
+    this.captions = const [],
     this.tracks,
     this.headersKeys = const [],
     this.headersValues = const [],
@@ -21,8 +21,8 @@ class StreamData {
 
   final List<String> streams;
   final List<String> qualities;
-  final List<List<CaptionData>>? captions;
-  final List<List<TrackData>>? tracks;
+  final List<List<CaptionData>> captions;
+  List<List<TrackData>>? tracks;
   final List<List<String>> headersKeys;
   final List<List<String>> headersValues;
 

@@ -165,6 +165,7 @@ class MqqtClientController {
           }
           break;
         case "escape":
+          if (!mixedController.canDispose) return;
           if (prefs.getBool("exit_fullscreen_on_video_exit") ?? false) {
             Window.exitFullscreen();
           }
@@ -259,6 +260,7 @@ class MqqtClientController {
         break;
       case LogicalKeyboardKey.escape:
         // sendOrder("escape");
+        if (!mixedController.canDispose) return;
         if (prefs.getBool("exit_fullscreen_on_video_exit") ?? true) {
           Window.exitFullscreen();
         }

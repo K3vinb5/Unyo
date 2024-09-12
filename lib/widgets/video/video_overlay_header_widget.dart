@@ -10,12 +10,15 @@ class VideoOverlayHeaderWidget extends StatefulWidget {
       required this.showControls,
       required this.title,
       required this.mixedController,
-      required this.updateEntry});
+      required this.updateEntry,
+      required this.cancelTimers
+     });
 
   final bool showControls;
   final String title;
   final MixedController mixedController;
   final void Function() updateEntry;
+  final void Function() cancelTimers;
 
   @override
   State<VideoOverlayHeaderWidget> createState() =>
@@ -55,6 +58,7 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
             child: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
+                if (!widget.mixedController.canDispose) return;
                 if (prefs.getBool("exit_fullscreen_on_video_exit") ?? true) {
                   Window.exitFullscreen();
                 }
@@ -67,6 +71,7 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
                     (prefs.getBool("update_progress_automatically") ?? false)) {
                   widget.updateEntry();
                 }
+                widget.cancelTimers();
                 widget.mixedController.dispose();
                 Navigator.pop(context);
               },

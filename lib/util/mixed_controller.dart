@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
+import 'package:fvp/mdk.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:video_player/video_player.dart';
@@ -15,6 +16,7 @@ class MixedController {
     required this.controlsOverlayOnTap,
     required this.resetHideControlsTimer,
     required this.updateEntry,
+    required this.cancelTimers,
     required this.context,
     required this.setState,
     required this.streamData,
@@ -30,6 +32,7 @@ class MixedController {
   final void Function() controlsOverlayOnTap;
   final void Function() resetHideControlsTimer;
   final void Function() updateEntry;
+  final void Function() cancelTimers;
   final void Function(void Function()) setState;
 
   late Timer syncTimer;
@@ -41,11 +44,13 @@ class MixedController {
   bool isPlaying = true;
   bool firstInit = true;
   bool isInitialized = false;
+  bool canDispose = false;
+  bool disposed = false;
   Future<ClosedCaptionFile>? closedCaptionFile;
 
   void init() {
     initControllers();
-    audioSeparate = streamData.tracks != null /* && widget.audioStream != "" */;
+    audioSeparate = streamData.tracks != null;
     sync();
     mqqtController = MqqtClientController(
       context: context,
@@ -63,19 +68,17 @@ class MixedController {
     if (videoUrl.contains("magnet")) {
       videoUrl = await getMagnetUrls(videoUrl);
     }
-    closedCaptionFile = streamData.captions != null
-        ? loadCaptions(streamData.captions![source][0].file)
-        : null;
+    loadCaptions(streamData.captions[source][0].file);
     if (streamData.getHeaders(source) != null) {
       videoController = my.VideoPlayerController.networkUrl(
-        /*Uri.parse(*/videoUrl/*)*/,
+        videoUrl,
         httpHeaders: streamData.getHeaders(source)!,
         closedCaptionFile: await closedCaptionFile,
         // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     } else {
       videoController = my.VideoPlayerController.networkUrl(
-        /*Uri.parse(*/videoUrl/*)*/,
+        videoUrl,
         closedCaptionFile: await closedCaptionFile,
         // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
@@ -83,14 +86,14 @@ class MixedController {
     if (streamData.tracks != null /*&& audioStream != ""*/) {
       if (streamData.getHeaders(source) != null) {
         audioController = my.VideoPlayerController.networkUrl(
-         /* Uri.parse(*/streamData.tracks![source][0].file/*)*/,
+          streamData.tracks![source][0].file,
           httpHeaders: streamData.getHeaders(source)!,
           closedCaptionFile: await closedCaptionFile,
           // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
         );
       } else {
         audioController = my.VideoPlayerController.networkUrl(
-          /*Uri.parse(*/streamData.tracks![source][0].file/*)*/,
+          streamData.tracks![source][0].file,
           closedCaptionFile: await closedCaptionFile,
           // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
         );
@@ -106,11 +109,12 @@ class MixedController {
     try {
       videoController.initialize().then((_) => setState(() {}));
     } catch (e) {
+      if (!context.mounted) return;
       showErrorDialog(context, exception: e.toString());
     }
     videoController.play();
 
-    if (streamData.tracks != null /*&& audioStream != ""*/) {
+    if (streamData.tracks != null) {
       audioController.addListener(() {
         setState(() {});
       });
@@ -119,15 +123,61 @@ class MixedController {
       audioController.initialize().then((_) => setState(() {}));
       audioController.play();
     }
+    initEmbeddedCaptionsAndSubtracks();
   }
 
- 
+  Future<void> initEmbeddedCaptionsAndSubtracks() async {
+    if (videoController.value.position.inMilliseconds == 0) {
+      await Future.delayed(const Duration(seconds: 2));
+      initEmbeddedCaptionsAndSubtracks();
+      return;
+    }
+    if (videoController.player.mediaInfo.subtitle != null &&
+        videoController.player.mediaInfo.subtitle!.isNotEmpty) {
+      for (int j = 0;
+          j < videoController.player.mediaInfo.subtitle!.length;
+          j++) {
+        for (List<CaptionData> listCaptions in streamData.captions) {
+          SubtitleStreamInfo subtitle =
+              videoController.player.mediaInfo.subtitle![j];
+          listCaptions.add(CaptionData(
+            file: "",
+            lang:
+                "${subtitle.metadata["title"] ?? ""} (${subtitle.metadata["language"]} - Embedded)",
+            embedded: true,
+            index: j,
+          ));
+        }
+      }
+    }
+    if (videoController.player.mediaInfo.audio != null &&
+        videoController.player.mediaInfo.audio!.length > 1) {
+      for (int j = 0; j < videoController.player.mediaInfo.audio!.length; j++) {
+        if (streamData.tracks == null) {
+          streamData.tracks = [];
+          for (int i = 0; i < streamData.captions.length; i++) {
+            AudioStreamInfo audio = videoController.player.mediaInfo.audio![j];
+            streamData.tracks!.add([
+              TrackData(
+                file: "",
+                lang:
+                    "${audio.metadata["title"] ?? ""} (${audio.metadata["language"]} - Embedded)",
+                embedded: true,
+                index: j,
+              )
+            ]);
+          }
+        }
+      }
+    }
+    canDispose = true;
+  }
 
   Future<String> getMagnetUrls(String magnet) async {
     List<String?> urls = await torrentServer.getTorrentPlaylist(magnet, null);
-    if (urls.length > 1){
-      return urls[episode - 1] ?? ""; 
-    }else{
+    if (urls.length > 1) {
+      return urls[episode - 1] ?? "";
+    } else {
       return urls[0] ?? "";
     }
   }
@@ -189,7 +239,6 @@ class MixedController {
       print("error, code: ${response.statusCode}");
       return null;
     }
-    // final archive = ZipDecoder().decodeBytes(response.bodyBytes);
     final archive = ZipDecoder()
         .decodeBytes(await consolidateHttpClientResponseBytes(response));
 
@@ -242,28 +291,42 @@ class MixedController {
     return original;
   }
 
-  void changeCaption(int pos) async{
+  void changeCaption(int pos) async {
+    if (streamData.captions[source][pos].embedded != null &&
+        streamData.captions[source][pos].embedded!) {
+      videoController.player.activeSubtitleTracks = [
+        streamData.captions[source][pos].index!
+      ];
+      print(streamData.captions[source][pos].index!);
+      return;
+    }
     Future<ClosedCaptionFile>? newClosedCaptionFile =
-        streamData.captions != null
-            ? loadCaptions(streamData.captions![source][pos].file)
-            : null;
+        loadCaptions(streamData.captions[source][pos].file);
     videoController.setClosedCaptionFile(await newClosedCaptionFile);
   }
 
   void changeSubTrack(int pos) async {
     // pause();
+    if (streamData.tracks![source][pos].embedded != null &&
+        streamData.tracks![source][pos].embedded!) {
+      videoController.player.activeAudioTracks = [
+        streamData.tracks![source][pos].index!
+      ];
+      return;
+    }
+
     if (!audioSeparate) return;
     audioController.dispose();
     if (streamData.getHeaders(source) != null) {
       audioController = my.VideoPlayerController.networkUrl(
-        /*Uri.parse(*/streamData.tracks![source][pos].file/*)*/,
+        streamData.tracks![source][pos].file,
         httpHeaders: streamData.getHeaders(source)!,
         closedCaptionFile: await closedCaptionFile,
         // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     } else {
       audioController = my.VideoPlayerController.networkUrl(
-        /*Uri.parse(*/streamData.tracks![source][pos].file/*)*/,
+        streamData.tracks![source][pos].file,
         closedCaptionFile: await closedCaptionFile,
         // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
@@ -330,14 +393,22 @@ class MixedController {
   }
 
   void dispose() {
+    if (disposed) return; 
     if (audioSeparate) {
       syncTimer.cancel();
+      audioController.removeListener(() {
+        setState(() {});
+      });
       audioController.dispose();
     }
+    videoController.removeListener(() {
+      setState(() {});
+    });
     videoController.dispose();
     if (mqqtController.connected) {
       mqqtController.client.disconnect();
     }
+    disposed = true;
   }
 
   void sync() {
@@ -363,17 +434,10 @@ class MixedController {
         //video waits (audio forward)
         audioController.seekTo(Duration(
             milliseconds: videoController.value.position.inMilliseconds));
-        // videoController.pause();
-        // await Future.delayed(Duration(milliseconds: difference.abs() + 100));
-        // videoController.play();
       } else {
         //audio waits (audio backwards)
         videoController.seekTo(Duration(
             milliseconds: audioController.value.position.inMilliseconds));
-
-        // audioController.pause();
-        // await Future.delayed(Duration(milliseconds: difference.abs() + 100));
-        // audioController.play();
       }
       return;
     }

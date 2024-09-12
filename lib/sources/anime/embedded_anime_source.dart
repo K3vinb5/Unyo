@@ -70,7 +70,7 @@ class EmbeddedAnimeSource implements AnimeSource {
                     TrackData(file: e.split(";")[0], lang: e.split(";")[1]))
                 .toList())
             .toList()
-        : null;
+        : null; 
 
     List<dynamic>? headersKeysResponse = jsonResponse["headersKeys"] != "null"
         ? jsonResponse["headersKeys"]
@@ -101,7 +101,7 @@ class EmbeddedAnimeSource implements AnimeSource {
       headersValues: headersValues,
     );
   }
- 
+
   @override
   Future<List<List<String>>> getAnimeTitlesAndIds(String query) async {
     var urlStream = Uri.parse(
