@@ -152,22 +152,22 @@ class MixedController {
     }
     if (videoController.player.mediaInfo.audio != null &&
         videoController.player.mediaInfo.audio!.length > 1) {
-      for (int j = 0; j < videoController.player.mediaInfo.audio!.length; j++) {
-        if (streamData.tracks == null) {
-          streamData.tracks = [];
-          for (int i = 0; i < streamData.captions.length; i++) {
-            AudioStreamInfo audio = videoController.player.mediaInfo.audio![j];
-            streamData.tracks!.add([
-              TrackData(
-                file: "",
-                lang:
-                    "${audio.metadata["title"] ?? ""} (${audio.metadata["language"]} - Embedded)",
-                embedded: true,
-                index: j,
-              )
-            ]);
-          }
+      streamData.tracks ??= [];
+      for (int i = 0; i < streamData.captions.length; i++) {
+        List<TrackData> newAudios = [];
+        for (int j = 0;
+            j < videoController.player.mediaInfo.audio!.length;
+            j++) {
+          AudioStreamInfo audio = videoController.player.mediaInfo.audio![j];
+          newAudios.add(TrackData(
+            file: "",
+            lang:
+                "${audio.metadata["title"] ?? ""} (${audio.metadata["language"]} - Embedded)",
+            embedded: true,
+            index: j,
+          ));
         }
+        streamData.tracks!.add(newAudios);
       }
     }
     canDispose = true;
@@ -393,7 +393,7 @@ class MixedController {
   }
 
   void dispose() {
-    if (disposed) return; 
+    if (disposed) return;
     if (audioSeparate) {
       syncTimer.cancel();
       audioController.removeListener(() {
