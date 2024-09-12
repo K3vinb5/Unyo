@@ -18,7 +18,9 @@ class OpenSubtitlesApi {
     }
     List<List<String>> seasons = await getAnimeEpisodes(animeId);
     print(seasons);
-    if(seasons.isEmpty || seasons.length < season || seasons[season - 1].length < episode){
+    if (seasons.isEmpty ||
+        seasons.length < season ||
+        seasons[season - 1].length < episode) {
       return {};
     }
     String episodeSubtitlesUrl = seasons[season - 1][episode - 1];
@@ -32,7 +34,14 @@ class OpenSubtitlesApi {
         Uri.parse("$searchEndPoint${query.replaceAll(RegExp(r'[:!.,]'), '')}");
     var response = await http.get(url);
     print(response.body);
-    List<dynamic> jsonResponse = json.decode(response.body);
+    List<dynamic> jsonResponse = [];
+    try {
+      jsonResponse = json.decode(response.body);
+    } catch (e) {
+      print("OpenSubtitles is Down");
+      return "-1";
+    }
+    
     if (jsonResponse.isEmpty) {
       return "-1";
     }
@@ -100,7 +109,7 @@ class OpenSubtitlesApi {
     titlesWithSublanguageId.removeLast();
     print(titlesWithSublanguageId.length);
     print(hrefsWithSrt.length);
-    if (hrefsWithSrt.length != titlesWithSublanguageId.length){
+    if (hrefsWithSrt.length != titlesWithSublanguageId.length) {
       return {};
     }
     return Map.fromIterables(titlesWithSublanguageId, hrefsWithSrt);

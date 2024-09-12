@@ -177,8 +177,6 @@ class _VideoScreenState extends State<VideoScreen> {
                     ? Stack(
                         alignment: Alignment.center,
                         children: [
-                          if (widget.streamData.tracks != null)
-                            VideoPlayer(_mixedController.audioController),
                           AspectRatio(
                             aspectRatio: 16 / 9,
                             child:

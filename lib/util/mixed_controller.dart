@@ -298,8 +298,10 @@ class MixedController {
         streamData.captions[source][pos].index!
       ];
       print(streamData.captions[source][pos].index!);
+      videoController.setClosedCaptionFile(null);
       return;
     }
+    videoController.player.activeSubtitleTracks = [-1];
     Future<ClosedCaptionFile>? newClosedCaptionFile =
         loadCaptions(streamData.captions[source][pos].file);
     videoController.setClosedCaptionFile(await newClosedCaptionFile);
