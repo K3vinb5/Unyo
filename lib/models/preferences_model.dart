@@ -62,6 +62,16 @@ class PreferencesModel {
       } else if (user is LocalUserModel) {
         localSavedUsers.add(user);
       }
+    }else{
+      UserModel oldUser = savedUsers.where((listUser) => listUser.userName == user.userName).toList()[0];
+      if (user.avatarImage == oldUser.avatarImage) return;
+      if (user is AnilistUserModel){
+        anilistSavedUsers.remove(oldUser);
+        anilistSavedUsers.add(user);
+      }else if(user is LocalUserModel){
+        localSavedUsers.remove(oldUser);
+        localSavedUsers.add(user);
+      }
     }
 
     userBox.put("anilistUsers", anilistSavedUsers);

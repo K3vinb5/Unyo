@@ -188,7 +188,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
         });
         currentSearchString = searches[0];
         AnimatedSnackBar.material(
-          "Found \"${searches[0]}\"! :D",
+          "Found \"${getUtf8Text(searches[0])}\"! :D",
           type: AnimatedSnackBarType.success,
           desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
         ).show(context);

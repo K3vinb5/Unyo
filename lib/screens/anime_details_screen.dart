@@ -174,7 +174,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       if (!mounted) return;
       if (searches.isNotEmpty) {
         AnimatedSnackBar.material(
-          "Found \"${searches[0]}\"! :D",
+          "Found \"${getUtf8Text(searches[0])}\"! :D",
           type: AnimatedSnackBarType.success,
           desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
         ).show(context);

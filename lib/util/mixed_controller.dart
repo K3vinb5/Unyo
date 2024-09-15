@@ -127,52 +127,56 @@ class MixedController {
   }
 
   Future<void> initEmbeddedCaptionsAndSubtracks() async {
-    if (videoController.value.position.inMilliseconds == 0) {
-      await Future.delayed(const Duration(seconds: 2));
-      initEmbeddedCaptionsAndSubtracks();
-      return;
-    }
-    if (videoController.player.mediaInfo.subtitle != null &&
-        videoController.player.mediaInfo.subtitle!.isNotEmpty) {
-      for (int j = 0;
-          j < videoController.player.mediaInfo.subtitle!.length;
-          j++) {
-        for (List<CaptionData> listCaptions in streamData.captions) {
-          SubtitleStreamInfo subtitle =
-              videoController.player.mediaInfo.subtitle![j];
-          listCaptions.add(CaptionData(
-            file: "",
-            lang:
-                "${subtitle.metadata["title"] ?? ""} (${subtitle.metadata["language"]} - Embedded)",
-            embedded: true,
-            index: j,
-          ));
-        }
-      }
-    }
-    if (videoController.player.mediaInfo.audio != null &&
-        videoController.player.mediaInfo.audio!.length > 1) {
-      streamData.tracks ??= [];
-      for (int i = 0; i < streamData.captions.length; i++) {
-        List<TrackData> newAudios = [];
-        for (int j = 0;
-            j < videoController.player.mediaInfo.audio!.length;
-            j++) {
-          AudioStreamInfo audio = videoController.player.mediaInfo.audio![j];
-          newAudios.add(TrackData(
-            file: "",
-            lang:
-                "${audio.metadata["title"] ?? ""} (${audio.metadata["language"]} - Embedded)",
-            embedded: true,
-            index: j,
-          ));
-        }
-        streamData.tracks!.add(newAudios);
-      }
-    }
-    canDispose = true;
+  if (canDispose) return; // Check if we can dispose
+
+  if (videoController.value.position.inMilliseconds == 0) {
+    await Future.delayed(const Duration(seconds: 2));
+    if (canDispose) return; // Check again after delay
+    initEmbeddedCaptionsAndSubtracks();
+    return;
   }
 
+  if (videoController.player.mediaInfo.subtitle != null &&
+      videoController.player.mediaInfo.subtitle!.isNotEmpty) {
+    for (int j = 0; j < videoController.player.mediaInfo.subtitle!.length; j++) {
+      if (canDispose) return; // Check if we can dispose
+      for (List<CaptionData> listCaptions in streamData.captions) {
+        if (canDispose) return; // Check if we can dispose
+        SubtitleStreamInfo subtitle =
+            videoController.player.mediaInfo.subtitle![j];
+        listCaptions.add(CaptionData(
+          file: "",
+          lang:
+              "${subtitle.metadata["title"] ?? ""} (${subtitle.metadata["language"]} - Embedded)",
+          embedded: true,
+          index: j,
+        ));
+      }
+    }
+  }
+
+  if (videoController.player.mediaInfo.audio != null &&
+      videoController.player.mediaInfo.audio!.length > 1) {
+    streamData.tracks ??= [];
+    for (int i = 0; i < streamData.captions.length; i++) {
+      if (canDispose) return; // Check if we can dispose
+      List<TrackData> newAudios = [];
+      for (int j = 0; j < videoController.player.mediaInfo.audio!.length; j++) {
+        if (canDispose) return; // Check if we can dispose
+        AudioStreamInfo audio = videoController.player.mediaInfo.audio![j];
+        newAudios.add(TrackData(
+          file: "",
+          lang:
+              "${audio.metadata["title"] ?? ""} (${audio.metadata["language"]} - Embedded)",
+          embedded: true,
+          index: j,
+        ));
+      }
+      streamData.tracks!.add(newAudios);
+    }
+  }
+  canDispose = true; // Set canDispose to true when done
+}
   Future<String> getMagnetUrls(String magnet) async {
     List<String?> urls = await torrentServer.getTorrentPlaylist(magnet, null);
     if (urls.length > 1) {

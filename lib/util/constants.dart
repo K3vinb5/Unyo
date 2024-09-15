@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -35,6 +37,11 @@ String getEndpoint() {
     return remoteEndPoint;
   }
 }
+
+String getUtf8Text(String text) {
+    List<int> bytes = text.codeUnits;
+    return utf8.decode(bytes);
+  }
 
 Map<String, Map<String, Color>?> themes = {
   "Default (Banner)": null,

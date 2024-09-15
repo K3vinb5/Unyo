@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:easy_localization/easy_localization.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/dialogs/dialogs.dart';
+import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
 
@@ -300,7 +302,9 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
             children: [
               StyledScreenMenuWidget(
                 isRow: true,
-                onBackPress: null,
+                onBackPress: () {
+                  goTo(1);
+                },
                 onMenuPress: buttonsLayout,
                 onRefreshPress: () {
                   setState(() {});
@@ -375,9 +379,17 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                                     ),
                                   ),
                                   child: InkWell(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      bottomLeft: Radius.circular(20),
+                                    ),
                                     onTap: () {
-                                      setState(() {
-                                        selectedExtensions = false;
+                                      Future.delayed(
+                                          const Duration(milliseconds: 300),
+                                          () {
+                                        setState(() {
+                                          selectedExtensions = false;
+                                        });
                                       });
                                     },
                                     child: Center(
@@ -404,9 +416,17 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
                                     ),
                                   ),
                                   child: InkWell(
+                                    borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      bottomRight: Radius.circular(20),
+                                    ),
                                     onTap: () {
-                                      setState(() {
-                                        selectedExtensions = true;
+                                      Future.delayed(
+                                          const Duration(milliseconds: 300),
+                                          () {
+                                        setState(() {
+                                          selectedExtensions = true;
+                                        });
                                       });
                                     },
                                     child: Center(

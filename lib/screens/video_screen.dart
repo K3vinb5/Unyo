@@ -129,7 +129,7 @@ class _VideoScreenState extends State<VideoScreen> {
           exception:
               "An error occured, try using another source or server/quality",
           onPressedAfterPop: () {
-            if (!_mixedController.canDispose) return;
+            _mixedController.canDispose = true;
             _hideControlsTimer?.cancel();
             isVideoPlaying?.cancel();
             _mixedController.dispose();

@@ -39,7 +39,7 @@ void addEmbeddedAniyomiExtensions() async {
 
 void addEmbeddedTachiyomiExtensions() async {
   globalMangasSources = {};
-  print("restarted manga extensions");
+  // print("restarted manga extensions");
   var urlStream = Uri.parse("${getEndpoint()}/unyo/manga/sources");
   late Response response;
   try {

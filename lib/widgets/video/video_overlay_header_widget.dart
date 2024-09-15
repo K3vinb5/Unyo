@@ -58,7 +58,7 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
             child: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                if (!widget.mixedController.canDispose) return;
+                widget.mixedController.canDispose = true;
                 if (prefs.getBool("exit_fullscreen_on_video_exit") ?? true) {
                   Window.exitFullscreen();
                 }
