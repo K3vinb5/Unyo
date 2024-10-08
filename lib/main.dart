@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +32,14 @@ Future<void> main() async {
   Hive.registerAdapter(MangaModelAdapter());
   Hive.registerAdapter(AnimeModelAdapter());
   fvp.registerWith(options: {
-    'platforms': ['windows', 'linux', 'macos']
+    'platforms': ['linux', 'macos']
   });
+  if (Platform.isWindows) {
+    fvp.registerWith(options: {
+      'platforms': ['windows'],
+      'video.decoders' : ['DXVA', 'FFmpeg']
+    });
+  }
   await FlutterDiscordRPC.initialize(
     "1266242749485809748",
   );
