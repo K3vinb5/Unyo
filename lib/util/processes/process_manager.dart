@@ -17,26 +17,17 @@ class ProcessManager {
 
   Future<void> _extractJar({bool ignore = false}) async {
     supportDirectoryPath = await getApplicationSupportDirectory();
-    final jarFile = File(p.join(supportDirectoryPath.path,
-        "extensions.jar")); /*Platform.isWindows
-        ? File('${supportDirectoryPath.path}\\extensions.jar')
-        : File('${supportDirectoryPath.path}//extensions.jar');*/
+    final jarFile = File(p.join(supportDirectoryPath.path, "extensions.jar"));
 
     if (await jarFile.exists() && !ignore) {
       _jarPath = jarFile.path;
       return;
     }
 
-    final byteData = await rootBundle.load(p.join("assets",
-            "extensions.jar") /*Platform.isWindows
-        ? 'assets\\extensions.jar'
-        : 'assets//extensions.jar'*/
-        );
+    // NOTE, even for windows, the slash must be forawd on this one
+    final byteData = await rootBundle.load("assets/extensions.jar");
     final buffer = byteData.buffer;
-    final file = File(p.join(supportDirectoryPath.path,
-        "extensions.jar")); /*Platform.isWindows
-        ? File('${supportDirectoryPath.path}\\extensions.jar')
-        : File('${supportDirectoryPath.path}//extensions.jar');*/
+    final file = File(p.join(supportDirectoryPath.path, "extensions.jar"));
     await file.writeAsBytes(
         buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
     _jarPath = file.path;

@@ -12,14 +12,14 @@ class MediaContentModel {
     if (response.statusCode != 200){
       if (attempt < 5){
          
-      } 
+      }
     }
     Map<String, dynamic> jsonResponse = json.decode(response.body);
     Map<String, dynamic> episodes = jsonResponse["episodes"];
     imageUrls = episodes.values.map((e) => e["image"] as String?).toList(); 
     titles = episodes.values.map((e) => e["title"]["en"] as String?).toList();
-    fanart = jsonResponse["images"][2]["url"];
-    banner = jsonResponse["images"][0]["url"];
+    fanart = jsonResponse["images"]?[2]["url"];
+    banner = jsonResponse["images"]?[0]["url"];
     // if (titles != null){
     //   titles!.addAll(List.filled(10, null));
     // }

@@ -24,6 +24,7 @@ class PreferencesModel {
     }
     String? version = sharedPreferences.getString("version");
     if(version == null || version != currentVersion){
+      print("New version, updating api");
       processManager.downloadNewCore();
     }
     sharedPreferences.setString("version", currentVersion);

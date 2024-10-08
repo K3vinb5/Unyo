@@ -53,9 +53,6 @@ Future<void> main() async {
         Locale('it'),
         Locale('pt'),
         Locale('ru'),
-        // Locale('po'),
-        // Locale('zh-cn'),
-        // Locale('zh-hk')
       ],
       useOnlyLangCode: true,
       path: 'assets/languages',

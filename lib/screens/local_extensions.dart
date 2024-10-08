@@ -200,9 +200,10 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
     List<String> updatedinstalledExtensions = await animeExtensionsDir
         .list()
         .map((fileSystemEntity) => fileSystemEntity.path
-            .substring(fileSystemEntity.path.lastIndexOf("/") + 1)
+            .substring(fileSystemEntity.path.lastIndexOf(Platform.isWindows ? "\\" : "/") + 1)
             .replaceFirst(".jar", ""))
         .toList();
+    print(updatedinstalledExtensions);
     setState(() {
       installedAnimeExtensions = updatedinstalledExtensions;
     });
@@ -215,7 +216,7 @@ class _LocalExtensionsScreenState extends State<LocalExtensionsScreen> {
     List<String> updatedinstalledExtensions = await mangaExtensionsDir
         .list()
         .map((fileSystemEntity) => fileSystemEntity.path
-            .substring(fileSystemEntity.path.lastIndexOf("/") + 1)
+            .substring(fileSystemEntity.path.lastIndexOf(Platform.isWindows ? "\\" :"/") + 1)
             .replaceFirst(".jar", ""))
         .toList();
     setState(() {
