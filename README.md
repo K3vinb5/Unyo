@@ -111,6 +111,20 @@ Contributions are always welcome! If you have any ideas or changes that you want
 
 Because this has happened before, I will explicitly write it, Contributing to the project means doing a pull request, opening an issue with suggestions etc. not proposing a big project which essentially is rebranding my app on another repo under your name :D.
 
+## Contributing
+
+Thank you for considering contributing to **Unyo**! Here’s how you can help:
+
+1. **Fork the Repository**: Click the "Fork" button at the top right of this page.
+2. **Clone Your Fork**: Run `git clone https://github.com/your-username/repository-name.git` in your terminal.
+3. **Create a Branch**: Use `git checkout -b your-branch-name` to create a new branch for your changes.
+4. **Make Changes**: Implement your feature or fix and commit your changes with a descriptive message.
+5. **Push to Your Branch**: Push your changes using `git push origin your-branch-name`.
+6. **Open a Pull Request**: Go to the original repository and submit a new Pull Request from your branch.
+
+We appreciate your contributions! 😊
+
+
 ## License
 
 This project is licensed under the **GNU Public License version 3.0**.
