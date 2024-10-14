@@ -53,33 +53,6 @@ It is important when setting up Unyo that your Anilist profile is set to either 
 
 The remote sources for this app are from a custom made api that uses [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, this means that if you wish to have a source added you can open a issue saying the name of the extension and I'll try to integrate it. Note that because the orinal project was for android I had to translate a lot of the codebase to work on pc, this means that not all extensions will be working (most likely a skill issue to be honest -_-)
 
-**English**
-
-- Gogogoanime ✅
-- Animepahe ❌
-- AllAnime ✅
-- AnimeParadise (No subtitles) ✅
-- NollyVerse ✅ (Low on content)
-
-**Portuguese**
-
-- Animes CX ✅ (Low on content)
-- Animes Digital ✅
-
-**Spanish**
-
-- AnimeYT ✅
-- AnimeMovil ✅
-- AnimeFenix ✅
-
-**Italian**
-
-- AnimesSaturn ✅
-
-**All (Multiple subtitles and/or audios)**
-
-- KickAssAnime ✅
-
 ### Local Sources
 
 The local sources are basically the same as remote sources but the api runs on your computer and it uses a modular system, the extensions are based of [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, You can download them from the app itself (if you wish to use local extensions obviosly) from my extensions repository [Unyo-Extensions](https://github.com/K3vinb5/Unyo-Extensions), later I will post some guides and tools to encourage others to contribute with extensions. Here are some advantages and disadvantages of using local extensions so you can decide for yourself if it is worth it:
