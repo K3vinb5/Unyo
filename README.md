@@ -100,7 +100,8 @@ We appreciate your contributions! 😊
 
 ## License
 
-This project is licensed under the **GNU Public License version 3.0**.
+This project is licensed under the **GNU Public License version 3.0**, one extra clause was added that states you must mention this project if you any portion of its code.
+This project has 2 very small portions of code from [mangayomi](https://github.com/kodjodevf/mangayomi), the torrent server and an audio slider. A big shout out to the developer!
 
 ## Disclaimer
 
