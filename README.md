@@ -73,8 +73,7 @@ You need java 17 or later installed on your machine to run the local extensions,
   
 ## Known Issues
 
-- Local Extensions do not working on windows, the reason is still unkown, will ve fixed in the future
-- App is crashing a lot more this last version, the reason as to why is still being determined but I know why, it should be better next version, anyway if it does crash just relaunch it. (It should only crash when leaving videos, so no worry youn't be waiting a lot of time).
+- App is crashing sometimes in this last version, the reason as to why is still being determined but I know why, it should be better next version, anyway if it does crash just relaunch it. (It should only crash when leaving videos, so no worry youn't be waiting a lot of time, and it is not common at all, the issue has been diagnosed and it is already in the todo list now available under the projects tab).
 
 ## Contributors
 
