@@ -65,6 +65,8 @@ jobs:
         run: cp -r build/linux/x64/release/bundle/* Unyo.AppDir/.
       - name: Copy appimagetool
         run: cp linux-appimage/appimagetool.AppImage .
+      - name: Give Permissions
+        run: chmod 755 appimagetool.AppImage
       - name: Execute appimagetool
         run: ./appimagetool.AppImage Unyo.AppDir Unyo-${{github.ref_name}}-linux.AppImage
       - name: Linux AppImage Release
