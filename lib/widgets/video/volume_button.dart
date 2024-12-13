@@ -31,7 +31,7 @@ class CustomMaterialDesktopVolumeButtonState extends State<VolumeButton>
  
   @override
   Widget build(BuildContext context) {
-    double volume = widget.controller.audioController.value.volume;
+    double volume = widget.controller.videoController.value.volume;
     return MouseRegion(
       onEnter: (e) {
         setState(() {
@@ -135,9 +135,9 @@ class CustomMaterialDesktopVolumeButtonState extends State<VolumeButton>
                               min: 0,
                               max: 1,
                               value: widget
-                                  .controller.audioController.value.volume,
+                                  .controller.videoController.value.volume,
                               label:
-                                  "${(widget.controller.audioController.value.volume * 100).toInt().toString()}%",
+                                  "${(widget.controller.videoController.value.volume * 100).toInt().toString()}%",
                               divisions: 100,
                               onChanged: (value) {
                                 setState(() {

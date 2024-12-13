@@ -38,7 +38,6 @@ class MixedController {
   late Timer syncTimer;
   late MqqtClientController mqqtController;
   late my.VideoPlayerController videoController;
-  late my.VideoPlayerController audioController;
   late bool audioSeparate;
 
   bool isPlaying = true;
@@ -51,7 +50,6 @@ class MixedController {
   void init() {
     initControllers();
     audioSeparate = streamData.tracks != null;
-    sync();
     mqqtController = MqqtClientController(
       context: context,
       key: key,
@@ -74,32 +72,12 @@ class MixedController {
         videoUrl,
         httpHeaders: streamData.getHeaders(source)!,
         closedCaptionFile: await closedCaptionFile,
-        // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
     } else {
       videoController = my.VideoPlayerController.networkUrl(
         videoUrl,
         closedCaptionFile: await closedCaptionFile,
-        // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
-    }
-    if (streamData.tracks != null /*&& audioStream != ""*/) {
-      if (streamData.getHeaders(source) != null) {
-        audioController = my.VideoPlayerController.networkUrl(
-          streamData.tracks![source][0].file,
-          httpHeaders: streamData.getHeaders(source)!,
-          closedCaptionFile: await closedCaptionFile,
-          // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-        );
-      } else {
-        audioController = my.VideoPlayerController.networkUrl(
-          streamData.tracks![source][0].file,
-          closedCaptionFile: await closedCaptionFile,
-          // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-        );
-      }
-    } else {
-      audioController = videoController;
     }
     isInitialized = true;
     videoController.addListener(() {
@@ -115,68 +93,68 @@ class MixedController {
     videoController.play();
 
     if (streamData.tracks != null) {
-      audioController.addListener(() {
-        setState(() {});
-      });
       videoController.setVolume(0);
-      audioController.setLooping(false);
-      audioController.initialize().then((_) => setState(() {}));
-      audioController.play();
+      changeSubTrack(0);
     }
     initEmbeddedCaptionsAndSubtracks();
   }
 
   Future<void> initEmbeddedCaptionsAndSubtracks() async {
-  if (canDispose) return; // Check if we can dispose
+    if (canDispose) return; // Check if we can dispose
 
-  if (videoController.value.position.inMilliseconds == 0) {
-    await Future.delayed(const Duration(seconds: 2));
-    if (canDispose) return; // Check again after delay
-    initEmbeddedCaptionsAndSubtracks();
-    return;
-  }
+    if (videoController.value.position.inMilliseconds == 0) {
+      await Future.delayed(const Duration(seconds: 2));
+      if (canDispose) return; // Check again after delay
+      initEmbeddedCaptionsAndSubtracks();
+      return;
+    }
 
-  if (videoController.player.mediaInfo.subtitle != null &&
-      videoController.player.mediaInfo.subtitle!.isNotEmpty) {
-    for (int j = 0; j < videoController.player.mediaInfo.subtitle!.length; j++) {
-      if (canDispose) return; // Check if we can dispose
-      for (List<CaptionData> listCaptions in streamData.captions) {
+    if (videoController.player.mediaInfo.subtitle != null &&
+        videoController.player.mediaInfo.subtitle!.isNotEmpty) {
+      for (int j = 0;
+          j < videoController.player.mediaInfo.subtitle!.length;
+          j++) {
         if (canDispose) return; // Check if we can dispose
-        SubtitleStreamInfo subtitle =
-            videoController.player.mediaInfo.subtitle![j];
-        listCaptions.add(CaptionData(
-          file: "",
-          lang:
-              "${subtitle.metadata["title"] ?? ""} (${subtitle.metadata["language"]} - Embedded)",
-          embedded: true,
-          index: j,
-        ));
+        for (List<CaptionData> listCaptions in streamData.captions) {
+          if (canDispose) return; // Check if we can dispose
+          SubtitleStreamInfo subtitle =
+              videoController.player.mediaInfo.subtitle![j];
+          listCaptions.add(CaptionData(
+            file: "",
+            lang:
+                "${subtitle.metadata["title"] ?? ""} (${subtitle.metadata["language"]} - Embedded)",
+            embedded: true,
+            index: j,
+          ));
+        }
       }
     }
+
+    if (videoController.player.mediaInfo.audio != null &&
+        videoController.player.mediaInfo.audio!.length > 1) {
+      streamData.tracks ??= [];
+      for (int i = 0; i < streamData.captions.length; i++) {
+        if (canDispose) return; // Check if we can dispose
+        List<TrackData> newAudios = [];
+        for (int j = 0;
+            j < videoController.player.mediaInfo.audio!.length;
+            j++) {
+          if (canDispose) return; // Check if we can dispose
+          AudioStreamInfo audio = videoController.player.mediaInfo.audio![j];
+          newAudios.add(TrackData(
+            file: "",
+            lang:
+                "${audio.metadata["title"] ?? ""} (${audio.metadata["language"]} - Embedded)",
+            embedded: true,
+            index: j,
+          ));
+        }
+        streamData.tracks!.add(newAudios);
+      }
+    }
+    canDispose = true; // Set canDispose to true when done
   }
 
-  if (videoController.player.mediaInfo.audio != null &&
-      videoController.player.mediaInfo.audio!.length > 1) {
-    streamData.tracks ??= [];
-    for (int i = 0; i < streamData.captions.length; i++) {
-      if (canDispose) return; // Check if we can dispose
-      List<TrackData> newAudios = [];
-      for (int j = 0; j < videoController.player.mediaInfo.audio!.length; j++) {
-        if (canDispose) return; // Check if we can dispose
-        AudioStreamInfo audio = videoController.player.mediaInfo.audio![j];
-        newAudios.add(TrackData(
-          file: "",
-          lang:
-              "${audio.metadata["title"] ?? ""} (${audio.metadata["language"]} - Embedded)",
-          embedded: true,
-          index: j,
-        ));
-      }
-      streamData.tracks!.add(newAudios);
-    }
-  }
-  canDispose = true; // Set canDispose to true when done
-}
   Future<String> getMagnetUrls(String magnet) async {
     List<String?> urls = await torrentServer.getTorrentPlaylist(magnet, null);
     if (urls.length > 1) {
@@ -322,42 +300,17 @@ class MixedController {
     }
 
     if (!audioSeparate) return;
-    audioController.dispose();
-    if (streamData.getHeaders(source) != null) {
-      audioController = my.VideoPlayerController.networkUrl(
-        streamData.tracks![source][pos].file,
-        httpHeaders: streamData.getHeaders(source)!,
-        closedCaptionFile: await closedCaptionFile,
-        // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-      );
-    } else {
-      audioController = my.VideoPlayerController.networkUrl(
-        streamData.tracks![source][pos].file,
-        closedCaptionFile: await closedCaptionFile,
-        // videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-      );
-    }
-    audioController.addListener(() {
-      setState(() {});
-    });
-    audioController.setLooping(false);
-    audioController.initialize().then((_) => setState(() {}));
+    videoController.player
+        .setMedia(streamData.tracks![source][pos].file, MediaType.audio);
     play();
-    sync();
   }
 
   void setPlaybackSpeed(double newSpeed) {
-    if (audioSeparate) {
-      audioController.setPlaybackSpeed(newSpeed);
-    }
     videoController.setPlaybackSpeed(newSpeed);
   }
 
   void play({bool? sendCommand}) {
     isPlaying = true;
-    if (audioSeparate) {
-      audioController.play();
-    }
     videoController.play();
     if (sendCommand != null && sendCommand) {
       mqqtController.sendOrder("play");
@@ -370,9 +323,6 @@ class MixedController {
 
   void pause({bool? sendCommand}) {
     isPlaying = false;
-    if (audioSeparate) {
-      audioController.pause();
-    }
     videoController.pause();
     if (sendCommand != null && sendCommand) {
       mqqtController.sendOrder("pause");
@@ -380,10 +330,6 @@ class MixedController {
   }
 
   void seekTo(Duration duration, {bool? sendCommand, double? time}) {
-    if (audioSeparate) {
-      audioController.seekTo(duration);
-      sync();
-    }
     videoController.seekTo(duration);
     if (sendCommand != null && time != null && sendCommand) {
       mqqtController.sendOrder("seekTo:$time");
@@ -391,22 +337,11 @@ class MixedController {
   }
 
   void setVolume(double n) {
-    if (audioSeparate) {
-      audioController.setVolume(n);
-      return;
-    }
     videoController.setVolume(n);
   }
 
   void dispose() {
     if (disposed) return;
-    if (audioSeparate) {
-      syncTimer.cancel();
-      audioController.removeListener(() {
-        setState(() {});
-      });
-      audioController.dispose();
-    }
     videoController.removeListener(() {
       setState(() {});
     });
@@ -415,54 +350,5 @@ class MixedController {
       mqqtController.client.disconnect();
     }
     disposed = true;
-  }
-
-  void sync() {
-    if (!audioSeparate) return;
-    if (!firstInit) {
-      syncTimer.cancel();
-    } else {
-      firstInit = false;
-    }
-    syncTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
-      if (videoController.value.isPlaying) {
-        syncControllers();
-      }
-    });
-  }
-
-  void syncControllers() async {
-    int difference = (videoController.value.position.inMilliseconds -
-        audioController.value.position.inMilliseconds);
-
-    if (difference.abs() > 2500 && difference != 0) {
-      if (difference > 0) {
-        //video waits (audio forward)
-        audioController.seekTo(Duration(
-            milliseconds: videoController.value.position.inMilliseconds));
-      } else {
-        //audio waits (audio backwards)
-        videoController.seekTo(Duration(
-            milliseconds: audioController.value.position.inMilliseconds));
-      }
-      return;
-    }
-
-    if (difference.abs() < 200 && difference != 0) {
-      syncTimer.cancel();
-      return;
-    }
-
-    if (difference > 0) {
-      //video waits (audio forward)
-      videoController.pause();
-      await Future.delayed(Duration(milliseconds: difference.abs() + 100));
-      videoController.play();
-    } else {
-      //audio waits (audio backwards)
-      audioController.pause();
-      await Future.delayed(Duration(milliseconds: difference.abs() + 100));
-      audioController.play();
-    }
   }
 }

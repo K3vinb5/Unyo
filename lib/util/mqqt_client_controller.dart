@@ -221,11 +221,11 @@ class MqqtClientController {
         break;
       case LogicalKeyboardKey.arrowUp:
         mixedController.setVolume(
-            min(mixedController.audioController.value.volume + 0.1, 1));
+            min(mixedController.videoController.value.volume + 0.1, 1));
         break;
       case LogicalKeyboardKey.arrowDown:
         mixedController.setVolume(
-            max(mixedController.audioController.value.volume - 0.1, 0));
+            max(mixedController.videoController.value.volume - 0.1, 0));
         break;
       case LogicalKeyboardKey.keyL:
         sendOrder("fifteenplus");
