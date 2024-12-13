@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:path/path.dart' as p;
+import 'package:http/http.dart' as http;
+import 'package:unyo/util/constants.dart';
 
 class ProcessManager {
   Process? _process;
@@ -101,6 +103,7 @@ class ProcessManager {
     if (_process != null) {
       _addOutput("Killed process Successfully", false);
       _process!.kill();
+      http.get(Uri.parse("${getEndpoint()}/unyo/kill"));
       _process = null;
     }
   }
