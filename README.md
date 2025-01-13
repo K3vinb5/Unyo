@@ -74,6 +74,7 @@ You need java 17 or later installed on your machine to run the local extensions,
 ## Known Issues
 
 - App is crashing sometimes in this last version, the reason as to why is still being determined but I know why, it should be better next version, anyway if it does crash just relaunch it. (It should only crash when leaving videos, so no worry youn't be waiting a lot of time, and it is not common at all, the issue has been diagnosed and it is already in the todo list now available under the projects tab).
+- DLL Hijacking Vulnerability, find more details [here](https://github.com/K3vinb5/Unyo/issues/58)
 
 ## Contributors
 
