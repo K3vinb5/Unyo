@@ -12,6 +12,25 @@ on:
         required: true
 
 jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create Git Tag
+        id: create_tag
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const tagName = `v${{ github.event.inputs.version }}`;
+            const { data: tag } = await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${tagName}`,
+              sha: context.sha,
+            });
+            return tag;
+
   build-and-release-linux:
     runs-on: ubuntu-latest
     steps:
