@@ -6,7 +6,7 @@ jobs:
 
   build-and-release-linux:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: github.ref_type == 'tag'
     permissions:
       contents: write
     steps:
