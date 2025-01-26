@@ -6,7 +6,7 @@ on:
       ref:
         description: 'Branch or commit SHA to release'
         required: true
-        default: 'main'
+        default: 'master'
       version:
         description: 'Version to release'
         required: true
