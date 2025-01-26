@@ -23,7 +23,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Window.initialize();
   await EasyLocalization.ensureInitialized();
-  WidgetsFlutterBinding.ensureInitialized();
   final dir = await getApplicationSupportDirectory();
   Hive.init(p.join(dir.path, "data"));
   Hive.registerAdapter(AnilistUserModelAdapter());
