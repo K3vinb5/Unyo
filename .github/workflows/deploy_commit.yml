@@ -23,13 +23,13 @@ jobs:
         with:
           script: |
             const tagName = `v${{ github.event.inputs.version }}`;
-            const { data: tag } = await github.git.createRef({
+            const { data: tag } = await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/tags/${tagName}`,
               sha: context.sha,
             });
-            return tag;
+            return tag;;
 
   build-and-release-linux:
     runs-on: ubuntu-latest
