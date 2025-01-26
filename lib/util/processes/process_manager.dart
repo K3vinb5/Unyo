@@ -76,7 +76,7 @@ class ProcessManager {
 
     try {
       _process = await Process.start(
-          'java', ['-jar', _jarPath!, supportDirectoryPath.path],
+          'java', ['-jar', _jarPath!],
           mode: ProcessStartMode.normal);
 
       _process?.stdout.transform(utf8.decoder).listen((data) {
