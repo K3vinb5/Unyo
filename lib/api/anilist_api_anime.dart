@@ -212,7 +212,7 @@ Future<String> getRandomAnimeBanner(int attempt) async {
 
 getUserToken() async {
   var url = Uri.parse(anilistEndPointGetToken);
-  launchUrl(url, mode: LaunchMode.platformDefault); //TODO verify launchMode
+  launchUrl(url, mode: LaunchMode.platformDefault);
 }
 
 String capitalize(String s) {
