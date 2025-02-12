@@ -28,6 +28,10 @@
 
 **Unyo** is a desktop application (inspired from [Dantotsu](https://github.com/rebelonion/dantotsu)) where you can watch and read your favourite animes and mangas, it is fully integrated with anilist so whatever content you consume will always be synced automatically. It has great UI and animations, and above all Ad-Free.
 
+## Unyo's Future
+
+As it is apparent by the commits Unyo has been stuck for quite a while and little to no development has been made, a lot of things have changed in my life lately but I'm finally getting back on track, in the future I will be more transparent and organized about Unyo's progress, for now I will start development slowly so I don't get burned out. I have moved my backlog to clickup to keep me organised and document what needs to be done, processes and plans for the future and created a dashboard for you guys to track my development [here](https://app.clickup.com/9015845694/v/db/8cp5rty-595)
+
 ## Installation
 
 You can download the latest version from the [releases](https://github.com/K3vinb5/Unyo/releases/latest) tab.
