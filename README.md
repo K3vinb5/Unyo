@@ -30,7 +30,7 @@
 
 ## Unyo's Future
 
-As it is apparent by the commits Unyo has been stuck for quite a while and little to no development has been made, a lot of things have changed in my life lately but I'm finally getting back on track, in the future I will be more transparent and organized about Unyo's progress, for now I will start development slowly so I don't get burned out. I have moved my backlog to clickup to keep me organised and document what needs to be done, processes and plans for the future and created a dashboard for you guys to track my development [here](https://app.clickup.com/9015845694/v/db/8cp5rty-595)
+As it is apparent by the commits Unyo has been stuck for quite a while and little to no development has been made, a lot of things have changed in my life lately but I'm finally getting back on track, in the future I will be more transparent and organized about Unyo's progress, for now I will start development slowly so I don't get burned out. Patiently for more news.
 
 ## Installation
 
