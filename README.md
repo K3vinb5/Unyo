@@ -104,11 +104,11 @@ We appreciate your contributions! 😊
 
 ## License
 
-This project is licensed under the **GNU Public License version 3.0**, one extra clause was added that states you must mention this project if you any portion of its code.
+This project is licensed under the **GNU Public License version 3.0**, one extra clause was added that states you must mention this project if you use any portion of its code.
 This project has 2 very small portions of code from [mangayomi](https://github.com/kodjodevf/mangayomi), the torrent server and an audio slider. A big shout out to the developer!
 
 ## Disclaimer
 
 - By using this app, you agree that the developer(s) of Unyo is not responsible for any content within the app and won't be legally responsible for any violations.
-- All the contents in Unyo are hosted by 3rd parties, and the developer(s) is not accountable for their nature or legality. Users are advised to use the application responsibly and in compliance with relevant laws and regulations.
+- All the contents in Unyo are hosted by 3rd parties, and the developer(s) is not accountable for their nature or legality. Users are advised to use the application responsibly and in compliance with relevant laws and regulations in their countries.
 - Unyo or its developer(s) are not responsible for the misuse of any content within or outside the app and shall not be responsible for dissemination of any content within the app.
