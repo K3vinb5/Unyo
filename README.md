@@ -51,15 +51,15 @@ If you are on **Linux**, you can:
 
 It is important when setting up Unyo that your Anilist profile is set to either public or semi-public. Currently Unyo won't be able to pull your anime and manga lists, if you have your account set to private.
 
-## Available Sources
+## Available Extensions
 
-### Remote sources
+### Remote Extensions
 
-The remote sources for this app are from a custom made api that uses [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, this means that if you wish to have a source added you can open a issue saying the name of the extension and I'll try to integrate it. Note that because the orinal project was for android I had to translate a lot of the codebase to work on pc, this means that not all extensions will be working (most likely a skill issue to be honest -_-)
+The remote extensions for this app are from a custom made api that uses [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, this means that if you wish to have a source added you can open a issue saying the name of the extension and I'll try to integrate it. Note that because the orinal project was for android I had to translate a lot of the codebase to work on pc, this means that not all extensions will be working (most likely a skill issue to be honest -_-)
 
-### Local Sources
+### Local Extensions
 
-The local sources are basically the same as remote sources but the api runs on your computer and it uses a modular system, the extensions are based of [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, You can download them from the app itself (if you wish to use local extensions obviosly) from my extensions repository [Unyo-Extensions](https://github.com/K3vinb5/Unyo-Extensions), later I will post some guides and tools to encourage others to contribute with extensions. Here are some advantages and disadvantages of using local extensions so you can decide for yourself if it is worth it:
+The local extensions are basically the same as remote extensions but the api runs on your computer and it uses a modular system, the extensions are based of [Aniyomi](https://github.com/aniyomiorg/aniyomi) extensions, You can download them from the app itself (if you wish to use local extensions obviosly) from my extensions repository [Unyo-Extensions](https://github.com/K3vinb5/Unyo-Extensions), later I will post some guides and tools to encourage others to contribute with extensions. Here are some advantages and disadvantages of using local extensions so you can decide for yourself if it is worth it:
 
 #### Advantages
 - Faster response times
@@ -69,7 +69,7 @@ The local sources are basically the same as remote sources but the api runs on y
 - You need java 17 or later installed one your machine
 - The app will consume more ram (around 100 to 200mb)
 
-#### Local Sources dependencies
+#### Local Extensions dependencies
 You need java 17 or later installed on your machine to run the local extensions, I imagine most people have it, but if you don't here is the download links:
 - Linux: [https://www.oracle.com/java/technologies/downloads/#jdk17-linux](https://www.oracle.com/java/technologies/downloads/#jdk17-linux)
 - Macos: [https://www.oracle.com/java/technologies/downloads/#jdk17-mac](https://www.oracle.com/java/technologies/downloads/#jdk17-mac)
