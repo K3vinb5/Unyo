@@ -38,6 +38,7 @@ You can download the latest version from the [releases](https://github.com/K3vin
 
 If you are on **Windows**, you can:
 - Download the .zip, extract it and run the executable "unyo.exe"
+- Download the installer .exe, run it and follow the instructions.
 
 If you are on **Mac**, you can:
 - Download the .dmg, and install it just like any other mac application.
@@ -45,6 +46,7 @@ If you are on **Mac**, you can:
 
 If you are on **Linux**, you can:
 - Install the app using the [AM package manager](https://github.com/ivan-hc/AM) by running "am -i unyo", you can also update it from here by running "am -u unyo" (Recommended option)
+- If you're on an Arch based distribution you can find unyo on the aur under the name unyo-bin
 - Download the .zip, extract it and run the executable "unyo"
 - Downlaod the .AppImage, and run it
 - Download the .deb, and install the package by running "sudo apt install ./package_name.deb" (Debian based distros only)
