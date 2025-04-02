@@ -32,6 +32,9 @@
 
 As it is apparent by the commits Unyo has been stuck for quite a while and little to no development has been made, a lot of things have changed in my life lately but I'm finally getting back on track, in the future I will be more transparent and organized about Unyo's progress, for now I will start development slowly so I don't get burned out. Patiently for more news.
 
+### Some Updates!
+- A new backend is being made for unyo so more extensions come back and uptime gets much much better. It is coming along nice, expect more news in the future.
+
 ## Installation
 
 You can download the latest version from the [releases](https://github.com/K3vinb5/Unyo/releases/latest) tab.
