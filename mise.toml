@@ -1,0 +1,5 @@
+[tools]
+cmake = "3.28.3"
+clang = "16.0.6"
+ninja = "1.11.1"
+#pkg-config = "0.29.2"

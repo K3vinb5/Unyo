@@ -69,7 +69,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
       title:
           "${widget.animeModel.getDefaultTitle()}, ${"episode".tr()} ${widget.animeEpisode}",
       mqqtKey:
-          "${widget.animeModel.userPreferedTitle}-ep${widget.animeEpisode}",
+      "${widget.animeModel.userPreferedTitle}-ep${widget.animeEpisode}",
       episode: widget.animeEpisode,
       timestamps: timestamps,
     );
@@ -82,77 +82,82 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
 
   String getUtf8Text(String text) {
     List<int> bytes = text.codeUnits;
-    return utf8.decode(bytes);
-  }
+    try {
+      return utf8.decode(bytes);
+    } catch (e) {
+      print("Error decoding text: $text");
+    }
+    return text;
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.adjustedWidth * 0.4,
-      height: widget.adjustedHeight * 0.7,
-      child: streamData != null
-          ? streamData!.qualities.isNotEmpty
-              ? SmoothListView(
-                  duration: const Duration(milliseconds: 200),
-                  children: [
-                    ...streamData!.qualities.mapIndexed(
-                      (index, text) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 8.0),
-                        child: SizedBox(
-                          // height: 60,
-                          child: ElevatedButton(
-                            style: const ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                Color.fromARGB(255, 37, 37, 37),
-                              ),
-                              foregroundColor: MaterialStatePropertyAll(
-                                Colors.white,
-                              ),
-                            ),
-                            onPressed: () async {
-                              Map<String, double> timestamps =
-                                  await getOpeningSkipTimeStamps(widget.idMal,
-                                      widget.animeEpisode.toString());
-                              onStreamSelected(index, timestamps);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 20.0, horizontal: 3.0),
-                              child: Text(getUtf8Text(text)),
-                            ),
-                          ),
-                        ),
+@override
+Widget build(BuildContext context) {
+  return SizedBox(
+    width: widget.adjustedWidth * 0.4,
+    height: widget.adjustedHeight * 0.7,
+    child: streamData != null
+        ? streamData!.qualities.isNotEmpty
+        ? SmoothListView(
+      duration: const Duration(milliseconds: 200),
+      children: [
+        ...streamData!.qualities.mapIndexed(
+              (index, text) =>
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12.0, vertical: 8.0),
+                child: SizedBox(
+                  // height: 60,
+                  child: ElevatedButton(
+                    style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                        Color.fromARGB(255, 37, 37, 37),
+                      ),
+                      foregroundColor: MaterialStatePropertyAll(
+                        Colors.white,
                       ),
                     ),
-                  ],
-                )
-              : Center(
-                  child: Text(
-                    "quality_no_results".tr(),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    onPressed: () async {
+                      Map<String, double> timestamps =
+                      await getOpeningSkipTimeStamps(widget.idMal,
+                          widget.animeEpisode.toString());
+                      onStreamSelected(index, timestamps);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 3.0),
+                      child: Text(getUtf8Text(text)),
                     ),
                   ),
-                )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                LoadingAnimationWidget.inkDrop(
-                  color: Colors.white,
-                  size: 30,
                 ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  "please_wait_text".tr(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                )
-              ],
-            ),
-    );
-  }
-}
+              ),
+        ),
+      ],
+    )
+        : Center(
+      child: Text(
+        "quality_no_results".tr(),
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    )
+        : Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        LoadingAnimationWidget.inkDrop(
+          color: Colors.white,
+          size: 30,
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        Text(
+          "please_wait_text".tr(),
+          style: const TextStyle(
+            color: Colors.white,
+          ),
+        )
+      ],
+    ),
+  );
+}}

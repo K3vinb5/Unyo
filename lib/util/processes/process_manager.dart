@@ -76,7 +76,7 @@ class ProcessManager {
 
     try {
       _process = await Process.start(
-          'java', ['-jar', _jarPath!],
+          'java', ['-jar', _jarPath!, supportDirectoryPath.path],
           mode: ProcessStartMode.normal);
 
       _process?.stdout.transform(utf8.decoder).listen((data) {
@@ -84,7 +84,7 @@ class ProcessManager {
       });
 
       _process?.stderr.transform(utf8.decoder).listen((data) {
-        _addOutput('ERROR: $data', true);
+        _addOutput(/*'ERROR: $data'*/data, /*true*/false);
       });
 
       _process?.exitCode.then((exitCode) {

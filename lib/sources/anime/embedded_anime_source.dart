@@ -76,8 +76,8 @@ class EmbeddedAnimeSource implements AnimeSource {
         ? jsonResponse["headersKeys"]
         : null;
     List<dynamic>? headersValuesResponse =
-        jsonResponse["headersNames"] != "null"
-            ? jsonResponse["headersNames"]
+        jsonResponse["headersValues"] != "null"
+            ? jsonResponse["headersValues"]
             : null;
     //Not sure about the inner strings conversion, might need to manually cast
     List<List<String>> headersKeys = [];

@@ -44,3 +44,6 @@ app.*.map.json
 linux/bundle/lib/libmtorrentserver.h
 linux/bundle/lib/libmtorrentserver.so
 libmtorrentserver.so
+
+# FVM Version Cache
+.fvm/
