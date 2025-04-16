@@ -44,7 +44,7 @@ dependencies:
   desktop_keep_screen_on: ^0.0.3
   build_runner: ^2.4.9
   go_router: ^14.2.1
-  icons_launcher: ^2.1.7
+  icons_launcher: ^3.0.1
   bitsdojo_window: ^0.1.6
   mqtt_client: ^10.2.1
   msix: ^3.16.7
@@ -56,24 +56,24 @@ dependencies:
   pie_chart: ^5.4.0
   palette_generator: ^0.3.3+4
   html: ^0.15.4
-  smooth_list_view: ^1.0.5
+  smooth_list_view: ^2.0.2
   crypto: ^3.0.3
   flutter_markdown: ^0.7.3
-  fvp: 0.31.1
+  fvp: 0.31.2
   video_player: ^2.8.3
   dropdown_button2: ^2.3.9
   flutter_acrylic: ^1.1.4
   easy_localization: ^3.0.7
   path_provider: ^2.1.3
   flutter_window_close: ^1.0.0
-  archive: ^3.6.1
+  archive: ^4.0.5
   hive: ^2.2.3
   path: ^1.9.0
   fluttericon: ^2.0.0
   cast: ^2.1.0
-  flutter_discord_rpc: ^0.1.0+1
+  flutter_discord_rpc: ^1.0.0
   ffi: ^2.1.3
-  ffigen: ^14.0.0
+  ffigen: ^18.1.0
 
 icons_launcher:
   image_path: 'assets/logo.png'
@@ -110,7 +110,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^5.0.0
   #dmg: ^0.0.5
 
 # For information on the generic Dart part of this file, see the
