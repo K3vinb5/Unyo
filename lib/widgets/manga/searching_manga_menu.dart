@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/screens/screens.dart';
 
 class SearchingMangaMenu extends StatefulWidget {
@@ -55,11 +56,11 @@ class _SearchingMangaMenuState extends State<SearchingMangaMenu> {
     );
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => mangaScreen),
+      customPageRouter(mangaScreen),
     ).then((_) {
       //TODO fix this eventually
       // if (widget.updateHomeScreenLists != null) {
-        // widget.updateHomeScreenLists!();
+      // widget.updateHomeScreenLists!();
       // }
     });
   }

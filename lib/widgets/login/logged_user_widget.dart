@@ -1,8 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:hovering/hovering.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/util/constants.dart';
+
+import '../styled/custom/hovering_animated_container.dart';
 
 class LoggedUserWidget extends StatelessWidget {
   const LoggedUserWidget({

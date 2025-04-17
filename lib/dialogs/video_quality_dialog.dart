@@ -7,6 +7,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/aniskip_api.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/util/utils.dart';
@@ -76,7 +77,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
     if (!context.mounted) return;
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => videoScreen!),
+      customPageRouter(videoScreen!),
     );
   }
 

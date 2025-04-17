@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/screens/screens.dart';
 
 class SearchingAnimeMenu extends StatefulWidget {
@@ -54,7 +55,7 @@ class _SearchingAnimeMenuState extends State<SearchingAnimeMenu> {
     );
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => animeScreen),
+      customPageRouter(animeScreen)
     );
   }
 

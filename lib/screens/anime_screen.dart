@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/models/anime_model.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -18,7 +19,7 @@ class AnimeScreen extends StatefulWidget {
 
 void Function() resumeAnimePageTimer = () {};
 void Function() pauseAnimePageTimer = () {};
-void Function(void Function()) refreshAnimeScreenState = (func){};
+void Function(void Function()) refreshAnimeScreenState = (func) {};
 
 class _AnimeScreenState extends State<AnimeScreen> {
   List<AnimeModel> recentlyReleased = [];
@@ -95,14 +96,13 @@ class _AnimeScreenState extends State<AnimeScreen> {
   }
 
   void setScrollListener() {
-    if (pageScrollController.offset > 200 && bannerInfoVisible) {
-      setState(() {
-        bannerInfoVisible = false;
-      });
-    } else if (pageScrollController.offset <= 200 && !bannerInfoVisible) {
-      setState(() {
-        bannerInfoVisible = true;
-      });
+    double offset = pageScrollController.offset;
+    if (offset > 200 && bannerInfoVisible) {
+      bannerInfoVisible = false;
+      setState(() {});
+    } else if (offset < 200 && !bannerInfoVisible) {
+      bannerInfoVisible = true;
+      setState(() {});
     }
   }
 
@@ -334,11 +334,13 @@ class _AnimeScreenState extends State<AnimeScreen> {
                             dontHide: true,
                             onTap: () {
                               // pageTimer.cancel();
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const MediaSearchScreen(
-                                  type: "ANIME",
+                              Navigator.of(context).push(
+                                customPageRouter(
+                                  const MediaSearchScreen(
+                                    type: "ANIME",
+                                  ),
                                 ),
-                              ));
+                              );
                             },
                             width: adjustedWidth,
                             height: adjustedHeight,

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/models/models.dart';
@@ -84,7 +85,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
     pauseAnimePageTimer();
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => animeScreen),
+      customPageRouter(animeScreen),
     ).then((_) {
       if (widget.updateHomeScreenLists != null) {
         widget.updateHomeScreenLists!();

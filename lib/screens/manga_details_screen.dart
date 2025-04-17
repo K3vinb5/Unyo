@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:unyo/dialogs/dialogs.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/sources/sources.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/constants.dart';
@@ -283,8 +284,8 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     discordRPC.setReadingMangaActivity(widget.currentManga, chapterNum);
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => ReadingScreen(
+      customPageRouter(
+        ReadingScreen(
           currentChapter: chapterNum,
           chaptersId: chaptersId,
           updateEntry: () {

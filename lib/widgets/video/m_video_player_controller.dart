@@ -39,6 +39,7 @@ class VideoPlayerController extends ChangeNotifier {
         VideoCaptionFile(player: player, closedCaptionFile: closedCaptionFile);
     caption.init();
     value = VideoPlayerValue(player: player, caption: caption);
+    mdk.setLogHandler(logHandler);
     _startNotifyingTimer();
   }
 
@@ -48,15 +49,23 @@ class VideoPlayerController extends ChangeNotifier {
     });
   }
 
-  void setHttpHeaders(Map<String, String>? httpHeaders) {
-    if (httpHeaders != null && httpHeaders.isNotEmpty) {
-      String headers = '';
-      httpHeaders.forEach((key, value) {
-        headers += '$key: $value\r\n';
-      });
-      player.setProperty('avio.headers', headers);
+  void logHandler(mdk.LogLevel level, String message){
+    if (!message.contains("unloaded media's position")) {
+      print("Mdk Log: $message");
     }
   }
+
+  void setHttpHeaders(Map<String, String>? httpHeaders) {
+  if (httpHeaders != null && httpHeaders.isNotEmpty) {
+    final headers = httpHeaders.entries
+        .map((e) => '${e.key}: ${e.value}')
+        .join('\r\n');
+
+    player.setProperty('avio.headers', headers);
+    player.setProperty('headers', headers);
+    player.setProperty('avformat.extension_picky', '0');
+  }
+}
 
   void play() {
     player.state = mdk.PlaybackState.playing;
@@ -133,6 +142,7 @@ class VideoCaptionFile {
   final mdk.Player player;
   final ClosedCaptionFile? closedCaptionFile;
   late List<Caption> captions;
+
   // String text = "";
 
   VideoCaptionFile({required this.player, required this.closedCaptionFile});

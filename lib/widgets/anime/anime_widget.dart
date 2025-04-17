@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hovering/hovering.dart';
 import 'package:unyo/util/utils.dart';
+
+import '../styled/custom/hovering_animated_container.dart';
 
 class AnimeWidget extends StatelessWidget {
   const AnimeWidget({
@@ -63,17 +64,15 @@ class AnimeWidget extends StatelessWidget {
                         ? SystemMouseCursors.click
                         : SystemMouseCursors.basic,
                     curve: Curves.easeOut,
-                    hoverDecoration: onTap != null
-                        ? BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white, width: 2),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                  coverImage == null ? uknown : coverImage!),
-                              fit: BoxFit.fill,
-                            ),
-                          )
-                        : null,
+                    hoverDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: onTap != null ? Border.all(color: Colors.white, width: 2) : null,
+                      image: DecorationImage(
+                        image: NetworkImage(
+                            coverImage == null ? uknown : coverImage!),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       image: DecorationImage(
@@ -111,7 +110,8 @@ class AnimeWidget extends StatelessWidget {
                                                           .computeLuminance() >
                                                       0.2
                                                   ? Colors.black
-                                                  : Colors.white.withOpacity(0.8),
+                                                  : Colors.white
+                                                      .withOpacity(0.8),
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -195,7 +195,10 @@ class AnimeWidget extends StatelessWidget {
                               style: TextStyle(
                                 color: veryLightBorderColor.withOpacity(0.8),
                                 overflow: TextOverflow.ellipsis,
-                                fontSize: format == "TV_SHORT"  || format == "SPECIAL"? 10 : 14,
+                                fontSize:
+                                    format == "TV_SHORT" || format == "SPECIAL"
+                                        ? 10
+                                        : 14,
                               ),
                             ),
                             Icon(

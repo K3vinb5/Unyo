@@ -5,6 +5,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:image_gradient/image_gradient.dart';
 import 'package:unyo/dialogs/dialogs.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/sources/sources.dart';
@@ -56,8 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void goToLogin() {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => LoginScreen(
+      customPageRouter(
+        LoginScreen(
           setUserInfo: setUserInfo,
         ),
       ),
@@ -72,8 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
       updateUserLists();
     };
     updateHomeScreenState = setState;
-    discordRPC.initDiscordRPC(); 
-  } 
+    discordRPC.initDiscordRPC();
+  }
 
   void startExtensions() {
     if (prefs.getBool("remote_endpoint") ?? false) {
@@ -365,9 +366,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     //settings screen
                                                     Navigator.of(context)
                                                         .push(
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const SettingsScreen(),
+                                                      customPageRouter(
+                                                        const SettingsScreen(),
                                                       ),
                                                     )
                                                         .then((value) {

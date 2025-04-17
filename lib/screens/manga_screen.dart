@@ -5,6 +5,7 @@ import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/api/anilist_api_manga.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/widgets/widgets.dart';
@@ -18,7 +19,7 @@ class MangaScreen extends StatefulWidget {
 
 void Function() resumeMangaPageTimer = () {};
 void Function() pauseMangaPageTimer = () {};
-void Function(void Function()) refreshMangaScreenState = (func){};
+void Function(void Function()) refreshMangaScreenState = (func) {};
 
 class _MangaScreenState extends State<MangaScreen> {
   List<MangaModel> recentlyReleased = [];
@@ -65,9 +66,9 @@ class _MangaScreenState extends State<MangaScreen> {
   }
 
   void initPage() {
-    if(pageTimerStarted){
-      pageTimer.cancel(); 
-    }else{
+    if (pageTimerStarted) {
+      pageTimer.cancel();
+    } else {
       pageTimerStarted = true;
     }
     pageTimer = Timer.periodic(
@@ -174,7 +175,8 @@ class _MangaScreenState extends State<MangaScreen> {
                                 return PageBannerWidget(
                                   animeModel: AnimeModel(
                                       id: mangaModel.id,
-                                      userPreferedTitle: mangaModel.getDefaultTitle(),
+                                      userPreferedTitle:
+                                          mangaModel.getDefaultTitle(),
                                       coverImage: mangaModel.coverImage,
                                       bannerImage: mangaModel.bannerImage,
                                       startDate: mangaModel.startDate,
@@ -333,11 +335,13 @@ class _MangaScreenState extends State<MangaScreen> {
                             dontHide: true,
                             text: context.tr("advanced_search"),
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const MediaSearchScreen(
-                                  type: "MANGA",
+                              Navigator.of(context).push(
+                                customPageRouter(
+                                  const MediaSearchScreen(
+                                    type: "MANGA",
+                                  ),
                                 ),
-                              ));
+                              );
                             },
                             width: adjustedWidth,
                             height: adjustedHeight,

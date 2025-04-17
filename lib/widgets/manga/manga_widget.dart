@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hovering/hovering.dart';
 import 'package:unyo/util/utils.dart';
+import 'package:unyo/widgets/styled/custom/hovering_animated_container.dart';
 
 class MangaWidget extends StatelessWidget {
   const MangaWidget(

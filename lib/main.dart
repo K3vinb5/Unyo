@@ -31,12 +31,13 @@ Future<void> main() async {
   Hive.registerAdapter(MangaModelAdapter());
   Hive.registerAdapter(AnimeModelAdapter());
   fvp.registerWith(options: {
-    'platforms': ['linux', 'macos']
+    'platforms': ['linux', 'macos'],
   });
   if (Platform.isWindows) {
     fvp.registerWith(options: {
       'platforms': ['windows'],
-      'video.decoders' : ['DXVA', 'FFmpeg']
+      'video.decoders': ['DXVA', 'FFmpeg'],
+      'player': {"avformat.extension_picky": "0"}
     });
   }
   await FlutterDiscordRPC.initialize(

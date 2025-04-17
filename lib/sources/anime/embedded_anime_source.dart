@@ -87,7 +87,7 @@ class EmbeddedAnimeSource implements AnimeSource {
         headersKeys.add(
             (headersKey as List<dynamic>).map((e) => e as String).toList());
       }
-      for (var headersValue in headersValuesResponse!) {
+      for (var headersValue in headersValuesResponse ?? []) {
         headersValues.add(
             (headersValue as List<dynamic>).map((e) => e as String).toList());
       }

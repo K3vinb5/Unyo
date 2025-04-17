@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hovering/hovering.dart';
 import 'package:unyo/api/anilist_api_anime.dart';
 import 'package:unyo/util/utils.dart';
+import 'package:unyo/widgets/styled/custom/hovering_animated_container.dart';
 
 class AnimeButton extends StatefulWidget {
   const AnimeButton({

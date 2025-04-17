@@ -4,6 +4,8 @@ import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/router/custom_page_route.dart';
+import 'package:unyo/router/router.dart';
 import 'package:unyo/util/torrent_server.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/screens/screens.dart';
@@ -156,7 +158,7 @@ void openMangaDetails(
   );
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => mangaScreen),
+    customPageRouter(mangaScreen),
   );
 }
 
@@ -168,7 +170,7 @@ void openAnime(BuildContext context, AnimeModel currentAnime, String tag) {
   );
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => animeScreen),
+    customPageRouter(animeScreen),
   );
 }
 

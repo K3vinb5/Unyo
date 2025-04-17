@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unyo/models/anime_model.dart';
+import 'package:unyo/router/custom_page_route.dart';
 import 'package:unyo/widgets/widgets.dart';
 import 'package:unyo/screens/screens.dart';
 
@@ -29,7 +30,7 @@ class AnimeListComponentWidget extends StatelessWidget {
     );
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => animeScreen),
+      customPageRouter(animeScreen),
     );
   }
 
