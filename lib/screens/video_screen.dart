@@ -76,10 +76,10 @@ class _VideoScreenState extends State<VideoScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _hideControlsTimer?.cancel();
     isVideoPlaying?.cancel();
     _mixedController.dispose();
+    super.dispose();
   }
 
   void cancelTimers() {
@@ -149,8 +149,8 @@ class _VideoScreenState extends State<VideoScreen> {
       color: Colors.black,
       child: KeyboardListener(
         focusNode: _screenFocusNode,
-        onKeyEvent: (keyEvent) {
-          if (keyDelay) return;
+        onKeyEvent: (KeyEvent keyEvent) {
+          if (keyDelay || keyEvent is! KeyDownEvent) return;
 
           keyDelay = true;
           Timer(const Duration(milliseconds: 200), () {
@@ -163,14 +163,12 @@ class _VideoScreenState extends State<VideoScreen> {
 
           // ESC key support
           if (key == LogicalKeyboardKey.escape) {
-            if (fullScreen) {
-              Window.exitFullscreen();
-              fullScreen = false;
-              setState(() {});
-            } else {
-              interactScreen(false);
-              Navigator.pop(context);
-            }
+            interactScreen(false);
+            Future.microtask(() {
+              if (mounted && Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              }
+            });
           }
         },
         child: Center(
@@ -178,10 +176,7 @@ class _VideoScreenState extends State<VideoScreen> {
             alignment: Alignment.topLeft,
             children: [
               MouseRegion(
-                onHover: (event) {
-                  // print("hover");
-                  _resetHideControlsTimer();
-                },
+                onHover: (event) => _resetHideControlsTimer(),
                 cursor: _showControls
                     ? SystemMouseCursors.basic
                     : SystemMouseCursors.none,
@@ -215,9 +210,7 @@ class _VideoScreenState extends State<VideoScreen> {
                               color: Colors.white,
                               size: 30,
                             ),
-                            const SizedBox(
-                              height: 15,
-                            ),
+                            const SizedBox(height: 15),
                             Text(
                               context.tr("video_loading"),
                               style: const TextStyle(
@@ -230,14 +223,14 @@ class _VideoScreenState extends State<VideoScreen> {
               ),
               //Video Header (top)
               VideoOverlayHeaderWidget(
-                  showControls: _showControls,
-                  title: widget.title,
-                  mixedController: _mixedController,
-                  cancelTimers: cancelTimers,
-                  updateEntry: widget.updateEntry),
-              !fullScreen
-                  ? const WindowBarButtons(startIgnoreWidth: 70)
-                  : const SizedBox.shrink(),
+                showControls: _showControls,
+                title: widget.title,
+                mixedController: _mixedController,
+                cancelTimers: cancelTimers,
+                updateEntry: widget.updateEntry,
+              ),
+              if (!fullScreen)
+                const WindowBarButtons(startIgnoreWidth: 70),
             ],
           ),
         ),
