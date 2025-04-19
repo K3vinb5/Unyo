@@ -31,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, Map<String, double>>? userStats;
   int? episodesWatched;
   int? minutesWatched;
+  List<AnimeModel>? rewatchingList;
+  List<MangaModel>? rereadingList;
 
   void attemptLogin() async {
     prefs = PreferencesModel();
@@ -110,8 +112,12 @@ class _HomeScreenState extends State<HomeScreen> {
     String newavatarUrl = await loggedUserModel.getUserAvatarImageUrl();
     List<AnimeModel> newWatchingAnimeList =
         await loggedUserModel.getUserAnimeLists("Watching");
+    List<AnimeModel> newRewatchingAnimeList = 
+      await loggedUserModel.getUserAnimeLists("Rewatching");
     List<MangaModel> newReadingMangaList =
         await loggedUserModel.getUserMangaLists("Reading");
+    List<MangaModel> newRereadingMangaList =
+        await loggedUserModel.getUserMangaLists("Rereading");
     //TODO fix stats
     Map<String, Map<String, double>> newUserStats =
         (loggedUserModel is AnilistUserModel) ? await getUserStatsMaps() : {};
@@ -123,7 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       avatarImageUrl = newavatarUrl;
       watchingList = newWatchingAnimeList;
+      rewatchingList = newRewatchingAnimeList;
       readingList = newReadingMangaList;
+      rereadingList = newRereadingMangaList;
       userStats = newUserStats;
     });
     prefs.saveUser(loggedUserModel);
@@ -134,11 +142,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void updateUserLists() async {
     List<AnimeModel> newWatchingAnimeList =
         await loggedUserModel.getUserAnimeLists("Watching");
+    List<AnimeModel> newRewatchingAnimeList = 
+      await loggedUserModel.getUserAnimeLists("Rewatching");
     List<MangaModel> newReadingMangaList =
         await loggedUserModel.getUserMangaLists("Reading");
+    List<MangaModel> newRereadingMangaList =
+        await loggedUserModel.getUserMangaLists("Rereading");    
     setState(() {
       watchingList = newWatchingAnimeList;
+      rewatchingList = newRewatchingAnimeList;
       readingList = newReadingMangaList;
+      rereadingList = newRereadingMangaList;
     });
   }
 
@@ -445,7 +459,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? AnimeWidgetList(
                                     tag: "home-details-list1",
                                     title: context.tr("continue_watching"),
-                                    animeList: watchingList!,
+                                    animeList: [
+                                        if (rewatchingList != null) ...rewatchingList!,
+                                        ...watchingList!,
+                                    ],
                                     textColor: Colors.white,
                                     loadMore: false,
                                     updateHomeScreenLists: updateUserLists,
@@ -459,7 +476,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? MangaWidgetList(
                                     tag: "home-details-list2",
                                     title: context.tr("continue_reading"),
-                                    mangaList: readingList!,
+                                    mangaList: [
+                                        if (rereadingList != null) ...rereadingList!,
+                                        ...readingList!,
+                                    ],
                                     textColor: Colors.white,
                                     loadMore: false,
                                     updateHomeScreenLists: updateUserLists,
