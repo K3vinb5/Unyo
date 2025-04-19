@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/icons/anilist_icons.dart';
 import 'package:unyo/dialogs/dialogs.dart';
+import 'package:unyo/util/constants.dart';
 import 'package:unyo/widgets/widgets.dart';
 
 void showSignInDialog(
@@ -13,6 +14,7 @@ void showSignInDialog(
     required void Function() goToMainScreen,
     required void Function(int) setUserInfo,
     required void Function(String) manualLogin}) {
+  logger.i("Opened sign in dialog");
   showDialog(
       context: context,
       builder: (_) => SignInDialog(
@@ -62,6 +64,7 @@ class SignInDialog extends StatelessWidget {
             StyledButton(
               onPressed: () {
                 login();
+                logger.i("Logged in to Anilist");
                 Navigator.of(context).pop();
               },
               child: const Padding(

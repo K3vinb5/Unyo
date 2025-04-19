@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/util/constants.dart';
 
 void showConnectionSuccessfulDialog(BuildContext context) {
+  logger.i("Opened connection successful dialog");
   showDialog(
     context: context,
     builder: (context) {

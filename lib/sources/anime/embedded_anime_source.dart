@@ -20,12 +20,15 @@ class EmbeddedAnimeSource implements AnimeSource {
       "id": id,
       "episode": episode
     };
+    logger.i("$source: Request made to /unyo/anime/streamAndCaptions");
     var response = await http.post(urlStream,
         body: json.encode(requestBody),
         headers: {"Content-Type": "application/json"});
     if (response.statusCode != 200) {
-      return StreamData.empy();
+      logger.e("$source: Error getting stream data: ${response.statusCode} ${response.body}");
+      return StreamData.empty();
     }
+    logger.i("$source: Got stream data successfully");
     Map<String, dynamic> jsonResponse = json.decode(response.body);
     List<dynamic> streams = jsonResponse["streams"];
     List<dynamic> qualities = jsonResponse["qualities"];
@@ -53,6 +56,7 @@ class EmbeddedAnimeSource implements AnimeSource {
       }
     }
     if (prefs.getBool("open_subtitles") ?? true) {
+      logger.i("Attempting getting Open Subtitles captions for $name episode $episode");
       List<CaptionData> openSubtitlesCaptions =
           await getOpenSubtitlesCaptions(name, 1, episode);
       for (List<CaptionData> list in captions) {
@@ -106,10 +110,11 @@ class EmbeddedAnimeSource implements AnimeSource {
   Future<List<List<String>>> getAnimeTitlesAndIds(String query) async {
     var urlStream = Uri.parse(
         "${getEndpoint()}/unyo/anime/titleAndIds?source=$source&query=$query");
+    logger.i("$source: Request made to /unyo/anime/titleAndIds");
     var response = await http.get(urlStream);
 
     if (response.statusCode != 200) {
-      print(response.body);
+      logger.e("$source: Error getting titles: ${response.statusCode} ${response.body}");
       return [[], []];
     }
 

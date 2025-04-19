@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:unyo/util/constants.dart';
 
 void showNoExtensionsDialog(
     BuildContext context) {
+  logger.i("No extensions dialog opened");
   showDialog(
       context: context,
       builder: (context) {

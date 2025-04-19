@@ -2,9 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:unyo/util/constants.dart';
 import 'package:unyo/widgets/widgets.dart';
+import 'package:logger/logger.dart';
 
 void showChangeRepoDialog(
     BuildContext context, TextEditingController controller) {
+  logger.i("Opened changeRepo dialog");
   showDialog(
       context: context,
       builder: (context) {
@@ -46,6 +48,7 @@ class ChangeRepoDialog extends StatelessWidget {
               children: [
                 StyledButton(
                   onPressed: () {
+                    logger.i("Restored extensions repository to default");
                     prefs.setString("extensions_json_url",
                         "https://raw.githubusercontent.com/K3vinb5/Unyo-Extensions/main/index.json");
                     Navigator.of(context).pop();
@@ -57,6 +60,7 @@ class ChangeRepoDialog extends StatelessWidget {
                 ),
                 StyledButton(
                   onPressed: () {
+                    logger.i("Changed extensions repository");
                     if (controller.text.trim() != "") {
                       prefs.setString(
                           "extensions_json_url", controller.text.trim());

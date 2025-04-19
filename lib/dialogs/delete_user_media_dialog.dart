@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/util/constants.dart';
 
 class DeleteUserMediaDialog extends StatelessWidget {
   const DeleteUserMediaDialog(
@@ -26,6 +27,7 @@ class DeleteUserMediaDialog extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
+              logger.i("Deleting user media with id: $currentMediaId");
               deleteUserAnime(currentMediaId);
               Navigator.of(context).pop();
             },

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,7 @@ import 'package:unyo/util/utils.dart';
 import 'package:flutter_window_close/flutter_window_close.dart';
 
 Future<void> main() async {
-  //needed for video player on desktop!!
+  logger.i("Initializing dependencies");
   WidgetsFlutterBinding.ensureInitialized();
   await Window.initialize();
   await EasyLocalization.ensureInitialized();
@@ -40,9 +39,10 @@ Future<void> main() async {
       'player': {"avformat.extension_picky": "0"}
     });
   }
-  await FlutterDiscordRPC.initialize(
-    "1266242749485809748",
-  );
+  // await FlutterDiscordRPC.initialize(
+  //   "1266242749485809748",
+  // );
+  logger.i("Initializing Unyo");
   runApp(
     EasyLocalization(
       supportedLocales: const [
@@ -81,6 +81,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     FlutterWindowClose.setWindowShouldCloseHandler(() async {
+      logger.i("Unyo is exiting...");
       processManager.stopProcess();
       print("Killed internal server");
       return true;

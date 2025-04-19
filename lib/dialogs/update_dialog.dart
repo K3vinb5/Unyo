@@ -33,14 +33,6 @@ class UpdateDialog extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          // SingleChildScrollView(
-          //   child: Theme(
-          //     data: Theme.of(context).copyWith(
-          //         textTheme:
-          //             Theme.of(context).textTheme.apply(bodyColor: Colors.white)),
-          //     child: MarkdownBody(data: markdown),
-          //   ),
-          // ),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.max,
@@ -84,6 +76,7 @@ class UpdateDialog extends StatelessWidget {
                               Color.fromARGB(255, 37, 37, 37)),
                         ),
                         onPressed: () {
+                          logger.i("Opening newest release on your browser");
                           goToLatestRelease();
                           Navigator.of(context).pop();
                         },
