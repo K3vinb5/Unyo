@@ -47,3 +47,5 @@ libmtorrentserver.so
 
 # FVM Version Cache
 .fvm/
+/.fvmrc
+/pubspec.lock
