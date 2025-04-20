@@ -159,7 +159,7 @@ class _VideoScreenState extends State<VideoScreen> {
 
           final key = keyEvent.logicalKey;
 
-          _mixedController.mqqtController.onReceivedKeys(key);
+          _mixedController.onReceivedKeys(key);
 
         },
         child: Center(

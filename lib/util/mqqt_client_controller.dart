@@ -5,12 +5,10 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:unyo/dialogs/dialogs.dart';
-import 'package:unyo/screens/screens.dart';
 import 'package:unyo/util/utils.dart';
 
 class MqqtClientController {
@@ -37,7 +35,6 @@ class MqqtClientController {
   bool firstConnection = true;
   bool firstConfirm = true;
   bool connected = false;
-  bool fullscreenDelay = false;
 
   void init() {
     myId = generateRandomId();
@@ -170,7 +167,7 @@ class MqqtClientController {
             Window.exitFullscreen();
           }
           mixedController.dispose();
-          interactScreen(false);
+          mixedController.interactScreen(false);
           Navigator.pop(context);
           break;
         case "connected":
@@ -186,117 +183,6 @@ class MqqtClientController {
       }
     });
     sendOrder("connected");
-  }
-
-  void onReceivedKeys(LogicalKeyboardKey logicalKey) async {
-    switch (logicalKey) {
-      case LogicalKeyboardKey.space:
-        controlsOverlayOnTap();
-        if (!mixedController.isPlaying) {
-          sendOrder("play");
-          mixedController.play();
-        } else {
-          sendOrder("pause");
-          mixedController.pause();
-        }
-        break;
-      case LogicalKeyboardKey.arrowLeft:
-        sendOrder("fiveminus");
-        mixedController.seekTo(
-          Duration(
-              milliseconds: mixedController
-                      .videoController.value.position.inMilliseconds -
-                  5000),
-        );
-
-        break;
-      case LogicalKeyboardKey.arrowRight:
-        sendOrder("fiveplus");
-        mixedController.seekTo(
-          Duration(
-              milliseconds: mixedController
-                      .videoController.value.position.inMilliseconds +
-                  5000),
-        );
-        break;
-      case LogicalKeyboardKey.arrowUp:
-        mixedController.setVolume(
-            min(mixedController.videoController.value.volume + 0.1, 1));
-        break;
-      case LogicalKeyboardKey.arrowDown:
-        mixedController.setVolume(
-            max(mixedController.videoController.value.volume - 0.1, 0));
-        break;
-      case LogicalKeyboardKey.keyL:
-        sendOrder("fifteenplus");
-        mixedController.seekTo(
-          Duration(
-              milliseconds: mixedController
-                      .videoController.value.position.inMilliseconds +
-                  15000),
-        );
-        resetHideControlsTimer();
-        break;
-      case LogicalKeyboardKey.keyJ:
-        sendOrder("fifteenminus");
-        mixedController.seekTo(
-          Duration(
-              milliseconds: mixedController
-                      .videoController.value.position.inMilliseconds -
-                  15000),
-        );
-        resetHideControlsTimer();
-        break;
-      case LogicalKeyboardKey.keyK:
-        resetHideControlsTimer();
-        controlsOverlayOnTap();
-        if (!mixedController.isPlaying) {
-          sendOrder("play");
-          mixedController.play();
-        } else {
-          sendOrder("pause");
-          mixedController.pause();
-        }
-        break;
-      case LogicalKeyboardKey.escape:
-        mixedController.canDispose = true;
-        if ((prefs.getBool("exit_fullscreen_on_video_exit") ?? true) && fullScreen) {
-          Window.exitFullscreen();
-          fullScreen = !fullScreen;
-          return;
-        }
-        interactScreen(false);
-        if (calculatePercentage() >
-                episodeCompletedOptions.values.toList()[
-                    prefs.getInt("episode_completed_percentage") ?? 0] &&
-            (prefs.getBool("update_progress_automatically") ?? false)) {
-          updateEntry();
-        }
-        mixedController.dispose();
-        Navigator.pop(context);
-        break;
-      case LogicalKeyboardKey.keyF:
-        print("pressed F");
-        print("fullscreenDelay : $fullscreenDelay");
-        if (fullscreenDelay) {
-          return;
-        }
-        fullscreenDelay = true;
-        Timer(
-          const Duration(milliseconds: 1000),
-          () {
-            fullscreenDelay = false;
-          },
-        );
-        if (fullScreen) {
-          await Window.exitFullscreen();
-        } else {
-          await Window.enterFullscreen();
-        }
-        fullScreen = !fullScreen;
-        break;
-      default:
-    }
   }
 
   void onDisconnected() {
@@ -323,15 +209,6 @@ class MqqtClientController {
 
   String insertCharacter(String original, int index, String charToInsert) {
     return '${original.substring(0, index)}$charToInsert${original.substring(index)}';
-  }
-
-  double calculatePercentage() {
-    return (mixedController.videoController.value.position.inMilliseconds /
-        mixedController.videoController.value.duration.inMilliseconds);
-  }
-
-  void interactScreen(bool keepOn) async {
-    await DesktopKeepScreenOn.setPreventSleep(keepOn);
   }
 
   void sendOrder(String message) {

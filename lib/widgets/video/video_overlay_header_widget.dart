@@ -63,7 +63,7 @@ class _VideoOverlayHeaderWidgetState extends State<VideoOverlayHeaderWidget> {
                   Window.exitFullscreen();
                 }
                 interactScreen(false);
-                if (widget.mixedController.mqqtController
+                if (widget.mixedController
                             .calculatePercentage() >
                         episodeCompletedOptions.values.toList()[
                             prefs.getInt("episode_completed_percentage") ??

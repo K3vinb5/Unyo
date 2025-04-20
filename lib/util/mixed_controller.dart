@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
+import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_acrylic/window.dart';
 import 'package:fvp/mdk.dart';
 import 'package:unyo/dialogs/dialogs.dart';
+import 'package:unyo/screens/video_screen.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +29,7 @@ class MixedController {
     required this.episode,
     required this.key,
   });
+
   final BuildContext context;
   final StreamData streamData;
   final int source;
@@ -45,6 +51,7 @@ class MixedController {
   bool isInitialized = false;
   bool canDispose = false;
   bool disposed = false;
+  bool fullscreenDelay = false;
   Future<ClosedCaptionFile>? closedCaptionFile;
 
   void init() {
@@ -338,6 +345,121 @@ class MixedController {
 
   void setVolume(double n) {
     videoController.setVolume(n);
+  }
+
+  void onReceivedKeys(LogicalKeyboardKey logicalKey) async {
+    switch (logicalKey) {
+      case LogicalKeyboardKey.space:
+        controlsOverlayOnTap();
+        if (!isPlaying) {
+          mqqtController.sendOrder("play");
+          play();
+        } else {
+          mqqtController.sendOrder("pause");
+          pause();
+        }
+        break;
+      case LogicalKeyboardKey.arrowLeft:
+        mqqtController.sendOrder("fiveminus");
+        seekTo(
+          Duration(
+              milliseconds:
+                  videoController.value.position.inMilliseconds - 5000),
+        );
+
+        break;
+      case LogicalKeyboardKey.arrowRight:
+        mqqtController.sendOrder("fiveplus");
+        seekTo(
+          Duration(
+              milliseconds:
+                  videoController.value.position.inMilliseconds + 5000),
+        );
+        break;
+      case LogicalKeyboardKey.arrowUp:
+        setVolume(min(videoController.value.volume + 0.1, 1));
+        break;
+      case LogicalKeyboardKey.arrowDown:
+        setVolume(max(videoController.value.volume - 0.1, 0));
+        break;
+      case LogicalKeyboardKey.keyL:
+        mqqtController.sendOrder("fifteenplus");
+        seekTo(
+          Duration(
+              milliseconds:
+                  videoController.value.position.inMilliseconds + 15000),
+        );
+        resetHideControlsTimer();
+        break;
+      case LogicalKeyboardKey.keyJ:
+        mqqtController.sendOrder("fifteenminus");
+        seekTo(
+          Duration(
+              milliseconds:
+                  videoController.value.position.inMilliseconds - 15000),
+        );
+        resetHideControlsTimer();
+        break;
+      case LogicalKeyboardKey.keyK:
+        resetHideControlsTimer();
+        controlsOverlayOnTap();
+        if (!isPlaying) {
+          mqqtController.sendOrder("play");
+          play();
+        } else {
+          mqqtController.sendOrder("pause");
+          pause();
+        }
+        break;
+      case LogicalKeyboardKey.escape:
+        canDispose = true;
+        if ((prefs.getBool("exit_fullscreen_on_video_exit") ?? true) &&
+            fullScreen) {
+          Window.exitFullscreen();
+          fullScreen = !fullScreen;
+          return;
+        }
+        interactScreen(false);
+        if (calculatePercentage() >
+                episodeCompletedOptions.values.toList()[
+                    prefs.getInt("episode_completed_percentage") ?? 0] &&
+            (prefs.getBool("update_progress_automatically") ?? false)) {
+          updateEntry();
+        }
+        dispose();
+        Future.microtask(() => Navigator.pop(context));
+        break;
+      case LogicalKeyboardKey.keyF:
+        print("pressed F");
+        print("fullscreenDelay : $fullscreenDelay");
+        if (fullscreenDelay) {
+          return;
+        }
+        fullscreenDelay = true;
+        Timer(
+          const Duration(milliseconds: 1000),
+          () {
+            fullscreenDelay = false;
+          },
+        );
+        if (fullScreen) {
+          await Window.exitFullscreen();
+        } else {
+          await Window.enterFullscreen();
+        }
+        fullScreen = !fullScreen;
+        break;
+      default:
+    }
+  }
+
+  double calculatePercentage() {
+    return (videoController.value.position.inMilliseconds /
+        videoController.value.duration.inMilliseconds);
+  }
+
+  void interactScreen(bool keepOn) async {
+    await DesktopKeepScreenOn.setPreventSleep(keepOn);
   }
 
   void dispose() {
