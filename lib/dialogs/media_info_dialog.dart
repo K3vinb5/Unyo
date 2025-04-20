@@ -106,6 +106,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                 horizontalPadding: 10,
                 onTap: (index) {
                   String newCurrentStatus = widget.statuses[index];
+                  logger.i("Selected status: $newCurrentStatus");
                   widget.statuses.removeAt(index);
                   widget.statuses.insert(0, newCurrentStatus);
                   query.remove("status");
@@ -144,8 +145,8 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                         });
                       },
                       onChangeEnd: (value) {
+                        logger.i("Progress slider value updated: $value");
                         query.remove("progress");
-                        // print(progress.toInt().toString());
                         query.addAll({"progress": progress.toInt().toString()});
                       },
                     ),
@@ -180,6 +181,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                         });
                       },
                       onChangeEnd: (value) {
+                        logger.i("Score slider value updated: $value");
                         query.remove("score");
                         query.addAll({"score": score.toString()});
                       },
@@ -198,6 +200,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                 children: [
                   IconButton(
                     onPressed: () async {
+                      logger.i("Opening date picker for start date");
                       DateTime? chosenDateTime = await showDatePicker(
                         context: context,
                         firstDate: DateTime(1970, 1, 1),
@@ -261,6 +264,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                   ),
                   IconButton(
                     onPressed: () async {
+                      logger.i("Opening date picker for end date");
                       DateTime? chosenDateTime = await showDatePicker(
                         context: context,
                         firstDate: DateTime(1970, 1, 1),
@@ -332,6 +336,7 @@ class _MediaInfoDialogState extends State<MediaInfoDialog> {
                             ),
                           ),
                           onPressed: () {
+                            logger.i("Updated user media info");
                             if (widget.animeModel != null) {
                               loggedUserModel.setUserAnimeInfo(widget.id, query,
                                   animeModel: widget.animeModel);

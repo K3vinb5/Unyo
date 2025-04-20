@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:unyo/util/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const String anilistEndpoint = "https://graphql.anilist.co";
 const String anilistEndPointGetToken =
     "https://anilist.co/api/v2/oauth/authorize?client_id=17550&response_type=token";
 const int maxAttempts = 5;

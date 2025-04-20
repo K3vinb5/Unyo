@@ -50,6 +50,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
   }
 
   void getStreamInfo() async {
+    logger.i("Getting stream info for ${widget.animeModel.getDefaultTitle()} episode ${widget.animeEpisode}");
     streamData = await widget.currentAnimeSource.getAnimeStreamAndCaptions(
         widget.id,
         widget.animeModel.englishTitle ?? "",
@@ -59,6 +60,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
   }
 
   void onStreamSelected(int selected, Map<String, double> timestamps) {
+    logger.i("Selected stream $selected for ${widget.animeModel.getDefaultTitle()} episode ${widget.animeEpisode}");
     source = selected;
     Navigator.of(context).pop();
     videoScreen = VideoScreen(
@@ -74,6 +76,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
       episode: widget.animeEpisode,
       timestamps: timestamps,
     );
+    logger.i("Opening video screen for ${widget.animeModel.getDefaultTitle()} episode ${widget.animeEpisode}");
     if (!context.mounted) return;
     Navigator.push(
       context,
@@ -86,7 +89,7 @@ class _VideoQualityDialogState extends State<VideoQualityDialog> {
     try {
       return utf8.decode(bytes);
     } catch (e) {
-      print("Error decoding text: $text");
+      logger.e("Error decoding text: $text", error: e.toString());
     }
     return text;
 }

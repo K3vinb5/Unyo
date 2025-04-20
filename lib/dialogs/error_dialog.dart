@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/util/constants.dart';
 
 void showErrorDialog(BuildContext context,
     {String? exception, void Function()? onPressedAfterPop}) {
+  logger.i("Opened error dialog");
+  logger.e("Unknown error", error: exception);
   showDialog(
       context: context,
       builder: (context) {
@@ -40,6 +43,7 @@ class ErrorDialog extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
                 if (onPressedAfterPop != null) {
+                  logger.i("Executing provided error resulting callback");
                   onPressedAfterPop!();
                 }
               },

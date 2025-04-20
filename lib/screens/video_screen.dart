@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:desktop_keep_screen_on/desktop_keep_screen_on.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:unyo/dialogs/dialogs.dart';
@@ -148,18 +149,29 @@ class _VideoScreenState extends State<VideoScreen> {
       color: Colors.black,
       child: KeyboardListener(
         focusNode: _screenFocusNode,
-        onKeyEvent: (keyEnvent) {
-          if (keyDelay) {
-            return;
-          }
+        onKeyEvent: (keyEvent) {
+          if (keyDelay) return;
+
           keyDelay = true;
-          Timer(
-            const Duration(milliseconds: 200),
-            () {
-              keyDelay = false;
-            },
-          );
-          _mixedController.mqqtController.onReceivedKeys(keyEnvent.logicalKey);
+          Timer(const Duration(milliseconds: 200), () {
+            keyDelay = false;
+          });
+
+          final key = keyEvent.logicalKey;
+
+          _mixedController.mqqtController.onReceivedKeys(key);
+
+          // ESC key support
+          if (key == LogicalKeyboardKey.escape) {
+            if (fullScreen) {
+              Window.exitFullscreen();
+              fullScreen = false;
+              setState(() {});
+            } else {
+              interactScreen(false);
+              Navigator.pop(context);
+            }
+          }
         },
         child: Center(
           child: Stack(

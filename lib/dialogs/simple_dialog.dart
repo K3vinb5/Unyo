@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:unyo/util/constants.dart';
 
 void showSimpleDialog(BuildContext context, String title, String message) {
+  logger.i("Opened simple dialog: $title - $message");
   showDialog(
       context: context,
       builder: (context) {

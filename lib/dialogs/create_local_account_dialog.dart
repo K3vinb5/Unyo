@@ -5,6 +5,7 @@ import 'package:unyo/widgets/widgets.dart';
 
 void showCreateLocalAccoutDialog(BuildContext context,
     void Function(int) setUserInfo, void Function() goToMainMenu) {
+  logger.i("Opened create local account dialog");
   showDialog(
       context: context,
       builder: (_) => CreateLocalAccountDialog(setUserInfo: setUserInfo, goToMainMenu: goToMainMenu));
@@ -47,6 +48,7 @@ class CreateLocalAccountDialog extends StatelessWidget {
                   prefs.setString("userName", userName!);
                   setUserInfo(1);
                   goToMainMenu();
+                  logger.i("Created local account with name: ${controller.text.trim()}");
                   if(!context.mounted) return;
                   Navigator.of(context).pop();
                 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/router/custom_page_route.dart';
@@ -26,12 +27,16 @@ Color darkBorderColor = Colors.black;
 List<Color> colorList = [];
 List<int> isScreenRefreshed = [0, 1, 2, 3, 4, 5];
 final ProcessManager processManager = ProcessManager();
-// String remoteEndPoint = "https://unyo.k3vinb5.dev";
-String remoteEndPoint = "http://localhost:8084";
+String remoteEndPoint = "https://unyo-be.k3vinb5.dev";
+// String remoteEndPoint = "http://localhost:8084";
 String localEndPoint = "http://localhost:8084";
+const String anilistEndpoint = "https://graphql.anilist.co";
 Future<List<CastDevice>> devices = CastDiscoveryService().search();
 DiscordRPC discordRPC = DiscordRPC();
 MTorrentServer torrentServer = MTorrentServer();
+var logger = Logger(
+  printer: PrettyPrinter(),
+);
 
 String getEndpoint() {
   if (prefs.getBool("remote_endpoint") ?? false) {

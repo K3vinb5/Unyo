@@ -9,6 +9,7 @@ void showLogOutDialog(
     void Function() attemptLogin,
     double adjustedHeight,
     double adjustedWidth) {
+  logger.i("Opened log out dialog");
   showDialog(
       context: context,
       builder: (context) => LogOutDialog(
@@ -63,6 +64,7 @@ class LogOutDialog extends StatelessWidget {
                 ),
                 StyledButton(
                   onPressed: () {
+                    logger.i("Logging out...");
                     prefs.logOut();
                     if (prefs.getBool("remote_endpoint") ?? false) {
                       processManager.stopProcess();

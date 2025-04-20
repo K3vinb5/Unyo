@@ -10,7 +10,7 @@ class StreamData {
     required this.headersValues,
   });
 
-  StreamData.empy({
+  StreamData.empty({
     this.streams = const [],
     this.qualities = const [],
     this.captions = const [],

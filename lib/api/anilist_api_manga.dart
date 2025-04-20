@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:unyo/models/models.dart';
 import 'package:http/http.dart' as http;
+import 'package:unyo/util/constants.dart';
 
-const String anilistEndpoint = "https://graphql.anilist.co";
 const String anilistEndPointGetToken =
     "https://anilist.co/api/v2/oauth/authorize?client_id=17550&response_type=token";
 

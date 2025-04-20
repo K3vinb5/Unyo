@@ -4,7 +4,6 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/util/constants.dart' as constants;
 
 class AnilistUserModel implements UserModel {
-  final String anilistEndpoint = "https://graphql.anilist.co";
   final maxAttempts = 5;
   @override
   String? avatarImage;
@@ -24,7 +23,7 @@ class AnilistUserModel implements UserModel {
       return [userName!, userId!.toString()];
     }
     int attempt = newAttempt ?? 0;
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query": "query {Viewer{name id}}",
     };
@@ -58,7 +57,7 @@ class AnilistUserModel implements UserModel {
       return bannerImage!;
     }
     int attempt = newAttempt ?? 0;
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query (\$id: Int \$name: String){User(id: \$id, name: \$name){bannerImage}}",
@@ -93,7 +92,7 @@ class AnilistUserModel implements UserModel {
       return avatarImage!;
     }
     int attempt = newAttempt ?? 0;
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query (\$id: Int \$name: String){User(id: \$id, name: \$name){avatar {medium}}}",
@@ -133,7 +132,7 @@ class AnilistUserModel implements UserModel {
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
 
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type,sort:UPDATED_TIME_DESC){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{year month day}}}",
@@ -179,7 +178,7 @@ class AnilistUserModel implements UserModel {
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
 
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english }coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{day month year}}}",
@@ -228,7 +227,7 @@ class AnilistUserModel implements UserModel {
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
 
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query{ Media(id: $mediaId){ mediaListEntry { score progress repeat priority status startedAt{day month year} completedAt{day month year} } } }",
@@ -280,7 +279,7 @@ class AnilistUserModel implements UserModel {
   Future<List<MangaModel>> getUserMangaLists(String listName,
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type,sort:UPDATED_TIME_DESC){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{year month day}}}",
@@ -344,7 +343,7 @@ class AnilistUserModel implements UserModel {
   Future<Map<String, List<MangaModel>>> getAllUserMangaLists(
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query(\$userId:Int,\$userName:String,\$type:MediaType){MediaListCollection(userId:\$userId,userName:\$userName,type:\$type){lists{name isCustomList isCompletedList:isSplitCompletedList entries{...mediaListEntry}}user{id name avatar{large}mediaListOptions{scoreFormat rowOrder animeList{sectionOrder customLists splitCompletedSectionByFormat theme}mangaList{sectionOrder customLists splitCompletedSectionByFormat theme}}}}}fragment mediaListEntry on MediaList{id mediaId status score progress progressVolumes repeat priority private hiddenFromStatusLists customLists advancedScores notes updatedAt startedAt{year month day}completedAt{year month day}media{id idMal title{userPreferred romaji english}coverImage{extraLarge large}type format status(version:2)episodes volumes chapters averageScore  description popularity isAdult countryOfOrigin genres bannerImage startDate{year month day} endDate{year month day}}}",
@@ -412,7 +411,7 @@ class AnilistUserModel implements UserModel {
   Future<UserMediaModel?> getUserMangaInfo(int mediaId,
       {int? newAttempt}) async {
     int attempt = newAttempt ?? 0;
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "query{ Media(id: $mediaId){ mediaListEntry { score progress repeat priority status startedAt{day month year} completedAt{day month year} } } }",
@@ -463,7 +462,7 @@ class AnilistUserModel implements UserModel {
   @override
   void setUserAnimeInfo(int mediaId, Map<String, String> receivedQuery,
       {AnimeModel? animeModel}) async {
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "mutation (\$mediaId: Int, \$status: MediaListStatus, \$score: Float, \$progress: Int, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) { SaveMediaListEntry(mediaId: \$mediaId, status: \$status, score: \$score, progress: \$progress, startedAt: \$startedAt, completedAt: \$completedAt) { mediaId status score progress startedAt { year month day } completedAt { year month day } } } ",
@@ -497,7 +496,7 @@ class AnilistUserModel implements UserModel {
 
   @override
   void deleteUserAnime(int mediaId) async {
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
 
     Map<String, dynamic> query1 = {
       "query": "query(\$mediaId:Int){ MediaList(mediaId:\$mediaId){ id } }",
@@ -536,7 +535,7 @@ class AnilistUserModel implements UserModel {
 
   @override
   void deleteUserManga(int mediaId) async {
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
 
     Map<String, dynamic> query1 = {
       "query": "query(\$mediaId:Int){ MediaList(mediaId:\$mediaId){ id } }",
@@ -576,7 +575,7 @@ class AnilistUserModel implements UserModel {
   @override
   void setUserMangaInfo(int mediaId, Map<String, String> receivedQuery,
       {MangaModel? mangaModel}) async {
-    var url = Uri.parse(anilistEndpoint);
+    var url = Uri.parse(constants.anilistEndpoint);
     Map<String, dynamic> query = {
       "query":
           "mutation (\$mediaId: Int, \$status: MediaListStatus, \$score: Float, \$progress: Int, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) { SaveMediaListEntry(mediaId: \$mediaId, status: \$status, score: \$score, progress: \$progress, startedAt: \$startedAt, completedAt: \$completedAt) { mediaId status score progress startedAt { year month day } completedAt { year month day } } } ",
