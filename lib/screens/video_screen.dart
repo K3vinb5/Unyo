@@ -150,7 +150,7 @@ class _VideoScreenState extends State<VideoScreen> {
       child: KeyboardListener(
         focusNode: _screenFocusNode,
         onKeyEvent: (KeyEvent keyEvent) {
-          if (keyDelay || keyEvent is! KeyDownEvent) return;
+          if (keyDelay) return;
 
           keyDelay = true;
           Timer(const Duration(milliseconds: 200), () {
@@ -161,16 +161,6 @@ class _VideoScreenState extends State<VideoScreen> {
 
           _mixedController.mqqtController.onReceivedKeys(key);
 
-          // ESC key support
-          if (key == LogicalKeyboardKey.escape) {
-            interactScreen(false);
-            final navigator = Navigator.of(context);
-            Future.microtask(() {
-              if (mounted && navigator.canPop()) {
-                navigator.pop();
-              }
-            });
-          }
         },
         child: Center(
           child: Stack(

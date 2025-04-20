@@ -259,10 +259,11 @@ class MqqtClientController {
         }
         break;
       case LogicalKeyboardKey.escape:
-        // sendOrder("escape");
         mixedController.canDispose = true;
-        if (prefs.getBool("exit_fullscreen_on_video_exit") ?? true) {
+        if ((prefs.getBool("exit_fullscreen_on_video_exit") ?? true) && fullScreen) {
           Window.exitFullscreen();
+          fullScreen = !fullScreen;
+          return;
         }
         interactScreen(false);
         if (calculatePercentage() >
