@@ -9,6 +9,7 @@ class DiscordRPC {
     try {
       FlutterDiscordRPC.instance.connect();
       initTime = DateTime.now();
+      discordFound = true;
       setPageActivity("Home Screen");
     } catch (e) {
       print("No Discord instance was found");

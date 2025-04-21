@@ -69,6 +69,8 @@ Map<String, String> langs = {
   "es": "Spanish",
   "it": "Italian",
   "de": "German",
+  "ja": "Japanese",
+  "hi": "Hindi",
   // "po" : "Polish",
   "ru": "Russian",
   // "zh-cn" : "Chinese (Traditional)",

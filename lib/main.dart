@@ -39,9 +39,24 @@ Future<void> main() async {
       'player': {"avformat.extension_picky": "0"}
     });
   }
-  // await FlutterDiscordRPC.initialize(
-  //   "1266242749485809748",
-  // );
+
+  await FlutterDiscordRPC.initialize("1266242749485809748");
+  final rpc = DiscordRPC();
+  rpc.initDiscordRPC();
+  logger.i("Discord RPC initialized");
+
+  // ✅ Handle forced shutdown (Ctrl+C, SIGTERM)
+  ProcessSignal.sigint.watch().listen((_) {
+    FlutterDiscordRPC.instance.clearActivity();
+    FlutterDiscordRPC.instance.disconnect();
+    exit(0);
+  });
+  ProcessSignal.sigterm.watch().listen((_) {
+    FlutterDiscordRPC.instance.clearActivity();
+    FlutterDiscordRPC.instance.disconnect();
+    exit(0);
+  });
+
   logger.i("Initializing Unyo");
   runApp(
     EasyLocalization(
@@ -53,6 +68,8 @@ Future<void> main() async {
         Locale('it'),
         Locale('pt'),
         Locale('ru'),
+        Locale('ja'),
+        Locale('hi'),
       ],
       useOnlyLangCode: true,
       path: 'assets/languages',
@@ -82,6 +99,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     FlutterWindowClose.setWindowShouldCloseHandler(() async {
       logger.i("Unyo is exiting...");
+      FlutterDiscordRPC.instance.clearActivity();
+      FlutterDiscordRPC.instance.disconnect();
       processManager.stopProcess();
       print("Killed internal server");
       return true;
@@ -90,6 +109,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    FlutterDiscordRPC.instance.clearActivity();
+    FlutterDiscordRPC.instance.disconnect();
     processManager.stopProcess();
     super.dispose();
   }
