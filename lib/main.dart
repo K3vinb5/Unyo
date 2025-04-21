@@ -40,20 +40,27 @@ Future<void> main() async {
     });
   }
 
+  // Initialize Discord RPC
   await FlutterDiscordRPC.initialize("1266242749485809748");
-  final rpc = DiscordRPC();
-  rpc.initDiscordRPC();
   logger.i("Discord RPC initialized");
 
-  // ✅ Handle forced shutdown (Ctrl+C, SIGTERM)
-  ProcessSignal.sigint.watch().listen((_) {
-    FlutterDiscordRPC.instance.clearActivity();
-    FlutterDiscordRPC.instance.disconnect();
+  // Connect RPC (auto retry on failure)
+  FlutterDiscordRPC.instance.connect(autoRetry: true, retryDelay: const Duration(seconds: 10));
+
+  // Cleanup helper
+  Future<void> cleanupRpc() async {
+    await FlutterDiscordRPC.instance.clearActivity();
+    await FlutterDiscordRPC.instance.disconnect();
+    await FlutterDiscordRPC.instance.dispose();
+  }
+
+  // Handle forced shutdown (Ctrl+C, SIGTERM)
+  ProcessSignal.sigint.watch().listen((_) async {
+    await cleanupRpc();
     exit(0);
   });
-  ProcessSignal.sigterm.watch().listen((_) {
-    FlutterDiscordRPC.instance.clearActivity();
-    FlutterDiscordRPC.instance.disconnect();
+  ProcessSignal.sigterm.watch().listen((_) async {
+    await cleanupRpc();
     exit(0);
   });
 
@@ -99,11 +106,12 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     FlutterWindowClose.setWindowShouldCloseHandler(() async {
       logger.i("Unyo is exiting...");
-      FlutterDiscordRPC.instance.clearActivity();
-      FlutterDiscordRPC.instance.disconnect();
+      await FlutterDiscordRPC.instance.clearActivity();
+      await FlutterDiscordRPC.instance.disconnect();
+      await FlutterDiscordRPC.instance.dispose();
       processManager.stopProcess();
-      print("Killed internal server");
-      return true;
+      logger.i("Cleanup done; exiting now.");
+      exit(0);
     });
   }
 
@@ -111,6 +119,7 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     FlutterDiscordRPC.instance.clearActivity();
     FlutterDiscordRPC.instance.disconnect();
+    FlutterDiscordRPC.instance.dispose();
     processManager.stopProcess();
     super.dispose();
   }
