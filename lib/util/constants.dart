@@ -70,6 +70,7 @@ Map<String, String> langs = {
   "it": "Italian",
   "de": "German",
   "ja": "Japanese",
+  "bn": "Bangla",
   "hi": "Hindi",
   // "po" : "Polish",
   "ru": "Russian",

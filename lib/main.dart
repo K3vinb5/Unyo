@@ -17,6 +17,9 @@ import 'package:path/path.dart' as p;
 import 'package:unyo/util/utils.dart';
 import 'package:flutter_window_close/flutter_window_close.dart';
 
+// Making it a global variable to access it from anywhere
+final discord = DiscordRPC();
+
 Future<void> main() async {
   logger.i("Initializing dependencies");
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,14 +43,11 @@ Future<void> main() async {
     });
   }
 
-  // Initialize Discord RPC
-  await DiscordRPC().setRPCActivity();
+  await discord.setRPCActivity();
 
-  // Cleanup helper
   Future<void> cleanupRpc() async {
-    await FlutterDiscordRPC.instance.clearActivity();
-    await FlutterDiscordRPC.instance.disconnect();
-    await FlutterDiscordRPC.instance.dispose();
+    await discord.cleanup();
+    processManager.stopProcess();
   }
 
   // Handle forced shutdown (Ctrl+C, SIGTERM)
@@ -72,6 +72,7 @@ Future<void> main() async {
         Locale('pt'),
         Locale('ru'),
         Locale('ja'),
+        Locale('bn'),
         Locale('hi'),
       ],
       useOnlyLangCode: true,
@@ -102,9 +103,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     FlutterWindowClose.setWindowShouldCloseHandler(() async {
       logger.i("Unyo is exiting...");
-      await FlutterDiscordRPC.instance.clearActivity();
-      await FlutterDiscordRPC.instance.disconnect();
-      await FlutterDiscordRPC.instance.dispose();
+      await discord.cleanup();
       processManager.stopProcess();
       logger.i("Cleanup done; exiting now.");
       exit(0);
@@ -113,9 +112,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    FlutterDiscordRPC.instance.clearActivity();
-    FlutterDiscordRPC.instance.disconnect();
-    FlutterDiscordRPC.instance.dispose();
+    discord.cleanup();
     processManager.stopProcess();
     super.dispose();
   }

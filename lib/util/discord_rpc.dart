@@ -2,30 +2,52 @@ import 'package:flutter_discord_rpc/flutter_discord_rpc.dart';
 import 'package:unyo/models/models.dart';
 
 class DiscordRPC {
-  late DateTime initTime;
-  late bool discordFound; 
+  DateTime initTime = DateTime.now();
+  bool discordConnected = false;
 
-  void initDiscordRPC() {
+  void initDiscordRPC() async {
     try {
-      FlutterDiscordRPC.instance.connect();
-      initTime = DateTime.now();
-      discordFound = true;
-      setPageActivity("Home Screen");
+      await FlutterDiscordRPC.initialize('1266242749485809748');
+      await FlutterDiscordRPC.instance.connect(autoRetry: false);
+      discordConnected = FlutterDiscordRPC.instance.isConnected;
+      if (discordConnected) {
+        setPageActivity('Home Screen');
+      } else {
+        print('Discord client not detected');
+      }
+      FlutterDiscordRPC.instance.isConnectedStream.listen((connected) {
+        discordConnected = connected;
+        print('Discord connected: $connected');
+        if (connected) {
+          setPageActivity('Home Screen');
+        }
+      });
     } catch (e) {
-      print("No Discord instance was found");
-      discordFound = false;
+      discordConnected = false;
+      print('Discord RPC init failed: $e');
     }
   }
 
   Future<void> setRPCActivity() async {
-    await FlutterDiscordRPC.initialize("1266242749485809748");
+    if (!discordConnected) return;
+    try {
+    } catch (e) {
+      print('Failed to set Discord activity: $e');
+    }
+  }
 
-    // Connect RPC (auto retry on failure)
-    FlutterDiscordRPC.instance.connect(autoRetry: true, retryDelay: const Duration(seconds: 10));
+  Future<void> cleanup() async {
+    if (!discordConnected) return;
+    try {
+      await FlutterDiscordRPC.instance.clearActivity();
+      await FlutterDiscordRPC.instance.disconnect();
+      await FlutterDiscordRPC.instance.dispose();
+    } catch (_) {}
+    discordConnected = false;
   }
 
   void setPageActivity(String page) {
-    if (!discordFound) return;
+    if (!discordConnected) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
@@ -45,7 +67,7 @@ class DiscordRPC {
   }
 
   void setNavigatingAnimeActivity(AnimeModel animeModel) {
-    if (!discordFound) return;
+    if (!discordConnected) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
@@ -65,7 +87,7 @@ class DiscordRPC {
   }
 
   void setNavigatingMangaActivity(MangaModel mangaModel) {
-    if (!discordFound) return;
+    if (!discordConnected) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
@@ -85,28 +107,27 @@ class DiscordRPC {
   }
 
   void setWatchingAnimeActivity(
-      AnimeModel animeModel, int episode, MediaContentModel mediaContentModel) {
-    if (!discordFound) return;
+    AnimeModel animeModel,
+    int episode,
+    MediaContentModel mediaContentModel,
+  ) {
+    if (!discordConnected) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
           largeImage: mediaContentModel.imageUrls != null &&
-                  mediaContentModel.imageUrls!.length > episode
+                  mediaContentModel.imageUrls!.length >= episode
               ? mediaContentModel.imageUrls![episode - 1]
               : animeModel.coverImage,
-          largeText:
-              "Watching ${animeModel.userPreferedTitle}, Episode $episode",
+          largeText: "Watching ${animeModel.userPreferedTitle}, Episode $episode",
           smallImage: "https://i.imgur.com/tF7Hv84.png",
           smallText: "Unyo",
         ),
         state: mediaContentModel.titles != null &&
-                mediaContentModel.titles!.length > episode
+                mediaContentModel.titles!.length >= episode
             ? "Episode $episode, ${mediaContentModel.titles![episode - 1]}"
             : "Watching ${animeModel.userPreferedTitle}",
-        details: mediaContentModel.titles != null &&
-                mediaContentModel.titles!.length > episode
-            ? "Watching ${animeModel.userPreferedTitle}"
-            : "Episode $episode",
+        details: "Watching ${animeModel.userPreferedTitle}",
         timestamps: RPCTimestamps(
           start: initTime.millisecondsSinceEpoch,
           end: null,
@@ -116,13 +137,12 @@ class DiscordRPC {
   }
 
   void setReadingMangaActivity(MangaModel mangaModel, int chapter) {
-    if (!discordFound) return;
+    if (!discordConnected) return;
     FlutterDiscordRPC.instance.setActivity(
       activity: RPCActivity(
         assets: RPCAssets(
           largeImage: mangaModel.coverImage,
-          largeText:
-              "Reading ${mangaModel.userPreferedTitle}, Chapter $chapter",
+          largeText: "Reading ${mangaModel.userPreferedTitle}, Chapter $chapter",
           smallImage: "https://i.imgur.com/tF7Hv84.png",
           smallText: "Unyo",
         ),
