@@ -13,18 +13,18 @@ class DiscordRPC {
       if (discordConnected) {
         setPageActivity('Home Screen');
       } else {
-        print('Discord client not detected');
+        // print('Discord client not detected');
       }
       FlutterDiscordRPC.instance.isConnectedStream.listen((connected) {
         discordConnected = connected;
-        print('Discord connected: $connected');
+        // print('Discord connected: $connected');
         if (connected) {
           setPageActivity('Home Screen');
         }
       });
     } catch (e) {
       discordConnected = false;
-      print('Discord RPC init failed: $e');
+      // print('Discord RPC init failed: $e');
     }
   }
 
@@ -32,7 +32,7 @@ class DiscordRPC {
     if (!discordConnected) return;
     try {
     } catch (e) {
-      print('Failed to set Discord activity: $e');
+      // print('Failed to set Discord activity: $e');
     }
   }
 
