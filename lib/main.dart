@@ -42,7 +42,8 @@ Future<void> main() async {
       'player': {"avformat.extension_picky": "0"}
     });
   }
-
+ 
+  //Initialize Discord RPC
   await discord.setRPCActivity();
 
   Future<void> cleanupRpc() async {
