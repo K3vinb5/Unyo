@@ -17,6 +17,13 @@ class DiscordRPC {
     }
   }
 
+  Future<void> setRPCActivity() async {
+    await FlutterDiscordRPC.initialize("1266242749485809748");
+
+    // Connect RPC (auto retry on failure)
+    FlutterDiscordRPC.instance.connect(autoRetry: true, retryDelay: const Duration(seconds: 10));
+  }
+
   void setPageActivity(String page) {
     if (!discordFound) return;
     FlutterDiscordRPC.instance.setActivity(

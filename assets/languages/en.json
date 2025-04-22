@@ -123,5 +123,6 @@
   "next_page" : "Next Page",
   "previous_page" : "Previous Page",
   "video_loading" : "Please wait, the video is loading",
-  "cast_to_tv" : "Cast to TV"
+  "cast_to_tv" : "Cast to TV",
+  "discord_rpc": "Discord RPC"
 }

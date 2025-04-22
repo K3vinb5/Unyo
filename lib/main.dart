@@ -41,11 +41,7 @@ Future<void> main() async {
   }
 
   // Initialize Discord RPC
-  await FlutterDiscordRPC.initialize("1266242749485809748");
-  logger.i("Discord RPC initialized");
-
-  // Connect RPC (auto retry on failure)
-  FlutterDiscordRPC.instance.connect(autoRetry: true, retryDelay: const Duration(seconds: 10));
+  await DiscordRPC().setRPCActivity();
 
   // Cleanup helper
   Future<void> cleanupRpc() async {

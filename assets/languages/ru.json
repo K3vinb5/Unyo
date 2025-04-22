@@ -121,5 +121,6 @@
   "previous_chapter" : "Предыдущая глава",
   "next_chapter" : "Следующая глава",
   "next_page" : "Следующая страница",
-  "previous_page" : "Предыдущая страница"
+  "previous_page" : "Предыдущая страница",
+  "discord_rpc" : "Discord RPC"
 }

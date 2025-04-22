@@ -121,5 +121,6 @@
   "previous_chapter" : "Capitolo precedente",
   "next_chapter" : "Capitolo successivo",
   "next_page" : "Pagina successiva",
-  "previous_page" : "Pagina precedente"
+  "previous_page" : "Pagina precedente",
+  "discord_rpc" : "Discord RPC"
 }
