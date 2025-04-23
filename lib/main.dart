@@ -20,6 +20,11 @@ import 'package:flutter_window_close/flutter_window_close.dart';
 // Making it a global variable to access it from anywhere
 final discord = DiscordRPC();
 
+Future<void> shutdownCleanup() async {
+  await discord.cleanup();
+  processManager.stopProcess();
+}
+
 Future<void> main() async {
   logger.i("Initializing dependencies");
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,32 +37,28 @@ Future<void> main() async {
   Hive.registerAdapter(UserMediaModelAdapter());
   Hive.registerAdapter(MangaModelAdapter());
   Hive.registerAdapter(AnimeModelAdapter());
-  fvp.registerWith(options: {
-    'platforms': ['linux', 'macos'],
-  });
   if (Platform.isWindows) {
     fvp.registerWith(options: {
       'platforms': ['windows'],
       'video.decoders': ['DXVA', 'FFmpeg'],
       'player': {"avformat.extension_picky": "0"}
     });
+  } else {
+  fvp.registerWith(options: {
+    'platforms': ['linux', 'macos'],
+    });
   }
  
   //Initialize Discord RPC
   await discord.setRPCActivity();
 
-  Future<void> cleanupRpc() async {
-    await discord.cleanup();
-    processManager.stopProcess();
-  }
-
   // Handle forced shutdown (Ctrl+C, SIGTERM)
   ProcessSignal.sigint.watch().listen((_) async {
-    await cleanupRpc();
+    await shutdownCleanup();
     exit(0);
   });
   ProcessSignal.sigterm.watch().listen((_) async {
-    await cleanupRpc();
+    await shutdownCleanup();
     exit(0);
   });
 
@@ -104,17 +105,17 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     FlutterWindowClose.setWindowShouldCloseHandler(() async {
       logger.i("Unyo is exiting...");
-      await discord.cleanup();
-      processManager.stopProcess();
+      await shutdownCleanup();
       logger.i("Cleanup done; exiting now.");
-      exit(0);
+      return true;
     });
   }
 
   @override
   void dispose() {
-    discord.cleanup();
-    processManager.stopProcess();
+    Future.microtask(() async {
+      await shutdownCleanup();
+    });
     super.dispose();
   }
 
