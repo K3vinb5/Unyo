@@ -103,6 +103,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    discordRPC.initDiscordRPC();
     FlutterWindowClose.setWindowShouldCloseHandler(() async {
       logger.i("Unyo is exiting...");
       await shutdownCleanup();
