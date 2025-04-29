@@ -101,6 +101,8 @@ Map<String, double> chapterCompletedOptions = {
   "100%": 1.0,
 };
 
+final DiscordRPC discord = DiscordRPC();
+
 void setBannerPallete(
     String url, void Function(void Function()) setState) async {
   ImageProvider image = NetworkImage(url);

@@ -1,5 +1,6 @@
 import 'package:flutter_discord_rpc/flutter_discord_rpc.dart';
 import 'package:unyo/models/models.dart';
+import 'package:unyo/util/utils.dart';
 
 class DiscordRPC {
   DateTime initTime = DateTime.now();
@@ -13,18 +14,18 @@ class DiscordRPC {
       if (discordConnected) {
         setPageActivity('Home Screen');
       } else {
-        // print('Discord client not detected');
+        logger.i('Discord RPC not connected');
       }
       FlutterDiscordRPC.instance.isConnectedStream.listen((connected) {
         discordConnected = connected;
-        // print('Discord connected: $connected');
+        logger.i('Discord RPC connection status: $connected');
         if (connected) {
           setPageActivity('Home Screen');
         }
       });
     } catch (e) {
       discordConnected = false;
-      // print('Discord RPC init failed: $e');
+      logger.e('Discord RPC initialization failed: $e');
     }
   }
 
@@ -32,7 +33,7 @@ class DiscordRPC {
     if (!discordConnected) return;
     try {
     } catch (e) {
-      // print('Failed to set Discord activity: $e');
+      logger.e('Error setting Discord RPC activity: $e');
     }
   }
 

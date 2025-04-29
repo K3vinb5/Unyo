@@ -17,8 +17,6 @@ import 'package:path/path.dart' as p;
 import 'package:unyo/util/utils.dart';
 import 'package:flutter_window_close/flutter_window_close.dart';
 
-// Making it a global variable to access it from anywhere
-final discord = DiscordRPC();
 
 Future<void> shutdownCleanup() async {
   await discord.cleanup();
