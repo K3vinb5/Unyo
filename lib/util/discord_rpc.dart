@@ -3,19 +3,39 @@ import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
 
 class DiscordRPC {
+  static const _appId = '1266242749485809748';
+  bool _initialized = false;
   DateTime initTime = DateTime.now();
   bool discordConnected = false;
 
-  void initDiscordRPC() async {
+  /// Initialize Discord RPC once
+  Future<void> initDiscordRPC() async {
     try {
-      await FlutterDiscordRPC.initialize('1266242749485809748');
-      await FlutterDiscordRPC.instance.connect(autoRetry: false);
+      // only call initialize() once per process
+      if (!_initialized) {
+        await FlutterDiscordRPC.initialize(_appId);
+        _initialized = true;
+      }
+
+      // if we're already connected just update the activity
+      if (discordConnected && FlutterDiscordRPC.instance.isConnected) {
+        setPageActivity('Home Screen');
+        return;
+      }
+
+      // otherwise, connect and then set the initial activity
+      await FlutterDiscordRPC.instance.connect(autoRetry: true);
       discordConnected = FlutterDiscordRPC.instance.isConnected;
+
+      logger.i('Discord RPC connected: $discordConnected');
+
       if (discordConnected) {
         setPageActivity('Home Screen');
       } else {
         logger.i('Discord RPC not connected');
       }
+
+      // listen for reconnects (e.g. if the user restarts Discord)
       FlutterDiscordRPC.instance.isConnectedStream.listen((connected) {
         discordConnected = connected;
         logger.i('Discord RPC connection status: $connected');
@@ -24,16 +44,7 @@ class DiscordRPC {
         }
       });
     } catch (e) {
-      discordConnected = false;
       logger.e('Discord RPC initialization failed: $e');
-    }
-  }
-
-  Future<void> setRPCActivity() async {
-    if (!discordConnected) return;
-    try {
-    } catch (e) {
-      logger.e('Error setting Discord RPC activity: $e');
     }
   }
 
@@ -42,7 +53,6 @@ class DiscordRPC {
     try {
       await FlutterDiscordRPC.instance.clearActivity();
       await FlutterDiscordRPC.instance.disconnect();
-      await FlutterDiscordRPC.instance.dispose();
     } catch (_) {}
     discordConnected = false;
   }

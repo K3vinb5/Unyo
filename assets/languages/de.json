@@ -122,5 +122,5 @@
   "next_chapter" : "Nächstes Kapitel",
   "next_page" : "Nächste Seite",
   "previous_page" : "Vorherige Seite",
-  "discord_rpc" : "Discord RPC"
+  "enable_discord_rpc" : "Discord RPC"
 }

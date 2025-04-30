@@ -32,7 +32,7 @@ String remoteEndPoint = "https://unyo-be.k3vinb5.dev";
 String localEndPoint = "http://localhost:8084";
 const String anilistEndpoint = "https://graphql.anilist.co";
 Future<List<CastDevice>> devices = CastDiscoveryService().search();
-DiscordRPC discordRPC = DiscordRPC();
+final DiscordRPC discord = DiscordRPC();
 MTorrentServer torrentServer = MTorrentServer();
 var logger = Logger(
   printer: PrettyPrinter(),
@@ -101,7 +101,6 @@ Map<String, double> chapterCompletedOptions = {
   "100%": 1.0,
 };
 
-final DiscordRPC discord = DiscordRPC();
 
 void setBannerPallete(
     String url, void Function(void Function()) setState) async {
@@ -161,7 +160,7 @@ void initThemes(int selected, void Function(void Function()) setState) async {
 
 void openMangaDetails(
     BuildContext context, MangaModel currentManga, String tag) {
-  discordRPC.setNavigatingMangaActivity(currentManga);
+  discord.setNavigatingMangaActivity(currentManga);
   var mangaScreen = MangaDetailsScreen(
     currentManga: currentManga,
     tag: tag,
@@ -173,7 +172,7 @@ void openMangaDetails(
 }
 
 void openAnime(BuildContext context, AnimeModel currentAnime, String tag) {
-  discordRPC.setNavigatingAnimeActivity(currentAnime);
+  discord.setNavigatingAnimeActivity(currentAnime);
   var animeScreen = AnimeDetailsScreen(
     currentAnime: currentAnime,
     tag: tag,

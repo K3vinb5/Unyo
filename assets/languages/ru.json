@@ -122,5 +122,5 @@
   "next_chapter" : "Следующая глава",
   "next_page" : "Следующая страница",
   "previous_page" : "Предыдущая страница",
-  "discord_rpc" : "Discord RPC"
+  "enable_discord_rpc" : "Discord RPC"
 }

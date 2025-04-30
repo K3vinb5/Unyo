@@ -10,6 +10,7 @@ class PreferencesModel {
 
   Future<void> init() async {
     sharedPreferences = await SharedPreferences.getInstance();
+    box = await Hive.openBox("settings");
     userName = sharedPreferences.getString("user_logged");
     if (userName != null && userName != "null") {
       box = await Hive.openBox(userName!);

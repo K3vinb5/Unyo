@@ -124,5 +124,5 @@
   "previous_page" : "Previous Page",
   "video_loading" : "Please wait, the video is loading",
   "cast_to_tv" : "Cast to TV",
-  "discord_rpc": "Discord RPC"
+  "enable_discord_rpc": "Discord RPC"
 }

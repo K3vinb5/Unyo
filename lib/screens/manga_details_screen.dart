@@ -281,7 +281,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       showErrorDialog(context, exception: context.tr("no_title_found_dialog"));
       return;
     }
-    discordRPC.setReadingMangaActivity(widget.currentManga, chapterNum);
+    discord.setReadingMangaActivity(widget.currentManga, chapterNum);
     Navigator.push(
       context,
       customPageRouter(

@@ -16,7 +16,8 @@ import 'package:fvp/fvp.dart' as fvp;
 import 'package:path/path.dart' as p;
 import 'package:unyo/util/utils.dart';
 import 'package:flutter_window_close/flutter_window_close.dart';
-
+import 'package:unyo/models/models.dart';
+import 'package:unyo/util/constants.dart';
 
 Future<void> shutdownCleanup() async {
   await discord.cleanup();
@@ -35,6 +36,10 @@ Future<void> main() async {
   Hive.registerAdapter(UserMediaModelAdapter());
   Hive.registerAdapter(MangaModelAdapter());
   Hive.registerAdapter(AnimeModelAdapter());
+
+  prefs = PreferencesModel();
+  await prefs.init();
+
   if (Platform.isWindows) {
     fvp.registerWith(options: {
       'platforms': ['windows'],
@@ -46,9 +51,11 @@ Future<void> main() async {
     'platforms': ['linux', 'macos'],
     });
   }
- 
-  //Initialize Discord RPC
-  await discord.setRPCActivity();
+
+  final bool discordEnabled = prefs.getBool("discord_rpc") ?? false;
+  if (discordEnabled) {
+    await discord.initDiscordRPC();
+  }
 
   // Handle forced shutdown (Ctrl+C, SIGTERM)
   ProcessSignal.sigint.watch().listen((_) async {
@@ -101,7 +108,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    discordRPC.initDiscordRPC();
     FlutterWindowClose.setWindowShouldCloseHandler(() async {
       logger.i("Unyo is exiting...");
       await shutdownCleanup();
