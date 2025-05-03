@@ -6,11 +6,11 @@ import 'package:unyo/util/utils.dart';
 class PreferencesModel {
   late SharedPreferences sharedPreferences;
   late Box box;
+  late Box settignsBox;
   String? userName;
 
   Future<void> init() async {
     sharedPreferences = await SharedPreferences.getInstance();
-    box = await Hive.openBox("settings");
     userName = sharedPreferences.getString("user_logged");
     if (userName != null && userName != "null") {
       box = await Hive.openBox(userName!);

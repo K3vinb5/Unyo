@@ -35,8 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<MangaModel>? rereadingList;
 
   void attemptLogin() async {
-    prefs = PreferencesModel();
-    await prefs.init();
+    // prefs = PreferencesModel();
+    // await prefs.init();
     if (!prefs.isUserLogged()) {
       Future.delayed(Duration.zero, () {
         // prefs.getUsers(setState);
