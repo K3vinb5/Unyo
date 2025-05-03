@@ -123,6 +123,19 @@ class VideoPlayerValue {
   final mdk.Player player;
   final VideoCaptionFile caption;
 
+  VideoPlayerValue({required this.player, required this.caption});
+
+  /// Preserve native video ratio from the first video track.
+  double get aspectRatio {
+    final streams = player.mediaInfo.video;
+    if (streams != null && streams.isNotEmpty) {
+      final codec = streams.first.codec;
+      // codec.width and codec.height are ints
+      return codec.width / codec.height;
+    }
+    return 16 / 9;
+  }
+
   Duration get position => Duration(milliseconds: player.position);
 
   Duration get duration => Duration(milliseconds: player.mediaInfo.duration);
@@ -130,8 +143,6 @@ class VideoPlayerValue {
   double get volume => player.volume;
 
   bool get isPlaying => player.state == mdk.PlaybackState.playing;
-
-  VideoPlayerValue({required this.player, required this.caption});
 
   void setNewCaptionFile(ClosedCaptionFile? newClosedCaptionFile) {
     caption.setNewCaptionFile(newClosedCaptionFile);

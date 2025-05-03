@@ -86,16 +86,35 @@ class AnimeModel {
   }
 
   String getDefaultTitle() {
-    int titleType = prefs.getInt("default_title_type") ?? 0;
-    switch (titleType) {
+    final type = prefs.getInt("default_title_type") ?? 0;
+    switch (type) {
       case 0:
-        return userPreferedTitle ?? "";
+        // userPreferred → English → Japanese
+        return userPreferedTitle?.isNotEmpty == true
+            ? userPreferedTitle!
+            : englishTitle?.isNotEmpty == true
+                ? englishTitle!
+                : japaneseTitle ?? '';
       case 1:
-        return englishTitle ?? "";
+        // English → userPreferred → Japanese
+        return englishTitle?.isNotEmpty == true
+            ? englishTitle!
+            : userPreferedTitle?.isNotEmpty == true
+                ? userPreferedTitle!
+                : japaneseTitle ?? '';
       case 2:
-        return japaneseTitle ?? "";
+        // Japanese → userPreferred → English
+        return japaneseTitle?.isNotEmpty == true
+            ? japaneseTitle!
+            : userPreferedTitle?.isNotEmpty == true
+                ? userPreferedTitle!
+                : englishTitle ?? '';
       default:
-        return userPreferedTitle ?? "";
+        return userPreferedTitle?.isNotEmpty == true
+            ? userPreferedTitle!
+            : englishTitle?.isNotEmpty == true
+                ? englishTitle!
+                : japaneseTitle ?? '';
     }
   }
 
