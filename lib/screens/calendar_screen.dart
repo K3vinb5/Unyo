@@ -137,7 +137,6 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   @override
   Widget build(BuildContext context) {
-    //TODO must calculate both adjustedHeight and adjustedWidth in the future so it doesn't depend on 16/9 aspect ratio
 
     TabController tabContrller =
         TabController(length: calendarLists.entries.length, vsync: this);

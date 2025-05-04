@@ -137,7 +137,6 @@ class _AnimeUserListsScreenState extends State<AnimeUserListsScreen>
 
   @override
   Widget build(BuildContext context) {
-    //TODO must calculate both adjustedHeight and adjustedWidth in the future so it doesn't depend on 16/9 aspect ratio
 
     TabController tabContrller =
         TabController(length: userAnimeLists.entries.length, vsync: this);

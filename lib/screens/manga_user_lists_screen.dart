@@ -139,7 +139,6 @@ class _MangaUserListsScreenState extends State<MangaUserListsScreen>
 
   @override
   Widget build(BuildContext context) {
-    //TODO must calculate both adjustedHeight and adjustedWidth in the future so it doesn't depend on 16/9 aspect ratio
 
     TabController tabContrller =
         TabController(length: userMangaLists.entries.length, vsync: this);
