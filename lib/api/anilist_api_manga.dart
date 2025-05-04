@@ -429,16 +429,6 @@ Future<List<MangaModel>> getMangaModelListSearch(
   async {
   String finalSearch = search.isNotEmpty ? "search:\"$search\"" : "";
   
-  List<String>? formatFilter;
-  if (format != "Select Format") {
-    formatFilter = [format.toUpperCase().replaceAll(' ', '_')];
-  }
-
-  String? statusFilter;
-  if (status != "Select Status") {
-    statusFilter = status.toUpperCase().replaceAll(' ', '_');
-  }
-
   String? countryFilter;
   if (country != "Select Country") {
     switch (country) {
@@ -473,9 +463,9 @@ Future<List<MangaModel>> getMangaModelListSearch(
         "sort": "TITLE_ENGLISH_DESC"
       else
         "sort": sort.toUpperCase(),
-      if (format != "Select Format") "format": formatFilter,
+      if (format != "Select Format") "format": [format.toUpperCase().replaceAll(' ', '_')],
       if (genre != "Select Genre") "genres": [genre],
-      if (status != "Select Status") "status": statusFilter,
+      if (status != "Select Status") "status": status.toUpperCase().replaceAll(' ', '_'),
       if (countryFilter != null)  "countryOfOrigin": countryFilter,
     }
   };

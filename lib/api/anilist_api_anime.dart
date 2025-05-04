@@ -138,16 +138,6 @@ Future<List<AnimeModel>> getAnimeModelListSearch(
   int n,
 ) async {
   String finalSearch = search.isNotEmpty ? "search:\"$search\"" : "";
-
-  List<String>? formatFilter;
-  if (format != "Select Format") {
-    formatFilter = [format.toUpperCase().replaceAll(' ', '_')];
-  }
-
-  String? statusFilter;
-  if (status != "Select Status") {
-    statusFilter = status.toUpperCase().replaceAll(' ', '_');
-  }
   
   Map<String, dynamic> query = {
     "query":
@@ -159,11 +149,11 @@ Future<List<AnimeModel>> getAnimeModelListSearch(
         "sort": "SEARCH_MATCH"
       else
         "sort": "${sort.toUpperCase()}_DESC",
-      if (format != "Select Format") "format": formatFilter,
+      if (format != "Select Format") "format": [format.toUpperCase().replaceAll(' ', '_')],
       if (season != "Select Season") "season": season.toUpperCase(),
       if (year != "Select Year") "seasonYear": int.parse(year),
       if (genre != "Select Genre") "genres": [genre],
-      if (status != "Select Status") "status": statusFilter,
+      if (status != "Select Status") "status": status.toUpperCase().replaceAll(' ', '_')
     }
   };
   var url = Uri.parse(anilistEndpoint);
