@@ -126,7 +126,7 @@ class VideoPlayerValue {
   VideoPlayerValue({required this.player, required this.caption});
 
   /// Preserve native video ratio from the first video track.
-  double get aspectRatio {
+  double aspectRatio() {
     final streams = player.mediaInfo.video;
     if (streams != null && streams.isNotEmpty) {
       final codec = streams.first.codec;
