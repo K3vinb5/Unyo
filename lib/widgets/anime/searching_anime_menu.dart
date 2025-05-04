@@ -66,7 +66,7 @@ class _SearchingAnimeMenuState extends State<SearchingAnimeMenu> {
     searchTimer.cancel();
     searchTimer = Timer(const Duration(milliseconds: 500), () async {
       List<AnimeModel> newSearchMediaList = await getAnimeModelListSearch(
-          text, currentSortBy, currentSeason, currentFormat, currentYear, currentStatus, currentGenre, 10);
+    text, currentGenre, currentSortBy, currentSeason, currentStatus, currentFormat, currentYear,10);
       setState(() {
         listAnimeModels = newSearchMediaList;
         listEntries = [
