@@ -6,7 +6,6 @@ import 'package:unyo/util/utils.dart';
 class PreferencesModel {
   late SharedPreferences sharedPreferences;
   late Box box;
-  late Box settignsBox;
   String? userName;
 
   Future<void> init() async {
