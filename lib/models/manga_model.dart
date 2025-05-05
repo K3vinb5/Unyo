@@ -79,7 +79,7 @@ class MangaModel {
       'description': description,
       'format': format,
       'averageScore': averageScore,
-      'chaptes': chapters,
+      'chapters': chapters,
       'currentEpisode': currentEpisode,
       'duration': duration,
     };
