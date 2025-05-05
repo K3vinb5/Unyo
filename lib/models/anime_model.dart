@@ -85,37 +85,27 @@ class AnimeModel {
     };
   }
 
+  /// Returns the first non-empty string in [candidates], or `''` if none.
+  String _firstNonEmpty(List<String?> candidates) {
+    for (final s in candidates) {
+      if (s?.isNotEmpty ?? false) return s!;
+    }
+    return '';
+  }
+
   String getDefaultTitle() {
     final type = prefs.getInt("default_title_type") ?? 0;
-    switch (type) {
-      case 0:
-        // userPreferred → English → Japanese
-        return userPreferedTitle?.isNotEmpty == true
-            ? userPreferedTitle!
-            : englishTitle?.isNotEmpty == true
-                ? englishTitle!
-                : japaneseTitle ?? '';
-      case 1:
-        // English → userPreferred → Japanese
-        return englishTitle?.isNotEmpty == true
-            ? englishTitle!
-            : userPreferedTitle?.isNotEmpty == true
-                ? userPreferedTitle!
-                : japaneseTitle ?? '';
-      case 2:
-        // Japanese → userPreferred → English
-        return japaneseTitle?.isNotEmpty == true
-            ? japaneseTitle!
-            : userPreferedTitle?.isNotEmpty == true
-                ? userPreferedTitle!
-                : englishTitle ?? '';
-      default:
-        return userPreferedTitle?.isNotEmpty == true
-            ? userPreferedTitle!
-            : englishTitle?.isNotEmpty == true
-                ? englishTitle!
-                : japaneseTitle ?? '';
-    }
+
+    final orders = <List<String?>>[
+      [userPreferedTitle, englishTitle, japaneseTitle], // 0
+      [englishTitle, userPreferedTitle, japaneseTitle], // 1
+      [japaneseTitle, userPreferedTitle, englishTitle], // 2
+    ];
+    final candidates = (type >= 0 && type < orders.length)
+        ? orders[type]
+        : orders[0];
+
+    return _firstNonEmpty(candidates);
   }
 
   @override
