@@ -85,18 +85,27 @@ class AnimeModel {
     };
   }
 
-  String getDefaultTitle() {
-    int titleType = prefs.getInt("default_title_type") ?? 0;
-    switch (titleType) {
-      case 0:
-        return userPreferedTitle ?? "";
-      case 1:
-        return englishTitle ?? "";
-      case 2:
-        return japaneseTitle ?? "";
-      default:
-        return userPreferedTitle ?? "";
+  /// Returns the first non-empty string in [candidates], or `''` if none.
+  String _firstNonEmpty(List<String?> candidates) {
+    for (final s in candidates) {
+      if (s?.isNotEmpty ?? false) return s!;
     }
+    return '';
+  }
+
+  String getDefaultTitle() {
+    final type = prefs.getInt("default_title_type") ?? 0;
+
+    final orders = <List<String?>>[
+      [userPreferedTitle, englishTitle, japaneseTitle], // 0
+      [englishTitle, userPreferedTitle, japaneseTitle], // 1
+      [japaneseTitle, userPreferedTitle, englishTitle], // 2
+    ];
+    final candidates = (type >= 0 && type < orders.length)
+        ? orders[type]
+        : orders[0];
+
+    return _firstNonEmpty(candidates);
   }
 
   @override

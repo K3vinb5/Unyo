@@ -176,7 +176,7 @@ class _VideoScreenState extends State<VideoScreen> {
                         alignment: Alignment.center,
                         children: [
                           AspectRatio(
-                            aspectRatio: 16 / 9,
+                            aspectRatio: _mixedController.videoController.value.aspectRatio(),
                             child:
                                 VideoPlayer(_mixedController.videoController),
                           ),

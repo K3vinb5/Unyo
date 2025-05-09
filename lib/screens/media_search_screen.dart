@@ -30,6 +30,8 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
   double totalHeight = 0;
   List<dynamic> searchMediaList = [];
   Timer searchTimer = Timer(const Duration(milliseconds: 500), () {});
+
+  // Filters
   List<String> sortBy = [
     "Select Sorting",
     "Score",
@@ -38,7 +40,7 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
     "A-Z",
     "Z-A"
   ];
-  List<String> format = [
+  List<String> animeFormat = [
     "Select Format",
     "Tv",
     "Tv Short",
@@ -48,13 +50,70 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
     "Ona",
     "Music"
   ];
+  List<String> mangaFormat = [
+    "Select Format",
+    "Manga",
+    "Novel",
+    "One shot",
+  ];
+  List<String> publishingStatus = [
+    "Select Status",
+    "Releasing",
+    "Finished",
+    "Not yet released",
+    "Hiatus",
+    "Cancelled"
+  ];
+  List<String> animeStatus = [
+    "Select Status",
+    "Releasing",
+    "Finished",
+    "Not yet released",
+    "Cancelled"
+  ];
+  List<String> countryOfOrigin = [
+    "Select Country",
+    "Japan",
+    "South Korea",
+    "China",
+    "Taiwan",
+  ];
+  List<String> genre = [
+    "Select Genre",
+    "Action",
+    "Adventure",
+    "Comedy",
+    "Drama",
+    "Ecchi",
+    "Fantasy",
+    "Hentai",
+    "Horror",
+    "Mahou Shoujo",
+    "Mecha",
+    "Music",
+    "Mystery",
+    "Psychological",
+    "Romance",
+    "Sci-Fi",
+    "Slice of Life",
+    "Sports",
+    "Supernatural",
+    "Thriller"
+  ];
   List<String> season = ["Select Season", "Winter", "Spring", "Summer", "Fall"];
+
   late List<String> years;
+
   String currentSortBy = "Select Sorting";
   String currentFormat = "Select Format";
+  String currentGenre = "Select Genre";
+  String currentStatus = "Select Status";
   String currentSeason = "Select Season";
+  String currentCountry = "Select Country";
   String currentYear = "Select Year";
+
   TextEditingController textFieldController = TextEditingController();
+
   final double minimumWidth = 124.08;
   final double minimumHeight = 195.44;
   double maximumWidth = 0;
@@ -98,19 +157,29 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
   void resetSearchTimer(String search) {
     searchTimer.cancel();
     searchTimer = Timer(const Duration(milliseconds: 500), () async {
-      //Calls anilist anilist api
       if (widget.type == "ANIME") {
-        var newSearchMediaList = await getAnimeModelListSearch(search,
-            currentSortBy, currentSeason, currentFormat, currentYear, 50);
-        setState(() {
-          searchMediaList = newSearchMediaList;
-        });
+        var newList = await getAnimeModelListSearch(
+          search,
+          currentGenre,
+          currentSortBy,
+          currentSeason,
+          currentStatus,
+          currentFormat,
+          currentYear,
+          50,
+        );
+        setState(() => searchMediaList = newList);
       } else {
-        var newSearchMediaList = await getMangaModelListSearch(search,
-            currentSortBy, currentSeason, currentFormat, currentYear, 50);
-        setState(() {
-          searchMediaList = newSearchMediaList;
-        });
+        var newList = await getMangaModelListSearch(
+          search,
+          currentSortBy,
+          currentFormat,
+          currentStatus,
+          currentCountry,
+          currentGenre,
+          50,
+        );
+        setState(() => searchMediaList = newList);
       }
     });
   }
@@ -191,7 +260,7 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   StyledTextField(
-                    width: totalWidth * 0.22,
+                    width: totalWidth * 0.20,
                     controller: textFieldController,
                     onChanged: (text) {
                       resetSearchTimer(text);
@@ -201,77 +270,86 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                     hint: "search".tr(),
                   ),
                   StyledDropDown(
-                    width: totalWidth * 0.22,
+                    horizontalPadding: 8,
+                    width: widget.type == "ANIME" ? totalWidth * 0.11 : totalWidth * 0.15,
                     onTap: (index) {
-                      currentFormat = format[index];
+                      currentGenre = genre[index];
                       resetSearchTimer(textFieldController.text);
                     },
-                    horizontalPadding: 0,
-                    items: const [
-                      Text("Select Format"),
-                      Text("Tv"),
-                      Text("Tv Short"),
-                      Text("Movie"),
-                      Text("Special"),
-                      Text("Ova"),
-                      Text("Ona"),
-                      Text("Music"),
-                    ],
-                  ),
-                  SizedBox(
-                    width: totalWidth * 0.26,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        StyledDropDown(
-                          width: totalWidth * 0.12,
-                          onTap: (index) {
-                            currentSeason = season[index];
-                            resetSearchTimer(textFieldController.text);
-                          },
-                          horizontalPadding: 0,
-                          items: const [
-                            Text("Select Season"),
-                            Text("Winter"),
-                            Text("Spring"),
-                            Text("Summer"),
-                            Text("Fall"),
-                          ],
-                        ),
-                        StyledDropDown(
-                          width: totalWidth * 0.12,
-                          onTap: (index) {
-                            currentYear = years[index];
-                            resetSearchTimer(textFieldController.text);
-                          },
-                          horizontalPadding: 0,
-                          items: [
-                            ...years.map(
-                              (year) {
-                                return Text(year);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    items: genre.map((e) => Text(e)).toList(),
                   ),
                   StyledDropDown(
+                    horizontalPadding: 8,
+                    width: widget.type == "ANIME" ? totalWidth * 0.09 : totalWidth * 0.12,
+                    onTap: (index) {
+                      currentFormat = widget.type == "MANGA"
+                          ? mangaFormat[index]
+                          : animeFormat[index];
+                      resetSearchTimer(textFieldController.text);
+                    },
+                    items: (widget.type == "MANGA"
+                        ? mangaFormat
+                        : animeFormat)
+                        .map((e) => Text(e))
+                        .toList(),
+                  ),
+                  if (widget.type == "ANIME") ...[
+                    StyledDropDown(
+                      horizontalPadding: 8,
+                      width: totalWidth * 0.09,
+                      onTap: (index) {
+                        currentSeason = season[index];
+                        resetSearchTimer(textFieldController.text);
+                      },
+                      items: season.map((e) => Text(e)).toList(),
+                    ),
+                    StyledDropDown(
+                      horizontalPadding: 8,
+                      width: totalWidth * 0.09,
+                      onTap: (index) {
+                        currentYear = years[index];
+                        resetSearchTimer(textFieldController.text);
+                      },
+                      items: years.map((e) => Text(e)).toList(),
+                    ),
+                    StyledDropDown(
+                      horizontalPadding: 8,
+                      width: totalWidth * 0.11,
+                      onTap: (index) {
+                        currentStatus = animeStatus[index];
+                        resetSearchTimer(textFieldController.text);
+                      },
+                      items: animeStatus.map((e) => Text(e)).toList(),
+                    ),
+                  ],
+                  if (widget.type == "MANGA") ...[
+                    StyledDropDown(
+                      horizontalPadding: 8,
+                      width: totalWidth * 0.12,
+                      onTap: (index) {
+                        currentStatus = publishingStatus[index];
+                        resetSearchTimer(textFieldController.text);
+                      },
+                      items: publishingStatus.map((e) => Text(e)).toList(),
+                    ),
+                    StyledDropDown(
+                      horizontalPadding: 8,
+                      width: totalWidth * 0.12,
+                      onTap: (index) {
+                        currentCountry = countryOfOrigin[index];
+                        resetSearchTimer(textFieldController.text);
+                      },
+                      items: countryOfOrigin.map((e) => Text(e)).toList(),
+                    ),
+                  ],
+                  StyledDropDown(
+                    horizontalPadding: 8,
+                    width: widget.type == "ANIME" ? totalWidth * 0.09 : totalWidth * 0.12,
                     onTap: (index) {
                       currentSortBy = sortBy[index];
                       resetSearchTimer(textFieldController.text);
                     },
-                    width: totalWidth * 0.22,
-                    horizontalPadding: 0,
-                    items: const [
-                      Text("Select Sorting"),
-                      Text("Score"),
-                      Text("Popularity"),
-                      Text("Trending"),
-                      Text("A-Z"),
-                      Text("Z-A"),
-                    ],
+                    items: sortBy.map((e) => Text(e)).toList(),
                   ),
                 ],
               ),
@@ -286,45 +364,43 @@ class _MediaSearchScreenState extends State<MediaSearchScreen> {
                   children: [
                     Wrap(
                       alignment: WrapAlignment.center,
-                      children: [
-                        ...searchMediaList.mapIndexed((index, mediaModel) {
-                          double calculatedWidth = adjustedWidth * 0.1;
-                          double calculatedHeight = adjustedHeight * 0.28;
-                          return Hero(
-                            tag: "${"grid-view"}-$index",
-                            child: AnimeWidget(
-                              title: (widget.type == "MANGA")
-                                  ? mediaModel.title
-                                  : mediaModel.getDefaultTitle(),
+                      children: searchMediaList.mapIndexed((index, mediaModel) {
+                        double w = adjustedWidth * 0.1;
+                        double h = adjustedHeight * 0.28;
+                        final widgetWidth  = min(max(w, minimumWidth),  maximumWidth);
+                        final widgetHeight = min(max(h, minimumHeight), maximumHeight);
+                        
+                        final mediaTile = widget.type == "ANIME"
+                          ? AnimeWidget(
+                              title: mediaModel.getDefaultTitle(),
                               score: mediaModel.averageScore,
                               coverImage: mediaModel.coverImage,
-                              onTap: () {
-                                if (widget.type == "ANIME") {
-                                  openAnime(
-                                    context,
-                                    mediaModel,
-                                    "grid-view-$index",
-                                  );
-                                } else {
-                                  openMangaDetails(
-                                    context,
-                                    mediaModel,
-                                    "grid-view-$index",
-                                  );
-                                }
-                              },
+                              onTap: () => openAnime(context, mediaModel, "grid-view-$index"),
                               textColor: Colors.white,
-                              height: min(max(calculatedHeight, minimumHeight),
-                                  maximumHeight),
-                              width: min(max(calculatedWidth, minimumWidth),
-                                  maximumWidth),
+                              width: widgetWidth,
+                              height: widgetHeight,
                               year: mediaModel.startDate,
                               format: mediaModel.format,
                               status: mediaModel.status,
-                            ),
-                          );
-                        })
-                      ],
+                            )
+                          : MangaWidget(
+                              title: mediaModel.getDefaultTitle(),
+                              score: mediaModel.averageScore,
+                              coverImage: mediaModel.coverImage,
+                              onTap: () => openMangaDetails(context, mediaModel, "grid-view-$index"),
+                              textColor: Colors.white,
+                              width: widgetWidth,
+                              height: widgetHeight,
+                              year: mediaModel.startDate,
+                              format: mediaModel.format,
+                              status: mediaModel.status,
+                            );
+
+                        return Hero(
+                          tag: "grid-view-$index",
+                          child: mediaTile,
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),

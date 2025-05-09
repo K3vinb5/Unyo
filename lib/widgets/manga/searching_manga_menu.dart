@@ -39,7 +39,9 @@ class _SearchingMangaMenuState extends State<SearchingMangaMenu> {
   String currentSortBy = "Select Sorting";
   String currentFormat = "Select Format";
   String currentSeason = "Select Season";
-  String currentYear = "Select Year";
+  String currentCountry = "Select Country";
+  String currentStatus = "Select Status";
+  String currentGenre = "Select Genre";
 
   @override
   void initState() {
@@ -70,7 +72,7 @@ class _SearchingMangaMenuState extends State<SearchingMangaMenu> {
     searchTimer.cancel();
     searchTimer = Timer(const Duration(milliseconds: 500), () async {
       List<MangaModel> newSearchMediaList = await getMangaModelListSearch(
-          text, currentSortBy, currentSeason, currentFormat, currentYear, 10);
+          text, currentSortBy, currentFormat, currentStatus, currentCountry, currentGenre, 10);
       setState(() {
         listMangaModels = newSearchMediaList;
         listEntries = [

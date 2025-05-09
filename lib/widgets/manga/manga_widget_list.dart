@@ -77,7 +77,7 @@ class _MangaWidgetListState extends State<MangaWidgetList> {
   }
 
   void openMangaDetails(MangaModel currentManga, String tag) {
-    discordRPC.setNavigatingMangaActivity(currentManga);
+    discord.setNavigatingMangaActivity(currentManga);
     mangaScreen = MangaDetailsScreen(
       currentManga: currentManga,
       tag: tag,

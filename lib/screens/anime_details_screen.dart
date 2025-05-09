@@ -262,7 +262,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       showErrorDialog(context, exception: context.tr("no_title_found_dialog"));
       return;
     }
-    discordRPC.setWatchingAnimeActivity(
+    discord.setWatchingAnimeActivity(
         widget.currentAnime, animeEpisode, mediaContentModel);
     if (!mounted) return;
     showDialog(

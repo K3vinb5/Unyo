@@ -121,6 +121,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                     value: (prefs.getBool("display_video_duration") ?? false),
                   ),
+                SettingsSwitchOptionWidget(
+                  title: context.tr("enable_discord_rpc"),
+                  onPressed: (bool newValue) async {
+                    setState(() {
+                      prefs.setBool("discord_rpc", newValue);
+                    });
+                    if (newValue) {
+                      await discord.initDiscordRPC();
+                    } else {
+                      await discord.cleanup();
+                    }
+                  },
+                value: prefs.getBool("discord_rpc") ?? false,
+              ),
                   SettingsSwitchOptionWidget(
                     title: context.tr("enable_open_subtitles"),
                     onPressed: (bool newValue) {
