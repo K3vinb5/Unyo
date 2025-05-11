@@ -37,7 +37,7 @@ dependencies:
   smooth_list_view: 2.0.2
   crypto: 3.0.3
   flutter_markdown: 0.7.7
-  fvp: 0.31.1
+  fvp: 0.31.2
   video_player: 2.8.3
   flutter_acrylic: 1.1.4
   easy_localization: 3.0.7

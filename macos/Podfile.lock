@@ -10,13 +10,13 @@ PODS:
   - flutter_window_close (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
-  - fvp (0.20.2):
+  - fvp (0.31.2):
     - Flutter
     - FlutterMacOS
-    - mdk (~> 0.29.1)
+    - mdk (~> 0.32.0)
   - macos_window_utils (1.0.0):
     - FlutterMacOS
-  - mdk (0.29.1)
+  - mdk (0.32.0)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -74,20 +74,20 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/video_player_avfoundation/darwin
 
 SPEC CHECKSUMS:
-  bitsdojo_window_macos: 44e3b8fe3dd463820e0321f6256c5b1c16bb6a00
-  bonsoir_darwin: e3b8526c42ca46a885142df84229131dfabea842
-  desktop_keep_screen_on: 855ea723f37225b8fc7895cffa06fe89f4fabd46
+  bitsdojo_window_macos: 7959fb0ca65a3ccda30095c181ecb856fae48ea9
+  bonsoir_darwin: 29c7ccf356646118844721f36e1de4b61f6cbd0e
+  desktop_keep_screen_on: bfedcf75be8bd8b4a21db3dcf48667427087792c
   flutter_discord_rpc: 53b006f68ef620a99fe1b3ba7e83513f3ae95b4c
-  flutter_window_close: ee4a6b81ca6fafe93b7cba48b0a18976e3f48e39
+  flutter_window_close: bd408414cbbf0d39f0d3076c4da0cdbf1c527168
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  fvp: dc8c88c3d851ded27bc406f6b35469d578471b75
-  macos_window_utils: 933f91f64805e2eb91a5bd057cf97cd097276663
-  mdk: 3c49affb38303cf86fd9f8ea1e05fe029c4dc194
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
-  url_launcher_macos: d2691c7dd33ed713bf3544850a623080ec693d95
-  video_player_avfoundation: 2b4384f3b157206b5e150a0083cdc0c905d260d3
+  fvp: 89275776efede62b7fde1762afa518974e6d6750
+  macos_window_utils: 3bca8603c2a1cf2257351dfe6bbccc9accf739fd
+  mdk: a726c85fd49c002b83d586b278d452f387750889
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  url_launcher_macos: 0fba8ddabfc33ce0a9afe7c5fef5aab3d8d2d673
+  video_player_avfoundation: 2cef49524dd1f16c5300b9cd6efd9611ce03639b
 
-PODFILE CHECKSUM: 9ebaf0ce3d369aaa26a9ea0e159195ed94724cf3
+PODFILE CHECKSUM: 864efca2071e997fd7028c12bc4746eb1ba0eb14
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
