@@ -50,11 +50,18 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   void initPages(String chapterId) async {
-    chapterPages = await widget.getMangaChapterPages(chapterId);
     setState(() {
+      currentPage  = 0;
+      totalPages = 0;     
+      chapterBytes = [];
+    });
+
+    final chapterPages = await widget.getMangaChapterPages(chapterId);
+
+    setState(() {
+      this.chapterPages = chapterPages;
       totalPages = chapterPages.length;
-      //kinda scuffed
-      chapterBytes = List.filled(totalPages, null);
+      chapterBytes = List<Uint8List?>.filled(totalPages, null);
     });
     downloadChapterPages();
   }
@@ -71,42 +78,44 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   void goBackPage() {
     setState(() {
-      if (currentPageOption == 1) {
-        if (currentPage > 1) {
-          currentPage -= 2;
-        }
-      } else {
-        if (currentPage > 0) {
-          currentPage--;
-        }
+      if (currentPageOption == 1) { // Double page mode
+        currentPage = (currentPage - 2).clamp(0, totalPages - 1);
+      } else { // Single page mode
+        currentPage = (currentPage - 1).clamp(0, totalPages - 1);
       }
     });
   }
 
   void goForwardPage() {
     setState(() {
-      if (currentPageOption == 1) {
-        if (currentPage < totalPages - 3) {
-          currentPage += 2;
-        } else if (currentPage < totalPages - 2) {
-          currentPage++;
-        }
-      } else {
-        currentPage++;
+      if (currentPageOption == 1) { // Double page mode
+        final newPage = (currentPage + 2).clamp(0, totalPages - 1);
+        currentPage = newPage < totalPages ? newPage : totalPages - 1;
+      } else { // Single page mode
+        currentPage = (currentPage + 1).clamp(0, totalPages - 1);
       }
     });
   }
 
   void onReceivedKeys(LogicalKeyboardKey logicalKey) {
+    bool isLeftToRight = currentOrientationOption == 0;
     switch (logicalKey) {
       case LogicalKeyboardKey.space:
         goForwardPage();
         break;
       case LogicalKeyboardKey.arrowLeft:
-        goBackPage();
+        if (isLeftToRight) {
+          goBackPage();
+        } else {
+          goForwardPage();
+        }
         break;
       case LogicalKeyboardKey.arrowRight:
-        goForwardPage();
+        if (isLeftToRight) {
+          goForwardPage();
+        } else {
+          goBackPage();
+        }
         break;
       case LogicalKeyboardKey.arrowUp:
         goBackPage();
@@ -183,9 +192,16 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   Widget singlePageList(double width, double height) {
-    if (currentPage == totalPages - 1) {
-      currentPage--;
+    if (chapterBytes.isEmpty) {
+      return SizedBox(
+        width: width,
+        height: height,
+        child: Center(
+          child: LoadingAnimationWidget.inkDrop(color: Colors.white, size: 30),
+        ),
+      );
     }
+    final safePage = currentPage.clamp(0, chapterBytes.length - 1);
     return SizedBox(
       width: width,
       height: height,
@@ -212,14 +228,14 @@ class _ReadingScreenState extends State<ReadingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            chapterBytes[currentPage] != null
+            chapterBytes[safePage] != null
                 ? SizedBox(
                     height: height,
                     width: width,
                     child: currentFittingOption != 0
                         ? SingleChildScrollView(
                             child: Image.memory(
-                              chapterBytes[currentPage]!,
+                              chapterBytes[safePage]!,
                               color: currentInverseModeOption == 0
                                   ? Colors.black
                                   : Colors.white,
@@ -230,7 +246,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                             ),
                           )
                         : Image.memory(
-                            chapterBytes[currentPage]!,
+                            chapterBytes[safePage]!,
                             color: currentInverseModeOption == 0
                                 ? Colors.black
                                 : Colors.white,
@@ -251,6 +267,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   Widget doublePageList(bool leftToRight, double width, double height) {
+    bool hasNextPage = (currentPage + 1) < chapterBytes.length;
     return SizedBox(
       width: width,
       // height: height,
@@ -277,8 +294,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            (chapterBytes[currentPage] != null &&
-                    chapterBytes[currentPage + 1] != null)
+            (chapterBytes[currentPage] != null && (!hasNextPage ||
+                    chapterBytes[currentPage + 1] != null))
                 ? SizedBox(
                     height: height,
                     width: width,
@@ -297,7 +314,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   Widget doublePages(bool leftToRight, double width) {
-    if (currentPage == chapterBytes.length) {
+    if (currentPage + 1 >= chapterBytes.length) {
       //last chapter page
       return Image.memory(
         chapterBytes[currentPage]!,

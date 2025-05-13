@@ -26,6 +26,7 @@ class MangaDetailsScreen extends StatefulWidget {
 }
 
 class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
+  String get _prefsKeyForThisManga => 'default_manga_source_${widget.currentManga.id}';
   late VideoScreen videoScreen;
   UserMediaModel? userMangaModel;
   List<String> searches = [];
@@ -67,10 +68,34 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   void initState() {
     super.initState();
     mangaSources = globalMangasSources;
-    Future.delayed(Duration.zero, () {
-      updateSource(0, context);
+
+    Future.delayed(Duration.zero, () async {
+      
+      final keys = mangaSources.keys.toList()..sort();
+      final savedKey = prefs.getInt(_prefsKeyForThisManga);
+
+      int initialSource = 0;
+      
+      if (keys.isNotEmpty) {
+        if (savedKey != null && keys.contains(savedKey)) {
+          initialSource = savedKey;
+        } else if (savedKey == null || savedKey < keys.first) {
+          initialSource = keys.first;
+        } else if (savedKey > keys.last) {
+          initialSource = keys.last;
+        } else {
+          initialSource = keys.lastWhere((k) => k < savedKey);
+        }
+      }
+
+      debugPrint(
+        'Using mangaSource key $initialSource '
+        '(available: $keys, saved: $savedKey)'
+      );
+      if (!mounted) return;
+      updateSource(initialSource, context);
+      setUserMangaModel();
     });
-    setUserMangaModel();
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
@@ -211,7 +236,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       Navigator.of(context).pop();
       return;
     }
-
+    prefs.setInt(_prefsKeyForThisManga, newSource);
     setState(() {
       currentSource = newSource;
       currentSearch = 0;

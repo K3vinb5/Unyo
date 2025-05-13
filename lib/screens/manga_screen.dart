@@ -54,14 +54,16 @@ class _MangaScreenState extends State<MangaScreen> {
   }
 
   void setScrollListener() {
-    if (pageScrollController.offset > 200 && bannerInfoVisible) {
-      setState(() {
-        bannerInfoVisible = false;
-      });
-    } else if (pageScrollController.offset <= 200 && !bannerInfoVisible) {
-      setState(() {
-        bannerInfoVisible = true;
-      });
+    final offset = pageScrollController.offset;
+    const hideThreshold = 225.0;
+    const showThreshold = 140.0;
+
+    if (offset > hideThreshold && bannerInfoVisible) {
+      bannerInfoVisible = false;
+      setState(() {});
+    } else if (offset < showThreshold && !bannerInfoVisible) {
+      bannerInfoVisible = true;
+      setState(() {});
     }
   }
 

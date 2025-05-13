@@ -23,6 +23,7 @@ class AnimeDetailsScreen extends StatefulWidget {
 }
 
 class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
+  String get _prefsKeyForThisAnime => 'default_anime_source_${widget.currentAnime.id}';
   UserMediaModel? userAnimeModel;
   List<String> searches = [];
   List<String> searchesId = [];
@@ -64,12 +65,35 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   void initState() {
     super.initState();
     animeSources = globalAnimesSources;
+
     mediaContentModel = MediaContentModel(anilistId: widget.currentAnime.id);
     mediaContentModel.init();
-    Future.delayed(Duration.zero, () {
-      updateSource(0, context);
+
+    Future.delayed(Duration.zero, () async {
+
+      final keys = animeSources.keys.toList()..sort();
+      final savedKey = prefs.getInt(_prefsKeyForThisAnime);
+      
+      int initialSource = 0;
+      
+      if (keys.isNotEmpty) {
+        if (savedKey != null && keys.contains(savedKey)) {
+          initialSource = savedKey;
+        } else if (savedKey == null || savedKey < keys.first) {
+          initialSource = keys.first;
+        } else if (savedKey > keys.last) {
+          initialSource = keys.last;
+        } else {
+          initialSource = keys.lastWhere((k) => k < savedKey);
+        }
+      }
+      
+      debugPrint('Using animeSource key $initialSource '
+                '(available: $keys, saved: $savedKey)');
+      if (!mounted) return;
+      updateSource(initialSource, context);
+      setUserAnimeModel();
     });
-    setUserAnimeModel();
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
@@ -203,6 +227,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
       Navigator.of(context).pop();
       return;
     }
+    prefs.setInt(_prefsKeyForThisAnime, newSource);
     setState(() {
       manualTitleSelection = false;
       currentSource = newSource;
@@ -306,7 +331,7 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
                 height: height,
                 wrongTitleSearchController: wrongTitleSearchController,
                 wrongTitleEntries: wrongTitleEntries,
-                manualSelection: currentSearchIndex,
+                manualSelection: currentSearchIndex ?? 0,
                 currentSearchString: manualTitleSelection
                     ? currentSearchString!
                     : searches.isNotEmpty
