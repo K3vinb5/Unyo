@@ -49,3 +49,6 @@ libmtorrentserver.so
 .fvm/
 /.fvmrc
 /pubspec.lock
+
+# VsCode related
+.vscode/
