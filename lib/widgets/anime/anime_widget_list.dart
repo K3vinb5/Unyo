@@ -77,7 +77,7 @@ class _AnimeWidgetListState extends State<AnimeWidgetList> {
   }
 
   void openAnime(AnimeModel currentAnime, String tag) {
-    discordRPC.setNavigatingAnimeActivity(currentAnime);
+    discord.setNavigatingAnimeActivity(currentAnime);
     animeScreen = AnimeDetailsScreen(
       currentAnime: currentAnime,
       tag: tag,
