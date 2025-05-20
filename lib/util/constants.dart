@@ -36,6 +36,7 @@ final DiscordRPC discord = DiscordRPC();
 MTorrentServer torrentServer = MTorrentServer();
 var logger = Logger(
   printer: PrettyPrinter(),
+  filter: ProductionFilter(),
 );
 
 String getEndpoint() {
