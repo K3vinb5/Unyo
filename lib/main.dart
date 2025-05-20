@@ -16,6 +16,13 @@ import 'package:fvp/fvp.dart' as fvp;
 import 'package:path/path.dart' as p;
 import 'package:unyo/util/utils.dart';
 import 'package:flutter_window_close/flutter_window_close.dart';
+import 'package:unyo/models/models.dart';
+import 'package:unyo/util/constants.dart';
+
+Future<void> shutdownCleanup() async {
+  await discord.cleanup();
+  processManager.stopProcess();
+}
 
 Future<void> main() async {
   logger.i("Initializing dependencies");
@@ -29,19 +36,37 @@ Future<void> main() async {
   Hive.registerAdapter(UserMediaModelAdapter());
   Hive.registerAdapter(MangaModelAdapter());
   Hive.registerAdapter(AnimeModelAdapter());
-  fvp.registerWith(options: {
-    'platforms': ['linux', 'macos'],
-  });
+
+  prefs = PreferencesModel();
+  await prefs.init();
+
   if (Platform.isWindows) {
     fvp.registerWith(options: {
       'platforms': ['windows'],
       'video.decoders': ['DXVA', 'FFmpeg'],
       'player': {"avformat.extension_picky": "0"}
     });
+  } else {
+  fvp.registerWith(options: {
+    'platforms': ['linux', 'macos'],
+    });
   }
-  // await FlutterDiscordRPC.initialize(
-  //   "1266242749485809748",
-  // );
+
+  final bool discordEnabled = prefs.getBool("discord_rpc") ?? false;
+  if (discordEnabled) {
+    await discord.initDiscordRPC();
+  }
+
+  // Handle forced shutdown (Ctrl+C, SIGTERM)
+  ProcessSignal.sigint.watch().listen((_) async {
+    await shutdownCleanup();
+    exit(0);
+  });
+  ProcessSignal.sigterm.watch().listen((_) async {
+    await shutdownCleanup();
+    exit(0);
+  });
+
   logger.i("Initializing Unyo");
   runApp(
     EasyLocalization(
@@ -53,6 +78,9 @@ Future<void> main() async {
         Locale('it'),
         Locale('pt'),
         Locale('ru'),
+        Locale('ja'),
+        Locale('bn'),
+        Locale('hi'),
       ],
       useOnlyLangCode: true,
       path: 'assets/languages',
@@ -82,15 +110,17 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     FlutterWindowClose.setWindowShouldCloseHandler(() async {
       logger.i("Unyo is exiting...");
-      processManager.stopProcess();
-      print("Killed internal server");
+      await shutdownCleanup();
+      logger.i("Cleanup done; exiting now.");
       return true;
     });
   }
 
   @override
   void dispose() {
-    processManager.stopProcess();
+    Future.microtask(() async {
+      await shutdownCleanup();
+    });
     super.dispose();
   }
 

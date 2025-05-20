@@ -96,11 +96,14 @@ class _AnimeScreenState extends State<AnimeScreen> {
   }
 
   void setScrollListener() {
-    double offset = pageScrollController.offset;
-    if (offset > 200 && bannerInfoVisible) {
+    final offset = pageScrollController.offset;
+    const hideThreshold = 220.0;
+    const showThreshold = 100.0;
+
+    if (offset > hideThreshold && bannerInfoVisible) {
       bannerInfoVisible = false;
       setState(() {});
-    } else if (offset < 200 && !bannerInfoVisible) {
+    } else if (offset < showThreshold && !bannerInfoVisible) {
       bannerInfoVisible = true;
       setState(() {});
     }

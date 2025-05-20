@@ -94,6 +94,20 @@ class UpdateDialog extends StatelessWidget {
   }
 }
 
+/// Returns true if [newVersion] is strictly greater than [currentVersion].
+bool _isVersionGreater(String newVersion, String currentVersion) {
+  List<String> newParts = newVersion.split('.');
+  List<String> currParts = currentVersion.split('.');
+  int maxLength = newParts.length > currParts.length ? newParts.length : currParts.length;
+  for (int i = 0; i < maxLength; i++) {
+    int n = i < newParts.length ? int.tryParse(newParts[i]) ?? 0 : 0;
+    int c = i < currParts.length ? int.tryParse(currParts[i]) ?? 0 : 0;
+    if (n > c) return true;
+    if (n < c) return false;
+  }
+  return false;
+}
+
 void showUpdateDialog(BuildContext context) async {
   var url = Uri.parse(apiEndpoint);
   var response = await http.get(url);
@@ -114,7 +128,9 @@ void showUpdateDialog(BuildContext context) async {
   Map<String, dynamic> jsonResponse = json.decode(response.body);
   final String markdown = jsonResponse["body"] as String;
   final String newVersion = jsonResponse["tag_name"] as String;
-  if (currentVersion == newVersion) return;
+
+  // Don't show dialog if version is not newer or tagged to ignore
+  if (!_isVersionGreater(newVersion, currentVersion)) return;
   if (newVersion.contains("ignore")) return;
   showDialog(
     context: context,
