@@ -50,6 +50,7 @@ class WrongTitleDialog extends StatelessWidget {
               const SizedBox(
                 height: 30,
               ),
+              // TODO Review DropdownMenu manualSelection field
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

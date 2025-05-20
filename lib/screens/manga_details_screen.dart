@@ -26,7 +26,8 @@ class MangaDetailsScreen extends StatefulWidget {
 }
 
 class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
-  String get _prefsKeyForThisManga => 'default_manga_source_${widget.currentManga.id}';
+  String get _defaultMangaSourceKey =>
+      'default_manga_source_${widget.currentManga.id}';
   late VideoScreen videoScreen;
   UserMediaModel? userMangaModel;
   List<String> searches = [];
@@ -70,32 +71,21 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     mangaSources = globalMangasSources;
 
     Future.delayed(Duration.zero, () async {
-      
-      final keys = mangaSources.keys.toList()..sort();
-      final savedKey = prefs.getInt(_prefsKeyForThisManga);
-
-      int initialSource = 0;
-      
-      if (keys.isNotEmpty) {
-        if (savedKey != null && keys.contains(savedKey)) {
-          initialSource = savedKey;
-        } else if (savedKey == null || savedKey < keys.first) {
-          initialSource = keys.first;
-        } else if (savedKey > keys.last) {
-          initialSource = keys.last;
-        } else {
-          initialSource = keys.lastWhere((k) => k < savedKey);
-        }
-      }
-
-      debugPrint(
-        'Using mangaSource key $initialSource '
-        '(available: $keys, saved: $savedKey)'
-      );
       if (!mounted) return;
-      updateSource(initialSource, context);
+      updateSource(getSavedSource(), context);
       setUserMangaModel();
     });
+  }
+
+  int getSavedSource() {
+    final List<String> sourcesNames = mangaSources.values.map((a) =>
+        a.getSourceName()).toList();
+    final String? savedSource = prefs.getString(_defaultMangaSourceKey);
+    if (savedSource != null && sourcesNames.contains(savedSource)) {
+      logger.i("Found saved previously saved source: $savedSource");
+      return sourcesNames.indexOf(savedSource);
+    }
+    return 0;
   }
 
   void setWrongTitleSearch(void Function(void Function()) setDialogState) {
@@ -107,7 +97,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     setDialogState(() {
       wrongTitleEntries = [
         ...searches.mapIndexed(
-          (index, title) {
+              (index, title) {
             return DropdownMenuEntry(
               style: const ButtonStyle(
                 foregroundColor: MaterialStatePropertyAll(Colors.white),
@@ -139,7 +129,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
 
   void setUserMangaModel() async {
     UserMediaModel? newUserMangaModel =
-        await loggedUserModel.getUserMangaInfo(widget.currentManga.id);
+    await loggedUserModel.getUserMangaInfo(widget.currentManga.id);
     setState(() {
       userMangaModel = newUserMangaModel;
     });
@@ -159,14 +149,14 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   void setSearches(Future<List<List<String>>> Function(String) getIds,
       {String? query, void Function(void Function())? setDialogState}) async {
     List<List<String>> newSearches =
-        await getIds(widget.currentManga.userPreferedTitle!);
+    await getIds(widget.currentManga.userPreferedTitle!);
     List<List<String>> newSearchesAndIds =
-        await getIds(query ?? widget.currentManga.userPreferedTitle!);
+    await getIds(query ?? widget.currentManga.userPreferedTitle!);
     if (newSearchesAndIds[0].isEmpty && query == null) {
       newSearchesAndIds = await getIds(widget.currentManga.englishTitle ?? "");
       if (newSearchesAndIds[0].isEmpty) {
         newSearchesAndIds =
-            await getIds(widget.currentManga.japaneseTitle ?? "");
+        await getIds(widget.currentManga.japaneseTitle ?? "");
       }
     }
 
@@ -184,7 +174,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       setDialogState(() {
         wrongTitleEntries = [
           ...searches.mapIndexed(
-            (index, title) {
+                (index, title) {
               return DropdownMenuEntry(
                 style: const ButtonStyle(
                   foregroundColor: MaterialStatePropertyAll(Colors.white),
@@ -236,7 +226,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       Navigator.of(context).pop();
       return;
     }
-    prefs.setInt(_prefsKeyForThisManga, newSource);
+    prefs.setString(_defaultMangaSourceKey, mangaSources[newSource]!.getSourceName());
     setState(() {
       currentSource = newSource;
       currentSearch = 0;
@@ -294,7 +284,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
       //waits a bit because anilist database may take a but to update, for now waiting one second could be tweaked later
       Timer(
         const Duration(milliseconds: 1000),
-        () {
+            () {
           setUserMangaModel();
         },
       );
@@ -318,7 +308,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
           },
           chapterId: chapterId,
           getMangaChapterPages:
-              mangaSources[currentSource]!.getMangaChapterPages,
+          mangaSources[currentSource]!.getMangaChapterPages,
         ),
       ),
     );
@@ -358,7 +348,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                       "Updating Title, don't close...",
                       type: AnimatedSnackBarType.warning,
                       desktopSnackBarPosition:
-                          DesktopSnackBarPosition.topCenter,
+                      DesktopSnackBarPosition.topCenter,
                     ).show(context);
                     await Future.delayed(const Duration(seconds: 1));
                     currentSearch = searches.indexOf(currentSearchString);
@@ -367,7 +357,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                       "Title Updated",
                       type: AnimatedSnackBarType.success,
                       desktopSnackBarPosition:
-                          DesktopSnackBarPosition.topCenter,
+                      DesktopSnackBarPosition.topCenter,
                     ).show(context);
                     Navigator.of(context).pop();
                   },
@@ -384,7 +374,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
     );
     Timer(
       const Duration(milliseconds: 500),
-      () {
+          () {
         setUserMangaModel();
       },
     );
@@ -435,17 +425,29 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   Widget build(BuildContext context) {
     return Material(
       color: (widget.currentManga.bannerImage != null &&
-              widget.currentManga.coverImage != null)
+          widget.currentManga.coverImage != null)
           ? Colors.black
           : Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedWidth =
-              getAdjustedWidth(MediaQuery.of(context).size.width, context);
-          totalWidth = MediaQuery.of(context).size.width;
+              getAdjustedWidth(MediaQuery
+                  .of(context)
+                  .size
+                  .width, context);
+          totalWidth = MediaQuery
+              .of(context)
+              .size
+              .width;
           adjustedHeight =
-              getAdjustedHeight(MediaQuery.of(context).size.height, context);
-          totalHeight = MediaQuery.of(context).size.height;
+              getAdjustedHeight(MediaQuery
+                  .of(context)
+                  .size
+                  .height, context);
+          totalHeight = MediaQuery
+              .of(context)
+              .size
+              .height;
 
           return Stack(
             alignment: Alignment.topCenter,
@@ -503,7 +505,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                             "Refreshing Page",
                             type: AnimatedSnackBarType.info,
                             desktopSnackBarPosition:
-                                DesktopSnackBarPosition.topCenter,
+                            DesktopSnackBarPosition.topCenter,
                           ).show(context);
                         },
                       ),
@@ -553,14 +555,15 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                         MediaResumeFromWidget(
                           totalWidth: totalWidth,
                           text:
-                              "${context.tr("resume_from")} Ch.${((userMangaModel?.progress ?? 0) + 1)}",
+                          "${context.tr("resume_from")} Ch.${((userMangaModel
+                              ?.progress ?? 0) + 1)}",
                           onPressed: () {
                             int chapterNum =
-                                ((userMangaModel?.progress ?? 0) + 1).toInt();
+                            ((userMangaModel?.progress ?? 0) + 1).toInt();
                             if (searches
-                                    .isEmpty /*||
+                                .isEmpty /*||
                                 (latestReleasedChapter + 1) <= chapterNum*/
-                                ) {
+                            ) {
                               return;
                             }
                             ((userMangaModel?.progress ?? 0) + 1).toInt();
@@ -600,7 +603,7 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
                               currentChapterGroup: currentChapterGroup,
                               chaptersId: chaptersId,
                               chapterTitle:
-                                  widget.currentManga.getDefaultTitle(),
+                              widget.currentManga.getDefaultTitle(),
                               openManga: openManga,
                             );
                           },
