@@ -6,7 +6,6 @@ import 'package:logger/logger.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/router/custom_page_route.dart';
-import 'package:unyo/router/router.dart';
 import 'package:unyo/util/torrent_server.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/screens/screens.dart';
@@ -243,20 +242,20 @@ Map<String, Color> tealTheme = {
   "darkColor": const Color.fromARGB(255, 0, 153, 153),
 };
 
-double getAdjustedHeight(double value, BuildContext context) {
+double getAdjustedHeight(double height, BuildContext context) {
   if (MediaQuery.of(context).size.aspectRatio > 1.77777777778) {
-    return value;
+    return height;
   } else {
-    return value *
+    return height *
         ((MediaQuery.of(context).size.aspectRatio) / (1.77777777778));
   }
 }
 
-double getAdjustedWidth(double value, BuildContext context) {
+double getAdjustedWidth(double width, BuildContext context) {
   if (MediaQuery.of(context).size.aspectRatio < 1.77777777778) {
-    return value;
+    return width;
   } else {
-    return value *
+    return width *
         ((1.77777777778) / (MediaQuery.of(context).size.aspectRatio));
   }
 }

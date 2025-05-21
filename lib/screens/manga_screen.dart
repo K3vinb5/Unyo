@@ -32,7 +32,7 @@ class _MangaScreenState extends State<MangaScreen> {
   bool pageLeftToRight = true;
   late Timer pageTimer;
   bool pageTimerStarted = false;
-  bool bannerInfoVisible = true;
+  final ValueNotifier<bool> bannerInfoVisible = ValueNotifier(true);
   double adjustedWidth = 0;
   double adjustedHeight = 0;
   double totalWidth = 0;
@@ -55,15 +55,10 @@ class _MangaScreenState extends State<MangaScreen> {
 
   void setScrollListener() {
     final offset = pageScrollController.offset;
-    const hideThreshold = 225.0;
-    const showThreshold = 140.0;
-
-    if (offset > hideThreshold && bannerInfoVisible) {
-      bannerInfoVisible = false;
-      setState(() {});
-    } else if (offset < showThreshold && !bannerInfoVisible) {
-      bannerInfoVisible = true;
-      setState(() {});
+    if (offset > 200 && bannerInfoVisible.value) {
+      bannerInfoVisible.value = false;
+    } else if (offset < 200 && !bannerInfoVisible.value) {
+      bannerInfoVisible.value = true;
     }
   }
 
@@ -149,6 +144,7 @@ class _MangaScreenState extends State<MangaScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      // color: const Color.fromARGB(255, 34, 33, 34),
       child: LayoutBuilder(
         builder: (context, constraints) {
           adjustedHeight =
@@ -163,46 +159,49 @@ class _MangaScreenState extends State<MangaScreen> {
               seasonPopularMangaList.isNotEmpty
                   ? SizedBox(
                       height: totalHeight * 0.35,
-                      child: AnimatedOpacity(
-                        opacity: bannerInfoVisible ? 1.0 : 0.0,
-                        duration: !bannerInfoVisible
-                            ? const Duration(milliseconds: 1500)
-                            : const Duration(milliseconds: 300),
-                        child: PageView(
-                          controller: pageController,
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            ...pageBannerMangaList.map(
-                              (mangaModel) {
-                                return PageBannerWidget(
-                                  animeModel: AnimeModel(
-                                      id: mangaModel.id,
-                                      userPreferedTitle:
-                                          mangaModel.getDefaultTitle(),
-                                      coverImage: mangaModel.coverImage,
-                                      bannerImage: mangaModel.bannerImage,
-                                      startDate: mangaModel.startDate,
-                                      endDate: mangaModel.endDate,
-                                      type: mangaModel.type,
-                                      status: mangaModel.status,
-                                      averageScore: mangaModel.averageScore,
-                                      episodes: mangaModel.chapters,
-                                      duration: mangaModel.duration,
-                                      description: mangaModel.description,
-                                      format: mangaModel.format),
-                                  width: totalWidth,
-                                  height: totalHeight * 0.35,
-                                  adjustedWidth: adjustedWidth,
-                                  adjustedHeight: adjustedHeight,
-                                );
-                              },
-                            ),
-                          ],
-                          onPageChanged: (int page) {
-                            setState(() {
-                              currentPage = page;
-                            });
-                          },
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: bannerInfoVisible,
+                        builder: (context, value, child) => AnimatedOpacity(
+                          opacity: value ? 1.0 : 0.0,
+                          duration: !value
+                              ? const Duration(milliseconds: 1500)
+                              : const Duration(milliseconds: 300),
+                          child: PageView(
+                            controller: pageController,
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              ...pageBannerMangaList.map(
+                                (mangaModel) {
+                                  return PageBannerWidget(
+                                    animeModel: AnimeModel(
+                                        id: mangaModel.id,
+                                        userPreferedTitle:
+                                            mangaModel.getDefaultTitle(),
+                                        coverImage: mangaModel.coverImage,
+                                        bannerImage: mangaModel.bannerImage,
+                                        startDate: mangaModel.startDate,
+                                        endDate: mangaModel.endDate,
+                                        type: mangaModel.type,
+                                        status: mangaModel.status,
+                                        averageScore: mangaModel.averageScore,
+                                        episodes: mangaModel.chapters,
+                                        duration: mangaModel.duration,
+                                        description: mangaModel.description,
+                                        format: mangaModel.format),
+                                    width: totalWidth,
+                                    height: totalHeight * 0.35,
+                                    adjustedWidth: adjustedWidth,
+                                    adjustedHeight: adjustedHeight,
+                                  );
+                                },
+                              ),
+                            ],
+                            onPageChanged: (int page) {
+                              setState(() {
+                                currentPage = page;
+                              });
+                            },
+                          ),
                         ),
                       ),
                     )
@@ -211,27 +210,30 @@ class _MangaScreenState extends State<MangaScreen> {
                 children: [
                   Column(
                     children: [
-                      AnimatedOpacity(
-                        opacity: seasonPopularMangaList.isEmpty
-                            ? 1
-                            : !bannerInfoVisible
-                                ? 1.0
-                                : 0.0,
-                        duration: !bannerInfoVisible
-                            ? const Duration(milliseconds: 300)
-                            : const Duration(milliseconds: 1500),
-                        child: Container(
-                          height: totalHeight * 0.35,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 34, 33, 34),
-                            border: Border.all(
+                      ValueListenableBuilder<bool>(
+                        valueListenable: bannerInfoVisible,
+                        builder: (context, value, child) => AnimatedOpacity(
+                          opacity: seasonPopularMangaList.isEmpty
+                              ? 1
+                              : !value
+                                  ? 1.0
+                                  : 0.0,
+                          duration: !value
+                              ? const Duration(milliseconds: 300)
+                              : const Duration(milliseconds: 1500),
+                          child: Container(
+                            height: totalHeight * 0.34,
+                            decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 34, 33, 34),
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 34, 33, 34),
+                              ),
                             ),
                           ),
                         ),
                       ),
                       Container(
-                        height: totalHeight * 0.65,
+                        height: totalHeight * 0.66,
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: const Color.fromARGB(255, 34, 33, 34),
@@ -281,26 +283,29 @@ class _MangaScreenState extends State<MangaScreen> {
                               ),
                             ],
                           ),
-                          AnimatedOpacity(
-                            opacity: bannerInfoVisible ? 1.0 : 0.0,
-                            duration: !bannerInfoVisible
-                                ? const Duration(milliseconds: 300)
-                                : const Duration(milliseconds: 1500),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                SearchingMangaMenu(
-                                  width: 400,
-                                  controller: quickSearchController,
-                                  color: Colors.white,
-                                  hintColor: Colors.grey,
-                                  label: context.tr("search"),
-                                  labelColor: Colors.white,
-                                ),
-                                const SizedBox(
-                                  width: 16,
-                                ),
-                              ],
+                          ValueListenableBuilder<bool>(
+                            valueListenable: bannerInfoVisible,
+                            builder: (context, value, child) => AnimatedOpacity(
+                              opacity: value ? 1.0 : 0.0,
+                              duration: !value
+                                  ? const Duration(milliseconds: 300)
+                                  : const Duration(milliseconds: 1500),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  SearchingMangaMenu(
+                                    width: 400,
+                                    controller: quickSearchController,
+                                    color: Colors.white,
+                                    hintColor: Colors.grey,
+                                    label: context.tr("search"),
+                                    labelColor: Colors.white,
+                                  ),
+                                  const SizedBox(
+                                    width: 16,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           MangaWidgetList(
@@ -339,9 +344,7 @@ class _MangaScreenState extends State<MangaScreen> {
                             onTap: () {
                               Navigator.of(context).push(
                                 customPageRouter(
-                                  const MediaSearchScreen(
-                                    type: "MANGA",
-                                  ),
+                                  const MangaSearchScreen(),
                                 ),
                               );
                             },

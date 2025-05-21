@@ -3,7 +3,6 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/window.dart';
-import 'package:flutter_discord_rpc/flutter_discord_rpc.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:unyo/models/adapters/anilist_user_model_adapter.dart';

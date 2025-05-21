@@ -246,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     // Image is fully loaded, start fading in
                                     return Container(
                                       width: totalWidth,
-                                      height: totalHeight * 0.35,
+                                      height: totalHeight * 0.34,
                                       color:
                                           const Color.fromARGB(255, 34, 33, 34),
                                       child: AnimatedOpacity(
@@ -261,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     // Keep the image transparent while loading
                                     return Container(
                                       width: totalWidth,
-                                      height: totalHeight * 0.35,
+                                      height: totalHeight * 0.34,
                                       color:
                                           const Color.fromARGB(255, 34, 33, 34),
                                       child: AnimatedOpacity(
@@ -274,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }
                                 },
                                 width: totalWidth,
-                                height: totalHeight * 0.35,
+                                height: totalHeight * 0.34,
                                 fit: BoxFit.cover,
                               ),
                               colors: const [Colors.white, Colors.black87],
