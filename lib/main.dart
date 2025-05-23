@@ -15,7 +15,6 @@ import 'package:fvp/fvp.dart' as fvp;
 import 'package:path/path.dart' as p;
 import 'package:unyo/util/utils.dart';
 import 'package:flutter_window_close/flutter_window_close.dart';
-import 'package:unyo/models/models.dart';
 import 'package:unyo/util/constants.dart';
 
 Future<void> shutdownCleanup() async {
@@ -36,9 +35,6 @@ Future<void> main() async {
   Hive.registerAdapter(MangaModelAdapter());
   Hive.registerAdapter(AnimeModelAdapter());
 
-  prefs = PreferencesModel();
-  await prefs.init();
-
   if (Platform.isWindows) {
     fvp.registerWith(options: {
       'platforms': ['windows'],
@@ -46,14 +42,9 @@ Future<void> main() async {
       'player': {"avformat.extension_picky": "0"}
     });
   } else {
-  fvp.registerWith(options: {
-    'platforms': ['linux', 'macos'],
+    fvp.registerWith(options: {
+      'platforms': ['linux', 'macos'],
     });
-  }
-
-  final bool discordEnabled = prefs.getBool("discord_rpc") ?? false;
-  if (discordEnabled) {
-    await discord.initDiscordRPC();
   }
 
   // Handle forced shutdown (Ctrl+C, SIGTERM)

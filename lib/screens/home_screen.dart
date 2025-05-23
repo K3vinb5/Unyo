@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -35,25 +36,44 @@ class _HomeScreenState extends State<HomeScreen> {
   List<MangaModel>? rereadingList;
 
   void attemptLogin() async {
-    // prefs = PreferencesModel();
-    // await prefs.init();
-    if (!prefs.isUserLogged()) {
-      Future.delayed(Duration.zero, () {
-        // prefs.getUsers(setState);
-        goToLogin();
-      });
-    } else {
-      accessToken = prefs.getString("accessToken");
-      userName = prefs.getString("userName");
-      userId = prefs.getInt("userId");
-      userName = prefs.userName!;
-      //change function bellow for when logged already
-      setUserInfo(users!
-              .where((user) =>
-                  user.userName == userName && user is AnilistUserModel)
-              .isNotEmpty
-          ? 0
-          : 1);
+    try {
+      prefs = PreferencesModel();
+      await prefs.init();
+      if (!prefs.isUserLogged()) {
+        Future.delayed(Duration.zero, () {
+          // prefs.getUsers(setState);
+          goToLogin();
+        });
+      } else {
+        setDiscordRPC();
+        accessToken = prefs.getString("accessToken");
+        userName = prefs.getString("userName");
+        userId = prefs.getInt("userId");
+        userName = prefs.userName!;
+        //change function bellow for when logged already
+        setUserInfo(users!
+            .where((user) =>
+        user.userName == userName && user is AnilistUserModel)
+            .isNotEmpty
+            ? 0
+            : 1);
+      }
+    } catch (e) {
+      logger.e("Error initializing preferences: $e");
+      resetSharedPreferences();
+      attemptLogin();
+    }
+  }
+
+  void resetSharedPreferences() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    sharedPrefs.clear();
+  }
+
+  void setDiscordRPC() async{
+    final bool discordEnabled = prefs.getBool("discord_rpc") ?? false;
+    if (discordEnabled) {
+      await discord.initDiscordRPC();
     }
   }
 
