@@ -65,9 +65,6 @@ icons_launcher:
     linux:
       enable: true
       image_path: 'assets/logo.png'
-    android:
-      enable: true
-      image_path: 'assets/logo.png'
 
 msix_config:
   display_name: Unyo
