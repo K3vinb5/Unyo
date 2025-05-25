@@ -77,10 +77,14 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   }
 
   int getSavedSource() {
+    if (animeSources.isEmpty) {
+      logger.w("No extensions found. Defaulting to source 0.");
+      return 0;
+    }
     final List<String> sourcesNames = animeSources.values.map((a) => a.getSourceName()).toList();
     final String? savedSource = prefs.getString(_defaultAnimeSourceKey);
     if (savedSource != null && sourcesNames.contains(savedSource)) {
-      logger.i("Found saved previously saved source: $savedSource");
+      logger.i("Found previously saved source: $savedSource");
       return sourcesNames.indexOf(savedSource);
     }
     return 0;
