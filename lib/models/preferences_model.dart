@@ -97,7 +97,8 @@ class PreferencesModel {
   }
 
   String? getString(String key) {
-    return box.get(key) as String?;
+    dynamic value = box.get(key);
+    return value?.toString(); // Convert to String
   }
 
   void setString(String key, String value) {
