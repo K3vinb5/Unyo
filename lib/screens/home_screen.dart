@@ -72,9 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void setDiscordRPC() async{
     final bool discordEnabled = prefs.getBool("discord_rpc") ?? false;
-    if (discordEnabled) {
-      await discord.initDiscordRPC();
+    if (!discordEnabled) {
+       await discord.cleanup();
+       return;
     }
+    await discord.initDiscordRPC(autoRetry: discordEnabled);
   }
 
   void goToLogin() {

@@ -128,7 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       prefs.setBool("discord_rpc", newValue);
                     });
                     if (newValue) {
-                      await discord.initDiscordRPC();
+                      await discord.initDiscordRPC(autoRetry: true);
                     } else {
                       await discord.cleanup();
                     }
