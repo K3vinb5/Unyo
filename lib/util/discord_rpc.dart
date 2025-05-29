@@ -75,6 +75,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
@@ -95,6 +105,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
@@ -115,6 +135,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
@@ -145,6 +175,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
@@ -165,6 +205,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
