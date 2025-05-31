@@ -16,6 +16,7 @@ class MangaModel {
     required this.averageScore,
     required this.chapters,
     required this.duration,
+    required this.genres,
     required this.description,
     required this.format,
     this.currentEpisode,
@@ -34,6 +35,7 @@ class MangaModel {
   String? status;
   String? description;
   String? format;
+  List<String>? genres;
   int? averageScore;
   int? chapters;
   int? currentEpisode;
@@ -60,6 +62,7 @@ class MangaModel {
       chapters: json['chapters'],
       currentEpisode: json['currentEpisode'],
       duration: json['duration'],
+      genres: List<String>.from(json['genres'] ?? []),
     );
   }
 
@@ -82,6 +85,7 @@ class MangaModel {
       'chapters': chapters,
       'currentEpisode': currentEpisode,
       'duration': duration,
+      'genres': genres,
     };
   }
 

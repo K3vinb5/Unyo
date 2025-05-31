@@ -41,6 +41,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   int currentFittingOption = 0;
   int currentInverseModeOption = 0;
   int currentOrientationOption = 0;
+  bool isFullscreen = false;
 
   @override
   void initState() {
@@ -97,6 +98,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
     });
   }
 
+  void fullscreenToggle() {
+    setState(() {
+      isFullscreen = !isFullscreen;
+    });
+  }
+
   void onReceivedKeys(LogicalKeyboardKey logicalKey) {
     bool isLeftToRight = currentOrientationOption == 0;
     switch (logicalKey) {
@@ -129,11 +136,20 @@ class _ReadingScreenState extends State<ReadingScreen> {
       case LogicalKeyboardKey.keyJ:
         goBackPage();
         break;
+      case LogicalKeyboardKey.keyF:
+        fullscreenToggle();
+        break;
       case LogicalKeyboardKey.escape:
-        updateUserMediaModel();
-        Navigator.pop(context);
+        if (isFullscreen) {
+          fullscreenToggle();
+          break;
+        } else {
+          updateUserMediaModel();
+          Navigator.pop(context);
+        }
         break;
       default:
+        break;
     }
   }
 
@@ -405,7 +421,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   Widget build(BuildContext context) {
     double totalWidth = MediaQuery.of(context).size.width;
     double totalHeight = MediaQuery.of(context).size.height;
-    double usableHeight = totalHeight - 50;
+    double usableHeight = totalHeight - (isFullscreen ? 0 : barHeight);
 
     return Material(
       color: const Color.fromARGB(255, 34, 33, 34),
@@ -431,29 +447,36 @@ class _ReadingScreenState extends State<ReadingScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                FocusScope(
-                  canRequestFocus: false,
-                  child: MangaOptionsBar(
-                    width: totalWidth,
-                    height: barHeight,
-                    currentPage: currentPage,
-                    totalPages: totalPages,
-                    pageOption: currentPageOption,
-                    currentChapter: widget.currentChapter,
-                    chaptersId: widget.chaptersId,
-                    setNewPageOption: setNewPageOption,
-                    fittingOption: currentFittingOption,
-                    setNewFittingOption: setNewFittingPageOption,
-                    orientationOption: currentOrientationOption,
-                    setNewOrientationOption: setNewOrientationOption,
-                    inverseModeOption: currentInverseModeOption,
-                    setNewInverseModeOption: setNewInverseModeOption,
-                    initPages: initPages,
-                    updateUserMediaModel: updateUserMediaModel,
-                    goBackPage: goBackPage,
-                    goForwardPage: goForwardPage,
+                if (!isFullscreen)
+                  FocusScope(
+                    canRequestFocus: false,
+                    child: MangaOptionsBar(
+                      width: totalWidth,
+                      height: barHeight,
+                      currentPage: currentPage,
+                      totalPages: totalPages,
+                      pageOption: currentPageOption,
+                      currentChapter: widget.currentChapter,
+                      chaptersId: widget.chaptersId,
+                      setNewPageOption: setNewPageOption,
+                      fittingOption: currentFittingOption,
+                      setNewFittingOption: setNewFittingPageOption,
+                      orientationOption: currentOrientationOption,
+                      setNewOrientationOption: setNewOrientationOption,
+                      inverseModeOption: currentInverseModeOption,
+                      setNewInverseModeOption: setNewInverseModeOption,
+                      initPages: initPages,
+                      updateUserMediaModel: updateUserMediaModel,
+                      goBackPage: goBackPage,
+                      goForwardPage: goForwardPage,
+                      isFullscreen: isFullscreen,
+                      toggleFullscreen: () {
+                        setState(() {
+                          isFullscreen = !isFullscreen;
+                        });
+                      },
+                    ),
                   ),
-                ),
                 SizedBox(
                   width: totalWidth,
                   height: usableHeight,
@@ -469,3 +492,4 @@ class _ReadingScreenState extends State<ReadingScreen> {
     );
   }
 }
+

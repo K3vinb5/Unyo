@@ -187,6 +187,7 @@ class _MangaScreenState extends State<MangaScreen> {
                                         episodes: mangaModel.chapters,
                                         duration: mangaModel.duration,
                                         description: mangaModel.description,
+                                        genres: mangaModel.genres,
                                         format: mangaModel.format),
                                     width: totalWidth,
                                     height: totalHeight * 0.35,

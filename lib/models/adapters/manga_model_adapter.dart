@@ -26,6 +26,7 @@ class MangaModelAdapter extends TypeAdapter<MangaModel> {
       chapters: fields[14],
       currentEpisode: fields[15],
       duration: fields[16],
+      genres: fields[17],
     );
   }
 
@@ -69,5 +70,7 @@ class MangaModelAdapter extends TypeAdapter<MangaModel> {
     writer.write(obj.currentEpisode);
     writer.writeByte(16);
     writer.write(obj.duration);
+    writer.writeByte(17);
+    writer.write(obj.genres ?? []);
   }
 }
