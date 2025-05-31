@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_discord_rpc/flutter_discord_rpc.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/util/utils.dart';
@@ -7,9 +8,10 @@ class DiscordRPC {
   bool _initialized = false;
   DateTime initTime = DateTime.now();
   bool discordConnected = false;
+  StreamSubscription<bool>? _connSub;
 
   /// Initialize Discord RPC once
-  Future<void> initDiscordRPC() async {
+  Future<void> initDiscordRPC({bool autoRetry = false}) async {
     try {
       // only call initialize() once per process
       if (!_initialized) {
@@ -24,7 +26,7 @@ class DiscordRPC {
       }
 
       // otherwise, connect and then set the initial activity
-      await FlutterDiscordRPC.instance.connect(autoRetry: true);
+      await FlutterDiscordRPC.instance.connect(autoRetry: autoRetry);
       discordConnected = FlutterDiscordRPC.instance.isConnected;
 
       logger.i('Discord RPC connected: $discordConnected');
@@ -36,19 +38,19 @@ class DiscordRPC {
       }
 
       // listen for reconnects (e.g. if the user restarts Discord)
-      FlutterDiscordRPC.instance.isConnectedStream.listen((connected) {
-        discordConnected = connected;
-        logger.i('Discord RPC connection status: $connected');
-        if (connected) {
-          setPageActivity('Home Screen');
-        }
-      });
+        _connSub = FlutterDiscordRPC.instance.isConnectedStream.listen((connected) {
+          discordConnected = connected;
+          logger.i('Discord RPC connection status: $connected');
+          if (connected) setPageActivity('Home Screen');
+        });
     } catch (e) {
       logger.e('Discord RPC initialization failed: $e');
     }
   }
 
   Future<void> cleanup() async {
+    await _connSub?.cancel();
+    _connSub = null;
     if (!discordConnected) return;
     try {
       await FlutterDiscordRPC.instance.clearActivity();
@@ -73,6 +75,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
@@ -93,6 +105,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
@@ -113,6 +135,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
@@ -143,6 +175,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
@@ -163,6 +205,16 @@ class DiscordRPC {
           start: initTime.millisecondsSinceEpoch,
           end: null,
         ),
+        buttons: [
+          const RPCButton(
+            label: "GitHub Repository",
+            url: "https://github.com/K3vinb5/Unyo",
+          ),
+          const RPCButton(
+            label: "Download App",
+            url: "https://github.com/K3vinb5/Unyo/releases",
+          ),
+        ],
       ),
     );
   }
