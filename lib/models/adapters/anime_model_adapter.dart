@@ -26,6 +26,7 @@ class AnimeModelAdapter extends TypeAdapter<AnimeModel> {
       episodes: fields[14],
       currentEpisode: fields[15],
       duration: fields[16],
+      genres: fields[17],
     );
   }
 
@@ -69,5 +70,7 @@ class AnimeModelAdapter extends TypeAdapter<AnimeModel> {
     writer.write(obj.currentEpisode);
     writer.writeByte(16);
     writer.write(obj.duration);
+    writer.writeByte(17);
+    writer.write(obj.genres ?? []);
   }
 }

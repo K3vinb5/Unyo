@@ -18,6 +18,7 @@ class AnimeModel {
     required this.duration,
     required this.description,
     required this.format,
+    required this.genres,
     this.currentEpisode,
   });
 
@@ -39,6 +40,7 @@ class AnimeModel {
   int? currentEpisode;
   int? duration;
 
+  List<String>? genres;
   factory AnimeModel.fromJson(Map<String, dynamic> json) {
     return AnimeModel(
       id: json['id'],
@@ -60,6 +62,7 @@ class AnimeModel {
       episodes: json['episodes'],
       currentEpisode: json['currentEpisode'],
       duration: json['duration'],
+      genres: List<String>.from(json['genres'] ?? []),
     );
   }
 
@@ -82,6 +85,7 @@ class AnimeModel {
       'episodes': episodes,
       'currentEpisode': currentEpisode,
       'duration': duration,
+      'genres': genres,
     };
   }
 

@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 import 'package:unyo/models/models.dart';
@@ -89,6 +90,9 @@ class MediaDetailsInfoWidget extends StatelessWidget {
     String? description = currentAnime != null
         ? currentAnime!.description
         : currentManga!.description;
+    List<String>? genres = currentAnime != null
+        ? currentAnime!.genres
+        : currentManga!.genres;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -205,12 +209,30 @@ class MediaDetailsInfoWidget extends StatelessWidget {
               const SizedBox(
                 height: 30,
               ),
+              if (genres != null && genres.isNotEmpty)
+                Transform.translate(
+                  offset: const Offset(0, -14),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      'Genres: ${genres.join(', ')}',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
                   description
                           ?.replaceAll("<br>", "\n")
+                          .replaceAll("</br>", "")
+                          .replaceAll("<BR>", "")
+                          .replaceAll("</BR>", "")
                           .replaceAll("<i>", "")
+                          .replaceAll("</i>", "")
                           .replaceAll("<b>", "")
                           .replaceAll("</b>", "") ??
                       "",

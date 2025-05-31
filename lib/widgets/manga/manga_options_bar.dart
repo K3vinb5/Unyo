@@ -24,6 +24,8 @@ class MangaOptionsBar extends StatefulWidget {
     required this.currentChapter,
     required this.chaptersId,
     required this.initPages,
+    required this.isFullscreen,
+    required this.toggleFullscreen,
   });
 
   final double width;
@@ -36,6 +38,7 @@ class MangaOptionsBar extends StatefulWidget {
   final int fittingOption;
   final int orientationOption;
   final int inverseModeOption;
+  final bool isFullscreen;
 
   final void Function(int) setNewPageOption;
   final void Function(int) setNewFittingOption;
@@ -46,6 +49,7 @@ class MangaOptionsBar extends StatefulWidget {
   final void Function() updateUserMediaModel;
   final void Function() goForwardPage;
   final void Function() goBackPage;
+  final void Function() toggleFullscreen;
 
   @override
   State<MangaOptionsBar> createState() => _MangaOptionsBarState();
@@ -59,6 +63,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
   List<List<dynamic>>? pageButtonOptions;
   List<List<dynamic>>? orientationButtonOptions;
   List<List<dynamic>>? inverseButtonOptions;
+  List<List<dynamic>>? fullScreenButtonOptions;
   List<String>? fittingButtonOptions;
   late int currentPageOption;
   late int currentFittingOption;
@@ -66,6 +71,7 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
   late int currentInverseOption;
   late int currentChapter;
   late List<String> chaptersId;
+  bool listsInitialized = false;
 
   @override
   void initState() {
@@ -99,6 +105,15 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!listsInitialized) {
+      initOptionsLists();
+      setState(() => listsInitialized = true);
+    }
+  }
+
   void initOptionsLists() {
     pageButtonOptions = [
       [context.tr("single_page"), Icons.library_books], // 0
@@ -113,7 +128,10 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
       [context.tr("light_mode"), Icons.remove_red_eye_outlined],
       [context.tr("dark_mode"), Icons.remove_red_eye],
     ];
-
+    fullScreenButtonOptions = [
+      [context.tr("enter_fullscreen"), Icons.fullscreen],
+      [context.tr("exit_fullscreen"), Icons.fullscreen_exit],
+    ];
     fittingButtonOptions = [
       context.tr("fit_height"),
       context.tr("fit_width"),
@@ -402,7 +420,32 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
                           ),
                         ),
                       ],
-                    )
+
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    StyledButton(
+                      onPressed: widget.toggleFullscreen,
+                      child: Row(
+                        children: [
+                          Text(
+                            widget.isFullscreen
+                              ? fullScreenButtonOptions![1][0]
+                              : fullScreenButtonOptions![0][0],
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            widget.isFullscreen
+                              ? fullScreenButtonOptions![1][1]
+                              : fullScreenButtonOptions![0][1],
+                            size: 18,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
                 const Divider(
@@ -416,5 +459,6 @@ class _MangaOptionsBarState extends State<MangaOptionsBar> {
             ),
           )
         : const SizedBox();
+        
   }
 }
