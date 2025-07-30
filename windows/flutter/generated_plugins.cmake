@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   bonsoir_windows
   dynamic_color
+  flutter_js
   fvp
   url_launcher_windows
 )

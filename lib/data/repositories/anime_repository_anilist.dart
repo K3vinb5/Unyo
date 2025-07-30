@@ -4,10 +4,10 @@ import 'package:logger/logger.dart';
 import 'package:unyo/core/di/locator.dart';
 // Internal dependencies
 import 'package:unyo/config/config.dart' as config;
+import 'package:unyo/core/services/api/graphql/queries/queries.dart' as queries;
 import 'package:unyo/core/services/api/dto/media_collection_recently_completed_graphql_dto_entity.dart';
 import 'package:unyo/core/services/api/dto/media_collection_trendingOrPopular_graphql_dto_entity.dart';
 import 'package:unyo/core/services/api/dto/media_collection_upcoming_graphql_dto_entity.dart';
-import 'package:unyo/core/services/api/graphql/queries/queries.dart' as queries;
 import 'package:unyo/core/services/api/dto/media_collection_recently_released_graphql_dto_entity.dart';
 import 'package:unyo/core/services/api/graphql/graphql_response.dart';
 import 'package:unyo/core/services/api/graphql/graphql_service.dart';

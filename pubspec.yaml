@@ -68,6 +68,16 @@ dependencies:
   ffigen: ^19.0.0
   meta: ^1.16.0
   jwt_decoder: ^2.0.1
+  http_interceptor: ^2.0.0
+  flutter_js: ^0.8.5
+  js_packer: ^0.0.6
+  intl: ^0.20.2
+  crypto: ^3.0.6
+  encrypt: ^5.0.3
+  d4rt: ^0.1.0
+  xpath_selector_html_parser: ^3.0.1
+  pseudom: ^1.0.1
+  cookie_jar: ^4.0.8
 # Dev dependencies
 dev_dependencies:
   flutter_test:
