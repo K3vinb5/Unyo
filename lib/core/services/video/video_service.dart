@@ -1,4 +1,5 @@
 // External dependencies
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -14,6 +15,7 @@ import 'package:unyo/core/services/api/http/api_response.dart';
 import 'package:unyo/core/services/api/http/empty_api_response.dart';
 import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/core/di/locator.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 class VideoService {
@@ -21,11 +23,11 @@ class VideoService {
   final Logger _logger = sl<Logger>();
   final HttpService _httpService = sl<HttpService>();
 
-  // Properties
   ext.Video _video;
   // This will be used for getting the correct video out of a playlist from a magnet / torrent
   int _playlistIndex;
   late final mdk.Player _player;
+  late Timer seekTimer;
   final List<ext.Track> captionTracks = [];
   final List<ext.Track> audioTracks = [];
   ClosedCaptionFile? _currentCaptionFile;
@@ -178,6 +180,11 @@ class VideoService {
     return true;
   }
 
+  bool setPreventSleep(bool preventSleep) {
+    WakelockPlus.enable();
+    return true;
+  }
+
   bool updateTexture() {
     _player.updateTexture();
     return true;
@@ -207,8 +214,8 @@ class VideoService {
   }
   void _configurePlayer() {
     _player.setProperty(
-      'avformat.protocol_whitelist',
-      'file,http,https,tcp,tls,udp,rtp,rtmp,rtmpe,rtmps,rtmpt,rtmpte,crypto,data',
+        'avio.protocol_whitelist',
+        'file,ftp,rtmp,http,https,tls,rtp,tcp,udp,crypto,httpproxy,data,concatf,concat,subfile'
     );
     _player.setProperty('video.decoder', 'shader_resource=0');
     _player.setProperty('avformat.strict', 'experimental');

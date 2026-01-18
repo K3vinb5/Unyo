@@ -58,6 +58,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
   @override
   Future<void> close() {
     if (_videoServiceInitialized) {
+      _videoService.setPreventSleep(false);
       _videoService.dispose();
     }
     _loggedUserSubscription.cancel();
@@ -73,6 +74,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     });
     _videoInfoSubscription = _videoInfoNotifier.videoInfoStream.listen((videoInfo) {
       _videoService = VideoService(video: videoInfo.currentVideo, playlistIndex: videoInfo.playlistIndex, lowLatency: false);
+      _videoService.setPreventSleep(true);
       _videoServiceInitialized = true;
       emit(state.copyWith(videoInfo: videoInfo, isLoading: false));
     });

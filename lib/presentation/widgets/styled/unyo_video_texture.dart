@@ -3,6 +3,7 @@ import 'package:unyo/core/services/video/video_service.dart';
 
 class UnyoVideoTexture extends StatefulWidget {
   final VideoService videoService;
+
   const UnyoVideoTexture({super.key, required this.videoService});
 
   @override
@@ -11,10 +12,13 @@ class UnyoVideoTexture extends StatefulWidget {
 
 class _UnyoVideoTextureState extends State<UnyoVideoTexture> {
   late VideoService _videoService;
+  late double aspectRatio;
+
   @override
   void initState() {
     super.initState();
     _videoService = widget.videoService;
+    aspectRatio = _videoService.aspectRatio;
     _videoService.updateTexture();
   }
 
@@ -26,15 +30,16 @@ class _UnyoVideoTextureState extends State<UnyoVideoTexture> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ValueListenableBuilder<int?>(
-            valueListenable: _videoService.textureId,
-            builder: (context, id, _) => id == null ? const SizedBox.shrink() : Texture(textureId: id),
-          ),
-        ),
-      ],
+    return Center(
+      child: ValueListenableBuilder<int?>(
+        valueListenable: _videoService.textureId,
+        builder: (context, id, _) => id == null
+            ? const SizedBox.shrink()
+            : AspectRatio(
+                aspectRatio: aspectRatio,
+                child: Texture(textureId: id),
+              ),
+      ),
     );
   }
 }

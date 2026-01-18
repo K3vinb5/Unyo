@@ -43,29 +43,6 @@ void main() async {
     windowManager.focus();
     windowManager.setPreventClose(true);
   });
-  // Setup Video Player
-  if (Platform.isWindows) {
-    fvp.registerWith(
-      options: {
-        'platforms': ['windows'],
-        'video.decoders': ['MFT:d3d=11', 'CUDA', 'DXVA', 'FFmpeg'],
-      },
-    );
-  } else if (Platform.isMacOS) {
-    fvp.registerWith(
-      options: {
-        'platforms': ['macos'],
-        'video.decoders': ['VT', 'FFmpeg'],
-      },
-    );
-  } else if (Platform.isLinux) {
-    fvp.registerWith(
-      options: {
-        'platforms': ['linux'],
-        'video.decoders': ['VAAPI', 'CUDA', 'VDPAU', 'FFmpeg'],
-      },
-    );
-  }
   //Run Flutter app with localization and screen utilities
   runApp(
     EasyLocalization(
