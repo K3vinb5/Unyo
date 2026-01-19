@@ -7,20 +7,26 @@ part 'video_info.g.dart';
 
 abstract class VideoInfo {
   final ext.Video currentVideo;
+  final List<ext.Video> alternativeVideos;
+  final int videoIndex;
   final int playlistIndex;
 
-  const VideoInfo({required this.currentVideo, required this.playlistIndex});
+  const VideoInfo({required this.currentVideo, required this.alternativeVideos, required this.videoIndex, required this.playlistIndex});
 }
 
 @freezed
 abstract class VideoInfoModel with _$VideoInfoModel implements VideoInfo {
   const factory VideoInfoModel({
     @ext.VideoConverter() required ext.Video currentVideo,
+    @ext.VideoConverter() required List<ext.Video> alternativeVideos,
+    required int videoIndex,
     required int playlistIndex,
   }) = _VideoInfoModel;
 
   factory VideoInfoModel.empty() => VideoInfoModel(
       currentVideo: ext.Video.empty(),
+      alternativeVideos: [],
+      videoIndex: -1,
       playlistIndex: -1
   );
 

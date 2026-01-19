@@ -16,6 +16,7 @@ import 'package:unyo/domain/entities/anime.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/domain/entities/video_info.dart';
+import 'package:unyo/presentation/dialogs/warning_dialog.dart';
 
 class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
   // Repositories
@@ -73,7 +74,15 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       emit(state.copyWith(loggedUser: loggedUser));
     });
     _videoInfoSubscription = _videoInfoNotifier.videoInfoStream.listen((videoInfo) {
-      _videoService = VideoService(video: videoInfo.currentVideo, playlistIndex: videoInfo.playlistIndex, lowLatency: false);
+
+      _videoService = VideoService(
+          video: videoInfo.currentVideo,
+          alternativeVideos: videoInfo.alternativeVideos,
+          videoIndex: videoInfo.videoIndex,
+          playlistIndex: videoInfo.playlistIndex,
+          onErrorCallback: (errorTitle) => showWidgetDialogEffect(dialog: WarningDialog(width: 500, height: 200, title: errorTitle)),
+          lowLatency: false
+      );
       _videoService.setPreventSleep(true);
       _videoServiceInitialized = true;
       emit(state.copyWith(videoInfo: videoInfo, isLoading: false));

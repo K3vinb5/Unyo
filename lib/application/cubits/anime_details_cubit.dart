@@ -159,9 +159,11 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     _logger.i("Navigating to Video Player with selected video from ${state.selectedExtension?.name}");
     _videoInfoNotifier.updateVideoInfo(
         VideoInfoModel(
-      currentVideo: selectedVideo,
-      playlistIndex: episodeIndex,
-     )
+          currentVideo: selectedVideo,
+          alternativeVideos: state.extensionVideoResults,
+          videoIndex: state.extensionVideoResults.indexOf(selectedVideo),
+          playlistIndex: episodeIndex,
+       )
     );
     pushRouteEffect(path: "/video");
   }

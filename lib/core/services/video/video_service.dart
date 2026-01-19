@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:fvp/mdk.dart' as mdk;
 import 'package:video_player/video_player.dart';
 import 'package:logger/logger.dart';
@@ -23,24 +24,37 @@ class VideoService {
   final Logger _logger = sl<Logger>();
   final HttpService _httpService = sl<HttpService>();
 
-  ext.Video _video;
+  final ext.Video _video;
+  final List<ext.Video> _alternativeVideos;
+  int _videoIndex;
   // This will be used for getting the correct video out of a playlist from a magnet / torrent
   int _playlistIndex;
   late final mdk.Player _player;
-  late Timer seekTimer;
   final List<ext.Track> captionTracks = [];
   final List<ext.Track> audioTracks = [];
   ClosedCaptionFile? _currentCaptionFile;
   ext.Track? _currentCaptionTrack;
   ext.Track? _currentAudioTrack;
-  bool _isBuffering = true;
-  final bool _lowLatency;
-  static const mdk.SeekFlag _seekFlags = mdk.SeekFlag(mdk.SeekFlag.fromStart | mdk.SeekFlag.inCache);
+  final void Function(String) _onErrorCallback;
 
-  VideoService({required ext.Video video, required int playlistIndex, bool lowLatency = false})
-      : _playlistIndex = playlistIndex,
-        _video = video,
-        _lowLatency = lowLatency {
+  final bool _lowLatency;
+  late Timer seekTimer;
+  bool _isBuffering = true;
+  static const mdk.SeekFlag _seekFlags = mdk.SeekFlag(mdk.SeekFlag.fromStart | mdk.SeekFlag.inCache | mdk.SeekFlag.fast);
+
+  VideoService({
+    required ext.Video video,
+    required List<ext.Video> alternativeVideos,
+    required int videoIndex,
+    required int playlistIndex,
+    required void Function(String) onErrorCallback,
+    bool lowLatency = false,
+  }) : _playlistIndex = playlistIndex,
+       _videoIndex = videoIndex,
+       _video = video,
+       _alternativeVideos = alternativeVideos,
+       _onErrorCallback = onErrorCallback,
+       _lowLatency = lowLatency {
     _player = mdk.Player();
     // Set player ffmpeg properties
     _configureDecoder();
@@ -61,7 +75,6 @@ class VideoService {
         _initCaptionsAndAudiotracks();
         _player.state = mdk.PlaybackState.playing;
         setVolume(1.0);
-        return false;
       }
       if (newStatus.test(mdk.MediaStatus.buffering)) {
         _isBuffering = true;
@@ -69,8 +82,9 @@ class VideoService {
       if (newStatus.test(mdk.MediaStatus.buffered)) {
         _isBuffering = false;
       }
-      if(newStatus.test(mdk.MediaStatus.invalid)) {
-        // TODO Warn user about invalid media and stop playback / leave
+      if (newStatus.test(mdk.MediaStatus.invalid)) {
+        _onErrorCallback("Failed to load media. Please try again later.");
+        return false;
       }
       return true;
     });
@@ -99,10 +113,9 @@ class VideoService {
     final streams = _player.mediaInfo.video;
     if (streams != null && streams.isNotEmpty) {
       final codec = streams.first.codec;
-      // codec.width and codec.height are ints
       return codec.width / codec.height;
     }
-    return 16 / 9;
+    return -1;
   }
 
   // Setters
@@ -134,8 +147,21 @@ class VideoService {
   }
 
   bool seekTo(Duration newDuration) {
-    _player.seek(position: newDuration.inMilliseconds, flags: _seekFlags);
+    if (isPlaying) {
+      _player.seek(position: newDuration.inMilliseconds, flags: _seekFlags);
+    } else {
+      _player.seek(position: newDuration.inMilliseconds, flags: _seekFlags);
+      _player.state = mdk.PlaybackState.paused;
+    }
     return true;
+  }
+
+  bool reverse(Duration reverseDuration) {
+      return seekTo(Duration(milliseconds: position.inMilliseconds - reverseDuration.inMilliseconds));
+  }
+
+  bool forward(Duration forwardDuration) {
+    return seekTo(Duration(milliseconds: position.inMilliseconds + forwardDuration.inMilliseconds));
   }
 
   bool setCaptionOffset(Duration duration) {
@@ -149,9 +175,7 @@ class VideoService {
     }
     _currentCaptionTrack = captionTracks[captionIndex];
     if (_currentCaptionTrack!.embedded) {
-      _player.activeSubtitleTracks = [
-        _currentCaptionTrack?.embeddedIndex ?? 0
-      ];
+      _player.activeSubtitleTracks = [_currentCaptionTrack?.embeddedIndex ?? 0];
     } else {
       _currentCaptionFile = await _loadExternalCaption(_currentCaptionTrack!);
       _player.setMedia(_currentCaptionTrack!.url, mdk.MediaType.subtitle);
@@ -166,9 +190,7 @@ class VideoService {
     }
     _currentAudioTrack = audioTracks[audioTrackIndex];
     if (_currentAudioTrack!.embedded) {
-      _player.activeAudioTracks = [
-        _currentAudioTrack?.embeddedIndex ?? 0
-      ];
+      _player.activeAudioTracks = [_currentAudioTrack?.embeddedIndex ?? 0];
     } else {
       _player.setMedia(_currentAudioTrack!.url, mdk.MediaType.audio);
     }
@@ -181,7 +203,7 @@ class VideoService {
   }
 
   bool setPreventSleep(bool preventSleep) {
-    WakelockPlus.enable();
+    WakelockPlus.toggle(enable: preventSleep);
     return true;
   }
 
@@ -198,25 +220,19 @@ class VideoService {
   // Utilities
   void _configureDecoder() {
     final vd = {
-      'windows': [
-        'MFT:d3d=11',
-        "D3D11",
-        "DXVA",
-        'CUDA',
-        'hap',
-        'FFmpeg',
-        'dav1d'
-      ],
+      'windows': ['MFT:d3d=11', "D3D11", "DXVA", 'CUDA', 'hap', 'FFmpeg', 'dav1d'],
       'macos': ['VT', 'hap', 'FFmpeg', 'dav1d'],
       'linux': ['VAAPI', 'CUDA', 'VDPAU', 'hap', 'FFmpeg', 'dav1d'],
     };
     _player.setDecoders(mdk.MediaType.video, vd[Platform.operatingSystem]!);
   }
+
   void _configurePlayer() {
     _player.setProperty(
-        'avio.protocol_whitelist',
-        'file,ftp,rtmp,http,https,tls,rtp,tcp,udp,crypto,httpproxy,data,concatf,concat,subfile'
+      'avio.protocol_whitelist',
+      'file,ftp,rtmp,http,https,tls,rtp,tcp,udp,crypto,httpproxy,data,concatf,concat,subfile',
     );
+    // Not sure about this flag
     _player.setProperty('video.decoder', 'shader_resource=0');
     _player.setProperty('avformat.strict', 'experimental');
     _player.setProperty('avformat.safe', '0');
@@ -231,49 +247,44 @@ class VideoService {
       _player.setProperty('avformat.analyzeduration', '100000');
       _player.setBufferRange(min: 0, max: 1000, drop: true);
     } else {
-      _player.setBufferRange(min: 0, max: 4000, drop: false);
+      _player.setBufferRange(min: 0, max: 5000, drop: false);
     }
-}
+  }
 
   void _setPlayerHttpHeaders(ext.Headers? headers) {
-  if (headers == null || headers.headersMap.isEmpty) return;
-  final userAgent = headers.headersMap.entries
-      .firstWhere(
-        (e) => e.key.toLowerCase() == 'user-agent',
-        orElse: () => const MapEntry('', '')
-      )
-      .value;
+    if (headers == null || headers.headersMap.isEmpty) return;
+    final userAgent = headers.headersMap.entries
+        .firstWhere((e) => e.key.toLowerCase() == 'user-agent', orElse: () => const MapEntry('', ''))
+        .value;
 
-  if (userAgent.isNotEmpty) {
-    _player.setProperty('user_agent', userAgent);
-  }
-  final formattedHeaders = headers.headersMap.entries
-      .where((e) => e.key.toLowerCase() != 'user-agent') // Filter out UA
-      .map((e) {
-        // Fix cookie separator logic (HTTP spec requires '; ' not ',')
-        final value = e.key.toLowerCase() == 'cookie'
-            ? e.value.replaceAll(',', '; ')
-            : e.value;
-        return '${e.key}: $value';
-      })
-      .join('\r\n'); // Join with CRLF
+    if (userAgent.isNotEmpty) {
+      _player.setProperty('user_agent', userAgent);
+    }
+    final formattedHeaders = headers.headersMap.entries
+        // .where((e) => e.key.toLowerCase() != 'user-agent') // Filter out UA
+        .map((e) {
+          // Fix cookie separator logic (HTTP spec requires '; ' not ',')
+          final value = e.key.toLowerCase() == 'cookie' ? e.value.replaceAll(',', '; ') : e.value;
+          return '${e.key}: $value';
+        })
+        .join('\r\n'); // Join with CRLF
 
-  if (formattedHeaders.isNotEmpty) {
-    _player.setProperty('headers', formattedHeaders);
-    _player.setProperty('avio.headers', formattedHeaders);
+    if (formattedHeaders.isNotEmpty) {
+      _player.setProperty('headers', formattedHeaders);
+      _player.setProperty('avio.headers', formattedHeaders);
+    }
   }
-}
 
   void _setPlayerLogsHandler() {
     mdk.setLogHandler((mdk.LogLevel level, String message) {
       if (!message.contains("unloaded media's position")) {
         switch (level) {
           case mdk.LogLevel.debug:
-            // _logger.d("MDK Log: $message");
+          // _logger.d("MDK Log: $message");
           case mdk.LogLevel.info:
-            // _logger.i("MDK Log: $message");
+          // _logger.i("MDK Log: $message");
           case mdk.LogLevel.warning:
-            // _logger.w("MDK Log: $message");
+          // _logger.w("MDK Log: $message");
           case mdk.LogLevel.error:
             _logger.e("MDK Log: $message");
           case mdk.LogLevel.off:
@@ -299,20 +310,24 @@ class VideoService {
       }
     }
     captionTracks.addAll(_video.subtitleTracks);
+    setCaption(0);
     if (_player.mediaInfo.audio != null && _player.mediaInfo.audio!.length > 1) {
       for (mdk.AudioStreamInfo audioStreamInfo in _player.mediaInfo.audio!) {
         audioTracks.add(
           ext.Track(
             url: "",
             lang:
-            "${audioStreamInfo.metadata["title"] ?? ""} (${audioStreamInfo.metadata["language"]} - Embedded)",
+                "${audioStreamInfo.metadata["title"] ?? ""} (${audioStreamInfo.metadata["language"]} - Embedded)",
             embedded: true,
-            embeddedIndex: audioStreamInfo.index
+            embeddedIndex: audioStreamInfo.index,
           ),
         );
       }
     }
     audioTracks.addAll(_video.audioTracks);
+    if (audioTracks.isNotEmpty) {
+      setAudioTrack(0);
+    }
   }
 
   Future<ClosedCaptionFile> _loadExternalCaption(ext.Track captionTrack) async {

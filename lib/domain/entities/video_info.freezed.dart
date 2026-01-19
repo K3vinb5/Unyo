@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VideoInfoModel {
 
-@ext.VideoConverter() ext.Video get currentVideo; int get playlistIndex;
+@ext.VideoConverter() ext.Video get currentVideo;@ext.VideoConverter() List<ext.Video> get alternativeVideos; int get videoIndex; int get playlistIndex;
 /// Create a copy of VideoInfoModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $VideoInfoModelCopyWith<VideoInfoModel> get copyWith => _$VideoInfoModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoInfoModel&&(identical(other.currentVideo, currentVideo) || other.currentVideo == currentVideo)&&(identical(other.playlistIndex, playlistIndex) || other.playlistIndex == playlistIndex));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoInfoModel&&(identical(other.currentVideo, currentVideo) || other.currentVideo == currentVideo)&&const DeepCollectionEquality().equals(other.alternativeVideos, alternativeVideos)&&(identical(other.videoIndex, videoIndex) || other.videoIndex == videoIndex)&&(identical(other.playlistIndex, playlistIndex) || other.playlistIndex == playlistIndex));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,currentVideo,playlistIndex);
+int get hashCode => Object.hash(runtimeType,currentVideo,const DeepCollectionEquality().hash(alternativeVideos),videoIndex,playlistIndex);
 
 @override
 String toString() {
-  return 'VideoInfoModel(currentVideo: $currentVideo, playlistIndex: $playlistIndex)';
+  return 'VideoInfoModel(currentVideo: $currentVideo, alternativeVideos: $alternativeVideos, videoIndex: $videoIndex, playlistIndex: $playlistIndex)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $VideoInfoModelCopyWith<$Res>  {
   factory $VideoInfoModelCopyWith(VideoInfoModel value, $Res Function(VideoInfoModel) _then) = _$VideoInfoModelCopyWithImpl;
 @useResult
 $Res call({
-@ext.VideoConverter() ext.Video currentVideo, int playlistIndex
+@ext.VideoConverter() ext.Video currentVideo,@ext.VideoConverter() List<ext.Video> alternativeVideos, int videoIndex, int playlistIndex
 });
 
 
@@ -65,10 +65,12 @@ class _$VideoInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of VideoInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? currentVideo = null,Object? playlistIndex = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? currentVideo = null,Object? alternativeVideos = null,Object? videoIndex = null,Object? playlistIndex = null,}) {
   return _then(_self.copyWith(
 currentVideo: null == currentVideo ? _self.currentVideo : currentVideo // ignore: cast_nullable_to_non_nullable
-as ext.Video,playlistIndex: null == playlistIndex ? _self.playlistIndex : playlistIndex // ignore: cast_nullable_to_non_nullable
+as ext.Video,alternativeVideos: null == alternativeVideos ? _self.alternativeVideos : alternativeVideos // ignore: cast_nullable_to_non_nullable
+as List<ext.Video>,videoIndex: null == videoIndex ? _self.videoIndex : videoIndex // ignore: cast_nullable_to_non_nullable
+as int,playlistIndex: null == playlistIndex ? _self.playlistIndex : playlistIndex // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -154,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@ext.VideoConverter()  ext.Video currentVideo,  int playlistIndex)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@ext.VideoConverter()  ext.Video currentVideo, @ext.VideoConverter()  List<ext.Video> alternativeVideos,  int videoIndex,  int playlistIndex)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoInfoModel() when $default != null:
-return $default(_that.currentVideo,_that.playlistIndex);case _:
+return $default(_that.currentVideo,_that.alternativeVideos,_that.videoIndex,_that.playlistIndex);case _:
   return orElse();
 
 }
@@ -175,10 +177,10 @@ return $default(_that.currentVideo,_that.playlistIndex);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@ext.VideoConverter()  ext.Video currentVideo,  int playlistIndex)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@ext.VideoConverter()  ext.Video currentVideo, @ext.VideoConverter()  List<ext.Video> alternativeVideos,  int videoIndex,  int playlistIndex)  $default,) {final _that = this;
 switch (_that) {
 case _VideoInfoModel():
-return $default(_that.currentVideo,_that.playlistIndex);case _:
+return $default(_that.currentVideo,_that.alternativeVideos,_that.videoIndex,_that.playlistIndex);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +197,10 @@ return $default(_that.currentVideo,_that.playlistIndex);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@ext.VideoConverter()  ext.Video currentVideo,  int playlistIndex)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@ext.VideoConverter()  ext.Video currentVideo, @ext.VideoConverter()  List<ext.Video> alternativeVideos,  int videoIndex,  int playlistIndex)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoInfoModel() when $default != null:
-return $default(_that.currentVideo,_that.playlistIndex);case _:
+return $default(_that.currentVideo,_that.alternativeVideos,_that.videoIndex,_that.playlistIndex);case _:
   return null;
 
 }
@@ -210,10 +212,18 @@ return $default(_that.currentVideo,_that.playlistIndex);case _:
 @JsonSerializable()
 
 class _VideoInfoModel implements VideoInfoModel {
-  const _VideoInfoModel({@ext.VideoConverter() required this.currentVideo, required this.playlistIndex});
+  const _VideoInfoModel({@ext.VideoConverter() required this.currentVideo, @ext.VideoConverter() required final  List<ext.Video> alternativeVideos, required this.videoIndex, required this.playlistIndex}): _alternativeVideos = alternativeVideos;
   factory _VideoInfoModel.fromJson(Map<String, dynamic> json) => _$VideoInfoModelFromJson(json);
 
 @override@ext.VideoConverter() final  ext.Video currentVideo;
+ final  List<ext.Video> _alternativeVideos;
+@override@ext.VideoConverter() List<ext.Video> get alternativeVideos {
+  if (_alternativeVideos is EqualUnmodifiableListView) return _alternativeVideos;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_alternativeVideos);
+}
+
+@override final  int videoIndex;
 @override final  int playlistIndex;
 
 /// Create a copy of VideoInfoModel
@@ -229,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoInfoModel&&(identical(other.currentVideo, currentVideo) || other.currentVideo == currentVideo)&&(identical(other.playlistIndex, playlistIndex) || other.playlistIndex == playlistIndex));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoInfoModel&&(identical(other.currentVideo, currentVideo) || other.currentVideo == currentVideo)&&const DeepCollectionEquality().equals(other._alternativeVideos, _alternativeVideos)&&(identical(other.videoIndex, videoIndex) || other.videoIndex == videoIndex)&&(identical(other.playlistIndex, playlistIndex) || other.playlistIndex == playlistIndex));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,currentVideo,playlistIndex);
+int get hashCode => Object.hash(runtimeType,currentVideo,const DeepCollectionEquality().hash(_alternativeVideos),videoIndex,playlistIndex);
 
 @override
 String toString() {
-  return 'VideoInfoModel(currentVideo: $currentVideo, playlistIndex: $playlistIndex)';
+  return 'VideoInfoModel(currentVideo: $currentVideo, alternativeVideos: $alternativeVideos, videoIndex: $videoIndex, playlistIndex: $playlistIndex)';
 }
 
 
@@ -249,7 +259,7 @@ abstract mixin class _$VideoInfoModelCopyWith<$Res> implements $VideoInfoModelCo
   factory _$VideoInfoModelCopyWith(_VideoInfoModel value, $Res Function(_VideoInfoModel) _then) = __$VideoInfoModelCopyWithImpl;
 @override @useResult
 $Res call({
-@ext.VideoConverter() ext.Video currentVideo, int playlistIndex
+@ext.VideoConverter() ext.Video currentVideo,@ext.VideoConverter() List<ext.Video> alternativeVideos, int videoIndex, int playlistIndex
 });
 
 
@@ -266,10 +276,12 @@ class __$VideoInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of VideoInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? currentVideo = null,Object? playlistIndex = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? currentVideo = null,Object? alternativeVideos = null,Object? videoIndex = null,Object? playlistIndex = null,}) {
   return _then(_VideoInfoModel(
 currentVideo: null == currentVideo ? _self.currentVideo : currentVideo // ignore: cast_nullable_to_non_nullable
-as ext.Video,playlistIndex: null == playlistIndex ? _self.playlistIndex : playlistIndex // ignore: cast_nullable_to_non_nullable
+as ext.Video,alternativeVideos: null == alternativeVideos ? _self._alternativeVideos : alternativeVideos // ignore: cast_nullable_to_non_nullable
+as List<ext.Video>,videoIndex: null == videoIndex ? _self.videoIndex : videoIndex // ignore: cast_nullable_to_non_nullable
+as int,playlistIndex: null == playlistIndex ? _self.playlistIndex : playlistIndex // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }

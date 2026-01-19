@@ -37,6 +37,7 @@ class _TextFieldDialogState extends State<TextFieldDialog> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              SizedBox(height: 5.h,),
               Text(widget.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               SizedBox(height: 10.h),
               UnyoTextfield(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:unyo/core/services/video/video_service.dart';
 
@@ -19,6 +21,17 @@ class _UnyoVideoTextureState extends State<UnyoVideoTexture> {
     super.initState();
     _videoService = widget.videoService;
     aspectRatio = _videoService.aspectRatio;
+    if (aspectRatio <= 0) {
+      aspectRatio = 16 / 9; // Default aspect ratio
+      Timer.periodic(const Duration(milliseconds: 200), (timer) {
+        if (_videoService.aspectRatio > 0) {
+          setState(() {
+            aspectRatio = _videoService.aspectRatio;
+          });
+          timer.cancel();
+        }
+      });
+    }
     _videoService.updateTexture();
   }
 
