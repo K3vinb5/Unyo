@@ -1,20 +1,15 @@
 // External dependencies
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fvp/mdk.dart' as mdk;
-import 'package:video_player/video_player.dart';
 import 'package:logger/logger.dart';
 
 // Internal dependencies
 import 'package:unyo/domain/entities/extension/headers.dart' as ext;
 import 'package:unyo/domain/entities/extension/track.dart' as ext;
 import 'package:unyo/domain/entities/extension/video.dart' as ext;
-import 'package:unyo/core/services/api/http/api_response.dart';
-import 'package:unyo/core/services/api/http/empty_api_response.dart';
-import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/core/di/locator.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
@@ -22,39 +17,43 @@ import 'package:window_manager/window_manager.dart';
 class VideoService {
   // Services
   final Logger _logger = sl<Logger>();
-  final HttpService _httpService = sl<HttpService>();
 
   final ext.Video _video;
   final List<ext.Video> _alternativeVideos;
   int _videoIndex;
   // This will be used for getting the correct video out of a playlist from a magnet / torrent
-  int _playlistIndex;
+  int _episodeIndex;
   late final mdk.Player _player;
   final List<ext.Track> captionTracks = [];
   final List<ext.Track> audioTracks = [];
-  ClosedCaptionFile? _currentCaptionFile;
   ext.Track? _currentCaptionTrack;
   ext.Track? _currentAudioTrack;
   final void Function(String) _onErrorCallback;
 
   final bool _lowLatency;
-  late Timer seekTimer;
+  late bool _isFullscreen;
+  bool _isVideoReady = false;
   bool _isBuffering = true;
-  static const mdk.SeekFlag _seekFlags = mdk.SeekFlag(mdk.SeekFlag.fromStart | mdk.SeekFlag.inCache | mdk.SeekFlag.fast);
+  bool _isLoading = false;
+  bool _isDisposed = false;
+  static const mdk.SeekFlag _seekFlags = mdk.SeekFlag(
+    mdk.SeekFlag.fromStart | mdk.SeekFlag.inCache | mdk.SeekFlag.fast,
+  );
 
   VideoService({
     required ext.Video video,
     required List<ext.Video> alternativeVideos,
     required int videoIndex,
-    required int playlistIndex,
+    required int episodeIndex,
     required void Function(String) onErrorCallback,
     bool lowLatency = false,
-  }) : _playlistIndex = playlistIndex,
+  }) : _episodeIndex = episodeIndex,
        _videoIndex = videoIndex,
        _video = video,
        _alternativeVideos = alternativeVideos,
        _onErrorCallback = onErrorCallback,
        _lowLatency = lowLatency {
+    initAsync();
     _player = mdk.Player();
     // Set player ffmpeg properties
     _configureDecoder();
@@ -70,30 +69,18 @@ class VideoService {
     _player.setMedia(_video.videoUrl, mdk.MediaType.audio);
     _player.loop = 0; // No loop
     _player.state = mdk.PlaybackState.paused;
-    _player.onMediaStatus((mdk.MediaStatus oldStatus, mdk.MediaStatus newStatus) {
-      if (newStatus.test(mdk.MediaStatus.loaded)) {
-        _initCaptionsAndAudiotracks();
-        _player.state = mdk.PlaybackState.playing;
-        setVolume(1.0);
-      }
-      if (newStatus.test(mdk.MediaStatus.buffering)) {
-        _isBuffering = true;
-      }
-      if (newStatus.test(mdk.MediaStatus.buffered)) {
-        _isBuffering = false;
-      }
-      if (newStatus.test(mdk.MediaStatus.invalid)) {
-        _onErrorCallback("Failed to load media. Please try again later.");
-        return false;
-      }
-      return true;
-    });
+    _player.onMediaStatus(_onMediaStatusInit);
+  }
+
+  /// Inits asynchronous properties
+  Future<void> initAsync() async {
+    _isFullscreen = await windowManager.isFullScreen();
   }
 
   // Getters
   Duration get position => Duration(milliseconds: _player.position);
 
-  String get formattedPosition => formatMilliseconds(position.inMilliseconds);
+  String get formattedPosition => _formatMilliseconds(position.inMilliseconds);
 
   ValueNotifier<int?> get textureId => _player.textureId;
 
@@ -107,7 +94,9 @@ class VideoService {
 
   bool get isBuffering => _isBuffering;
 
-  Future<bool> get isFullscreen async => await windowManager.isFullScreen();
+  bool get isLoading => _isLoading;
+
+  bool get isFullscreen => _isFullscreen;
 
   double get aspectRatio {
     final streams = _player.mediaInfo.video;
@@ -117,6 +106,10 @@ class VideoService {
     }
     return -1;
   }
+
+  List<ext.Track> get captions => captionTracks;
+
+  List<ext.Track> get audios => audioTracks;
 
   // Setters
   bool play() {
@@ -128,6 +121,16 @@ class VideoService {
   bool pause() {
     if (_isBuffering) return false;
     _player.state = mdk.PlaybackState.paused;
+    return true;
+  }
+
+  bool togglePlay() {
+    if (_isBuffering) return false;
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
     return true;
   }
 
@@ -147,17 +150,12 @@ class VideoService {
   }
 
   bool seekTo(Duration newDuration) {
-    if (isPlaying) {
-      _player.seek(position: newDuration.inMilliseconds, flags: _seekFlags);
-    } else {
-      _player.seek(position: newDuration.inMilliseconds, flags: _seekFlags);
-      _player.state = mdk.PlaybackState.paused;
-    }
+    _player.seek(position: newDuration.inMilliseconds, flags: _seekFlags);
     return true;
   }
 
   bool reverse(Duration reverseDuration) {
-      return seekTo(Duration(milliseconds: position.inMilliseconds - reverseDuration.inMilliseconds));
+    return seekTo(Duration(milliseconds: position.inMilliseconds - reverseDuration.inMilliseconds));
   }
 
   bool forward(Duration forwardDuration) {
@@ -177,7 +175,6 @@ class VideoService {
     if (_currentCaptionTrack!.embedded) {
       _player.activeSubtitleTracks = [_currentCaptionTrack?.embeddedIndex ?? 0];
     } else {
-      _currentCaptionFile = await _loadExternalCaption(_currentCaptionTrack!);
       _player.setMedia(_currentCaptionTrack!.url, mdk.MediaType.subtitle);
     }
     return true;
@@ -198,6 +195,7 @@ class VideoService {
   }
 
   bool setFullscreen(bool fullscreen) {
+    _isFullscreen = fullscreen;
     windowManager.setFullScreen(fullscreen);
     return true;
   }
@@ -213,7 +211,9 @@ class VideoService {
   }
 
   void dispose() {
-    _player.state = mdk.PlaybackState.stopped;
+    _isDisposed = true;
+    _player.onMediaStatus(null);
+    setFullscreen(false);
     _player.dispose();
   }
 
@@ -296,6 +296,35 @@ class VideoService {
     });
   }
 
+  bool _onMediaStatusInit(mdk.MediaStatus oldStatus, mdk.MediaStatus newStatus) {
+    if (_isDisposed) return false;
+
+    if (newStatus.test(mdk.MediaStatus.loaded) && !_isVideoReady) {
+      _initCaptionsAndAudiotracks();
+      _player.state = mdk.PlaybackState.playing;
+      setVolume(1.0);
+      _isVideoReady = true;
+    }
+    if (newStatus.test(mdk.MediaStatus.loaded) && _isVideoReady) {
+      _isLoading = false;
+    }
+    if (newStatus.test(mdk.MediaStatus.loading)) {
+      _isLoading = true;
+    }
+    if (newStatus.test(mdk.MediaStatus.buffering)) {
+      _isBuffering = true;
+    }
+    if (newStatus.test(mdk.MediaStatus.buffered)) {
+      _isBuffering = false;
+    }
+    if (newStatus.test(mdk.MediaStatus.invalid)) {
+      // if (!_isDisposed) {
+      //   _onErrorCallback("Failed to load media. Please try again later.");
+      // }
+    }
+    return true;
+  }
+
   Future<void> _initCaptionsAndAudiotracks() async {
     if (_player.mediaInfo.subtitle != null && _player.mediaInfo.subtitle!.isNotEmpty) {
       for (mdk.SubtitleStreamInfo subtitleStreamInfo in _player.mediaInfo.subtitle!) {
@@ -330,54 +359,7 @@ class VideoService {
     }
   }
 
-  Future<ClosedCaptionFile> _loadExternalCaption(ext.Track captionTrack) async {
-    if (captionTrack.url.isEmpty) {
-      throw Exception("Caption track URL is empty");
-    }
-    ApiResponse<EmptyApiResponse> response = await _httpService.get(
-      captionTrack.url,
-      fromJson: EmptyApiResponse.fromJson,
-    );
-    if (response.statusCode != 200) {
-      throw Exception(
-        "Failed to load captions from ${captionTrack.url} with status code ${response.statusCode}",
-      );
-    }
-    var bytes = response.bodyBytes;
-    String content = String.fromCharCodes(bytes);
-    return WebVTTCaptionFile(_formatCaptions(_getUtf8Text(content)));
-  }
-
-  String _getUtf8Text(String text) {
-    List<int> bytes = text.codeUnits;
-    return utf8.decode(bytes);
-  }
-
-  String _formatCaptions(String captions) {
-    // Split the captions into pieces based on empty lines
-    List<String> pieces = captions.split('\n\n');
-    List<String> formattedPieces = [];
-    for (int i = 0; i < pieces.length; i++) {
-      formattedPieces.add(_replaceSecondNewLine(pieces[i], "\n", " "));
-    }
-    // Join the formatted pieces back together with empty lines
-    String formattedCaptions = formattedPieces.join('\n\n');
-
-    return formattedCaptions;
-  }
-
-  String _replaceSecondNewLine(String original, String pattern, String replacement) {
-    int firstIndex = original.indexOf(pattern);
-    if (firstIndex != -1) {
-      int secondIndex = original.indexOf(pattern, firstIndex + 1);
-      if (secondIndex != -1) {
-        return original.replaceFirst(pattern, replacement, secondIndex);
-      }
-    }
-    return original;
-  }
-
-  String formatMilliseconds(int milliseconds) {
+  String _formatMilliseconds(int milliseconds) {
     // Calculate total seconds
     int totalSeconds = milliseconds ~/ 1000;
 

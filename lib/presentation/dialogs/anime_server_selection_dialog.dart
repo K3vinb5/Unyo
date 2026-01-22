@@ -12,9 +12,10 @@ import 'package:unyo/presentation/widgets/styled/unyo_server_button.dart';
 
 class AnimeServerSelectionDialog extends StatefulWidget {
   final AnimeDetailsCubit cubit;
+  final int episodeIndex;
   final Future<bool> Function() onOpen;
 
-  const AnimeServerSelectionDialog({super.key, required this.cubit, required this.onOpen});
+  const AnimeServerSelectionDialog({super.key, required this.cubit, required this.episodeIndex, required this.onOpen});
 
   @override
   State<AnimeServerSelectionDialog> createState() => _AnimeServerSelectionDialogState();
@@ -59,14 +60,14 @@ class _AnimeServerSelectionDialogState extends State<AnimeServerSelectionDialog>
                             padding: EdgeInsets.symmetric(horizontal: 15.0.w),
                             children: [
                               ...state.extensionVideoResults.mapIndexed(
-                                (int episodeIndex, ext.Video video) => Column(
+                                (int videoIndex, ext.Video video) => Column(
                                   children: [
                                     SizedBox(height: 25.0.h),
                                     UnyoServerButton(
                                       videoServer: video,
                                       onPressed: () {
                                         Navigator.of(context).pop();
-                                        context.read<AnimeDetailsCubit>().navigateToVideoPlayer(video, episodeIndex);
+                                        context.read<AnimeDetailsCubit>().navigateToVideoPlayer(video, widget.episodeIndex, videoIndex);
                                       },
                                     ),
                                   ],

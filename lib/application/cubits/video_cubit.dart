@@ -79,8 +79,8 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
           video: videoInfo.currentVideo,
           alternativeVideos: videoInfo.alternativeVideos,
           videoIndex: videoInfo.videoIndex,
-          playlistIndex: videoInfo.playlistIndex,
-          onErrorCallback: (errorTitle) => showWidgetDialogEffect(dialog: WarningDialog(width: 500, height: 200, title: errorTitle)),
+          episodeIndex: videoInfo.playlistIndex,
+          onErrorCallback: _handleVideoError,
           lowLatency: false
       );
       _videoService.setPreventSleep(true);
@@ -96,5 +96,9 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     _logger.d("Returning to Anime Details Page");
     popRouteEffect(context);
     // The BlocProvider will dispose/close this cubit when the route is popped.
+  }
+
+  void _handleVideoError(String errorTitle) {
+    showWidgetDialogEffect(dialog: WarningDialog(width: 500, height: 200, title: errorTitle));
   }
 }

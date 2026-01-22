@@ -86,6 +86,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
           selectedExtension: null,
           userLoaded: false,
           animeServerDialogReady: false,
+          animeServerDialogLoading: false,
           extensionAnimeResults: [],
           extensionEpisodeResults: [],
           extensionVideoResults: [],
@@ -155,13 +156,13 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     }
   }
 
-  Future<void> navigateToVideoPlayer(ext.Video selectedVideo, int episodeIndex) async {
+  Future<void> navigateToVideoPlayer(ext.Video selectedVideo, int episodeIndex, int videoIndex) async {
     _logger.i("Navigating to Video Player with selected video from ${state.selectedExtension?.name}");
     _videoInfoNotifier.updateVideoInfo(
         VideoInfoModel(
           currentVideo: selectedVideo,
           alternativeVideos: state.extensionVideoResults,
-          videoIndex: state.extensionVideoResults.indexOf(selectedVideo),
+          videoIndex: videoIndex,
           playlistIndex: episodeIndex,
        )
     );
@@ -203,16 +204,21 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
   }
 
   Future<void> openAnimeServerSelectionDialog(BuildContext context, int episodeIndex) async {
-    emit(state.copyWith(animeServerDialogReady: false, extensionVideoResults: []));
+    if (state.animeServerDialogLoading) return;
+    emit(state.copyWith(animeServerDialogReady: false, animeServerDialogLoading: true, extensionVideoResults: []));
     // TODO - You may not want to select the first one on extensionAnimeResults
     bool canOpenDialog = await _getEpisodesFromSelectedExtension(
       state.selectedExtension,
       state.extensionAnimeResults.firstOrNull,
     );
-    if (!canOpenDialog) return;
+    if (!canOpenDialog) {
+      emit(state.copyWith(animeServerDialogLoading: false));
+     return;
+    }
     showWidgetDialogEffect(
       dialog: AnimeServerSelectionDialog(
         cubit: this,
+        episodeIndex: episodeIndex,
         onOpen: () async {
           if (episodeIndex >= state.extensionEpisodeResults.length) {
             _logger.w("Episode index $episodeIndex is out of bounds for extension episode results.");
@@ -224,9 +230,10 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
             state.extensionEpisodeResults[episodeIndex],
           );
           if (!shouldKeepDialog && context.mounted) {
+            emit(state.copyWith(animeServerDialogReady: false, animeServerDialogLoading: false));
             return false;
           }
-          emit(state.copyWith(animeServerDialogReady: true));
+          emit(state.copyWith(animeServerDialogReady: true, animeServerDialogLoading: false));
           return true;
         },
       ),
