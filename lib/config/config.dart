@@ -6,6 +6,7 @@ const String loggedUserNotifier = 'loggedUserNotifier';
 const String newUserNotifier = 'newUserNotifier';
 // Anilist API configuration
 const String anilistOAuthEndpoint = 'https://anilist.co/api/v2/oauth/token';
+const String shutDownTorrentServer = 'http://127.0.0.1:8090/shutdown';
 const String anilistAuthUrl =
     'https://anilist.co/api/v2/oauth/authorize?client_id=$anilistClientId&redirect_uri=$anilistRedirectUri&response_type=code';
 const String anilistRedirectUri = 'http://localhost:9999/auth';
@@ -19,6 +20,7 @@ const String torrentServiceEndpoint = 'http://127.0.0.1:8090';
 // Cache configuration
 const Set<String> cacheDisabledEndpoints = <String>{
   anilistOAuthEndpoint,
+  shutDownTorrentServer
 };
 const Set<String> cacheIgnoredHeaders = <String>{
   'Authorization'

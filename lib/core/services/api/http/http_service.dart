@@ -142,6 +142,7 @@ class HttpService {
       _logger.w("Not caching response for $endpoint due to client error with status code ${response.statusCode}");
       return;
     }
+    if (!_isCacheable(endpoint)) return null;
     _logger.d("Caching response for $endpoint");
     final cacheKey = "${method.hashCode}${endpoint.hashCode}${json.encode(_cacheEnabledHeaders(headers)).hashCode}${body.hashCode}${fromJson.runtimeType.hashCode}";
     _apiResponseCache[cacheKey] =

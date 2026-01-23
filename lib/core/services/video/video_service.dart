@@ -318,9 +318,10 @@ class VideoService {
       _isBuffering = false;
     }
     if (newStatus.test(mdk.MediaStatus.invalid)) {
-      // if (!_isDisposed) {
-      //   _onErrorCallback("Failed to load media. Please try again later.");
-      // }
+      if (!_isDisposed) {
+        _onErrorCallback("Failed to load media. Please try again later.");
+      }
+      return false;
     }
     return true;
   }
