@@ -85,6 +85,7 @@ class _AnimeViewState extends State<_AnimeView> {
               SizedBox(height: 20.0.h),
               UnyoBannerCarousel(
                 animeList: state.banners,
+                onTapAnime: context.read<AnimeCubit>().navigateToAnimeDetails,
               ),
               const SizedBox(height: 40,),
               SizedBox(

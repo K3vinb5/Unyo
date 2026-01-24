@@ -82,7 +82,10 @@ class _MangaViewState extends State<_MangaView> {
             mainAxisSize: MainAxisSize.max,
             children: [
               SizedBox(height: 20.0.h),
-              UnyoBannerCarousel(mangaList: state.banners),
+              UnyoBannerCarousel(
+                mangaList: state.banners,
+                onTapManga: context.read<MangaCubit>().navigateToMangaDetails,
+              ),
               const SizedBox(height: 40),
               SizedBox(
                 height: 90,
