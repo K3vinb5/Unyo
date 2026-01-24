@@ -15,6 +15,7 @@ class UnyoVideoTexture extends StatefulWidget {
 class _UnyoVideoTextureState extends State<UnyoVideoTexture> {
   late VideoService _videoService;
   late double aspectRatio;
+  Timer? _aspectRatioTimer;
 
   @override
   void initState() {
@@ -23,10 +24,15 @@ class _UnyoVideoTextureState extends State<UnyoVideoTexture> {
     aspectRatio = _videoService.aspectRatio;
     if (aspectRatio <= 0) {
       aspectRatio = 16 / 9; // Default aspect ratio
-      Timer.periodic(const Duration(milliseconds: 200), (timer) {
-        if (_videoService.aspectRatio > 0) {
+      _aspectRatioTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        final newAspectRatio = _videoService.aspectRatio;
+        if (newAspectRatio > 0) {
           setState(() {
-            aspectRatio = _videoService.aspectRatio;
+            aspectRatio = newAspectRatio;
           });
           timer.cancel();
         }
@@ -37,7 +43,7 @@ class _UnyoVideoTextureState extends State<UnyoVideoTexture> {
 
   @override
   void dispose() {
-    // Only updates texture on init; nothing to clean up, but keep method for symmetry/debug hooks.
+    _aspectRatioTimer?.cancel();
     super.dispose();
   }
 

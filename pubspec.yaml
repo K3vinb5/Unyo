@@ -86,6 +86,7 @@ dev_dependencies:
   hive_ce_generator: ^1.9.2
   json_serializable: ^6.9.5
   build_runner: ^2.10.4
+  mocktail: ^1.0.4
 
 # The following section is specific to Flutter packages.
 flutter:

@@ -31,7 +31,7 @@ void main() async {
   setupLocatorAfterHiveInit();
   // Setup Window Manager options
   WindowOptions windowOptions = const WindowOptions(
-    minimumSize: Size(1280, 720),
+    minimumSize: Size(1200, 675),
     center: false,
     backgroundColor: Colors.transparent,
     titleBarStyle: TitleBarStyle.normal,
@@ -39,8 +39,8 @@ void main() async {
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     Size size = await windowManager.getSize();
-    if (size.width < 1280 || size.height < 720) {
-      await windowManager.setSize(const Size(1280, 720));
+    if (size.width < 1200 || size.height < 675) {
+      await windowManager.setSize(const Size(1200, 675));
     }
     windowManager.setPreventClose(true);
   });
