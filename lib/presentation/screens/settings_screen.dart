@@ -10,6 +10,8 @@ import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/enums/episode_service.dart';
 import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/core/services/effects/app_effect_handler.dart';
+import 'package:unyo/core/services/media/episode_service.dart';
+import 'package:unyo/core/services/media/media_service.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_settings_category.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_settings_selection_dialog.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_settings_selection_dropdown.dart';
@@ -173,7 +175,7 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                                         service.name.substring(1),
                                   )
                                   .toList(),
-                          onPressed: (value) {},
+                          onPressed: context.read<SettingsCubit>().updateEpisodeMetadataService,
                         ),
                         UnyoSettingsSelectionDropdown(
                           title: "Episode Metadata Service",
@@ -191,7 +193,7 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                                         service.name.substring(1),
                                   )
                                   .toList(),
-                          onPressed: (value) {},
+                          onPressed: context.read<SettingsCubit>().updateEpisodeMetadataService,
                         ),
                         UnyoSettingsCategory(
                           title: "Language Settings",
@@ -215,18 +217,18 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                               description: "Select the default media title language",
                               icon: Icons.text_fields_rounded,
                               label: "Select a language",
-                              defaultValue: "English",
-                              children: ["English"],
-                              onPressed: (value) {},
+                              defaultValue: state.loggedUser.settings.mediaTitleLanguage,
+                              children: MediaServiceFactory.getMediaService(state.loggedUser.settings.service).titleLanguages,
+                              onPressed: context.read<SettingsCubit>().updateMediaTitleLanguage,
                             ),
                             UnyoSettingsSelectionDropdown(
                               title: "Default Episode Title Language",
                               description: "Select the default episode title language",
                               icon: Icons.text_fields_rounded,
                               label: "Select a language",
-                              defaultValue: "English",
-                              children: ["English"],
-                              onPressed: (value) {},
+                              defaultValue: state.loggedUser.settings.episodeTitleLanguage,
+                              children: EpisodeMediaServiceFactory.getEpisodeMediaService(state.loggedUser.settings.episodeService).titleLanguages,
+                              onPressed: context.read<SettingsCubit>().updateEpisodeTitleLanguage,
                             ),
                           ],
                         ),
@@ -235,7 +237,7 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                           description: "Enable or disable Discord Rich Presence",
                           icon: Icons.discord_rounded,
                           initiallySelected: state.loggedUser.settings.enableDiscordRichPresence,
-                          onPressed: (value) {},
+                          onPressed: context.read<SettingsCubit>().enableDiscordRichPresence,
                         ),
                         UnyoSettingsSelectionToggle(
                           title: "NSFW Content",
@@ -266,14 +268,14 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                           description: "Automatically skip the opening of episodes",
                           icon: Icons.skip_next_rounded,
                           initiallySelected: state.loggedUser.settings.automaticallySkipOpening,
-                          onPressed: (value) {},
+                          onPressed: context.read<SettingsCubit>().enableAutomaticallySkipOpening,
                         ),
                         UnyoSettingsSelectionToggle(
                           title: "Skip ending automatically (when available)",
                           description: "Automatically skip the ending of episodes",
                           icon: Icons.skip_previous_rounded,
                           initiallySelected: state.loggedUser.settings.automaticallySkipEnding,
-                          onPressed: (value) {},
+                          onPressed: context.read<SettingsCubit>().enableAutomaticallySkipEnding,
                         ),
                         UnyoSettingsSelectionSlider(
                           title: "Default manual skip time",
@@ -282,21 +284,21 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                           initialValue: state.loggedUser.settings.manualSkipTime,
                           minValue: 60,
                           maxValue: 120,
-                          onChanged: (value) {},
+                          onChanged: context.read<SettingsCubit>().manualSkipTimeUpdate,
                         ),
                         UnyoSettingsSelectionToggle(
                           title: "Enable auto-play next episode",
                           description: "Automatically accept next episode pop-up when the current one ends",
                           icon: Icons.navigate_next_rounded,
                           initiallySelected: state.loggedUser.settings.autoPlayNextEpisode,
-                          onPressed: (value) {},
+                          onPressed: context.read<SettingsCubit>().enableAutoPlayNextEpisode,
                         ),
                         UnyoSettingsSelectionToggle(
                           title: "Enable OpenSubtitles.org integration (When available)",
                           description: "Enable OpenSubtitles.org integration for automatic subtitle fetching",
                           icon: Icons.subtitles_rounded,
                           initiallySelected: state.loggedUser.settings.enableOpenSubtitlesIntegration,
-                          onPressed: (value) {},
+                          onPressed: context.read<SettingsCubit>().enableOpenSubtitlesIntegration,
                         ),
                       ],
                     ),

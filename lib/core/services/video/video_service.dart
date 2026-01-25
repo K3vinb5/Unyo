@@ -31,6 +31,7 @@ class VideoService {
   final void Function(String) _onErrorCallback;
 
   final bool _lowLatency;
+  late bool _initialFullscreen;
   late bool _isFullscreen;
   bool _isVideoReady = false;
   bool _isBuffering = true;
@@ -74,7 +75,8 @@ class VideoService {
 
   /// Inits asynchronous properties
   Future<void> initAsync() async {
-    _isFullscreen = await windowManager.isFullScreen();
+    _initialFullscreen = await windowManager.isFullScreen();
+    _isFullscreen = _initialFullscreen;
   }
 
   // Getters
@@ -196,6 +198,7 @@ class VideoService {
 
   bool setFullscreen(bool fullscreen) {
     _isFullscreen = fullscreen;
+    _initialFullscreen = fullscreen;
     windowManager.setFullScreen(fullscreen);
     return true;
   }
@@ -213,7 +216,7 @@ class VideoService {
   void dispose() {
     _isDisposed = true;
     _player.onMediaStatus(null);
-    setFullscreen(false);
+    setFullscreen(_initialFullscreen);
     _player.dispose();
   }
 

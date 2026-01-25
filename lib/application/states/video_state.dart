@@ -1,3 +1,4 @@
+import 'package:cast/cast.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
@@ -13,6 +14,7 @@ abstract class VideoState with _$VideoState implements HasEffects{
     required User loggedUser,
     required VideoInfo videoInfo,
     required Anime selectedAnime,
+    required List<CastDevice> availableCastDevices,
     required bool isLoading,
     @Default(<AppEffect>[]) List<AppEffect> effects,
   }) = _VideoState;

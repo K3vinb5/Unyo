@@ -1,5 +1,6 @@
 // External dependencies
 import 'dart:async';
+import 'package:cast/cast.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -363,6 +364,16 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                             const PopupMenuItem<double>(value: 1.5, child: Text('1.5x')),
                                             const PopupMenuItem<double>(value: 2.0, child: Text('2.0x')),
                                           ],
+                                        ),
+                                        PopupMenuButton<CastDevice>(
+                                          tooltip: "Cast to Device",
+                                          icon: const Icon(Icons.cast_rounded, size: 22),
+                                          onSelected: (CastDevice device) {
+                                            context.read<VideoCubit>().castToDevice(device);
+                                          },
+                                          itemBuilder: (BuildContext context) => state.availableCastDevices.map(
+                                              (device) => PopupMenuItem<CastDevice>(value: device, child: Text(device.name))
+                                          ).toList()
                                         ),
                                         Tooltip(
                                           message: "${_videoService.isFullscreen ? "Disable" : "Enable"} Fullscreen",

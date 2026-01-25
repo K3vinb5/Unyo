@@ -53,6 +53,7 @@ class _UnyoMenuIconState extends State<UnyoMenuIcon> {
                   width: 3.5,
                   decoration: BoxDecoration(
                     color: ColorScheme.of(context).tertiary,
+                    borderRadius: BorderRadius.circular(20)
                   ),
                 ),
                 SizedBox(width: widget.isSelected ? 10.0 : 9.5),

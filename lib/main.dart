@@ -38,10 +38,6 @@ void main() async {
     title: "Unyo",
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
-    Size size = await windowManager.getSize();
-    if (size.width < 1200 || size.height < 675) {
-      await windowManager.setSize(const Size(1200, 675));
-    }
     windowManager.setPreventClose(true);
   });
   // Run Flutter app with localization and screen utilities

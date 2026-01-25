@@ -1,4 +1,6 @@
 // External dependencies
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
@@ -32,6 +34,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
 
   // Services
   late VideoService _videoService;
+  // Others
   bool _videoServiceInitialized = false;
 
   VideoCubit(this._loggedUserNotifier, this._videoInfoNotifier, this._selectedAnimeNotifier)
@@ -40,6 +43,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       loggedUser: UserModel.empty(),
       videoInfo: VideoInfoModel.empty(),
       selectedAnime: AnimeModel.empty(),
+      availableCastDevices: [],
       isLoading: true
     )
   ) {
@@ -90,12 +94,150 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     _selectedAnimeSubscription = _selectedAnimeNotifier.animeStream.listen((selectedAnime) {
       emit(state.copyWith(selectedAnime: selectedAnime));
     });
+    _getAvailableCastDevices();
+  }
+
+  Future<void> _getAvailableCastDevices() async {
+    List<CastDevice> availableCastDevices = await CastDiscoveryService().search();
+    emit(state.copyWith(availableCastDevices: availableCastDevices));
+  }
+
+  Future<void> _connectAndPlayMediaOnCastDevice(CastDevice device) async {
+    final session = await CastSessionManager().startSession(device);
+
+    session.stateStream.listen((castState) {
+      if (castState == CastSessionState.connected) {
+        _logger.d("Connected to Cast device: ${device.name}");
+        showSnackBarEffect(
+          "Cast Connected",
+          message: "Connected to ${device.name}",
+          contentType: ContentType.success,
+        );
+      }
+    });
+
+    var messageIndex = 0;
+    session.messageStream.listen((message) {
+      messageIndex += 1;
+      _logger.d("Cast message received ($messageIndex): $message");
+
+      // After receiving the initial messages, send the media load command
+      if (messageIndex == 2) {
+        Future.delayed(const Duration(seconds: 2)).then((_) {
+          _sendMediaToCastSession(session);
+        });
+      }
+    });
+
+    // Launch the default media receiver app
+    session.sendMessage(CastSession.kNamespaceReceiver, {
+      'type': 'LAUNCH',
+      'appId': 'CC1AD845', // Google's default media receiver app ID
+    });
+  }
+
+  void _sendMediaToCastSession(CastSession session) {
+    final video = state.videoInfo.currentVideo;
+    final anime = state.selectedAnime;
+    final episodeNumber = state.videoInfo.playlistIndex + 1;
+
+    // Determine the content type based on the video URL
+    final contentType = _getContentType(video.videoUrl);
+    final streamType = _getStreamType(video.videoUrl);
+
+    _logger.d("Casting video: ${video.videoUrl} with contentType: $contentType, streamType: $streamType");
+
+    // Build the media message
+    final Map<String, dynamic> message = {
+      'contentId': video.videoUrl,
+      'contentType': contentType,
+      'streamType': streamType,
+      'metadata': {
+        'type': 0,
+        'metadataType': 0,
+        'title': "${anime.title.userPreferred} - Episode $episodeNumber",
+        'images': [
+          {'url': anime.coverImage}
+        ]
+      }
+    };
+
+    // Add custom headers if available (for custom receivers that support it)
+    // Note: The default media receiver (CC1AD845) has limited header support.
+    // For full header support, a custom receiver app may be needed.
+    if (video.headers != null && video.headers!.headersMap.isNotEmpty) {
+      final headers = video.headers!.headersMap;
+      _logger.d("Including custom headers for cast: $headers");
+
+      // Add headers via customData (requires custom receiver support)
+      message['customData'] = {
+        'headers': headers,
+      };
+    }
+
+    session.sendMessage(CastSession.kNamespaceMedia, {
+      'type': 'LOAD',
+      'autoPlay': true,
+      'currentTime': _videoService.position.inSeconds,
+      'media': message,
+    });
+
+    // Pause local playback when casting
+    _videoService.pause();
+  }
+
+  String _getContentType(String videoUrl) {
+    final lowerUrl = videoUrl.toLowerCase();
+
+    if (lowerUrl.contains('.m3u8') || lowerUrl.contains('m3u8')) {
+      return 'application/x-mpegurl';
+    } else if (lowerUrl.contains('.mpd')) {
+      return 'application/dash+xml';
+    } else if (lowerUrl.endsWith('.webm')) {
+      return 'video/webm';
+    } else if (lowerUrl.endsWith('.mkv')) {
+      return 'video/x-matroska';
+    } else if (lowerUrl.endsWith('.avi')) {
+      return 'video/x-msvideo';
+    } else if (lowerUrl.endsWith('.mov')) {
+      return 'video/quicktime';
+    } else if (lowerUrl.endsWith('.ts')) {
+      return 'video/mp2t';
+    } else if (lowerUrl.endsWith('.flv')) {
+      return 'video/x-flv';
+    } else if (lowerUrl.endsWith('.mp3')) {
+      return 'audio/mpeg';
+    } else if (lowerUrl.endsWith('.aac')) {
+      return 'audio/aac';
+    } else {
+      // Default to mp4 for most video streams
+      return 'video/mp4';
+    }
+  }
+
+  String _getStreamType(String videoUrl) {
+    final lowerUrl = videoUrl.toLowerCase();
+
+    // HLS and DASH are typically live/buffered streams
+    if (lowerUrl.contains('.m3u8') || lowerUrl.contains('m3u8') || lowerUrl.contains('.mpd')) {
+      // Could be LIVE or BUFFERED depending on the stream
+      // For VOD content, BUFFERED is more appropriate
+      return 'BUFFERED';
+    }
+
+    // Regular file-based content
+    return 'BUFFERED';
   }
 
   void navigateBackToAnimeDetailsPage(BuildContext context) {
     _logger.d("Returning to Anime Details Page");
     popRouteEffect(context);
     // The BlocProvider will dispose/close this cubit when the route is popped.
+  }
+
+  void castToDevice(CastDevice device) {
+    _logger.d("Casting to device: ${device.name}");
+    _connectAndPlayMediaOnCastDevice(device);
   }
 
   void _handleVideoError(String errorTitle) {

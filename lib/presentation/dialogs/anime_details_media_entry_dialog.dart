@@ -126,10 +126,11 @@ class AnimeDetailsMediaEntryDialog extends StatelessWidget {
                       Column(
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              DarkUnyoButton(text: "Confirm", maxHeight: 50, onPressed: () => context.read<AnimeDetailsCubit>().updateMediaListEntry(context)),
-                              SizedBox(width: 25.0.w),
                               DarkUnyoButton(text: "Cancel", maxHeight: 50, onPressed: () => context.read<AnimeDetailsCubit>().popRouteEffect(context)),
+                              SizedBox(width: 25.0.w),
+                              DarkUnyoButton(text: "Confirm", maxHeight: 50, onPressed: () => context.read<AnimeDetailsCubit>().updateMediaListEntry(context)),
                             ],
                           )
                         ],
