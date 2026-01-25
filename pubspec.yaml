@@ -56,8 +56,6 @@ dependencies:
   hive_ce: ^2.16.0
   path: ^1.9.1
   crypto: ^3.0.7
-  # Asset Management
-  icons_launcher: ^3.0.3
   # Utilities
   collection: ^1.19.1
   html: ^0.15.6
@@ -82,11 +80,14 @@ dev_dependencies:
   bloc_lint: ^0.3.5
   # Testing
   bloc_test: ^10.0.0
+  mocktail: ^1.0.4
   # Code generation
   hive_ce_generator: ^1.9.2
   json_serializable: ^6.9.5
   build_runner: ^2.10.4
-  mocktail: ^1.0.4
+  # Asset Management
+  flutter_launcher_icons: ^0.14.4
+  icons_launcher: ^3.0.3
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -113,3 +114,20 @@ flutter:
   #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
+
+flutter_launcher_icons:
+  windows:
+    generate: true
+    icon_size: 256
+    image_path: "assets/logo_1.png"
+  macos:
+    generate: true
+    icon_size: 256
+    image_path: "assets/logo_1.png"
+
+
+icons_launcher:
+  image_path: "assets/logo_1.png"
+  platforms:
+    linux:
+      enable: true
