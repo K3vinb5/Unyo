@@ -11,10 +11,14 @@ import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/video_state.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
+import 'package:unyo/core/notification/episode_info_notifier.dart';
+import 'package:unyo/core/notification/media_list_entry_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/notification/video_info_notifier.dart';
 import 'package:unyo/core/services/video/video_service.dart';
 import 'package:unyo/domain/entities/anime.dart';
+import 'package:unyo/domain/entities/episode_info.dart';
+import 'package:unyo/domain/entities/media_list_entry.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/domain/entities/video_info.dart';
@@ -28,21 +32,27 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
   final UserNotifier _loggedUserNotifier;
   final VideoInfoNotifier _videoInfoNotifier;
   final AnimeNotifier _selectedAnimeNotifier;
+  final EpisodesInfoNotifier _episodesInfoNotifier;
+  final MediaListEntryNotifier _mediaListEntryNotifier;
   late StreamSubscription<User> _loggedUserSubscription;
   late StreamSubscription<VideoInfo> _videoInfoSubscription;
   late StreamSubscription<Anime> _selectedAnimeSubscription;
+  late StreamSubscription<List<EpisodeInfo>> _episodeInfoSubscription;
+  late StreamSubscription<MediaListEntry> _mediaListEntrySubscription;
 
   // Services
   late VideoService _videoService;
   // Others
   bool _videoServiceInitialized = false;
 
-  VideoCubit(this._loggedUserNotifier, this._videoInfoNotifier, this._selectedAnimeNotifier)
+  VideoCubit(this._loggedUserNotifier, this._videoInfoNotifier, this._selectedAnimeNotifier, this._episodesInfoNotifier, this._mediaListEntryNotifier)
     : super(
       VideoState(
       loggedUser: UserModel.empty(),
       videoInfo: VideoInfoModel.empty(),
       selectedAnime: AnimeModel.empty(),
+      episodesInfo: [],
+      mediaListEntry: MediaListEntryModel.empty(),
       availableCastDevices: [],
       isLoading: true
     )
@@ -69,6 +79,8 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     _loggedUserSubscription.cancel();
     _videoInfoSubscription.cancel();
     _selectedAnimeSubscription.cancel();
+    _episodeInfoSubscription.cancel();
+    _mediaListEntrySubscription.cancel();
     _logger.d("VideoCubit closed and subscriptions cancelled.");
     return super.close();
   }
@@ -93,6 +105,12 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     });
     _selectedAnimeSubscription = _selectedAnimeNotifier.animeStream.listen((selectedAnime) {
       emit(state.copyWith(selectedAnime: selectedAnime));
+    });
+    _episodeInfoSubscription = _episodesInfoNotifier.episodeInfoStream.listen((episodesInfo) {
+      emit(state.copyWith(episodesInfo: episodesInfo));
+    });
+    _mediaListEntrySubscription = _mediaListEntryNotifier.mediaListEntryStream.listen((mediaListEntry) {
+      emit(state.copyWith(mediaListEntry: mediaListEntry));
     });
     _getAvailableCastDevices();
   }

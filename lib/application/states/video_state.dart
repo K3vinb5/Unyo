@@ -3,6 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/domain/entities/anime.dart';
+import 'package:unyo/domain/entities/episode_info.dart';
+import 'package:unyo/domain/entities/media_list_entry.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/domain/entities/video_info.dart';
 
@@ -14,6 +16,8 @@ abstract class VideoState with _$VideoState implements HasEffects{
     required User loggedUser,
     required VideoInfo videoInfo,
     required Anime selectedAnime,
+    required List<EpisodeInfo> episodesInfo,
+    required MediaListEntry mediaListEntry,
     required List<CastDevice> availableCastDevices,
     required bool isLoading,
     @Default(<AppEffect>[]) List<AppEffect> effects,

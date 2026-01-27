@@ -1,18 +1,18 @@
 // External dependencies
-import 'dart:io';
-import 'package:get_it/get_it.dart';
 import 'package:k3vinb5_aniyomi_bridge/aniyomi_bridge.dart';
-import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:logger/logger.dart';
+import 'package:get_it/get_it.dart';
+import 'dart:io';
+
+// Internal dependencies
+import 'package:unyo/config/config.dart' as config;
 import 'package:unyo/application/cubits/anime_advanced_search_cubit.dart';
 import 'package:unyo/application/cubits/extensions_cubit.dart';
 import 'package:unyo/application/cubits/manga_advanced_search_cubit.dart';
 import 'package:unyo/application/cubits/manga_details_cubit.dart';
 import 'package:unyo/application/cubits/settings_cubit.dart';
 import 'package:unyo/application/cubits/video_cubit.dart';
-
-// Internal dependencies
-import 'package:unyo/config/config.dart' as config;
 import 'package:unyo/application/cubits/anime_cubit.dart';
 import 'package:unyo/application/cubits/anime_details_cubit.dart';
 import 'package:unyo/application/cubits/calendar_cubit.dart';
@@ -23,8 +23,10 @@ import 'package:unyo/application/cubits/login_cubit.dart';
 import 'package:unyo/core/log/logger.dart';
 import 'package:unyo/core/notification/anime_genres_notifier.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
+import 'package:unyo/core/notification/episode_info_notifier.dart';
 import 'package:unyo/core/notification/manga_genres_notifier.dart';
 import 'package:unyo/core/notification/manga_notifier.dart';
+import 'package:unyo/core/notification/media_list_entry_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/menu_bar_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
@@ -73,6 +75,8 @@ void setupLocator() async{
   sl.registerLazySingleton<MangaGenresNotifier>(() => MangaGenresNotifier());
   sl.registerLazySingleton<MediaListNotifier>(() => MediaListNotifier());
   sl.registerLazySingleton<VideoInfoNotifier>(() => VideoInfoNotifier());
+  sl.registerLazySingleton<EpisodesInfoNotifier>(() => EpisodesInfoNotifier());
+  sl.registerLazySingleton<MediaListEntryNotifier>(() => MediaListEntryNotifier());
   // Repositories
   sl.registerLazySingleton<UserRepositoryLocal>(() => UserRepositoryLocal());
   sl.registerLazySingleton<UserRepositoryAnilist>(
@@ -161,6 +165,8 @@ void setupLocator() async{
       sl<VideoInfoNotifier>(),
       sl<ExtensionRepositoryAniyomi>(),
       sl<UserRepositoryAnilist>(),
+      sl<EpisodesInfoNotifier>(),
+      sl<MediaListEntryNotifier>()
     ),
   );
   sl.registerFactory<MangaDetailsCubit>(
@@ -202,7 +208,9 @@ void setupLocator() async{
   sl.registerFactory<VideoCubit>(() => VideoCubit(
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
       sl<VideoInfoNotifier>(),
-      sl<AnimeNotifier>()
+      sl<AnimeNotifier>(),
+      sl<EpisodesInfoNotifier>(),
+      sl<MediaListEntryNotifier>()
     )
   );
 }

@@ -198,7 +198,6 @@ class VideoService {
 
   bool setFullscreen(bool fullscreen) {
     _isFullscreen = fullscreen;
-    _initialFullscreen = fullscreen;
     windowManager.setFullScreen(fullscreen);
     return true;
   }

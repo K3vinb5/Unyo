@@ -18,22 +18,20 @@ class UnyoServerButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.0),
           color: Colors.grey.withOpacity(0.3),
         ),
-        height: 80.h,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0.w),
+          padding: EdgeInsets.only(left: 16.0.w, right: 16.0.w, top: 16.0.h, bottom: 8.0.h),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                       Text(
                         videoServer.quality,
+                        maxLines: 4,
+                        overflow: TextOverflow.fade,
                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                       ),
                       Row(
@@ -54,9 +52,9 @@ class UnyoServerButton extends StatelessWidget {
                       ),
                     ],
                   ),
-                ],
-              ),
-              Icon(Icons.play_circle_outline_rounded, size: 35.h),
+                ),
+              const SizedBox(width: 15,),
+              Icon(Icons.play_circle_outline_rounded, size: 40.h.clamp(35, 45)),
             ],
           ),
         ),

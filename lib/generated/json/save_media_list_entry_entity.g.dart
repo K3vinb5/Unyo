@@ -36,7 +36,8 @@ SaveMediaListEntrySaveMediaListEntry $SaveMediaListEntrySaveMediaListEntryFromJs
   if (progress != null) {
     saveMediaListEntrySaveMediaListEntry.progress = progress;
   }
-  final int? progressVolumes = json['progressVolumes'];
+  final int? progressVolumes = jsonConvert.convert<int>(
+      json['progressVolumes']);
   if (progressVolumes != null) {
     saveMediaListEntrySaveMediaListEntry.progressVolumes = progressVolumes;
   }
@@ -71,12 +72,12 @@ Map<String, dynamic> $SaveMediaListEntrySaveMediaListEntryToJson(
     SaveMediaListEntrySaveMediaListEntry entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['progress'] = entity.progress;
+  data['progressVolumes'] = entity.progressVolumes;
   data['repeat'] = entity.repeat;
   data['score'] = entity.score;
   data['status'] = entity.status;
   data['startedAt'] = entity.startedAt.toJson();
   data['completedAt'] = entity.completedAt.toJson();
-  data['progressVolumes'] = entity.progressVolumes;
   return data;
 }
 

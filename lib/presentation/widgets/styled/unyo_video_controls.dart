@@ -11,7 +11,11 @@ import 'package:unyo/application/states/video_state.dart';
 
 // Internal dependencies
 import 'package:unyo/core/services/video/video_service.dart';
+import 'package:unyo/presentation/drawers/episode_list_drawer.dart';
 import 'package:unyo/presentation/widgets/styled/dark_unyo_button.dart';
+import 'package:unyo/presentation/widgets/styled/unyo_fade_overlay.dart';
+import 'package:unyo/presentation/widgets/styled/unyo_video_header_controls.dart';
+import 'package:unyo/presentation/widgets/styled/unyo_video_list_button.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_volume_button.dart';
 
 class UnyoVideoControls extends StatefulWidget {
@@ -46,7 +50,7 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
         setState(() {});
       }
     });
-    _hideControlsTimer = Timer(const Duration(seconds: 3), () {
+    _hideControlsTimer = Timer(const Duration(seconds: 4), () {
       if (mounted && _videoService.isPlaying) {
         _controlsVisible = false;
       }
@@ -62,7 +66,7 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
           setState(() {});
         }
       });
-      _hideControlsTimer = Timer(const Duration(seconds: 3), () {
+      _hideControlsTimer = Timer(const Duration(seconds: 4), () {
         if (mounted && _videoService.isPlaying) {
           _controlsVisible = false;
         }
@@ -108,7 +112,7 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                     _hideControlsTimer.cancel();
                     _controlsVisible = true;
                     setState(() {});
-                    _hideControlsTimer = Timer(const Duration(seconds: 3), () {
+                    _hideControlsTimer = Timer(const Duration(seconds: 4), () {
                       if (mounted && _videoService.isPlaying) {
                         _controlsVisible = false;
                         setState(() {});
@@ -123,33 +127,11 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                       children: [
                         // Screen Gestures
                         GestureDetector(onTap: () => pauseVideo()),
-                        // Header
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: SizedBox(
-                            height: 60,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () =>
-                                        context.read<VideoCubit>().navigateBackToAnimeDetailsPage(context),
-                                    icon: Icon(
-                                      Icons.arrow_back_ios_new_rounded,
-                                      color: ColorScheme.of(context).tertiary,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    "${state.selectedAnime.title.userPreferred}  -  Episode ${state.videoInfo.playlistIndex + 1}",
-                                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Top and Bottom Fade Overlays
+                        const UnyoFadeOverlay(isTop: true),
+                        const UnyoFadeOverlay(isTop: false),
+                        // Video Header Controls
+                        UnyoVideoHeaderControls(cubit: widget.videoCubit, videoService: _videoService),
                         // Video Controls Overlay
                         AnimatedOpacity(
                           duration: const Duration(milliseconds: 500),
@@ -166,12 +148,12 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                       _videoService.reverse(const Duration(seconds: 30));
                                       setState(() {});
                                     },
-                                    iconSize: 80.w,
+                                    iconSize: 80.w.clamp(80, 100),
                                     icon: Tooltip(
                                       waitDuration: const Duration(milliseconds: 2000),
                                       textAlign: TextAlign.center,
                                       message: "Reverse 30s",
-                                      child: Icon(Icons.fast_rewind_rounded, color: Colors.white, size: 80.w),
+                                      child: Icon(Icons.fast_rewind_rounded, color: Colors.white, size: 80.w.clamp(80, 100)),
                                     ),
                                   ),
                                   SizedBox(width: 20.w),
@@ -189,7 +171,7 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                         borderRadius: BorderRadius.circular(60.w),
                                         child: AnimatedIcon(
                                           icon: AnimatedIcons.play_pause,
-                                          size: 85.w,
+                                          size: 85.w.clamp(85, 110),
                                           color: Colors.white,
                                           progress: _controller,
                                         ),
@@ -202,17 +184,51 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                     textAlign: TextAlign.center,
                                     message: "Forward 30s",
                                     child: IconButton(
-                                      iconSize: 80.w,
+                                      iconSize: 80.w.clamp(80, 100),
                                       onPressed: () {
                                         _videoService.forward(const Duration(seconds: 30));
                                         setState(() {});
                                       },
-                                      icon: Icon(Icons.fast_forward_rounded, color: Colors.white, size: 80.w),
+                                      icon: Icon(Icons.fast_forward_rounded, color: Colors.white, size: 80.w.clamp(80, 100)),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+                          ),
+                        ),
+                        // Side Video List
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: UnyoVideoListButton(
+                            tooltip: "Open Episode List",
+                            onPressed: () {
+                              _hideControlsTimer.cancel();
+                              _controlsVisible = false;
+                              setState(() {});
+                              _hideControlsTimer = Timer(const Duration(seconds: 4), () {
+                                if (mounted && _videoService.isPlaying) {
+                                  _controlsVisible = false;
+                                  setState(() {});
+                                }
+                              });
+                              showGeneralDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+                                barrierColor: Colors.transparent,
+                                transitionDuration: const Duration(milliseconds: 250),
+                                pageBuilder:(context, animation, secondaryAnimation) => EpisodeListDrawer(cubit: widget.videoCubit),
+                                transitionBuilder: (context, animation, secondaryAnimation, child) =>
+                                    SlideTransition(
+                                      position: Tween<Offset>(
+                                      begin: const Offset(1, 0),
+                                      end: Offset.zero,
+                                      ).animate(animation),
+                                      child: child,
+                                ),
+                              );
+                            },
                           ),
                         ),
                         // Video Slider And Controls
@@ -233,7 +249,7 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                         text: "${state.loggedUser.settings.manualSkipTime.toString()}s",
                                         color: ColorScheme.of(context).primary,
                                         width: 80.w,
-                                        maxWidth: 90,
+                                        maxWidth: 40,
                                         maxHeight: 45,
                                         onPressed: () {},
                                       ),
@@ -405,36 +421,11 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                 )
               : Stack(
                   children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        height: 60,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                onPressed: () =>
-                                    context.read<VideoCubit>().navigateBackToAnimeDetailsPage(context),
-                                icon: Icon(
-                                  Icons.arrow_back_ios_new_rounded,
-                                  color: ColorScheme.of(context).tertiary,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                "${state.selectedAnime.title.userPreferred}  -  Episode ${state.videoInfo.playlistIndex + 1}",
-                                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    UnyoVideoHeaderControls(cubit: widget.videoCubit, videoService: _videoService),
                     Align(
                       alignment: Alignment.center,
                       child: Center(
-                        child: LoadingAnimationWidget.fourRotatingDots(color: Colors.white, size: 100.w),
+                        child: LoadingAnimationWidget.fourRotatingDots(color: Colors.white, size: 100.w.clamp(100, 170)),
                       ),
                     ),
                   ],

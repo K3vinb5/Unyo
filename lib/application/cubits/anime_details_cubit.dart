@@ -17,6 +17,8 @@ import 'package:unyo/core/enums/episode_service.dart';
 import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/core/notification/anime_genres_notifier.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
+import 'package:unyo/core/notification/episode_info_notifier.dart';
+import 'package:unyo/core/notification/media_list_entry_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/notification/video_info_notifier.dart';
@@ -53,6 +55,8 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
   final AnimeGenresNotifier _selectedAnimeAdvancedSearchGenresFilters;
   final MediaListNotifier _selectedMediaListNotifier;
   final VideoInfoNotifier _videoInfoNotifier;
+  final EpisodesInfoNotifier _episodesInfoNotifier;
+  final MediaListEntryNotifier _mediaListEntryNotifier;
   late StreamSubscription<Anime> _selectedAnimeSubscription;
   late StreamSubscription<User> _loggedUserSubscription;
   late StreamSubscription<MediaList> _selectedMediaListSubscription;
@@ -70,6 +74,8 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     this._videoInfoNotifier,
     this._extensionRepositoryAniyomi,
     this._userRepositoryAnilist,
+    this._episodesInfoNotifier,
+    this._mediaListEntryNotifier,
   ) : super(
         AnimeDetailsState(
           loggedUser: UserModel.empty(),
@@ -252,6 +258,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
             state.loggedUser,
           );
           emit(state.copyWith(mediaListEntry: savedMediaListEntry, newMediaListEntry: savedMediaListEntry));
+          _mediaListEntryNotifier.updateSelectedMediaListEntry(savedMediaListEntry);
         case Service.mal:
           _logger.i("Updating Media List Entry to $desiredMediaListEntry on MyAnimeList");
         case Service.shikimori:
@@ -616,6 +623,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
             );
           }
           emit(state.copyWith(episodesInfo: episodesInfo));
+          _episodesInfoNotifier.updateSelectedEpisodeInfo(episodesInfo);
         case EpisodeService.kitsu:
           _logger.i("Fetching Episodes Details from Kitsu for ${state.selectedAnime.title.userPreferred}");
       }
