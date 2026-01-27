@@ -1,10 +1,20 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LightUnyoButton extends StatelessWidget {
   final String? text;
   final Widget? child;
+  final Color color;
+  final Color textColor;
   final bool isEnabled;
+  final double? maxWidth;
+  final double? maxHeight;
+  final double? minWidth;
+  final double? minHeight;
+  final double? width;
+  final double? height;
   final void Function() onPressed;
 
   const LightUnyoButton({
@@ -13,20 +23,33 @@ class LightUnyoButton extends StatelessWidget {
     required this.onPressed,
     this.isEnabled = true,
     this.child,
+    this.color = const Color.fromARGB(190, 200, 200, 200),
+    this.textColor = const Color.fromARGB(255, 37, 37, 37),
+    this.width,
+    this.height,
+    this.minWidth,
+    this.minHeight,
+    this.maxWidth,
+    this.maxHeight,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-        minimumSize: WidgetStatePropertyAll( Size(100.w, 40.h)),
-        backgroundColor: const WidgetStatePropertyAll(Colors.white),
-        foregroundColor: const WidgetStatePropertyAll(
-          Color.fromARGB(255, 37, 37, 37),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isEnabled ? onPressed : null,
+        highlightColor: Color.lerp(Colors.white, color, 1.0),
+        borderRadius: BorderRadius.circular(20.0),
+        child: Container(
+          width: width ?? 80.w.clamp(minWidth ?? 0, maxWidth ?? math.max(minWidth ?? 0, 80.w)),
+          height: height ?? 45.h.clamp(minHeight ?? 0, maxHeight ?? math.max(minHeight ?? 0, 45.h)),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0), color: color.withOpacity(0.9)),
+          child: Center(
+            child: Text(text ?? "", style: TextStyle(color: textColor, fontWeight: FontWeight.w700)),
+          ),
         ),
       ),
-      onPressed: isEnabled ? onPressed : null,
-      child: text != null ? Text(text!) : child ?? const SizedBox(),
     );
   }
 }

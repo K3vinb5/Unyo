@@ -45,7 +45,7 @@ class _UnyoEpisodeButtonState extends State<UnyoEpisodeButton> {
           widget.showDivider ? Divider(
             height: 0,
             thickness: 1,
-            color: Colors.white,
+            color: Colors.white60,
             endIndent: 40.w,
             indent: 40.w,
           ) : const SizedBox.shrink(),
