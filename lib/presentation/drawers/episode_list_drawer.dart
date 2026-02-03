@@ -53,7 +53,10 @@ class EpisodeListDrawer extends StatelessWidget {
               ? (state.selectedAnime.nextAiringEpisode.episode - 1)
               : numEpisodes,
           showDivider: i != 0,
-          onPressed: () {},
+          onPressed: ()
+          {
+            context.read<VideoCubit>().navigateToEpisode(i);
+          }
         ),
       );
     }

@@ -1,9 +1,11 @@
 import 'package:cast/cast.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:k3vinb5_aniyomi_bridge/jmodels/jsepisode.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/domain/entities/anime.dart';
 import 'package:unyo/domain/entities/episode_info.dart';
+import 'package:unyo/domain/entities/extension.dart';
 import 'package:unyo/domain/entities/media_list_entry.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/domain/entities/video_info.dart';
@@ -17,6 +19,8 @@ abstract class VideoState with _$VideoState implements HasEffects{
     required VideoInfo videoInfo,
     required Anime selectedAnime,
     required List<EpisodeInfo> episodesInfo,
+    required Extension selectedExtension,
+    required List<JSEpisode> extensionEpisodeResults,
     required MediaListEntry mediaListEntry,
     required List<CastDevice> availableCastDevices,
     required bool isLoading,

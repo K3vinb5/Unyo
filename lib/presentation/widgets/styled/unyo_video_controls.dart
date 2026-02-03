@@ -61,6 +61,7 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
     if (!_videoService.isPlaying) {
       _videoService.play();
       setState(() {});
+      _refreshTimer.cancel();
       _refreshTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
         if (mounted && _videoService.isPlaying) {
           setState(() {});
@@ -78,6 +79,11 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
   void pauseVideo() {
     if (_videoService.isPlaying) {
       _refreshTimer.cancel();
+      _refreshTimer = Timer.periodic(const Duration(milliseconds: 1000), (_) {
+        if (mounted && _videoService.isPlaying) {
+          setState(() {});
+        }
+      });
       _videoService.pause();
       _controlsVisible = true;
       setState(() {});

@@ -65,7 +65,7 @@ class CalendarCubit extends Cubit<CalendarState> with EffectMixin<CalendarState>
 
   void popScreen(BuildContext context) {
     popRouteEffect(context);
-    close();
+    // close();
   }
 
   Future<void> _getCalendarEvents(User loggedUser) async {

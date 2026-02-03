@@ -18,8 +18,8 @@ class VideoService {
   // Services
   final Logger _logger = sl<Logger>();
 
-  final ext.Video _video;
-  final List<ext.Video> _alternativeVideos;
+  ext.Video _video;
+  List<ext.Video> _alternativeVideos;
   int _videoIndex;
   // This will be used for getting the correct video out of a playlist from a magnet / torrent
   int _episodeIndex;
@@ -54,7 +54,7 @@ class VideoService {
        _alternativeVideos = alternativeVideos,
        _onErrorCallback = onErrorCallback,
        _lowLatency = lowLatency {
-    initAsync();
+    _initAsync();
     _player = mdk.Player();
     // Set player ffmpeg properties
     _configureDecoder();
@@ -74,9 +74,23 @@ class VideoService {
   }
 
   /// Inits asynchronous properties
-  Future<void> initAsync() async {
+  Future<void> _initAsync() async {
     _initialFullscreen = await windowManager.isFullScreen();
     _isFullscreen = _initialFullscreen;
+  }
+
+  void changeVideo({
+    required ext.Video video,
+    required List<ext.Video> alternativeVideos,
+    required int videoIndex,
+    required int episodeIndex})
+  {
+    _video = video;
+    _alternativeVideos = alternativeVideos;
+    _videoIndex = videoIndex;
+    _episodeIndex = episodeIndex;
+    _player.setMedia(_video.videoUrl, mdk.MediaType.video);
+    _player.setMedia(_video.videoUrl, mdk.MediaType.audio);
   }
 
   // Getters
@@ -166,6 +180,15 @@ class VideoService {
 
   bool setCaptionOffset(Duration duration) {
     return false;
+  }
+
+  bool resetService() {
+    _player.state = mdk.PlaybackState.paused;
+    _isBuffering = true;
+    _isVideoReady = false;
+    _isBuffering = true;
+    _isLoading = false;
+    return true;
   }
 
   Future<bool> setCaption(int captionIndex) async {
@@ -329,6 +352,8 @@ class VideoService {
   }
 
   Future<void> _initCaptionsAndAudiotracks() async {
+    captionTracks.clear();
+    audioTracks.clear();
     if (_player.mediaInfo.subtitle != null && _player.mediaInfo.subtitle!.isNotEmpty) {
       for (mdk.SubtitleStreamInfo subtitleStreamInfo in _player.mediaInfo.subtitle!) {
         captionTracks.add(

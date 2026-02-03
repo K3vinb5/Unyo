@@ -18,6 +18,8 @@ import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/core/notification/anime_genres_notifier.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/episode_info_notifier.dart';
+import 'package:unyo/core/notification/episodes_notifier.dart';
+import 'package:unyo/core/notification/extension_notifier.dart';
 import 'package:unyo/core/notification/media_list_entry_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
@@ -57,6 +59,8 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
   final VideoInfoNotifier _videoInfoNotifier;
   final EpisodesInfoNotifier _episodesInfoNotifier;
   final MediaListEntryNotifier _mediaListEntryNotifier;
+  final ExtensionNotifier _selectedExtensionNotifier;
+  final EpisodesNotifier _selectedEpisodesNotifier;
   late StreamSubscription<Anime> _selectedAnimeSubscription;
   late StreamSubscription<User> _loggedUserSubscription;
   late StreamSubscription<MediaList> _selectedMediaListSubscription;
@@ -76,6 +80,8 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     this._userRepositoryAnilist,
     this._episodesInfoNotifier,
     this._mediaListEntryNotifier,
+    this._selectedExtensionNotifier,
+    this._selectedEpisodesNotifier,
   ) : super(
         AnimeDetailsState(
           loggedUser: UserModel.empty(),
@@ -139,7 +145,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
   void navigateBackToAnimePage(BuildContext context) {
     _logger.d("Returning to Anime Page");
     popRouteEffect(context);
-    close();
+    // close();
   }
 
   void navigateToAnimeDetails(Anime anime, MediaList mediaList) {
@@ -182,6 +188,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
             .firstOrNull;
     if (selectedExtension != null) {
       emit(state.copyWith(selectedExtension: selectedExtension));
+      _selectedExtensionNotifier.updateSelectedExtension(selectedExtension);
       switch (state.loggedUser) {
         case AnilistUserModel anilistUserModel:
           SettingsModel userSettings = anilistUserModel.settings as SettingsModel;
@@ -513,7 +520,9 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
         selectedExtension,
       );
       if (episodeResults.isNotEmpty) {
-        emit(state.copyWith(extensionEpisodeResults: episodeResults.sorted((animeEpisode1, animeEpisode2) => animeEpisode1.getEpisode_number().toInt() - animeEpisode2.getEpisode_number().toInt())));
+        List<JSEpisode> sortedEpisodes = episodeResults.sorted((animeEpisode1, animeEpisode2) => animeEpisode1.getEpisode_number().toInt() - animeEpisode2.getEpisode_number().toInt());
+        emit(state.copyWith(extensionEpisodeResults: sortedEpisodes));
+        _selectedEpisodesNotifier.updateSelectedJSEpisodes(sortedEpisodes);
         return true;
       } else {
         showSnackBarEffect(

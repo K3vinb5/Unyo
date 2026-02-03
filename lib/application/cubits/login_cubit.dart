@@ -118,7 +118,7 @@ class LoginCubit extends Cubit<LoginState> with EffectMixin<LoginState> {
       // _loadUserExtensions();
       setUsersTheme(user);
       replaceRouteEffect(path: "/tabs");
-      close();
+      // close();
     } catch (e, stackTrace) {
       handleError("Error logging in user: $e", stackTrace: stackTrace);
       return;

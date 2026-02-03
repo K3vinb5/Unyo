@@ -3,6 +3,8 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:k3vinb5_aniyomi_bridge/jmodels/jsepisode.dart';
+import 'package:k3vinb5_aniyomi_bridge/jmodels/jvideo.dart';
 import 'package:logger/logger.dart';
 import 'dart:async';
 
@@ -12,12 +14,17 @@ import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/video_state.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/episode_info_notifier.dart';
+import 'package:unyo/core/notification/episodes_notifier.dart';
+import 'package:unyo/core/notification/extension_notifier.dart';
 import 'package:unyo/core/notification/media_list_entry_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/notification/video_info_notifier.dart';
 import 'package:unyo/core/services/video/video_service.dart';
+import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/domain/entities/anime.dart';
 import 'package:unyo/domain/entities/episode_info.dart';
+import 'package:unyo/domain/entities/extension.dart';
+import 'package:unyo/domain/entities/extension/video.dart' as ext;
 import 'package:unyo/domain/entities/media_list_entry.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/core/di/locator.dart';
@@ -25,8 +32,10 @@ import 'package:unyo/domain/entities/video_info.dart';
 import 'package:unyo/presentation/dialogs/warning_dialog.dart';
 
 class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
-  // Repositories
   final Logger _logger = sl<Logger>();
+
+  // Repositories
+  final ExtensionRepositoryAniyomi _extensionRepositoryAniyomi;
 
   // Notifiers / Subscriptions
   final UserNotifier _loggedUserNotifier;
@@ -34,29 +43,44 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
   final AnimeNotifier _selectedAnimeNotifier;
   final EpisodesInfoNotifier _episodesInfoNotifier;
   final MediaListEntryNotifier _mediaListEntryNotifier;
+  final ExtensionNotifier _selectedExtensionNotifier;
+  final EpisodesNotifier _selectedEpisodesNotifier;
   late StreamSubscription<User> _loggedUserSubscription;
   late StreamSubscription<VideoInfo> _videoInfoSubscription;
   late StreamSubscription<Anime> _selectedAnimeSubscription;
   late StreamSubscription<List<EpisodeInfo>> _episodeInfoSubscription;
   late StreamSubscription<MediaListEntry> _mediaListEntrySubscription;
+  late StreamSubscription<Extension> _selectedExtensionSubscription;
+  late StreamSubscription<List<JSEpisode>> _selectedEpisodesSubscription;
 
   // Services
   late VideoService _videoService;
+
   // Others
   bool _videoServiceInitialized = false;
 
-  VideoCubit(this._loggedUserNotifier, this._videoInfoNotifier, this._selectedAnimeNotifier, this._episodesInfoNotifier, this._mediaListEntryNotifier)
-    : super(
-      VideoState(
-      loggedUser: UserModel.empty(),
-      videoInfo: VideoInfoModel.empty(),
-      selectedAnime: AnimeModel.empty(),
-      episodesInfo: [],
-      mediaListEntry: MediaListEntryModel.empty(),
-      availableCastDevices: [],
-      isLoading: true
-    )
-  ) {
+  VideoCubit(
+    this._loggedUserNotifier,
+    this._videoInfoNotifier,
+    this._selectedAnimeNotifier,
+    this._episodesInfoNotifier,
+    this._mediaListEntryNotifier,
+    this._selectedExtensionNotifier,
+    this._selectedEpisodesNotifier,
+    this._extensionRepositoryAniyomi,
+  ) : super(
+        VideoState(
+          loggedUser: UserModel.empty(),
+          videoInfo: VideoInfoModel.empty(),
+          selectedAnime: AnimeModel.empty(),
+          selectedExtension: ExtensionModel.empty(),
+          extensionEpisodeResults: [],
+          episodesInfo: [],
+          mediaListEntry: MediaListEntryModel.empty(),
+          availableCastDevices: [],
+          isLoading: true,
+        ),
+      ) {
     _init();
   }
 
@@ -77,10 +101,11 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       _videoService.dispose();
     }
     _loggedUserSubscription.cancel();
-    _videoInfoSubscription.cancel();
     _selectedAnimeSubscription.cancel();
     _episodeInfoSubscription.cancel();
     _mediaListEntrySubscription.cancel();
+    _selectedExtensionSubscription.cancel();
+    _selectedEpisodesSubscription.cancel();
     _logger.d("VideoCubit closed and subscriptions cancelled.");
     return super.close();
   }
@@ -90,18 +115,8 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       emit(state.copyWith(loggedUser: loggedUser));
     });
     _videoInfoSubscription = _videoInfoNotifier.videoInfoStream.listen((videoInfo) {
-
-      _videoService = VideoService(
-          video: videoInfo.currentVideo,
-          alternativeVideos: videoInfo.alternativeVideos,
-          videoIndex: videoInfo.videoIndex,
-          episodeIndex: videoInfo.playlistIndex,
-          onErrorCallback: _handleVideoError,
-          lowLatency: false
-      );
-      _videoService.setPreventSleep(true);
-      _videoServiceInitialized = true;
-      emit(state.copyWith(videoInfo: videoInfo, isLoading: false));
+      _initializeVideoService(videoInfo);
+      _videoInfoSubscription.cancel();
     });
     _selectedAnimeSubscription = _selectedAnimeNotifier.animeStream.listen((selectedAnime) {
       emit(state.copyWith(selectedAnime: selectedAnime));
@@ -112,7 +127,45 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     _mediaListEntrySubscription = _mediaListEntryNotifier.mediaListEntryStream.listen((mediaListEntry) {
       emit(state.copyWith(mediaListEntry: mediaListEntry));
     });
+    _selectedExtensionSubscription = _selectedExtensionNotifier.extensionStream.listen((selectedExtension) {
+      emit(state.copyWith(selectedExtension: selectedExtension));
+    });
+    _selectedEpisodesSubscription = _selectedEpisodesNotifier.episodesStream.listen((
+      extensionEpisodeResults,
+    ) {
+      emit(state.copyWith(extensionEpisodeResults: extensionEpisodeResults));
+    });
     _getAvailableCastDevices();
+  }
+
+  void _initializeVideoService(VideoInfo videoInfo) {
+    if (_videoServiceInitialized) {
+      _videoService.dispose();
+      _logger.d("Previous VideoService disposed.");
+    }
+    _videoService = VideoService(
+      video: videoInfo.currentVideo,
+      alternativeVideos: videoInfo.alternativeVideos,
+      videoIndex: videoInfo.videoIndex,
+      episodeIndex: videoInfo.playlistIndex,
+      onErrorCallback: _handleVideoError,
+      lowLatency: false,
+    );
+    _videoService.setPreventSleep(true);
+    _videoServiceInitialized = true;
+    emit(state.copyWith(videoInfo: videoInfo, isLoading: false));
+  }
+
+  void _selectNewEpisode(VideoInfo videoInfo) {
+    _logger.i("Selecting new episode: Index ${videoInfo.playlistIndex}");
+    _videoService.changeVideo(
+      video: videoInfo.currentVideo,
+      alternativeVideos: videoInfo.alternativeVideos,
+      videoIndex: videoInfo.videoIndex,
+      episodeIndex: videoInfo.playlistIndex,
+    );
+    emit(state.copyWith(videoInfo: videoInfo));
+    _logger.i("VideoService updated for new episode.");
   }
 
   Future<void> _getAvailableCastDevices() async {
@@ -175,9 +228,9 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
         'metadataType': 0,
         'title': "${anime.title.userPreferred} - Episode $episodeNumber",
         'images': [
-          {'url': anime.coverImage}
-        ]
-      }
+          {'url': anime.coverImage},
+        ],
+      },
     };
 
     // Add custom headers if available (for custom receivers that support it)
@@ -188,9 +241,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       _logger.d("Including custom headers for cast: $headers");
 
       // Add headers via customData (requires custom receiver support)
-      message['customData'] = {
-        'headers': headers,
-      };
+      message['customData'] = {'headers': headers};
     }
 
     session.sendMessage(CastSession.kNamespaceMedia, {
@@ -260,5 +311,73 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
 
   void _handleVideoError(String errorTitle) {
     showWidgetDialogEffect(dialog: WarningDialog(width: 500, height: 200, title: errorTitle));
+  }
+
+  Future<void> navigateToEpisode(int episodeIndex) async {
+    try {
+      _logger.i("Navigating to episode index: $episodeIndex");
+      _videoService.resetService();
+      VideoInfo currentVideoInfo = state.videoInfo;
+      List<ext.Video> alternativeVideos = await _getVideosFromSelectedExtension(
+        state.selectedExtension,
+        state.extensionEpisodeResults[episodeIndex],
+      );
+      VideoInfo videoInfo = VideoInfoModel(
+        currentVideo: alternativeVideos[currentVideoInfo.videoIndex],
+        alternativeVideos: alternativeVideos,
+        videoIndex: currentVideoInfo.videoIndex,
+        playlistIndex: episodeIndex,
+      );
+      _selectNewEpisode(videoInfo);
+    } catch (e, stackTrace) {
+      logger.e("Error navigating to episode $e", stackTrace: stackTrace);
+      handleError("Error navigating to episode", stackTrace: stackTrace);
+    }
+  }
+
+  Future<List<ext.Video>> _getVideosFromSelectedExtension(
+    Extension? selectedExtension,
+    JSEpisode? selectedJSEpisode,
+  ) async {
+    if (selectedExtension == null) {
+      _logger.w("No extension selected to fetch videos.");
+      showSnackBarEffect(
+        "No Extension Selected",
+        message: "Select an extension to fetch videos.",
+        contentType: ContentType.warning,
+      );
+      return [];
+    } else if (selectedJSEpisode == null) {
+      _logger.w("No JSEpisode selected to fetch videos.");
+      showSnackBarEffect(
+        "No Episode Selected",
+        message: "Select an episode to fetch videos.",
+        contentType: ContentType.warning,
+      );
+      return [];
+    }
+    try {
+      _logger.i(
+        "Fetching Videos Info from extension ${selectedExtension.name} for ${state.selectedAnime.title.userPreferred}",
+      );
+      List<JVideo> videoResults = await _extensionRepositoryAniyomi.getAnimeVideoList(
+        selectedJSEpisode,
+        selectedExtension,
+      );
+      if (videoResults.isNotEmpty) {
+        return videoResults.map((jVideo) => ext.Video.fromJVideo(jVideo)).toList();
+      } else {
+        showSnackBarEffect(
+          selectedExtension.name,
+          message:
+              "No video links found in ${selectedExtension.name} for ${state.selectedAnime.title.userPreferred}",
+          contentType: ContentType.warning,
+        );
+        return [];
+      }
+    } catch (e, stackTrace) {
+      handleError("Error fetching Videos Info from selected extension: $e", stackTrace: stackTrace);
+      return [];
+    }
   }
 }

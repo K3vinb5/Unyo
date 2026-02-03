@@ -83,7 +83,7 @@ class MediaListCubit extends Cubit<MediaListState>
 
   void popScreen(BuildContext context) {
     popRouteEffect(context);
-    close();
+    // close();
   }
 
   Future<void> _getUserLists(User user) async {

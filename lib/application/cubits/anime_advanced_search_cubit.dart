@@ -88,7 +88,7 @@ class AnimeAdvancedSearchCubit extends Cubit<AnimeAdvancedSearchState>
 
   void popScreen(BuildContext context) {
     popRouteEffect(context);
-    close();
+    // close();
   }
 
   Future<void> updateSearchQuery(String query) async {

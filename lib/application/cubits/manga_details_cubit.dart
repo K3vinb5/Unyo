@@ -96,7 +96,7 @@ class MangaDetailsCubit extends Cubit<MangaDetailsState> with EffectMixin<MangaD
   void navigateBackToMangaPage(BuildContext context) {
     _logger.d("Returning to Manga Page");
     popRouteEffect(context);
-    close();
+    // close();
   }
 
   void _init() {

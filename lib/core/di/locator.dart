@@ -24,6 +24,8 @@ import 'package:unyo/core/log/logger.dart';
 import 'package:unyo/core/notification/anime_genres_notifier.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/episode_info_notifier.dart';
+import 'package:unyo/core/notification/episodes_notifier.dart';
+import 'package:unyo/core/notification/extension_notifier.dart';
 import 'package:unyo/core/notification/manga_genres_notifier.dart';
 import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_entry_notifier.dart';
@@ -77,6 +79,8 @@ void setupLocator() async{
   sl.registerLazySingleton<VideoInfoNotifier>(() => VideoInfoNotifier());
   sl.registerLazySingleton<EpisodesInfoNotifier>(() => EpisodesInfoNotifier());
   sl.registerLazySingleton<MediaListEntryNotifier>(() => MediaListEntryNotifier());
+  sl.registerLazySingleton<ExtensionNotifier>(() => ExtensionNotifier());
+  sl.registerLazySingleton<EpisodesNotifier>(() => EpisodesNotifier());
   // Repositories
   sl.registerLazySingleton<UserRepositoryLocal>(() => UserRepositoryLocal());
   sl.registerLazySingleton<UserRepositoryAnilist>(
@@ -166,7 +170,9 @@ void setupLocator() async{
       sl<ExtensionRepositoryAniyomi>(),
       sl<UserRepositoryAnilist>(),
       sl<EpisodesInfoNotifier>(),
-      sl<MediaListEntryNotifier>()
+      sl<MediaListEntryNotifier>(),
+      sl<ExtensionNotifier>(),
+      sl<EpisodesNotifier>()
     ),
   );
   sl.registerFactory<MangaDetailsCubit>(
@@ -205,12 +211,16 @@ void setupLocator() async{
       sl<MangaRepositoryAnilist>(),
     ),
   );
-  sl.registerFactory<VideoCubit>(() => VideoCubit(
+  sl.registerFactory<VideoCubit>(
+          () => VideoCubit(
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
       sl<VideoInfoNotifier>(),
       sl<AnimeNotifier>(),
       sl<EpisodesInfoNotifier>(),
-      sl<MediaListEntryNotifier>()
+      sl<MediaListEntryNotifier>(),
+      sl<ExtensionNotifier>(),
+      sl<EpisodesNotifier>(),
+      sl<ExtensionRepositoryAniyomi>()
     )
   );
 }
