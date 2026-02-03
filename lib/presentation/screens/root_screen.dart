@@ -31,8 +31,14 @@ class _RootScreenState extends State<RootScreen> with WindowListener {
   }
 
   @override
-  void onWindowClose() async {
-    super.onWindowClose();
+  void onWindowEvent(String eventName) {
+    super.onWindowEvent(eventName);
+    if (eventName == 'close') {
+      closeApp();
+    }
+  }
+
+  Future<void> closeApp() async {
     await sl<TorrentService>().stopServer();
     await windowManager.destroy();
   }
