@@ -127,6 +127,8 @@ class VideoService {
 
   List<ext.Track> get audios => audioTracks;
 
+  int get videoIndex => _videoIndex;
+
   // Setters
   bool play() {
     if (_isBuffering) return false;
@@ -189,6 +191,23 @@ class VideoService {
     _isBuffering = true;
     _isLoading = false;
     return true;
+  }
+
+  Future<void> swapVideoUrl(int index) async {
+    if (index < 0 || index >= _alternativeVideos.length) {
+      return;
+    }
+    pause();
+    ext.Video video = _alternativeVideos[index];
+    _videoIndex = index;
+    _video = video;
+    final position = this.position;
+    await _player.seek(position: 0, flags: _seekFlags);
+    _player.setMedia(video.videoUrl, mdk.MediaType.video);
+    await _initCaptionsAndAudiotracks();
+    await Future.delayed(const Duration(milliseconds: 500));
+    await _player.seek(position: position.inMilliseconds, flags: _seekFlags);
+    play();
   }
 
   Future<bool> setCaption(int captionIndex) async {

@@ -371,6 +371,35 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                           )
                                               .toList(),
                                         ),
+                                        PopupMenuButton<int>(
+                                          tooltip: "Select Video Server",
+                                          icon: const Icon(Icons.video_settings_rounded, size: 27),
+                                          onSelected: (int index) {
+                                            _videoService.swapVideoUrl(index);
+                                            setState(() {});
+                                          },
+                                          itemBuilder: (BuildContext context) => state
+                                              .videoInfo
+                                              .alternativeVideos
+                                              .mapIndexed(
+                                                (index, video) => PopupMenuItem<int>(
+                                              value: index,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(video.quality, style: const TextStyle(overflow: TextOverflow.fade),),
+                                                  _videoService.videoIndex == index
+                                                      ? const Padding(
+                                                        padding: EdgeInsets.only(right: 5.0),
+                                                        child: Icon(Icons.check_rounded, size: 16),
+                                                      )
+                                                      : const SizedBox.shrink(),
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                              .toList(),
+                                        ),
                                         PopupMenuButton<double>(
                                           tooltip: "Adjust Playback Speed",
                                           icon: const Icon(Icons.speed_rounded, size: 27),
