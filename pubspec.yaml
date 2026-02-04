@@ -58,11 +58,12 @@ dependencies:
   crypto: ^3.0.7
   # Utilities
   collection: ^1.19.1
+  fuzzywuzzy: ^1.2.0
   html: ^0.15.6
-  cast: ^2.1.0
   # Localization
   easy_localization: ^3.0.8
   # FFI/Native Integration
+  cast: ^2.1.0
   system_info3: ^4.0.2
   jni: ^0.14.2
   meta: ^1.17.0

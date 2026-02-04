@@ -35,6 +35,7 @@ abstract class AnimeDetailsState with _$AnimeDetailsState implements HasEffects{
     // relations
     // voice actors
     required List<JSAnime> extensionAnimeResults,
+    required int selectedAnimeResultIndex,
     required List<JSEpisode> extensionEpisodeResults,
     required List<ext.Video> extensionVideoResults,
     @Default(<AppEffect>[]) List<AppEffect> effects,

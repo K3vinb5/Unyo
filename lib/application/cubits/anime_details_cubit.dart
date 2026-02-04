@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:k3vinb5_aniyomi_bridge/jmodels/jsanime.dart';
 import 'package:k3vinb5_aniyomi_bridge/jmodels/jsepisode.dart';
 import 'package:k3vinb5_aniyomi_bridge/jmodels/jvideo.dart';
@@ -100,6 +101,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
           animeServerDialogReady: false,
           animeServerDialogLoading: false,
           extensionAnimeResults: [],
+          selectedAnimeResultIndex: 0,
           extensionEpisodeResults: [],
           extensionVideoResults: [],
         ),
@@ -219,10 +221,10 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
   Future<void> openAnimeServerSelectionDialog(BuildContext context, int episodeIndex) async {
     if (state.animeServerDialogLoading) return;
     emit(state.copyWith(animeServerDialogReady: false, animeServerDialogLoading: true, extensionVideoResults: []));
-    // TODO - You may not want to select the first one on extensionAnimeResults
+    // TODO - You may not want to select the found index on extensionAnimeResults
     bool canOpenDialog = await _getEpisodesFromSelectedExtension(
       state.selectedExtension,
-      state.extensionAnimeResults.firstOrNull,
+      state.extensionAnimeResults[state.selectedAnimeResultIndex],
     );
     if (!canOpenDialog) {
       emit(state.copyWith(animeServerDialogLoading: false));
@@ -470,11 +472,12 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
           selectedExtension,
         );
       }
-      emit(state.copyWith(extensionAnimeResults: animeResults));
+      int selectedAnimeResultIndex = await _fuzzySelectAnimeResultIndex(animeResults);
+      emit(state.copyWith(extensionAnimeResults: animeResults, selectedAnimeResultIndex: selectedAnimeResultIndex));
       if (animeResults.isNotEmpty) {
         showSnackBarEffect(
           selectedExtension.name,
-          message: "Found: ${animeResults.first.getTitle()}",
+          message: "Found: ${animeResults[selectedAnimeResultIndex].getTitle()}",
           contentType: ContentType.success,
         );
       } else {
@@ -488,6 +491,28 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     } catch (e, stackTrace) {
       handleError("Error fetching Anime Info from selected extension: $e", stackTrace: stackTrace);
     }
+  }
+
+  Future<int> _fuzzySelectAnimeResultIndex(List<JSAnime> animeResults) async {
+    Set<String> animeTitles = {
+      state.selectedAnime.title.userPreferred.toLowerCase(),
+      if (state.selectedAnime.title.english.isNotEmpty)
+        state.selectedAnime.title.english.toLowerCase(),
+      if (state.selectedAnime.title.romaji.isNotEmpty)
+        state.selectedAnime.title.romaji.toLowerCase(),
+      if (state.selectedAnime.title.nativeTitle.isNotEmpty)
+        state.selectedAnime.title.nativeTitle.toLowerCase(),
+    };
+    List<(int, JSAnime)> resultScores = [];
+    for (var validTitle in animeTitles) {
+      for (var animeResult in animeResults) {
+        String testingTitle = animeResult.getTitle().toDartString().toLowerCase();
+        int score = tokenSortRatio(validTitle, testingTitle);
+        resultScores.add((score, animeResult));
+      }
+    }
+    resultScores.sort((a, b) => b.$1.compareTo(a.$1));
+    return animeResults.indexOf(resultScores.first.$2);
   }
 
   Future<bool> _getEpisodesFromSelectedExtension(
