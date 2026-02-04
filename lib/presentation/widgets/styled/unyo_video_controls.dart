@@ -222,7 +222,7 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                 context: context,
                                 barrierDismissible: true,
                                 barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-                                barrierColor: Colors.transparent,
+                                barrierColor: Colors.black.withValues(alpha: 0.5),
                                 transitionDuration: const Duration(milliseconds: 250),
                                 pageBuilder:(context, animation, secondaryAnimation) => EpisodeListDrawer(cubit: widget.videoCubit),
                                 transitionBuilder: (context, animation, secondaryAnimation, child) =>
@@ -387,10 +387,17 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text(video.quality, style: const TextStyle(overflow: TextOverflow.fade),),
+                                                  Expanded(
+                                                    child: Text(
+                                                      video.quality,
+                                                      maxLines: 3,
+                                                      softWrap: true,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
                                                   _videoService.videoIndex == index
                                                       ? const Padding(
-                                                        padding: EdgeInsets.only(right: 5.0),
+                                                        padding: EdgeInsets.only(left: 12.0),
                                                         child: Icon(Icons.check_rounded, size: 16),
                                                       )
                                                       : const SizedBox.shrink(),

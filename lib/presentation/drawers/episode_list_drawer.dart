@@ -1,5 +1,6 @@
 // External dependencies
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,34 +75,37 @@ class EpisodeListDrawer extends StatelessWidget {
             color: Colors.transparent,
             elevation: 8,
             shadowColor: Colors.transparent,
-            child: Container(
-              width: 450.w,
-              height: 1.sh,
-              padding: EdgeInsets.only(top: 20.h, bottom: 20.h, left: 15.w, right: 25.w),
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
-                  color: ColorScheme.of(context).secondary.withOpacity(0.6)
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 20.0.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Episodes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                        IconButton(
-                            icon: const Icon(Icons.close),
-                            color: ColorScheme.of(context).tertiary,
-                            onPressed: () => Navigator.of(context).pop()
-                        ),
-                      ],
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                width: 450.w,
+                height: 1.sh,
+                padding: EdgeInsets.only(top: 20.h, bottom: 20.h, left: 15.w, right: 25.w),
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
+                    color: ColorScheme.of(context).secondary.withOpacity(0.6)
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 20.0.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Episodes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          IconButton(
+                              icon: const Icon(Icons.close),
+                              color: ColorScheme.of(context).tertiary,
+                              onPressed: () => Navigator.of(context).pop()
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  Expanded(child: ListView(children: _getEpisodeButtonsWidgets(context, state))),
-                ],
+                    SizedBox(height: 20.h),
+                    Expanded(child: ListView(children: _getEpisodeButtonsWidgets(context, state))),
+                  ],
+                ),
               ),
             ),
           ),
