@@ -19,12 +19,16 @@ import 'package:unyo/core/notification/extension_notifier.dart';
 import 'package:unyo/core/notification/media_list_entry_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/notification/video_info_notifier.dart';
+import 'package:unyo/core/services/api/dto/aniskip/aniskip_times_entity.dart';
+import 'package:unyo/core/services/api/http/api_response.dart';
+import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/core/services/video/video_service.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/domain/entities/anime.dart';
 import 'package:unyo/domain/entities/episode_info.dart';
 import 'package:unyo/domain/entities/extension.dart';
 import 'package:unyo/domain/entities/extension/video.dart' as ext;
+import 'package:unyo/config/config.dart' as config;
 import 'package:unyo/domain/entities/media_list_entry.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/core/di/locator.dart';
@@ -32,7 +36,6 @@ import 'package:unyo/domain/entities/video_info.dart';
 import 'package:unyo/presentation/dialogs/warning_dialog.dart';
 
 class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
-  final Logger _logger = sl<Logger>();
 
   // Repositories
   final ExtensionRepositoryAniyomi _extensionRepositoryAniyomi;
@@ -55,6 +58,8 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
 
   // Services
   late VideoService _videoService;
+  final Logger _logger = sl<Logger>();
+  final HttpService _httpService = sl<HttpService>();
 
   // Others
   bool _videoServiceInitialized = false;
@@ -78,6 +83,8 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
           episodesInfo: [],
           mediaListEntry: MediaListEntryModel.empty(),
           availableCastDevices: [],
+          openingSkipTimes: AniskipTimesResults(),
+          endingSkipTimes: AniskipTimesResults(),
           isLoading: true,
         ),
       ) {
@@ -117,6 +124,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     _videoInfoSubscription = _videoInfoNotifier.videoInfoStream.listen((videoInfo) {
       _initializeVideoService(videoInfo);
       _videoInfoSubscription.cancel();
+      Future.delayed(const Duration(seconds: 1), () => _getAniskipSkipTimes(state.selectedAnime, videoInfo));
     });
     _selectedAnimeSubscription = _selectedAnimeNotifier.animeStream.listen((selectedAnime) {
       emit(state.copyWith(selectedAnime: selectedAnime));
@@ -167,6 +175,52 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     emit(state.copyWith(videoInfo: videoInfo));
     _logger.i("VideoService updated for new episode.");
   }
+
+  Future<void> _getAniskipSkipTimes(Anime selectedAnime, VideoInfo videoInfo) async {
+    double formattedDuration = selectedAnime.duration > 0 ? selectedAnime.duration * 60 : 24 * 60;
+    ApiResponse<AniskipTimesEntity> aniskipResponse =
+      await _httpService.get(
+          "${config.aniskiBaseEndpoint}/v2/skip-times/${selectedAnime.idMal}/${videoInfo.playlistIndex + 1}?types=op&types=ed&episodeLength=$formattedDuration",
+          fromJson: AniskipTimesEntity.fromJson
+      );
+    if (aniskipResponse.statusCode > 299 || aniskipResponse.data.statusCode > 299) {
+    _logger.e("Failed to fetch Aniskip times for malId: ${selectedAnime.idMal}. Status code: ${aniskipResponse.data.statusCode}. Message: ${aniskipResponse.data.message}");
+      return;
+    }
+    final openingSkipTimes = aniskipResponse.data.results.where((skip) => skip.skipType == "op").firstOrNull;
+    final endingSkipTimes = aniskipResponse.data.results.where((skip) => skip.skipType == "ed").firstOrNull;
+    emit(state.copyWith(openingSkipTimes: openingSkipTimes ?? AniskipTimesResults(), endingSkipTimes: endingSkipTimes ?? AniskipTimesResults()));
+  }
+
+  String getSkipTimeText() {
+    if (state.openingSkipTimes.interval.endTime > 0 &&
+        _videoService.position.inSeconds > state.openingSkipTimes.interval.startTime &&
+        state.openingSkipTimes.interval.endTime > _videoService.position.inSeconds) {
+      return "Skip Opening";
+    } else if (state.endingSkipTimes.interval.endTime > 0 &&
+        _videoService.position.inSeconds > state.endingSkipTimes.interval.startTime &&
+        state.endingSkipTimes.interval.endTime > _videoService.position.inSeconds) {
+      return "Skip Ending";
+    } else {
+      return "+ ${state.loggedUser.settings.manualSkipTime.toString()}s";
+    }
+  }
+
+
+  void performSkipActin() {
+    if (state.openingSkipTimes.interval.endTime > 0 &&
+        _videoService.position.inSeconds > state.openingSkipTimes.interval.startTime &&
+        state.openingSkipTimes.interval.endTime > _videoService.position.inSeconds) {
+      _videoService.seekTo(Duration(seconds: state.openingSkipTimes.interval.endTime.toInt()));
+    } else if (state.endingSkipTimes.interval.endTime > 0 &&
+        _videoService.position.inSeconds > state.endingSkipTimes.interval.startTime &&
+        state.endingSkipTimes.interval.endTime > _videoService.position.inSeconds) {
+      _videoService.seekTo(Duration(seconds: state.endingSkipTimes.interval.endTime.toInt()));
+    } else {
+      _videoService.forward(Duration(seconds: state.loggedUser.settings.manualSkipTime));
+    }
+  }
+
 
   Future<void> _getAvailableCastDevices() async {
     List<CastDevice> availableCastDevices = await CastDiscoveryService().search();

@@ -237,16 +237,15 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    // TODO - AniSkip
                                     Opacity(
                                       opacity: 0.7,
                                       child: DarkUnyoButton(
-                                        text: "${state.loggedUser.settings.manualSkipTime.toString()}s",
+                                        text: context.read<VideoCubit>().getSkipTimeText(),
                                         color: ColorScheme.of(context).primary,
-                                        width: 80.w,
-                                        maxWidth: 40,
+                                        width: 90.w,
+                                        maxWidth: 110,
                                         maxHeight: 45,
-                                        onPressed: () {},
+                                        onPressed: () => context.read<VideoCubit>().performSkipActin(),
                                       ),
                                     ),
                                     SizedBox(width: 20.w),

@@ -4,8 +4,8 @@ import 'package:unyo/core/services/api/dto/anilist/media_advanced_search_query_g
 MediaAdvancedSearchQueryGraphqlEntity $MediaAdvancedSearchQueryGraphqlEntityFromJson(
     Map<String, dynamic> json) {
   final MediaAdvancedSearchQueryGraphqlEntity mediaAdvancedSearchQueryGraphqlEntity = MediaAdvancedSearchQueryGraphqlEntity();
-  final MediaAdvancedSearchQueryGraphqlPage? page = jsonConvert.convert<
-      MediaAdvancedSearchQueryGraphqlPage>(json['Page']);
+  final MediaAdvancedSearchQueryGraphqlPage? page = jsonConvert.convert<MediaAdvancedSearchQueryGraphqlPage>(
+      json['Page']);
   if (page != null) {
     mediaAdvancedSearchQueryGraphqlEntity.page = page;
   }
@@ -28,12 +28,9 @@ extension MediaAdvancedSearchQueryGraphqlEntityExtension on MediaAdvancedSearchQ
   }
 }
 
-MediaAdvancedSearchQueryGraphqlPage $MediaAdvancedSearchQueryGraphqlPageFromJson(
-    Map<String, dynamic> json) {
+MediaAdvancedSearchQueryGraphqlPage $MediaAdvancedSearchQueryGraphqlPageFromJson(Map<String, dynamic> json) {
   final MediaAdvancedSearchQueryGraphqlPage mediaAdvancedSearchQueryGraphqlPage = MediaAdvancedSearchQueryGraphqlPage();
-  final List<
-      MediaAdvancedSearchQueryGraphqlPageMedia>? media = (json['media'] as List<
-      dynamic>?)?.map(
+  final List<MediaAdvancedSearchQueryGraphqlPageMedia>? media = (json['media'] as List<dynamic>?)?.map(
           (e) =>
       jsonConvert.convert<MediaAdvancedSearchQueryGraphqlPageMedia>(
           e) as MediaAdvancedSearchQueryGraphqlPageMedia).toList();
@@ -43,8 +40,7 @@ MediaAdvancedSearchQueryGraphqlPage $MediaAdvancedSearchQueryGraphqlPageFromJson
   return mediaAdvancedSearchQueryGraphqlPage;
 }
 
-Map<String, dynamic> $MediaAdvancedSearchQueryGraphqlPageToJson(
-    MediaAdvancedSearchQueryGraphqlPage entity) {
+Map<String, dynamic> $MediaAdvancedSearchQueryGraphqlPageToJson(MediaAdvancedSearchQueryGraphqlPage entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['media'] = entity.media.map((v) => v.toJson()).toList();
   return data;
@@ -70,8 +66,8 @@ MediaAdvancedSearchQueryGraphqlPageMedia $MediaAdvancedSearchQueryGraphqlPageMed
   if (idMal != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.idMal = idMal;
   }
-  final MediaAdvancedSearchQueryGraphqlPageMediaTitle? title = jsonConvert
-      .convert<MediaAdvancedSearchQueryGraphqlPageMediaTitle>(json['title']);
+  final MediaAdvancedSearchQueryGraphqlPageMediaTitle? title = jsonConvert.convert<
+      MediaAdvancedSearchQueryGraphqlPageMediaTitle>(json['title']);
   if (title != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.title = title;
   }
@@ -87,14 +83,12 @@ MediaAdvancedSearchQueryGraphqlPageMedia $MediaAdvancedSearchQueryGraphqlPageMed
   if (chapters != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.chapters = chapters;
   }
-  final String? countryOfOrigin = jsonConvert.convert<String>(
-      json['countryOfOrigin']);
+  final String? countryOfOrigin = jsonConvert.convert<String>(json['countryOfOrigin']);
   if (countryOfOrigin != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.countryOfOrigin = countryOfOrigin;
   }
-  final MediaAdvancedSearchQueryGraphqlPageMediaCoverImage? coverImage = jsonConvert
-      .convert<MediaAdvancedSearchQueryGraphqlPageMediaCoverImage>(
-      json['coverImage']);
+  final MediaAdvancedSearchQueryGraphqlPageMediaCoverImage? coverImage = jsonConvert.convert<
+      MediaAdvancedSearchQueryGraphqlPageMediaCoverImage>(json['coverImage']);
   if (coverImage != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.coverImage = coverImage;
   }
@@ -106,15 +100,13 @@ MediaAdvancedSearchQueryGraphqlPageMedia $MediaAdvancedSearchQueryGraphqlPageMed
   if (duration != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.duration = duration;
   }
-  final MediaAdvancedSearchQueryGraphqlPageMediaEndDate? endDate = jsonConvert
-      .convert<MediaAdvancedSearchQueryGraphqlPageMediaEndDate>(
-      json['endDate']);
+  final MediaAdvancedSearchQueryGraphqlPageMediaEndDate? endDate = jsonConvert.convert<
+      MediaAdvancedSearchQueryGraphqlPageMediaEndDate>(json['endDate']);
   if (endDate != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.endDate = endDate;
   }
-  final MediaAdvancedSearchQueryGraphqlPageMediaStartDate? startDate = jsonConvert
-      .convert<MediaAdvancedSearchQueryGraphqlPageMediaStartDate>(
-      json['startDate']);
+  final MediaAdvancedSearchQueryGraphqlPageMediaStartDate? startDate = jsonConvert.convert<
+      MediaAdvancedSearchQueryGraphqlPageMediaStartDate>(json['startDate']);
   if (startDate != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.startDate = startDate;
   }
@@ -151,12 +143,10 @@ MediaAdvancedSearchQueryGraphqlPageMedia $MediaAdvancedSearchQueryGraphqlPageMed
   if (isFavourite != null) {
     mediaAdvancedSearchQueryGraphqlPageMedia.isFavourite = isFavourite;
   }
-  final MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode? nextAiringEpisode = jsonConvert
-      .convert<MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode>(
-      json['nextAiringEpisode']);
+  final MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode? nextAiringEpisode = jsonConvert.convert<
+      MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode>(json['nextAiringEpisode']);
   if (nextAiringEpisode != null) {
-    mediaAdvancedSearchQueryGraphqlPageMedia.nextAiringEpisode =
-        nextAiringEpisode;
+    mediaAdvancedSearchQueryGraphqlPageMedia.nextAiringEpisode = nextAiringEpisode;
   }
   final String? status = jsonConvert.convert<String>(json['status']);
   if (status != null) {
@@ -259,8 +249,7 @@ MediaAdvancedSearchQueryGraphqlPageMediaTitle $MediaAdvancedSearchQueryGraphqlPa
   if (romaji != null) {
     mediaAdvancedSearchQueryGraphqlPageMediaTitle.romaji = romaji;
   }
-  final String? userPreferred = jsonConvert.convert<String>(
-      json['userPreferred']);
+  final String? userPreferred = jsonConvert.convert<String>(json['userPreferred']);
   if (userPreferred != null) {
     mediaAdvancedSearchQueryGraphqlPageMediaTitle.userPreferred = userPreferred;
   }
@@ -407,14 +396,12 @@ MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode $MediaAdvancedSearchQu
   }
   final int? airingAt = jsonConvert.convert<int>(json['airingAt']);
   if (airingAt != null) {
-    mediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode.airingAt =
-        airingAt;
+    mediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode.airingAt = airingAt;
   }
   return mediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode;
 }
 
-Map<String,
-    dynamic> $MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisodeToJson(
+Map<String, dynamic> $MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisodeToJson(
     MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['episode'] = entity.episode;

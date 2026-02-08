@@ -15,6 +15,8 @@ const String anilistClientSecret = 'xI8KTZlKm2F3kHXLko1ArQ21bKap4MojgDTk6Ukx';
 const String anilistGraphQLEndpoint = 'https://graphql.anilist.co';
 // Anizip API configuration
 const String anizipBaseEndpoint = 'https://api.ani.zip';
+// Aniski API configuration
+const String aniskiBaseEndpoint = 'https://api.aniskip.com';
 // Torrent API configuration
 const String torrentServiceEndpoint = 'http://127.0.0.1:8090';
 // Cache configuration

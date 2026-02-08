@@ -1,8 +1,7 @@
 import 'package:unyo/generated/json/base/json_convert_content.dart';
 import 'package:unyo/core/services/api/dto/extensions/aniyomi_repo_json_entity.dart';
 
-AniyomiRepoJsonEntity $AniyomiRepoJsonEntityFromJson(
-    Map<String, dynamic> json) {
+AniyomiRepoJsonEntity $AniyomiRepoJsonEntityFromJson(Map<String, dynamic> json) {
   final AniyomiRepoJsonEntity aniyomiRepoJsonEntity = AniyomiRepoJsonEntity();
   final String? name = jsonConvert.convert<String>(json['name']);
   if (name != null) {
@@ -32,20 +31,15 @@ AniyomiRepoJsonEntity $AniyomiRepoJsonEntityFromJson(
   if (nsfw != null) {
     aniyomiRepoJsonEntity.nsfw = nsfw;
   }
-  final List<AniyomiRepoJsonSources>? sources = (json['sources'] as List<
-      dynamic>?)
-      ?.map(
-          (e) =>
-      jsonConvert.convert<AniyomiRepoJsonSources>(e) as AniyomiRepoJsonSources)
-      .toList();
+  final List<AniyomiRepoJsonSources>? sources = (json['sources'] as List<dynamic>?)?.map(
+          (e) => jsonConvert.convert<AniyomiRepoJsonSources>(e) as AniyomiRepoJsonSources).toList();
   if (sources != null) {
     aniyomiRepoJsonEntity.sources = sources;
   }
   return aniyomiRepoJsonEntity;
 }
 
-Map<String, dynamic> $AniyomiRepoJsonEntityToJson(
-    AniyomiRepoJsonEntity entity) {
+Map<String, dynamic> $AniyomiRepoJsonEntityToJson(AniyomiRepoJsonEntity entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['name'] = entity.name;
   data['pkg'] = entity.pkg;
@@ -81,8 +75,7 @@ extension AniyomiRepoJsonEntityExtension on AniyomiRepoJsonEntity {
   }
 }
 
-AniyomiRepoJsonSources $AniyomiRepoJsonSourcesFromJson(
-    Map<String, dynamic> json) {
+AniyomiRepoJsonSources $AniyomiRepoJsonSourcesFromJson(Map<String, dynamic> json) {
   final AniyomiRepoJsonSources aniyomiRepoJsonSources = AniyomiRepoJsonSources();
   final String? name = jsonConvert.convert<String>(json['name']);
   if (name != null) {
@@ -103,8 +96,7 @@ AniyomiRepoJsonSources $AniyomiRepoJsonSourcesFromJson(
   return aniyomiRepoJsonSources;
 }
 
-Map<String, dynamic> $AniyomiRepoJsonSourcesToJson(
-    AniyomiRepoJsonSources entity) {
+Map<String, dynamic> $AniyomiRepoJsonSourcesToJson(AniyomiRepoJsonSources entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['name'] = entity.name;
   data['lang'] = entity.lang;

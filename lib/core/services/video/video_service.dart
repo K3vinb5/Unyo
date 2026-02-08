@@ -168,6 +168,7 @@ class VideoService {
   }
 
   bool seekTo(Duration newDuration) {
+    if (newDuration > duration || newDuration < Duration.zero) return false;
     _player.seek(position: newDuration.inMilliseconds, flags: _seekFlags);
     return true;
   }
@@ -204,6 +205,7 @@ class VideoService {
     final position = this.position;
     await _player.seek(position: 0, flags: _seekFlags);
     _player.setMedia(video.videoUrl, mdk.MediaType.video);
+    _player.setMedia(video.videoUrl, mdk.MediaType.audio);
     await _initCaptionsAndAudiotracks();
     await Future.delayed(const Duration(milliseconds: 500));
     await _player.seek(position: position.inMilliseconds, flags: _seekFlags);

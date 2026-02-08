@@ -13,6 +13,7 @@ import 'package:unyo/core/services/api/dto/anilist/media_collection_upcoming_gra
 import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/save_media_list_entry_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/viewer_graphql_entity.dart';
+import 'package:unyo/core/services/api/dto/aniskip/aniskip_times_entity.dart';
 import 'package:unyo/core/services/api/dto/anizip/anizip_episode_info_entity.dart';
 import 'package:unyo/core/services/api/dto/extensions/aniyomi_repo_json_entity.dart';
 import 'package:unyo/core/services/api/dto/extensions/tachiyomi_repo_json_entity.dart';
@@ -73,15 +74,12 @@ class JsonConvert {
     }
   }
 
-  List<T?>? convertList<T>(List<dynamic>? value,
-      {EnumConvertFunction? enumConvert}) {
+  List<T?>? convertList<T>(List<dynamic>? value, {EnumConvertFunction? enumConvert}) {
     if (value == null) {
       return null;
     }
     try {
-      return value
-          .map((dynamic e) => _asT<T>(e, enumConvert: enumConvert))
-          .toList();
+      return value.map((dynamic e) => _asT<T>(e, enumConvert: enumConvert)).toList();
     } catch (e, stackTrace) {
       debugPrint('asT<$T> $e $stackTrace');
       if (onError != null) {
@@ -91,14 +89,12 @@ class JsonConvert {
     }
   }
 
-  List<T>? convertListNotNull<T>(dynamic value,
-      {EnumConvertFunction? enumConvert}) {
+  List<T>? convertListNotNull<T>(dynamic value, {EnumConvertFunction? enumConvert}) {
     if (value == null) {
       return null;
     }
     try {
-      return (value as List<dynamic>).map((dynamic e) =>
-      _asT<T>(e, enumConvert: enumConvert)!).toList();
+      return (value as List<dynamic>).map((dynamic e) => _asT<T>(e, enumConvert: enumConvert)!).toList();
     } catch (e, stackTrace) {
       debugPrint('asT<$T> $e $stackTrace');
       if (onError != null) {
@@ -146,8 +142,7 @@ class JsonConvert {
           return covertFunc(Map<String, dynamic>.from(value)) as T;
         }
       } else {
-        throw UnimplementedError(
-            '$type unimplemented,you can try running the app again');
+        throw UnimplementedError('$type unimplemented,you can try running the app again');
       }
     }
   }
@@ -155,55 +150,36 @@ class JsonConvert {
   //list is returned by type
   static M? _getListChildType<M>(List<Map<String, dynamic>> data) {
     if (<MediaAdvancedSearchQueryGraphqlEntity>[] is M) {
-      return data.map<MediaAdvancedSearchQueryGraphqlEntity>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaAdvancedSearchQueryGraphqlEntity>((Map<String, dynamic> e) =>
           MediaAdvancedSearchQueryGraphqlEntity.fromJson(e)).toList() as M;
     }
     if (<MediaAdvancedSearchQueryGraphqlPage>[] is M) {
-      return data.map<MediaAdvancedSearchQueryGraphqlPage>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaAdvancedSearchQueryGraphqlPage>((Map<String, dynamic> e) =>
           MediaAdvancedSearchQueryGraphqlPage.fromJson(e)).toList() as M;
     }
     if (<MediaAdvancedSearchQueryGraphqlPageMedia>[] is M) {
-      return data.map<MediaAdvancedSearchQueryGraphqlPageMedia>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaAdvancedSearchQueryGraphqlPageMedia>((Map<String, dynamic> e) =>
           MediaAdvancedSearchQueryGraphqlPageMedia.fromJson(e)).toList() as M;
     }
     if (<MediaAdvancedSearchQueryGraphqlPageMediaTitle>[] is M) {
-      return data
-          .map<MediaAdvancedSearchQueryGraphqlPageMediaTitle>((
-          Map<String, dynamic> e) =>
-          MediaAdvancedSearchQueryGraphqlPageMediaTitle.fromJson(e))
-          .toList() as M;
+      return data.map<MediaAdvancedSearchQueryGraphqlPageMediaTitle>((Map<String, dynamic> e) =>
+          MediaAdvancedSearchQueryGraphqlPageMediaTitle.fromJson(e)).toList() as M;
     }
     if (<MediaAdvancedSearchQueryGraphqlPageMediaCoverImage>[] is M) {
-      return data
-          .map<MediaAdvancedSearchQueryGraphqlPageMediaCoverImage>((
-          Map<String, dynamic> e) =>
-          MediaAdvancedSearchQueryGraphqlPageMediaCoverImage.fromJson(e))
-          .toList() as M;
+      return data.map<MediaAdvancedSearchQueryGraphqlPageMediaCoverImage>((Map<String, dynamic> e) =>
+          MediaAdvancedSearchQueryGraphqlPageMediaCoverImage.fromJson(e)).toList() as M;
     }
     if (<MediaAdvancedSearchQueryGraphqlPageMediaEndDate>[] is M) {
-      return data
-          .map<MediaAdvancedSearchQueryGraphqlPageMediaEndDate>((
-          Map<String, dynamic> e) =>
-          MediaAdvancedSearchQueryGraphqlPageMediaEndDate.fromJson(e))
-          .toList() as M;
+      return data.map<MediaAdvancedSearchQueryGraphqlPageMediaEndDate>((Map<String, dynamic> e) =>
+          MediaAdvancedSearchQueryGraphqlPageMediaEndDate.fromJson(e)).toList() as M;
     }
     if (<MediaAdvancedSearchQueryGraphqlPageMediaStartDate>[] is M) {
-      return data
-          .map<MediaAdvancedSearchQueryGraphqlPageMediaStartDate>((
-          Map<String, dynamic> e) =>
-          MediaAdvancedSearchQueryGraphqlPageMediaStartDate.fromJson(e))
-          .toList() as M;
+      return data.map<MediaAdvancedSearchQueryGraphqlPageMediaStartDate>((Map<String, dynamic> e) =>
+          MediaAdvancedSearchQueryGraphqlPageMediaStartDate.fromJson(e)).toList() as M;
     }
     if (<MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode>[] is M) {
-      return data
-          .map<
-          MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode>((
-          Map<String, dynamic> e) =>
-          MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode.fromJson(e))
-          .toList() as M;
+      return data.map<MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode>((Map<String, dynamic> e) =>
+          MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionGraphqlEntity>[] is M) {
       return data.map<MediaCollectionGraphqlEntity>((Map<String, dynamic> e) =>
@@ -214,295 +190,191 @@ class JsonConvert {
           MediaCollectionGraphqlDtoData.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionGraphqlDtoDataMediaListCollection>[] is M) {
-      return data
-          .map<MediaCollectionGraphqlDtoDataMediaListCollection>((
-          Map<String, dynamic> e) =>
-          MediaCollectionGraphqlDtoDataMediaListCollection.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionGraphqlDtoDataMediaListCollection>((Map<String, dynamic> e) =>
+          MediaCollectionGraphqlDtoDataMediaListCollection.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionGraphqlDtoDataMediaListCollectionLists>[] is M) {
-      return data
-          .map<MediaCollectionGraphqlDtoDataMediaListCollectionLists>((
-          Map<String, dynamic> e) =>
-          MediaCollectionGraphqlDtoDataMediaListCollectionLists.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionGraphqlDtoDataMediaListCollectionLists>((Map<String, dynamic> e) =>
+          MediaCollectionGraphqlDtoDataMediaListCollectionLists.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries>[] is M) {
-      return data.map<
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries>((
-          Map<String, dynamic> e) =>
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries.fromJson(
-              e)).toList() as M;
+      return data
+          .map<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries>((
+          Map<String, dynamic> e) => MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries.fromJson(e))
+          .toList() as M;
     }
-    if (<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia>[
-    ] is M) {
-      return data.map<
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia>((
+    if (<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia>[] is M) {
+      return data.map<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia>((
           Map<String, dynamic> e) =>
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
-              .fromJson(e)).toList() as M;
+          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.fromJson(e)).toList() as M;
     }
-    if (<
-        MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle>[
-    ] is M) {
-      return data.map<
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle>((
+    if (<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle>[] is M) {
+      return data.map<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle>((
           Map<String, dynamic> e) =>
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle
-              .fromJson(e)).toList() as M;
+          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle.fromJson(e)).toList() as M;
     }
-    if (<
-        MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage>[
-    ] is M) {
-      return data.map<
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage>((
+    if (<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage>[] is M) {
+      return data
+          .map<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage>((
           Map<String, dynamic> e) =>
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage
-              .fromJson(e)).toList() as M;
+          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage.fromJson(e))
+          .toList() as M;
     }
-    if (<
-        MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate>[
-    ] is M) {
-      return data.map<
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate>((
+    if (<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate>[] is M) {
+      return data.map<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate>((
           Map<String, dynamic> e) =>
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate
-              .fromJson(e)).toList() as M;
+          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate.fromJson(e)).toList() as M;
     }
-    if (<
-        MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate>[
-    ] is M) {
-      return data.map<
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate>((
+    if (<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate>[] is M) {
+      return data
+          .map<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate>((
           Map<String, dynamic> e) =>
-          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate
-              .fromJson(e)).toList() as M;
+          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate.fromJson(e))
+          .toList() as M;
     }
     if (<MediaCollectionRecentlyCompletedGraphqlEntity>[] is M) {
-      return data
-          .map<MediaCollectionRecentlyCompletedGraphqlEntity>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyCompletedGraphqlEntity.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionRecentlyCompletedGraphqlEntity>((Map<String, dynamic> e) =>
+          MediaCollectionRecentlyCompletedGraphqlEntity.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionRecentlyCompletedGraphqlDtoPage>[] is M) {
-      return data
-          .map<MediaCollectionRecentlyCompletedGraphqlDtoPage>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyCompletedGraphqlDtoPage.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionRecentlyCompletedGraphqlDtoPage>((Map<String, dynamic> e) =>
+          MediaCollectionRecentlyCompletedGraphqlDtoPage.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionRecentlyCompletedGraphqlDtoPageMedia>[] is M) {
-      return data
-          .map<MediaCollectionRecentlyCompletedGraphqlDtoPageMedia>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMedia.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionRecentlyCompletedGraphqlDtoPageMedia>((Map<String, dynamic> e) =>
+          MediaCollectionRecentlyCompletedGraphqlDtoPageMedia.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate>[] is M) {
-      return data.map<
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate.fromJson(
-              e)).toList() as M;
+      return data.map<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate>((Map<String, dynamic> e) =>
+          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate>[] is M) {
-      return data.map<
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate.fromJson(
-              e)).toList() as M;
+      return data
+          .map<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate>((
+          Map<String, dynamic> e) => MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate.fromJson(e))
+          .toList() as M;
     }
-    if (<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage>[
-    ] is M) {
-      return data.map<
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage>((
+    if (<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage>[] is M) {
+      return data.map<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage>((
           Map<String, dynamic> e) =>
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage
-              .fromJson(e)).toList() as M;
+          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle>[] is M) {
-      return data
-          .map<
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle>((Map<String, dynamic> e) =>
+          MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionRecentlyReleasedGraphqlEntity>[] is M) {
-      return data
-          .map<MediaCollectionRecentlyReleasedGraphqlEntity>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlEntity.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionRecentlyReleasedGraphqlEntity>((Map<String, dynamic> e) =>
+          MediaCollectionRecentlyReleasedGraphqlEntity.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionRecentlyReleasedGraphqlDtoPage>[] is M) {
-      return data
-          .map<MediaCollectionRecentlyReleasedGraphqlDtoPage>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlDtoPage.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionRecentlyReleasedGraphqlDtoPage>((Map<String, dynamic> e) =>
+          MediaCollectionRecentlyReleasedGraphqlDtoPage.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedules>[] is M) {
-      return data.map<
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedules>((
-          Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedules.fromJson(
-              e)).toList() as M;
+      return data
+          .map<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedules>((
+          Map<String, dynamic> e) => MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedules.fromJson(e))
+          .toList() as M;
     }
-    if (<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia>[
-    ] is M) {
-      return data.map<
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia>((
+    if (<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia>[] is M) {
+      return data.map<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia>((
           Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia
-              .fromJson(e)).toList() as M;
+          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia.fromJson(e)).toList() as M;
     }
-    if (<
-        MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaNextAiringEpisode>[
-    ] is M) {
-      return data.map<
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaNextAiringEpisode>((
+    if (<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaNextAiringEpisode>[] is M) {
+      return data
+          .map<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaNextAiringEpisode>((
           Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaNextAiringEpisode
-              .fromJson(e)).toList() as M;
+          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaNextAiringEpisode.fromJson(e))
+          .toList() as M;
     }
-    if (<
-        MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate>[
-    ] is M) {
-      return data.map<
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate>((
+    if (<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate>[] is M) {
+      return data.map<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate>((
           Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate
-              .fromJson(e)).toList() as M;
+          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate.fromJson(e)).toList() as M;
     }
-    if (<
-        MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate>[
-    ] is M) {
-      return data.map<
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate>((
+    if (<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate>[] is M) {
+      return data
+          .map<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate>((
           Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate
-              .fromJson(e)).toList() as M;
+          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate.fromJson(e))
+          .toList() as M;
     }
-    if (<
-        MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage>[
-    ] is M) {
-      return data.map<
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage>((
+    if (<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage>[] is M) {
+      return data
+          .map<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage>((
           Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage
-              .fromJson(e)).toList() as M;
+          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage.fromJson(e))
+          .toList() as M;
     }
-    if (<
-        MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle>[
-    ] is M) {
-      return data.map<
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle>((
+    if (<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle>[] is M) {
+      return data.map<MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle>((
           Map<String, dynamic> e) =>
-          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle
-              .fromJson(e)).toList() as M;
+          MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionTrendingOrPopularGraphqlEntity>[] is M) {
-      return data
-          .map<MediaCollectionTrendingOrPopularGraphqlEntity>((
-          Map<String, dynamic> e) =>
-          MediaCollectionTrendingOrPopularGraphqlEntity.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionTrendingOrPopularGraphqlEntity>((Map<String, dynamic> e) =>
+          MediaCollectionTrendingOrPopularGraphqlEntity.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionTrendingOrPopularGraphqlDtoPage>[] is M) {
-      return data
-          .map<MediaCollectionTrendingOrPopularGraphqlDtoPage>((
-          Map<String, dynamic> e) =>
-          MediaCollectionTrendingOrPopularGraphqlDtoPage.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionTrendingOrPopularGraphqlDtoPage>((Map<String, dynamic> e) =>
+          MediaCollectionTrendingOrPopularGraphqlDtoPage.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionTrendingOrPopularGraphqlDtoPageMedia>[] is M) {
-      return data
-          .map<MediaCollectionTrendingOrPopularGraphqlDtoPageMedia>((
-          Map<String, dynamic> e) =>
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMedia.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionTrendingOrPopularGraphqlDtoPageMedia>((Map<String, dynamic> e) =>
+          MediaCollectionTrendingOrPopularGraphqlDtoPageMedia.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate>[] is M) {
-      return data.map<
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate>((
-          Map<String, dynamic> e) =>
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate.fromJson(
-              e)).toList() as M;
+      return data.map<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate>((Map<String, dynamic> e) =>
+          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate>[] is M) {
-      return data.map<
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate>((
-          Map<String, dynamic> e) =>
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate.fromJson(
-              e)).toList() as M;
-    }
-    if (<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage>[
-    ] is M) {
-      return data.map<
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage>((
-          Map<String, dynamic> e) =>
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage
-              .fromJson(e)).toList() as M;
-    }
-    if (<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle>[] is M) {
       return data
-          .map<
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle>((
-          Map<String, dynamic> e) =>
-          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle.fromJson(e))
+          .map<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate>((
+          Map<String, dynamic> e) => MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate.fromJson(e))
           .toList() as M;
     }
-    if (<MediaCollectionUpcomingGraphqlEntity>[] is M) {
-      return data.map<MediaCollectionUpcomingGraphqlEntity>((
+    if (<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage>[] is M) {
+      return data.map<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage>((
           Map<String, dynamic> e) =>
+          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage.fromJson(e)).toList() as M;
+    }
+    if (<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle>[] is M) {
+      return data.map<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle>((Map<String, dynamic> e) =>
+          MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle.fromJson(e)).toList() as M;
+    }
+    if (<MediaCollectionUpcomingGraphqlEntity>[] is M) {
+      return data.map<MediaCollectionUpcomingGraphqlEntity>((Map<String, dynamic> e) =>
           MediaCollectionUpcomingGraphqlEntity.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionUpcomingGraphqlDtoPage>[] is M) {
-      return data.map<MediaCollectionUpcomingGraphqlDtoPage>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaCollectionUpcomingGraphqlDtoPage>((Map<String, dynamic> e) =>
           MediaCollectionUpcomingGraphqlDtoPage.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionUpcomingGraphqlDtoPageMedia>[] is M) {
-      return data.map<MediaCollectionUpcomingGraphqlDtoPageMedia>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaCollectionUpcomingGraphqlDtoPageMedia>((Map<String, dynamic> e) =>
           MediaCollectionUpcomingGraphqlDtoPageMedia.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode>[] is M) {
-      return data.map<
-          MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode>((
-          Map<String, dynamic> e) =>
-          MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode.fromJson(
-              e)).toList() as M;
+      return data.map<MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode>((Map<String, dynamic> e) =>
+          MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionUpcomingGraphqlDtoPageMediaEndDate>[] is M) {
-      return data
-          .map<MediaCollectionUpcomingGraphqlDtoPageMediaEndDate>((
-          Map<String, dynamic> e) =>
-          MediaCollectionUpcomingGraphqlDtoPageMediaEndDate.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionUpcomingGraphqlDtoPageMediaEndDate>((Map<String, dynamic> e) =>
+          MediaCollectionUpcomingGraphqlDtoPageMediaEndDate.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionUpcomingGraphqlDtoPageMediaStartDate>[] is M) {
-      return data
-          .map<MediaCollectionUpcomingGraphqlDtoPageMediaStartDate>((
-          Map<String, dynamic> e) =>
-          MediaCollectionUpcomingGraphqlDtoPageMediaStartDate.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionUpcomingGraphqlDtoPageMediaStartDate>((Map<String, dynamic> e) =>
+          MediaCollectionUpcomingGraphqlDtoPageMediaStartDate.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage>[] is M) {
-      return data
-          .map<MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage>((
-          Map<String, dynamic> e) =>
-          MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage>((Map<String, dynamic> e) =>
+          MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage.fromJson(e)).toList() as M;
     }
     if (<MediaCollectionUpcomingGraphqlDtoPageMediaTitle>[] is M) {
-      return data
-          .map<MediaCollectionUpcomingGraphqlDtoPageMediaTitle>((
-          Map<String, dynamic> e) =>
-          MediaCollectionUpcomingGraphqlDtoPageMediaTitle.fromJson(e))
-          .toList() as M;
+      return data.map<MediaCollectionUpcomingGraphqlDtoPageMediaTitle>((Map<String, dynamic> e) =>
+          MediaCollectionUpcomingGraphqlDtoPageMediaTitle.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlEntity>[] is M) {
       return data.map<MediaDetailsGraphqlEntity>((Map<String, dynamic> e) =>
@@ -517,186 +389,150 @@ class JsonConvert {
           MediaDetailsGraphqlMediaTitle.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaRecommendations>[] is M) {
-      return data.map<MediaDetailsGraphqlMediaRecommendations>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaDetailsGraphqlMediaRecommendations>((Map<String, dynamic> e) =>
           MediaDetailsGraphqlMediaRecommendations.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaRecommendationsNodes>[] is M) {
-      return data
-          .map<MediaDetailsGraphqlMediaRecommendationsNodes>((
+      return data.map<MediaDetailsGraphqlMediaRecommendationsNodes>((Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaRecommendationsNodes.fromJson(e)).toList() as M;
+    }
+    if (<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation>[] is M) {
+      return data.map<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation>((
           Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaRecommendationsNodes.fromJson(e))
+          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.fromJson(e)).toList() as M;
+    }
+    if (<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate>[] is M) {
+      return data.map<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate>((
+          Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate.fromJson(e)).toList() as M;
+    }
+    if (<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate>[] is M) {
+      return data.map<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate>((
+          Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate.fromJson(e)).toList() as M;
+    }
+    if (<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle>[] is M) {
+      return data.map<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle>((
+          Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle.fromJson(e)).toList() as M;
+    }
+    if (<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage>[] is M) {
+      return data
+          .map<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage>((
+          Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage.fromJson(e))
           .toList() as M;
     }
-    if (<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation>[
-    ] is M) {
-      return data.map<
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation
-              .fromJson(e)).toList() as M;
-    }
-    if (<
-        MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate>[
-    ] is M) {
-      return data.map<
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate
-              .fromJson(e)).toList() as M;
-    }
-    if (<
-        MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate>[
-    ] is M) {
-      return data.map<
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate
-              .fromJson(e)).toList() as M;
-    }
-    if (<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle>[
-    ] is M) {
-      return data.map<
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle
-              .fromJson(e)).toList() as M;
-    }
-    if (<
-        MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage>[
-    ] is M) {
-      return data.map<
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage
-              .fromJson(e)).toList() as M;
-    }
     if (<MediaDetailsGraphqlMediaCharacters>[] is M) {
-      return data.map<MediaDetailsGraphqlMediaCharacters>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaDetailsGraphqlMediaCharacters>((Map<String, dynamic> e) =>
           MediaDetailsGraphqlMediaCharacters.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaCharactersNodes>[] is M) {
-      return data.map<MediaDetailsGraphqlMediaCharactersNodes>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaDetailsGraphqlMediaCharactersNodes>((Map<String, dynamic> e) =>
           MediaDetailsGraphqlMediaCharactersNodes.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaCharactersNodesImage>[] is M) {
-      return data
-          .map<MediaDetailsGraphqlMediaCharactersNodesImage>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaCharactersNodesImage.fromJson(e))
-          .toList() as M;
+      return data.map<MediaDetailsGraphqlMediaCharactersNodesImage>((Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaCharactersNodesImage.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaCharactersNodesName>[] is M) {
-      return data
-          .map<MediaDetailsGraphqlMediaCharactersNodesName>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaCharactersNodesName.fromJson(e))
-          .toList() as M;
+      return data.map<MediaDetailsGraphqlMediaCharactersNodesName>((Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaCharactersNodesName.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaCharactersNodesDateOfBirth>[] is M) {
-      return data
-          .map<MediaDetailsGraphqlMediaCharactersNodesDateOfBirth>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaCharactersNodesDateOfBirth.fromJson(e))
-          .toList() as M;
+      return data.map<MediaDetailsGraphqlMediaCharactersNodesDateOfBirth>((Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaCharactersNodesDateOfBirth.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaMediaListEntry>[] is M) {
-      return data.map<MediaDetailsGraphqlMediaMediaListEntry>((
-          Map<String, dynamic> e) =>
+      return data.map<MediaDetailsGraphqlMediaMediaListEntry>((Map<String, dynamic> e) =>
           MediaDetailsGraphqlMediaMediaListEntry.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaMediaListEntryStartedAt>[] is M) {
-      return data
-          .map<MediaDetailsGraphqlMediaMediaListEntryStartedAt>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaMediaListEntryStartedAt.fromJson(e))
-          .toList() as M;
+      return data.map<MediaDetailsGraphqlMediaMediaListEntryStartedAt>((Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaMediaListEntryStartedAt.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaMediaListEntryCompletedAt>[] is M) {
-      return data
-          .map<MediaDetailsGraphqlMediaMediaListEntryCompletedAt>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaMediaListEntryCompletedAt.fromJson(e))
-          .toList() as M;
+      return data.map<MediaDetailsGraphqlMediaMediaListEntryCompletedAt>((Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaMediaListEntryCompletedAt.fromJson(e)).toList() as M;
     }
     if (<MediaDetailsGraphqlMediaMediaListEntryCustomLists>[] is M) {
-      return data
-          .map<MediaDetailsGraphqlMediaMediaListEntryCustomLists>((
-          Map<String, dynamic> e) =>
-          MediaDetailsGraphqlMediaMediaListEntryCustomLists.fromJson(e))
-          .toList() as M;
+      return data.map<MediaDetailsGraphqlMediaMediaListEntryCustomLists>((Map<String, dynamic> e) =>
+          MediaDetailsGraphqlMediaMediaListEntryCustomLists.fromJson(e)).toList() as M;
     }
     if (<SaveMediaListEntryEntity>[] is M) {
       return data.map<SaveMediaListEntryEntity>((Map<String, dynamic> e) =>
           SaveMediaListEntryEntity.fromJson(e)).toList() as M;
     }
     if (<SaveMediaListEntrySaveMediaListEntry>[] is M) {
-      return data.map<SaveMediaListEntrySaveMediaListEntry>((
-          Map<String, dynamic> e) =>
+      return data.map<SaveMediaListEntrySaveMediaListEntry>((Map<String, dynamic> e) =>
           SaveMediaListEntrySaveMediaListEntry.fromJson(e)).toList() as M;
     }
     if (<SaveMediaListEntrySaveMediaListEntryStartedAt>[] is M) {
-      return data
-          .map<SaveMediaListEntrySaveMediaListEntryStartedAt>((
-          Map<String, dynamic> e) =>
-          SaveMediaListEntrySaveMediaListEntryStartedAt.fromJson(e))
-          .toList() as M;
+      return data.map<SaveMediaListEntrySaveMediaListEntryStartedAt>((Map<String, dynamic> e) =>
+          SaveMediaListEntrySaveMediaListEntryStartedAt.fromJson(e)).toList() as M;
     }
     if (<SaveMediaListEntrySaveMediaListEntryCompletedAt>[] is M) {
-      return data
-          .map<SaveMediaListEntrySaveMediaListEntryCompletedAt>((
-          Map<String, dynamic> e) =>
-          SaveMediaListEntrySaveMediaListEntryCompletedAt.fromJson(e))
-          .toList() as M;
+      return data.map<SaveMediaListEntrySaveMediaListEntryCompletedAt>((Map<String, dynamic> e) =>
+          SaveMediaListEntrySaveMediaListEntryCompletedAt.fromJson(e)).toList() as M;
     }
     if (<ViewerGraphqlEntity>[] is M) {
-      return data.map<ViewerGraphqlEntity>((Map<String, dynamic> e) =>
-          ViewerGraphqlEntity.fromJson(e)).toList() as M;
+      return data
+          .map<ViewerGraphqlEntity>((Map<String, dynamic> e) => ViewerGraphqlEntity.fromJson(e))
+          .toList() as M;
     }
     if (<ViewerGraphqlDtoViewer>[] is M) {
-      return data.map<ViewerGraphqlDtoViewer>((Map<String, dynamic> e) =>
-          ViewerGraphqlDtoViewer.fromJson(e)).toList() as M;
+      return data
+          .map<ViewerGraphqlDtoViewer>((Map<String, dynamic> e) => ViewerGraphqlDtoViewer.fromJson(e))
+          .toList() as M;
     }
     if (<ViewerGraphqlDtoViewerAvatar>[] is M) {
       return data.map<ViewerGraphqlDtoViewerAvatar>((Map<String, dynamic> e) =>
           ViewerGraphqlDtoViewerAvatar.fromJson(e)).toList() as M;
     }
     if (<ViewerGraphqlDtoViewerMediaListOptions>[] is M) {
-      return data.map<ViewerGraphqlDtoViewerMediaListOptions>((
-          Map<String, dynamic> e) =>
+      return data.map<ViewerGraphqlDtoViewerMediaListOptions>((Map<String, dynamic> e) =>
           ViewerGraphqlDtoViewerMediaListOptions.fromJson(e)).toList() as M;
     }
     if (<ViewerGraphqlDtoViewerMediaListOptionsAnimeList>[] is M) {
-      return data
-          .map<ViewerGraphqlDtoViewerMediaListOptionsAnimeList>((
-          Map<String, dynamic> e) =>
-          ViewerGraphqlDtoViewerMediaListOptionsAnimeList.fromJson(e))
-          .toList() as M;
+      return data.map<ViewerGraphqlDtoViewerMediaListOptionsAnimeList>((Map<String, dynamic> e) =>
+          ViewerGraphqlDtoViewerMediaListOptionsAnimeList.fromJson(e)).toList() as M;
     }
     if (<ViewerGraphqlDtoViewerMediaListOptionsMangaList>[] is M) {
+      return data.map<ViewerGraphqlDtoViewerMediaListOptionsMangaList>((Map<String, dynamic> e) =>
+          ViewerGraphqlDtoViewerMediaListOptionsMangaList.fromJson(e)).toList() as M;
+    }
+    if (<AniskipTimesEntity>[] is M) {
       return data
-          .map<ViewerGraphqlDtoViewerMediaListOptionsMangaList>((
-          Map<String, dynamic> e) =>
-          ViewerGraphqlDtoViewerMediaListOptionsMangaList.fromJson(e))
+          .map<AniskipTimesEntity>((Map<String, dynamic> e) => AniskipTimesEntity.fromJson(e))
           .toList() as M;
+    }
+    if (<AniskipTimesResults>[] is M) {
+      return data
+          .map<AniskipTimesResults>((Map<String, dynamic> e) => AniskipTimesResults.fromJson(e))
+          .toList() as M;
+    }
+    if (<AniskipTimesResultsInterval>[] is M) {
+      return data.map<AniskipTimesResultsInterval>((Map<String, dynamic> e) =>
+          AniskipTimesResultsInterval.fromJson(e)).toList() as M;
     }
     if (<AnizipEpisodeInfoEntity>[] is M) {
       return data.map<AnizipEpisodeInfoEntity>((Map<String, dynamic> e) =>
           AnizipEpisodeInfoEntity.fromJson(e)).toList() as M;
     }
     if (<AnizipEpisodeInfoTitle>[] is M) {
-      return data.map<AnizipEpisodeInfoTitle>((Map<String, dynamic> e) =>
-          AnizipEpisodeInfoTitle.fromJson(e)).toList() as M;
+      return data
+          .map<AnizipEpisodeInfoTitle>((Map<String, dynamic> e) => AnizipEpisodeInfoTitle.fromJson(e))
+          .toList() as M;
     }
     if (<AniyomiRepoJsonEntity>[] is M) {
-      return data.map<AniyomiRepoJsonEntity>((Map<String, dynamic> e) =>
-          AniyomiRepoJsonEntity.fromJson(e)).toList() as M;
+      return data
+          .map<AniyomiRepoJsonEntity>((Map<String, dynamic> e) => AniyomiRepoJsonEntity.fromJson(e))
+          .toList() as M;
     }
     if (<AniyomiRepoJsonSources>[] is M) {
-      return data.map<AniyomiRepoJsonSources>((Map<String, dynamic> e) =>
-          AniyomiRepoJsonSources.fromJson(e)).toList() as M;
+      return data
+          .map<AniyomiRepoJsonSources>((Map<String, dynamic> e) => AniyomiRepoJsonSources.fromJson(e))
+          .toList() as M;
     }
     if (<TachiyomiRepoJsonEntity>[] is M) {
       return data.map<TachiyomiRepoJsonEntity>((Map<String, dynamic> e) =>
@@ -717,8 +553,7 @@ class JsonConvert {
       return json;
     }
     if (json is List) {
-      return _getListChildType<M>(
-          json.map((dynamic e) => e as Map<String, dynamic>).toList());
+      return _getListChildType<M>(json.map((dynamic e) => e as Map<String, dynamic>).toList());
     } else {
       return jsonConvert.convert<M>(json);
     }
@@ -727,169 +562,123 @@ class JsonConvert {
 
 class JsonConvertClassCollection {
   Map<String, JsonConvertFunction> convertFuncMap = {
-    (MediaAdvancedSearchQueryGraphqlEntity)
-        .toString(): MediaAdvancedSearchQueryGraphqlEntity.fromJson,
-    (MediaAdvancedSearchQueryGraphqlPage)
-        .toString(): MediaAdvancedSearchQueryGraphqlPage.fromJson,
-    (MediaAdvancedSearchQueryGraphqlPageMedia)
-        .toString(): MediaAdvancedSearchQueryGraphqlPageMedia.fromJson,
-    (MediaAdvancedSearchQueryGraphqlPageMediaTitle)
-        .toString(): MediaAdvancedSearchQueryGraphqlPageMediaTitle.fromJson,
-    (MediaAdvancedSearchQueryGraphqlPageMediaCoverImage)
-        .toString(): MediaAdvancedSearchQueryGraphqlPageMediaCoverImage
+    (MediaAdvancedSearchQueryGraphqlEntity).toString(): MediaAdvancedSearchQueryGraphqlEntity.fromJson,
+    (MediaAdvancedSearchQueryGraphqlPage).toString(): MediaAdvancedSearchQueryGraphqlPage.fromJson,
+    (MediaAdvancedSearchQueryGraphqlPageMedia).toString(): MediaAdvancedSearchQueryGraphqlPageMedia.fromJson,
+    (MediaAdvancedSearchQueryGraphqlPageMediaTitle).toString(): MediaAdvancedSearchQueryGraphqlPageMediaTitle
         .fromJson,
+    (MediaAdvancedSearchQueryGraphqlPageMediaCoverImage)
+        .toString(): MediaAdvancedSearchQueryGraphqlPageMediaCoverImage.fromJson,
     (MediaAdvancedSearchQueryGraphqlPageMediaEndDate)
         .toString(): MediaAdvancedSearchQueryGraphqlPageMediaEndDate.fromJson,
     (MediaAdvancedSearchQueryGraphqlPageMediaStartDate)
         .toString(): MediaAdvancedSearchQueryGraphqlPageMediaStartDate.fromJson,
     (MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode)
-        .toString(): MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode
-        .fromJson,
-    (MediaCollectionGraphqlEntity).toString(): MediaCollectionGraphqlEntity
-        .fromJson,
-    (MediaCollectionGraphqlDtoData).toString(): MediaCollectionGraphqlDtoData
-        .fromJson,
+        .toString(): MediaAdvancedSearchQueryGraphqlPageMediaNextAiringEpisode.fromJson,
+    (MediaCollectionGraphqlEntity).toString(): MediaCollectionGraphqlEntity.fromJson,
+    (MediaCollectionGraphqlDtoData).toString(): MediaCollectionGraphqlDtoData.fromJson,
     (MediaCollectionGraphqlDtoDataMediaListCollection)
         .toString(): MediaCollectionGraphqlDtoDataMediaListCollection.fromJson,
     (MediaCollectionGraphqlDtoDataMediaListCollectionLists)
-        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionLists
-        .fromJson,
+        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionLists.fromJson,
     (MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries)
-        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries
-        .fromJson,
+        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries.fromJson,
     (MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia)
-        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
-        .fromJson,
+        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.fromJson,
     (MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle)
-        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle
-        .fromJson,
+        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle.fromJson,
     (MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage)
-        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage
-        .fromJson,
+        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage.fromJson,
     (MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate)
-        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate
-        .fromJson,
+        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate.fromJson,
     (MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate)
-        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate
+        .toString(): MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate.fromJson,
+    (MediaCollectionRecentlyCompletedGraphqlEntity).toString(): MediaCollectionRecentlyCompletedGraphqlEntity
         .fromJson,
-    (MediaCollectionRecentlyCompletedGraphqlEntity)
-        .toString(): MediaCollectionRecentlyCompletedGraphqlEntity.fromJson,
     (MediaCollectionRecentlyCompletedGraphqlDtoPage)
         .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPage.fromJson,
     (MediaCollectionRecentlyCompletedGraphqlDtoPageMedia)
-        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMedia
-        .fromJson,
+        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMedia.fromJson,
     (MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate)
-        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate
-        .fromJson,
+        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate.fromJson,
     (MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate)
-        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate
-        .fromJson,
+        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate.fromJson,
     (MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage)
-        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage
-        .fromJson,
+        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage.fromJson,
     (MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle)
-        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle
+        .toString(): MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle.fromJson,
+    (MediaCollectionRecentlyReleasedGraphqlEntity).toString(): MediaCollectionRecentlyReleasedGraphqlEntity
         .fromJson,
-    (MediaCollectionRecentlyReleasedGraphqlEntity)
-        .toString(): MediaCollectionRecentlyReleasedGraphqlEntity.fromJson,
-    (MediaCollectionRecentlyReleasedGraphqlDtoPage)
-        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPage.fromJson,
+    (MediaCollectionRecentlyReleasedGraphqlDtoPage).toString(): MediaCollectionRecentlyReleasedGraphqlDtoPage
+        .fromJson,
     (MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedules)
-        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedules
-        .fromJson,
+        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedules.fromJson,
     (MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia)
-        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia
-        .fromJson,
+        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMedia.fromJson,
     (MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaNextAiringEpisode)
         .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaNextAiringEpisode
         .fromJson,
     (MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate)
-        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate
-        .fromJson,
+        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaEndDate.fromJson,
     (MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate)
-        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate
-        .fromJson,
+        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaStartDate.fromJson,
     (MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage)
-        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage
-        .fromJson,
+        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaCoverImage.fromJson,
     (MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle)
-        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle
+        .toString(): MediaCollectionRecentlyReleasedGraphqlDtoPageAiringSchedulesMediaTitle.fromJson,
+    (MediaCollectionTrendingOrPopularGraphqlEntity).toString(): MediaCollectionTrendingOrPopularGraphqlEntity
         .fromJson,
-    (MediaCollectionTrendingOrPopularGraphqlEntity)
-        .toString(): MediaCollectionTrendingOrPopularGraphqlEntity.fromJson,
     (MediaCollectionTrendingOrPopularGraphqlDtoPage)
         .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPage.fromJson,
     (MediaCollectionTrendingOrPopularGraphqlDtoPageMedia)
-        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMedia
-        .fromJson,
+        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMedia.fromJson,
     (MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate)
-        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate
-        .fromJson,
+        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate.fromJson,
     (MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate)
-        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate
-        .fromJson,
+        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate.fromJson,
     (MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage)
-        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage
-        .fromJson,
+        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage.fromJson,
     (MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle)
-        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle
+        .toString(): MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle.fromJson,
+    (MediaCollectionUpcomingGraphqlEntity).toString(): MediaCollectionUpcomingGraphqlEntity.fromJson,
+    (MediaCollectionUpcomingGraphqlDtoPage).toString(): MediaCollectionUpcomingGraphqlDtoPage.fromJson,
+    (MediaCollectionUpcomingGraphqlDtoPageMedia).toString(): MediaCollectionUpcomingGraphqlDtoPageMedia
         .fromJson,
-    (MediaCollectionUpcomingGraphqlEntity)
-        .toString(): MediaCollectionUpcomingGraphqlEntity.fromJson,
-    (MediaCollectionUpcomingGraphqlDtoPage)
-        .toString(): MediaCollectionUpcomingGraphqlDtoPage.fromJson,
-    (MediaCollectionUpcomingGraphqlDtoPageMedia)
-        .toString(): MediaCollectionUpcomingGraphqlDtoPageMedia.fromJson,
     (MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode)
-        .toString(): MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode
-        .fromJson,
+        .toString(): MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode.fromJson,
     (MediaCollectionUpcomingGraphqlDtoPageMediaEndDate)
         .toString(): MediaCollectionUpcomingGraphqlDtoPageMediaEndDate.fromJson,
     (MediaCollectionUpcomingGraphqlDtoPageMediaStartDate)
-        .toString(): MediaCollectionUpcomingGraphqlDtoPageMediaStartDate
-        .fromJson,
+        .toString(): MediaCollectionUpcomingGraphqlDtoPageMediaStartDate.fromJson,
     (MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage)
-        .toString(): MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage
-        .fromJson,
+        .toString(): MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage.fromJson,
     (MediaCollectionUpcomingGraphqlDtoPageMediaTitle)
         .toString(): MediaCollectionUpcomingGraphqlDtoPageMediaTitle.fromJson,
     (MediaDetailsGraphqlEntity).toString(): MediaDetailsGraphqlEntity.fromJson,
     (MediaDetailsGraphqlMedia).toString(): MediaDetailsGraphqlMedia.fromJson,
-    (MediaDetailsGraphqlMediaTitle).toString(): MediaDetailsGraphqlMediaTitle
+    (MediaDetailsGraphqlMediaTitle).toString(): MediaDetailsGraphqlMediaTitle.fromJson,
+    (MediaDetailsGraphqlMediaRecommendations).toString(): MediaDetailsGraphqlMediaRecommendations.fromJson,
+    (MediaDetailsGraphqlMediaRecommendationsNodes).toString(): MediaDetailsGraphqlMediaRecommendationsNodes
         .fromJson,
-    (MediaDetailsGraphqlMediaRecommendations)
-        .toString(): MediaDetailsGraphqlMediaRecommendations.fromJson,
-    (MediaDetailsGraphqlMediaRecommendationsNodes)
-        .toString(): MediaDetailsGraphqlMediaRecommendationsNodes.fromJson,
     (MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation)
-        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation
-        .fromJson,
+        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.fromJson,
     (MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate)
-        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate
-        .fromJson,
+        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate.fromJson,
     (MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate)
-        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate
-        .fromJson,
+        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate.fromJson,
     (MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle)
-        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle
-        .fromJson,
+        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle.fromJson,
     (MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage)
-        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage
+        .toString(): MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage.fromJson,
+    (MediaDetailsGraphqlMediaCharacters).toString(): MediaDetailsGraphqlMediaCharacters.fromJson,
+    (MediaDetailsGraphqlMediaCharactersNodes).toString(): MediaDetailsGraphqlMediaCharactersNodes.fromJson,
+    (MediaDetailsGraphqlMediaCharactersNodesImage).toString(): MediaDetailsGraphqlMediaCharactersNodesImage
         .fromJson,
-    (MediaDetailsGraphqlMediaCharacters)
-        .toString(): MediaDetailsGraphqlMediaCharacters.fromJson,
-    (MediaDetailsGraphqlMediaCharactersNodes)
-        .toString(): MediaDetailsGraphqlMediaCharactersNodes.fromJson,
-    (MediaDetailsGraphqlMediaCharactersNodesImage)
-        .toString(): MediaDetailsGraphqlMediaCharactersNodesImage.fromJson,
-    (MediaDetailsGraphqlMediaCharactersNodesName)
-        .toString(): MediaDetailsGraphqlMediaCharactersNodesName.fromJson,
+    (MediaDetailsGraphqlMediaCharactersNodesName).toString(): MediaDetailsGraphqlMediaCharactersNodesName
+        .fromJson,
     (MediaDetailsGraphqlMediaCharactersNodesDateOfBirth)
-        .toString(): MediaDetailsGraphqlMediaCharactersNodesDateOfBirth
-        .fromJson,
-    (MediaDetailsGraphqlMediaMediaListEntry)
-        .toString(): MediaDetailsGraphqlMediaMediaListEntry.fromJson,
+        .toString(): MediaDetailsGraphqlMediaCharactersNodesDateOfBirth.fromJson,
+    (MediaDetailsGraphqlMediaMediaListEntry).toString(): MediaDetailsGraphqlMediaMediaListEntry.fromJson,
     (MediaDetailsGraphqlMediaMediaListEntryStartedAt)
         .toString(): MediaDetailsGraphqlMediaMediaListEntryStartedAt.fromJson,
     (MediaDetailsGraphqlMediaMediaListEntryCompletedAt)
@@ -897,22 +686,22 @@ class JsonConvertClassCollection {
     (MediaDetailsGraphqlMediaMediaListEntryCustomLists)
         .toString(): MediaDetailsGraphqlMediaMediaListEntryCustomLists.fromJson,
     (SaveMediaListEntryEntity).toString(): SaveMediaListEntryEntity.fromJson,
-    (SaveMediaListEntrySaveMediaListEntry)
-        .toString(): SaveMediaListEntrySaveMediaListEntry.fromJson,
-    (SaveMediaListEntrySaveMediaListEntryStartedAt)
-        .toString(): SaveMediaListEntrySaveMediaListEntryStartedAt.fromJson,
+    (SaveMediaListEntrySaveMediaListEntry).toString(): SaveMediaListEntrySaveMediaListEntry.fromJson,
+    (SaveMediaListEntrySaveMediaListEntryStartedAt).toString(): SaveMediaListEntrySaveMediaListEntryStartedAt
+        .fromJson,
     (SaveMediaListEntrySaveMediaListEntryCompletedAt)
         .toString(): SaveMediaListEntrySaveMediaListEntryCompletedAt.fromJson,
     (ViewerGraphqlEntity).toString(): ViewerGraphqlEntity.fromJson,
     (ViewerGraphqlDtoViewer).toString(): ViewerGraphqlDtoViewer.fromJson,
-    (ViewerGraphqlDtoViewerAvatar).toString(): ViewerGraphqlDtoViewerAvatar
-        .fromJson,
-    (ViewerGraphqlDtoViewerMediaListOptions)
-        .toString(): ViewerGraphqlDtoViewerMediaListOptions.fromJson,
+    (ViewerGraphqlDtoViewerAvatar).toString(): ViewerGraphqlDtoViewerAvatar.fromJson,
+    (ViewerGraphqlDtoViewerMediaListOptions).toString(): ViewerGraphqlDtoViewerMediaListOptions.fromJson,
     (ViewerGraphqlDtoViewerMediaListOptionsAnimeList)
         .toString(): ViewerGraphqlDtoViewerMediaListOptionsAnimeList.fromJson,
     (ViewerGraphqlDtoViewerMediaListOptionsMangaList)
         .toString(): ViewerGraphqlDtoViewerMediaListOptionsMangaList.fromJson,
+    (AniskipTimesEntity).toString(): AniskipTimesEntity.fromJson,
+    (AniskipTimesResults).toString(): AniskipTimesResults.fromJson,
+    (AniskipTimesResultsInterval).toString(): AniskipTimesResultsInterval.fromJson,
     (AnizipEpisodeInfoEntity).toString(): AnizipEpisodeInfoEntity.fromJson,
     (AnizipEpisodeInfoTitle).toString(): AnizipEpisodeInfoTitle.fromJson,
     (AniyomiRepoJsonEntity).toString(): AniyomiRepoJsonEntity.fromJson,
