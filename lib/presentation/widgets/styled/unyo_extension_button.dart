@@ -32,7 +32,7 @@ class UnyoExtensionButton extends StatelessWidget {
         height: 70,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.black.withOpacity(0.15),
+          color: Colors.black.withValues(alpha: 0.15),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,7 +63,7 @@ class UnyoExtensionButton extends StatelessWidget {
                               height: 14,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: Colors.amber.withOpacity(0.3),
+                                color: Colors.amber.withValues(alpha: 0.3),
                               ),
                               child: const Center(
                                 child: Padding(
@@ -89,7 +89,7 @@ class UnyoExtensionButton extends StatelessWidget {
                           height: 22,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: ColorScheme.of(context).primary.withOpacity(0.3),
+                            color: ColorScheme.of(context).primary.withValues(alpha: 0.3),
                           ),
                           child: Center(
                             child: Padding(
@@ -110,7 +110,7 @@ class UnyoExtensionButton extends StatelessWidget {
                           height: 22,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: ColorScheme.of(context).tertiary.withOpacity(0.3),
+                            color: ColorScheme.of(context).tertiary.withValues(alpha: 0.3),
                           ),
                           child: Center(
                             child: Padding(
@@ -147,7 +147,7 @@ class UnyoExtensionButton extends StatelessWidget {
                             height: 45,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: ColorScheme.of(context).primary.withOpacity(0.2),
+                              color: ColorScheme.of(context).primary.withValues(alpha: 0.2),
                             ),
                             child: Icon(Icons.download_rounded, color: ColorScheme.of(context).tertiary),
                           ),
@@ -168,7 +168,7 @@ class UnyoExtensionButton extends StatelessWidget {
                             height: 45,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: ColorScheme.of(context).primary.withOpacity(0.2),
+                              color: ColorScheme.of(context).primary.withValues(alpha: 0.2),
                             ),
                             child: Icon(Icons.settings_rounded, color: ColorScheme.of(context).tertiary),
                           ),
@@ -189,9 +189,9 @@ class UnyoExtensionButton extends StatelessWidget {
                             height: 45,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: Colors.red.withOpacity(0.2),
+                              color: Colors.red.withValues(alpha: 0.2),
                             ),
-                            child: Icon(Icons.delete_rounded, color: Colors.redAccent.withOpacity(0.3)),
+                            child: Icon(Icons.delete_rounded, color: Colors.redAccent.withValues(alpha: 0.3)),
                           ),
                         ),
                       ),

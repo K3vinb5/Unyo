@@ -92,7 +92,7 @@ class MediaCard extends StatelessWidget {
                                                             .computeLuminance() >
                                                         0.2
                                                     ? Colors.black
-                                                    : Colors.white.withOpacity(
+                                                    : Colors.white.withValues(alpha: 
                                                       0.8,
                                                     ),
                                             fontWeight: FontWeight.bold,
@@ -105,7 +105,7 @@ class MediaCard extends StatelessWidget {
                                                           .computeLuminance() >
                                                       0.2
                                                   ? Colors.black
-                                                  : Colors.white.withOpacity(
+                                                  : Colors.white.withValues(alpha: 
                                                     0.8,
                                                   ),
                                           size: 15,
@@ -171,7 +171,7 @@ class MediaCard extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.calendar_today,
-                    color: ColorScheme.of(context).tertiary.withOpacity(0.8),
+                    color: ColorScheme.of(context).tertiary.withValues(alpha: 0.8),
                     size: 17,
                   ),
                   Text(
@@ -180,7 +180,7 @@ class MediaCard extends StatelessWidget {
                       fontSize: 14,
                       color: ColorScheme.of(
                         context,
-                      ).tertiary.withOpacity(0.8),
+                      ).tertiary.withValues(alpha: 0.8),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -190,7 +190,7 @@ class MediaCard extends StatelessWidget {
                     style: TextStyle(
                       color: ColorScheme.of(
                         context,
-                      ).tertiary.withOpacity(0.8),
+                      ).tertiary.withValues(alpha: 0.8),
                       overflow: TextOverflow.ellipsis,
                       fontSize:
                           format == "TV_SHORT" ||
@@ -207,7 +207,7 @@ class MediaCard extends StatelessWidget {
                   ),
                   Icon(
                     format != 'MANGA' ? Icons.tv_rounded : Icons.book_rounded,
-                    color: ColorScheme.of(context).tertiary.withOpacity(0.8),
+                    color: ColorScheme.of(context).tertiary.withValues(alpha: 0.8),
                     size: 17,
                   ),
                 ],

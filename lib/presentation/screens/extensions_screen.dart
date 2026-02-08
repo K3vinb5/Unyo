@@ -114,7 +114,7 @@ class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderSta
               height: 50,
               child: TabBar(
                 labelColor: Colors.white,
-                dividerColor: ColorScheme.of(context).secondary.withOpacity(0.5),
+                dividerColor: ColorScheme.of(context).secondary.withValues(alpha: 0.5),
                 indicatorColor: ColorScheme.of(context).primary,
                 unselectedLabelColor: Colors.grey,
                 isScrollable: true,

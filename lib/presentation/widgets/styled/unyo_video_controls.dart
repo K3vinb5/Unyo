@@ -218,21 +218,10 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                   setState(() {});
                                 }
                               });
-                              showGeneralDialog(
-                                context: context,
-                                barrierDismissible: true,
-                                barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-                                barrierColor: Colors.black.withValues(alpha: 0.5),
-                                transitionDuration: const Duration(milliseconds: 250),
-                                pageBuilder:(context, animation, secondaryAnimation) => EpisodeListDrawer(cubit: widget.videoCubit),
-                                transitionBuilder: (context, animation, secondaryAnimation, child) =>
-                                    SlideTransition(
-                                      position: Tween<Offset>(
-                                      begin: const Offset(1, 0),
-                                      end: Offset.zero,
-                                      ).animate(animation),
-                                      child: child,
-                                ),
+                              context.read<VideoCubit>().showDrawerDialogEffect(
+                                  drawerDialog:EpisodeListDrawer(cubit: widget.videoCubit),
+                                  backgroundColor: Colors.black.withValues(alpha: 0.5),
+                                  startPosition: AxisDirection.right
                               );
                             },
                           ),

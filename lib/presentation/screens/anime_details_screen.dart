@@ -108,7 +108,7 @@ class _AnimeDetailsViewState extends State<_AnimeDetailsView> {
                   ? (state.selectedAnime.nextAiringEpisode.episode - 1)
                   : numEpisodes,
           showDivider: i != 0,
-          onPressed: () => context.read<AnimeDetailsCubit>().openAnimeServerSelectionDialog(context, i),
+          onPressed: () => context.read<AnimeDetailsCubit>().openAnimeServerSelectionDrawer(context, i),
         ),
       );
     }
@@ -120,7 +120,7 @@ class _AnimeDetailsViewState extends State<_AnimeDetailsView> {
     return BlocBuilder<AnimeDetailsCubit, AnimeDetailsState>(
       builder: (context, state) {
         return Container(
-          decoration: BoxDecoration(color: Colors.black.withOpacity(0.3)),
+          decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.3)),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
@@ -201,7 +201,7 @@ class _AnimeDetailsViewState extends State<_AnimeDetailsView> {
                                               width: 120.w,
                                               height: 40,
                                               decoration: BoxDecoration(
-                                                color: Colors.grey.withOpacity(0.3),
+                                                color: Colors.grey.withValues(alpha: 0.3),
                                                 borderRadius: BorderRadius.circular(8.0),
                                               ),
                                               child: Center(
@@ -300,7 +300,7 @@ class _AnimeDetailsViewState extends State<_AnimeDetailsView> {
                     child: Container(
                       height: 1.sh - 60,
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(12),
                           topRight: Radius.circular(12),

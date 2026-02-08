@@ -62,7 +62,7 @@ class _UnyoSettingsSelectionToggleState extends State<UnyoSettingsSelectionToggl
                   height: 47,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: ColorScheme.of(context).primary.withOpacity(0.2),
+                    color: ColorScheme.of(context).primary.withValues(alpha: 0.2),
                   ),
                   child:
                       widget.imageUrl == null
@@ -80,7 +80,7 @@ class _UnyoSettingsSelectionToggleState extends State<UnyoSettingsSelectionToggl
                     ),
                     Text(
                       widget.description,
-                      style: TextStyle(color: Colors.grey.withOpacity(0.8), fontSize: 13),
+                      style: TextStyle(color: Colors.grey.withValues(alpha: 0.8), fontSize: 13),
                     ),
                   ],
                 ),
@@ -91,10 +91,10 @@ class _UnyoSettingsSelectionToggleState extends State<UnyoSettingsSelectionToggl
               trackOutlineWidth: const WidgetStatePropertyAll(0.5),
               activeTrackColor: ColorScheme.of(context).primary,
               inactiveTrackColor: Colors.black45,
-              trackOutlineColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.4)),
-              inactiveThumbColor: Colors.white.withOpacity(0.7),
+              trackOutlineColor: WidgetStatePropertyAll(Colors.white.withValues(alpha: 0.4)),
+              inactiveThumbColor: Colors.white.withValues(alpha: 0.7),
               thumbColor: WidgetStateMapper({WidgetState.selected: ColorScheme.of(context).tertiary}),
-              hoverColor: ColorScheme.of(context).tertiary.withOpacity(0.1),
+              hoverColor: ColorScheme.of(context).tertiary.withValues(alpha: 0.1),
               onChanged: (value) {
                 setState(() {
                   _isSelected = !_isSelected;

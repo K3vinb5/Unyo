@@ -29,7 +29,7 @@ class MediaButton extends StatelessWidget {
                   end: Alignment.bottomCenter,
                 ),
                 border: Border.all(
-                    color: ColorScheme.of(context).secondary.withOpacity(0.4), width: 2),
+                    color: ColorScheme.of(context).secondary.withValues(alpha: 0.4), width: 2),
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   opacity: 0.35,
@@ -48,7 +48,7 @@ class MediaButton extends StatelessWidget {
                   end: Alignment.bottomCenter,
                 ),
                 border: Border.all(
-                    color: ColorScheme.of(context).secondary.withOpacity(0.4), width: 2),
+                    color: ColorScheme.of(context).secondary.withValues(alpha: 0.4), width: 2),
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   opacity: 0.35,

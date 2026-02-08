@@ -21,7 +21,7 @@ class UnyoMenuBar extends StatelessWidget {
             filter: ImageFilter.blur(sigmaX: 40.0, sigmaY: 40.0),
             child: ShaderMask(
               shaderCallback: (bounds) => LinearGradient(
-                colors: [Colors.white.withOpacity(0.15), Colors.white.withOpacity(0.05)],
+                colors: [Colors.white.withValues(alpha: 0.15), Colors.white.withValues(alpha: 0.05)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ).createShader(bounds),

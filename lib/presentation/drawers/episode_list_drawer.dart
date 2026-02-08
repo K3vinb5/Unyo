@@ -83,7 +83,7 @@ class EpisodeListDrawer extends StatelessWidget {
                 padding: EdgeInsets.only(top: 20.h, bottom: 20.h, left: 15.w, right: 25.w),
                 decoration: BoxDecoration(
                     borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
-                    color: ColorScheme.of(context).secondary.withOpacity(0.6)
+                    color: ColorScheme.of(context).secondary.withValues(alpha: 0.6)
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

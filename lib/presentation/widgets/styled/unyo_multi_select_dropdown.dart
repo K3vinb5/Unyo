@@ -99,7 +99,7 @@ class _UnyoMultiSelectDropdownState extends State<UnyoMultiSelectDropdown> {
                     offset: Offset(0, size.height + 4),
                     child: Material(
                       elevation: 4,
-                      color: ColorScheme.of(context).secondary.withOpacity(0.8),
+                      color: ColorScheme.of(context).secondary.withValues(alpha: 0.8),
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 300),
                         child: ListView(
@@ -139,7 +139,7 @@ class _UnyoMultiSelectDropdownState extends State<UnyoMultiSelectDropdown> {
                                           ),
                                         ),
                                         if (isSelected)
-                                          Icon(Icons.check, color: Colors.white.withOpacity(0.8), size: 20),
+                                          Icon(Icons.check, color: Colors.white.withValues(alpha: 0.8), size: 20),
                                       ],
                                     ),
                                   ),
@@ -172,7 +172,7 @@ class _UnyoMultiSelectDropdownState extends State<UnyoMultiSelectDropdown> {
                 color:
                     _isOpen
                         ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.tertiary.withOpacity(0.8),
+                        : Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.8),
                 width: _isOpen ? 3 : 2,
               ),
               borderRadius: BorderRadius.circular(16),
@@ -180,7 +180,7 @@ class _UnyoMultiSelectDropdownState extends State<UnyoMultiSelectDropdown> {
             child: Row(
               children: [
                 if (widget.icon != null) ...[
-                  Icon(widget.icon, color: Theme.of(context).colorScheme.tertiary.withOpacity(0.7)),
+                  Icon(widget.icon, color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.7)),
                   const SizedBox(width: 8),
                 ],
                 Expanded(
@@ -188,13 +188,13 @@ class _UnyoMultiSelectDropdownState extends State<UnyoMultiSelectDropdown> {
                     _selectedItems.isEmpty ? widget.label ?? '' : _getDisplayText(),
                     style: TextStyle(
                       fontSize: 14,
-                      color: _selectedItems.isEmpty ? Colors.white.withOpacity(0.8) : Colors.white,
+                      color: _selectedItems.isEmpty ? Colors.white.withValues(alpha: 0.8) : Colors.white,
                     ),
                   ),
                 ),
                 Icon(
                   _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                  color: _isOpen ? Colors.white : Theme.of(context).colorScheme.tertiary.withOpacity(0.7),
+                  color: _isOpen ? Colors.white : Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.7),
                 ),
               ],
             ),

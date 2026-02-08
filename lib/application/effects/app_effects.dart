@@ -38,6 +38,14 @@ class ShowWidgetDialogEffect extends AppEffect {
   ShowWidgetDialogEffect(this.dialog);
 }
 
+class ShowDrawerDialogEffect extends AppEffect {
+  final Widget drawerDialog;
+  final Color backgroundColor;
+  final AxisDirection startPosition;
+
+  ShowDrawerDialogEffect(this.drawerDialog, this.backgroundColor, this.startPosition);
+}
+
 class CloseDialogEffect extends AppEffect {
   BuildContext context;
 

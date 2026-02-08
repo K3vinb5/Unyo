@@ -64,12 +64,12 @@ class _UnyoDropdownState extends State<UnyoDropdown> {
               padding: const EdgeInsets.only(left: 16.0, right: 8.0),
               child: Icon(
                 widget.icon ?? Icons.search_rounded,
-                color: ColorScheme.of(context).tertiary.withOpacity(0.7),
+                color: ColorScheme.of(context).tertiary.withValues(alpha: 0.7),
               ),
             ),
             trailingIcon:
                 widget.selectedValue == null || widget.selectedValue!.isEmpty || searchController.text.isEmpty
-                    ? Icon(Icons.arrow_drop_down, color: ColorScheme.of(context).tertiary.withOpacity(0.7))
+                    ? Icon(Icons.arrow_drop_down, color: ColorScheme.of(context).tertiary.withValues(alpha: 0.7))
                     : GestureDetector(
                       onTap: () {
                         setState(() {
@@ -79,16 +79,16 @@ class _UnyoDropdownState extends State<UnyoDropdown> {
                           widget.onPressed?.call(null);
                         }
                       },
-                      child: Icon(Icons.clear, color: ColorScheme.of(context).tertiary.withOpacity(0.7)),
+                      child: Icon(Icons.clear, color: ColorScheme.of(context).tertiary.withValues(alpha: 0.7)),
                     ),
             enableFilter: true,
             menuStyle: MenuStyle(
-              backgroundColor: WidgetStatePropertyAll(ColorScheme.of(context).secondary.withOpacity(0.8)),
+              backgroundColor: WidgetStatePropertyAll(ColorScheme.of(context).secondary.withValues(alpha: 0.8)),
               maximumSize: WidgetStatePropertyAll(Size(constrains.maxWidth, 300)),
             ),
             label:
                 widget.label != null
-                    ? Text(widget.label!, style: TextStyle(color: Colors.white.withOpacity(0.8)))
+                    ? Text(widget.label!, style: TextStyle(color: Colors.white.withValues(alpha: 0.8)))
                     : null,
             inputDecorationTheme: InputDecorationTheme(
               focusedBorder: OutlineInputBorder(
@@ -97,7 +97,7 @@ class _UnyoDropdownState extends State<UnyoDropdown> {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-                borderSide: BorderSide(color: ColorScheme.of(context).tertiary.withOpacity(0.8), width: 2),
+                borderSide: BorderSide(color: ColorScheme.of(context).tertiary.withValues(alpha: 0.8), width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
             ),

@@ -37,7 +37,7 @@ class UnyoMediaBanner extends StatelessWidget {
                     : const SizedBox.shrink(),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     gradient: const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,

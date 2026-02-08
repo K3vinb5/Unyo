@@ -67,7 +67,7 @@ class _UnyoSettingsSelectionDropdownState extends State<UnyoSettingsSelectionDro
                   height: 47,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: ColorScheme.of(context).primary.withOpacity(0.2),
+                    color: ColorScheme.of(context).primary.withValues(alpha: 0.2),
                   ),
                   child:
                       widget.imageUrl == null
@@ -85,7 +85,7 @@ class _UnyoSettingsSelectionDropdownState extends State<UnyoSettingsSelectionDro
                     ),
                     Text(
                       widget.description,
-                      style: TextStyle(color: Colors.grey.withOpacity(0.8), fontSize: 13),
+                      style: TextStyle(color: Colors.grey.withValues(alpha: 0.8), fontSize: 13),
                     ),
                   ],
                 ),

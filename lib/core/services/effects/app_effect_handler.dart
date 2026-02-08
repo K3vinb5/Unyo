@@ -44,6 +44,8 @@ class AppEffectHandler {
         _handlePushRouteEffect(pushRouteEffect, context);
       case ShowWidgetDialogEffect showWidgetDialogEffect:
         _handleShowWidgetDialogEffect(showWidgetDialogEffect, context);
+      case ShowDrawerDialogEffect showDrawerDialogEffect:
+        _handleShowDrawerDialogEffect(showDrawerDialogEffect, context);
       case CloseDialogEffect closeDialogEffect:
         _handleCloseDialogEffect(closeDialogEffect, closeDialogEffect.context);
       case ChangeTabRouteEffect changeTabRouteEffect:
@@ -59,6 +61,32 @@ class AppEffectHandler {
   ) {
     _logger.d("Handling ShowWidgetDialogEffect");
     showDialog(context: context, builder: (dialogContext) => effect.dialog);
+  }
+
+  void _handleShowDrawerDialogEffect(
+    ShowDrawerDialogEffect effect,
+    BuildContext context,
+  ) {
+    _logger.d("Handling ShowDrawerDialogEffect");
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: effect.backgroundColor,
+      transitionDuration: const Duration(milliseconds: 250),
+      pageBuilder:(context, animation, secondaryAnimation) => effect.drawerDialog,
+      transitionBuilder: (context, animation, secondaryAnimation, child) =>
+          SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset(
+                  effect.startPosition == AxisDirection.right ? 1 : (effect.startPosition == AxisDirection.left ? -1 : 0),
+                  effect.startPosition == AxisDirection.up ? -1 : (effect.startPosition == AxisDirection.down ? 1 : 0)
+              ),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+    );
   }
 
   void _handleCloseDialogEffect(

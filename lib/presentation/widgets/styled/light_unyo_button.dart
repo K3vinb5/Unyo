@@ -44,7 +44,7 @@ class LightUnyoButton extends StatelessWidget {
         child: Container(
           width: width ?? 80.w.clamp(minWidth ?? 0, maxWidth ?? math.max(minWidth ?? 0, 80.w)),
           height: height ?? 45.h.clamp(minHeight ?? 0, maxHeight ?? math.max(minHeight ?? 0, 45.h)),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0), color: color.withOpacity(0.9)),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0), color: color.withValues(alpha: 0.9)),
           child: Center(
             child: Text(text ?? "", style: TextStyle(color: textColor, fontWeight: FontWeight.w700)),
           ),

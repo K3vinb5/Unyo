@@ -31,7 +31,7 @@ class _UnyoVideoListButtonState extends State<UnyoVideoListButton> {
             width: 45.w.clamp(40, 50),
             height: 95.h.clamp(90, 105),
             decoration: BoxDecoration(
-              color: ColorScheme.of(context).primary.withOpacity(0.3),
+              color: ColorScheme.of(context).primary.withValues(alpha: 0.3),
               borderRadius: const BorderRadius.only(topLeft: Radius.circular(50), bottomLeft: Radius.circular(50))
             ),
             child: AnimatedScale(
@@ -39,7 +39,7 @@ class _UnyoVideoListButtonState extends State<UnyoVideoListButton> {
               duration: const Duration(milliseconds: 100),
               child: Icon(
                 Icons.arrow_back_ios_new_rounded,
-                color: isHovered ? Colors.white.withOpacity(0.8) : Colors.white.withOpacity(0.7),
+                color: isHovered ? Colors.white.withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.7),
                 size: 30,
               ),
             ),

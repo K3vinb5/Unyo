@@ -29,7 +29,7 @@ class UnyoFadeOverlay extends StatelessWidget {
               begin: isTop ? Alignment.topCenter : Alignment.bottomCenter,
               end: isTop ? Alignment.bottomCenter : Alignment.topCenter,
               colors: [
-                color.withOpacity(opacity),
+                color.withValues(alpha: opacity),
                 Colors.transparent,
               ],
             ),

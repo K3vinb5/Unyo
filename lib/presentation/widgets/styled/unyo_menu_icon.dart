@@ -38,9 +38,9 @@ class _UnyoMenuIconState extends State<UnyoMenuIcon> {
             height: 50.0,
             decoration: BoxDecoration(
               color: widget.isSelected
-                  ? Colors.white.withOpacity(.10)
+                  ? Colors.white.withValues(alpha: .10)
                   : isHovered
-                      ? Colors.white.withOpacity(.05)
+                      ? Colors.white.withValues(alpha: .05)
                       : Colors.transparent,
               borderRadius: BorderRadius.circular(15.0),
             ),
@@ -66,7 +66,7 @@ class _UnyoMenuIconState extends State<UnyoMenuIcon> {
                     color: widget.isSelected
                         ? ColorScheme.of(context).tertiary
                         : isHovered
-                            ? Colors.white.withOpacity(0.9)
+                            ? Colors.white.withValues(alpha: 0.9)
                             : Colors.white,
                   ),
                 ),

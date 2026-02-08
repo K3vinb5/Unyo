@@ -43,7 +43,7 @@ import 'package:unyo/domain/entities/settings.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/domain/entities/video_info.dart';
 import 'package:unyo/presentation/dialogs/anime_details_media_entry_dialog.dart';
-import 'package:unyo/presentation/dialogs/anime_server_selection_dialog.dart';
+import 'package:unyo/presentation/drawers/anime_server_selection_drawer.dart';
 
 class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeDetailsState> {
   // Repositories
@@ -218,40 +218,42 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     showWidgetDialogEffect(dialog: AnimeDetailsMediaEntryDialog(cubit: this));
   }
 
-  Future<void> openAnimeServerSelectionDialog(BuildContext context, int episodeIndex) async {
+  Future<void> openAnimeServerSelectionDrawer(BuildContext context, int episodeIndex) async {
     if (state.animeServerDialogLoading) return;
     emit(state.copyWith(animeServerDialogReady: false, animeServerDialogLoading: true, extensionVideoResults: []));
-    // TODO - You may not want to select the found index on extensionAnimeResults
-    bool canOpenDialog = await _getEpisodesFromSelectedExtension(
+    // TODO - You may not want to select the found index (selectedAnimeResultIndex) on extensionAnimeResults
+    bool canOpenDrawer = await _getEpisodesFromSelectedExtension(
       state.selectedExtension,
       state.extensionAnimeResults[state.selectedAnimeResultIndex],
     );
-    if (!canOpenDialog) {
+    if (!canOpenDrawer) {
       emit(state.copyWith(animeServerDialogLoading: false));
      return;
     }
-    showWidgetDialogEffect(
-      dialog: AnimeServerSelectionDialog(
-        cubit: this,
-        episodeIndex: episodeIndex,
-        onOpen: () async {
-          if (episodeIndex >= state.extensionEpisodeResults.length) {
-            _logger.w("Episode index $episodeIndex is out of bounds for extension episode results.");
-            showSnackBarEffect("${state.selectedExtension?.name} Error", message: "Only ${state.extensionEpisodeResults.length} episodes were found", contentType: ContentType.warning);
-            return false;
-          }
-          bool shouldKeepDialog = await _getVideosFromSelectedExtension(
-            state.selectedExtension,
-            state.extensionEpisodeResults[episodeIndex],
-          );
-          if (!shouldKeepDialog && context.mounted) {
-            emit(state.copyWith(animeServerDialogReady: false, animeServerDialogLoading: false));
-            return false;
-          }
-          emit(state.copyWith(animeServerDialogReady: true, animeServerDialogLoading: false));
-          return true;
-        },
-      ),
+    showDrawerDialogEffect(
+        drawerDialog: AnimeServerSelectionDrawer(
+          cubit: this,
+          episodeIndex: episodeIndex,
+          onOpen: () async {
+            if (episodeIndex >= state.extensionEpisodeResults.length) {
+              _logger.w("Episode index $episodeIndex is out of bounds for extension episode results.");
+              showSnackBarEffect("${state.selectedExtension?.name} Error", message: "Only ${state.extensionEpisodeResults.length} episodes were found", contentType: ContentType.warning);
+              return false;
+            }
+            bool shouldKeepDialog = await _getVideosFromSelectedExtension(
+              state.selectedExtension,
+              state.extensionEpisodeResults[episodeIndex],
+            );
+            if (!shouldKeepDialog && context.mounted) {
+              emit(state.copyWith(animeServerDialogReady: false, animeServerDialogLoading: false));
+              return false;
+            }
+            emit(state.copyWith(animeServerDialogReady: true, animeServerDialogLoading: false));
+            return true;
+          },
+        ),
+        backgroundColor: Colors.black.withValues(alpha: 0.55),
+        startPosition: AxisDirection.down
     );
   }
 

@@ -82,7 +82,7 @@ class _UnyoSettingsCategoryState extends State<UnyoSettingsCategory> with Single
                         bottomRight: Radius.circular(20),
                       )
                       : BorderRadius.circular(0),
-              color: !widget.isChild ? Colors.black.withOpacity(0.15) : Colors.transparent,
+              color: !widget.isChild ? Colors.black.withValues(alpha: 0.15) : Colors.transparent,
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.0.w),
@@ -97,7 +97,7 @@ class _UnyoSettingsCategoryState extends State<UnyoSettingsCategory> with Single
                         height: 47,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: ColorScheme.of(context).primary.withOpacity(0.2),
+                          color: ColorScheme.of(context).primary.withValues(alpha: 0.2),
                         ),
                         child: Icon(widget.icon, color: ColorScheme.of(context).tertiary),
                       ),
@@ -114,7 +114,7 @@ class _UnyoSettingsCategoryState extends State<UnyoSettingsCategory> with Single
                               color: Colors.white,
                             ),
                           ),
-                          Text(widget.description, style: TextStyle(color: Colors.grey.withOpacity(0.8), fontSize: 13)),
+                          Text(widget.description, style: TextStyle(color: Colors.grey.withValues(alpha: 0.8), fontSize: 13)),
                         ],
                       ),
                     ],
@@ -147,7 +147,7 @@ class _UnyoSettingsCategoryState extends State<UnyoSettingsCategory> with Single
                             bottomRight: Radius.circular(20),
                           )
                           : BorderRadius.circular(0),
-                  color: !widget.isChild ? Colors.black.withOpacity(0.15) : Colors.transparent,
+                  color: !widget.isChild ? Colors.black.withValues(alpha: 0.15) : Colors.transparent,
                 ),
                 child: FadeTransition(
                   opacity: _fadeAnimation,

@@ -71,7 +71,7 @@ class _UnyoSortWidgetState extends State<UnyoSortWidget> {
                     child: Material(
                       elevation: 4,
                       borderRadius: BorderRadius.circular(16),
-                      color: ColorScheme.of(context).secondary.withOpacity(0.8),
+                      color: ColorScheme.of(context).secondary.withValues(alpha: 0.8),
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 300),
                         child: ListView(
@@ -102,7 +102,7 @@ class _UnyoSortWidgetState extends State<UnyoSortWidget> {
                                         if (isSelected)
                                           Icon(
                                             Icons.check,
-                                            color: Colors.white.withOpacity(0.8),
+                                            color: Colors.white.withValues(alpha: 0.8),
                                             size: 20,
                                           ),
                                       ],
@@ -138,7 +138,7 @@ class _UnyoSortWidgetState extends State<UnyoSortWidget> {
           child: Row(
             children: [
               IconButton(
-                icon: Icon(widget.icon, color: Theme.of(context).colorScheme.tertiary.withOpacity(0.7)),
+                icon: Icon(widget.icon, color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.7)),
                 onPressed: _toggleDropdown,
               ),
               const SizedBox(width: 8),
@@ -146,7 +146,7 @@ class _UnyoSortWidgetState extends State<UnyoSortWidget> {
                 _selectedOption,
                 style: TextStyle(
                   fontSize: 14,
-                  color: _selectedOption.isEmpty ? Colors.white.withOpacity(0.8) : Colors.white,
+                  color: _selectedOption.isEmpty ? Colors.white.withValues(alpha: 0.8) : Colors.white,
                 ),
               ),
             ],

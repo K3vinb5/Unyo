@@ -148,7 +148,7 @@ class _UnyoBannerCarouselState extends State<UnyoBannerCarousel> {
                                       // Dark overlay
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.4),
+                                          color: Colors.black.withValues(alpha: 0.4),
                                           // Adjust opacity as needed
                                           // Optional: add gradient for more dramatic effect
                                           gradient: LinearGradient(
@@ -156,7 +156,7 @@ class _UnyoBannerCarouselState extends State<UnyoBannerCarousel> {
                                             end: Alignment.bottomCenter,
                                             colors: [
                                               Colors.transparent,
-                                              Colors.black.withOpacity(0.8),
+                                              Colors.black.withValues(alpha: 0.8),
                                             ],
                                           ),
                                         ),
@@ -186,7 +186,7 @@ class _UnyoBannerCarouselState extends State<UnyoBannerCarousel> {
                                       width: 50,
                                       height: 25,
                                       decoration: BoxDecoration(
-                                        color: Colors.grey.withOpacity(0.3),
+                                        color: Colors.grey.withValues(alpha: 0.3),
                                         borderRadius: BorderRadius.circular(8.0),
                                       ),
                                       child: Row(
@@ -253,7 +253,7 @@ class _UnyoBannerCarouselState extends State<UnyoBannerCarousel> {
                     color:
                         _currentPage == index
                             ? ColorScheme.of(context).tertiary
-                            : Colors.grey.withOpacity(0.8),
+                            : Colors.grey.withValues(alpha: 0.8),
                   ),
                 ),
               ),

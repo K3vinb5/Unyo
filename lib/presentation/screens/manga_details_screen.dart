@@ -107,7 +107,7 @@ class _MangaDetailsViewState extends State<_MangaDetailsView> {
     return BlocBuilder<MangaDetailsCubit, MangaDetailsState>(
       builder: (context, state) {
         return Container(
-          decoration: BoxDecoration(color: Colors.black.withOpacity(0.3)),
+          decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.3)),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
@@ -262,7 +262,7 @@ class _MangaDetailsViewState extends State<_MangaDetailsView> {
                     child: Container(
                       height: 1.sh - 60,
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(12),
                           topRight: Radius.circular(12),

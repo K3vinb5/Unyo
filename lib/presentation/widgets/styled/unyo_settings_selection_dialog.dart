@@ -38,7 +38,7 @@ class UnyoSettingsSelectionDialog extends StatelessWidget {
                     height: 47,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: ColorScheme.of(context).primary.withOpacity(0.2),
+                      color: ColorScheme.of(context).primary.withValues(alpha: 0.2),
                     ),
                     child:
                         imageUrl == null
@@ -58,7 +58,7 @@ class UnyoSettingsSelectionDialog extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
-                      Text(description, style: TextStyle(color: Colors.grey.withOpacity(0.8), fontSize: 13)),
+                      Text(description, style: TextStyle(color: Colors.grey.withValues(alpha: 0.8), fontSize: 13)),
                     ],
                   ),
                 ],

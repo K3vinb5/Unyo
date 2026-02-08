@@ -44,6 +44,11 @@ mixin EffectMixin<State> on Cubit<State> {
     addEffect(ShowWidgetDialogEffect(dialog));
   }
 
+  void showDrawerDialogEffect({required Widget drawerDialog, required Color backgroundColor, required AxisDirection startPosition}) {
+    logger.i("ShowDrawerDialog with dialog: $drawerDialog and startPosition: $startPosition");
+    addEffect(ShowDrawerDialogEffect(drawerDialog, backgroundColor, startPosition));
+  }
+
   void closeDialogEffect(BuildContext context) {
     logger.i("CloseDialog attempted");
     addEffect(CloseDialogEffect(context));

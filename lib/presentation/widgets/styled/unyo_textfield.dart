@@ -43,10 +43,10 @@ class _UnyoTextfieldState extends State<UnyoTextfield> {
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-                prefixIcon: Icon(widget.icon ?? Icons.search, color: ColorScheme.of(context).tertiary.withOpacity(0.7)),
+                prefixIcon: Icon(widget.icon ?? Icons.search, color: ColorScheme.of(context).tertiary.withValues(alpha: 0.7)),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide(color: ColorScheme.of(context).tertiary.withOpacity(0.8), width: 2),
+                  borderSide: BorderSide(color: ColorScheme.of(context).tertiary.withValues(alpha: 0.8), width: 2),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
@@ -55,7 +55,7 @@ class _UnyoTextfieldState extends State<UnyoTextfield> {
                 hintText: widget.hint,
                 label:
                     widget.label != null
-                        ? Text(widget.label!, style: TextStyle(color: Colors.white.withOpacity(0.8)))
+                        ? Text(widget.label!, style: TextStyle(color: Colors.white.withValues(alpha: 0.8)))
                         : null,
               ),
               onChanged: (newText) {
