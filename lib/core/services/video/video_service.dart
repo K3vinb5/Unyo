@@ -167,9 +167,13 @@ class VideoService {
     return true;
   }
 
-  bool seekTo(Duration newDuration) {
-    if (newDuration > duration || newDuration < Duration.zero) return false;
-    _player.seek(position: newDuration.inMilliseconds, flags: _seekFlags);
+  bool seekTo(Duration newPosition) {
+    if (newPosition > duration) {
+      _player.seek(position: duration.inMilliseconds, flags: _seekFlags);
+    } else if (newPosition < Duration.zero) {
+      _player.seek(position: 0, flags: _seekFlags);
+    }
+    _player.seek(position: newPosition.inMilliseconds, flags: _seekFlags);
     return true;
   }
 
