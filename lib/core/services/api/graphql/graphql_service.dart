@@ -20,6 +20,7 @@ class GraphQLService {
     Map<String, dynamic>? variables,
     Map<String, String>? headers,
     required T Function(Map<String, dynamic>) fromJson,
+    bool ignoreCache = false,
   }) async {
     _logger.d("Executing GraphQL QUERY operation");
     return _sendRequest(
@@ -27,6 +28,7 @@ class GraphQLService {
       variables: variables,
       headers: headers,
       fromJson: fromJson,
+      ignoreCache: ignoreCache
     );
   }
 
@@ -35,6 +37,7 @@ class GraphQLService {
     Map<String, dynamic>? variables,
     Map<String, String>? headers,
     required T Function(Map<String, dynamic>) fromJson,
+    bool ignoreCache = true,
   }) async {
     _logger.d("Executing GraphQL MUTATION operation");
     return _sendRequest(
@@ -42,6 +45,7 @@ class GraphQLService {
       variables: variables,
       headers: headers,
       fromJson: fromJson,
+      ignoreCache: ignoreCache
     );
   }
 
@@ -50,6 +54,7 @@ class GraphQLService {
     Map<String, dynamic>? variables,
     Map<String, String>? headers,
     required T Function(Map<String, dynamic>) fromJson,
+    required bool ignoreCache,
   }) async {
     final body = {
       "query": query,
@@ -64,6 +69,7 @@ class GraphQLService {
         json,
         fromJson,
       ),
+      ignoreCache: ignoreCache
     );
     return response.data;
   }

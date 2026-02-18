@@ -3,7 +3,8 @@ import 'package:unyo/core/services/api/dto/anilist/viewer_graphql_entity.dart';
 
 ViewerGraphqlEntity $ViewerGraphqlEntityFromJson(Map<String, dynamic> json) {
   final ViewerGraphqlEntity viewerGraphqlEntity = ViewerGraphqlEntity();
-  final ViewerGraphqlDtoViewer? viewer = jsonConvert.convert<ViewerGraphqlDtoViewer>(json['Viewer']);
+  final ViewerGraphqlDtoViewer? viewer = jsonConvert.convert<
+      ViewerGraphqlDtoViewer>(json['Viewer']);
   if (viewer != null) {
     viewerGraphqlEntity.viewer = viewer;
   }
@@ -25,7 +26,8 @@ extension ViewerGraphqlEntityExtension on ViewerGraphqlEntity {
   }
 }
 
-ViewerGraphqlDtoViewer $ViewerGraphqlDtoViewerFromJson(Map<String, dynamic> json) {
+ViewerGraphqlDtoViewer $ViewerGraphqlDtoViewerFromJson(
+    Map<String, dynamic> json) {
   final ViewerGraphqlDtoViewer viewerGraphqlDtoViewer = ViewerGraphqlDtoViewer();
   final int? id = jsonConvert.convert<int>(json['id']);
   if (id != null) {
@@ -35,13 +37,14 @@ ViewerGraphqlDtoViewer $ViewerGraphqlDtoViewerFromJson(Map<String, dynamic> json
   if (bannerImage != null) {
     viewerGraphqlDtoViewer.bannerImage = bannerImage;
   }
-  final ViewerGraphqlDtoViewerAvatar? avatar = jsonConvert.convert<ViewerGraphqlDtoViewerAvatar>(
-      json['avatar']);
+  final ViewerGraphqlDtoViewerAvatar? avatar = jsonConvert.convert<
+      ViewerGraphqlDtoViewerAvatar>(json['avatar']);
   if (avatar != null) {
     viewerGraphqlDtoViewer.avatar = avatar;
   }
-  final ViewerGraphqlDtoViewerMediaListOptions? mediaListOptions = jsonConvert.convert<
-      ViewerGraphqlDtoViewerMediaListOptions>(json['mediaListOptions']);
+  final ViewerGraphqlDtoViewerMediaListOptions? mediaListOptions = jsonConvert
+      .convert<ViewerGraphqlDtoViewerMediaListOptions>(
+      json['mediaListOptions']);
   if (mediaListOptions != null) {
     viewerGraphqlDtoViewer.mediaListOptions = mediaListOptions;
   }
@@ -52,7 +55,8 @@ ViewerGraphqlDtoViewer $ViewerGraphqlDtoViewerFromJson(Map<String, dynamic> json
   return viewerGraphqlDtoViewer;
 }
 
-Map<String, dynamic> $ViewerGraphqlDtoViewerToJson(ViewerGraphqlDtoViewer entity) {
+Map<String, dynamic> $ViewerGraphqlDtoViewerToJson(
+    ViewerGraphqlDtoViewer entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['id'] = entity.id;
   data['bannerImage'] = entity.bannerImage;
@@ -79,7 +83,8 @@ extension ViewerGraphqlDtoViewerExtension on ViewerGraphqlDtoViewer {
   }
 }
 
-ViewerGraphqlDtoViewerAvatar $ViewerGraphqlDtoViewerAvatarFromJson(Map<String, dynamic> json) {
+ViewerGraphqlDtoViewerAvatar $ViewerGraphqlDtoViewerAvatarFromJson(
+    Map<String, dynamic> json) {
   final ViewerGraphqlDtoViewerAvatar viewerGraphqlDtoViewerAvatar = ViewerGraphqlDtoViewerAvatar();
   final String? medium = jsonConvert.convert<String>(json['medium']);
   if (medium != null) {
@@ -88,7 +93,8 @@ ViewerGraphqlDtoViewerAvatar $ViewerGraphqlDtoViewerAvatarFromJson(Map<String, d
   return viewerGraphqlDtoViewerAvatar;
 }
 
-Map<String, dynamic> $ViewerGraphqlDtoViewerAvatarToJson(ViewerGraphqlDtoViewerAvatar entity) {
+Map<String, dynamic> $ViewerGraphqlDtoViewerAvatarToJson(
+    ViewerGraphqlDtoViewerAvatar entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['medium'] = entity.medium;
   return data;
@@ -106,13 +112,15 @@ extension ViewerGraphqlDtoViewerAvatarExtension on ViewerGraphqlDtoViewerAvatar 
 ViewerGraphqlDtoViewerMediaListOptions $ViewerGraphqlDtoViewerMediaListOptionsFromJson(
     Map<String, dynamic> json) {
   final ViewerGraphqlDtoViewerMediaListOptions viewerGraphqlDtoViewerMediaListOptions = ViewerGraphqlDtoViewerMediaListOptions();
-  final ViewerGraphqlDtoViewerMediaListOptionsAnimeList? animeList = jsonConvert.convert<
-      ViewerGraphqlDtoViewerMediaListOptionsAnimeList>(json['animeList']);
+  final ViewerGraphqlDtoViewerMediaListOptionsAnimeList? animeList = jsonConvert
+      .convert<ViewerGraphqlDtoViewerMediaListOptionsAnimeList>(
+      json['animeList']);
   if (animeList != null) {
     viewerGraphqlDtoViewerMediaListOptions.animeList = animeList;
   }
-  final ViewerGraphqlDtoViewerMediaListOptionsMangaList? mangaList = jsonConvert.convert<
-      ViewerGraphqlDtoViewerMediaListOptionsMangaList>(json['mangaList']);
+  final ViewerGraphqlDtoViewerMediaListOptionsMangaList? mangaList = jsonConvert
+      .convert<ViewerGraphqlDtoViewerMediaListOptionsMangaList>(
+      json['mangaList']);
   if (mangaList != null) {
     viewerGraphqlDtoViewerMediaListOptions.mangaList = mangaList;
   }
@@ -148,8 +156,10 @@ extension ViewerGraphqlDtoViewerMediaListOptionsExtension on ViewerGraphqlDtoVie
 ViewerGraphqlDtoViewerMediaListOptionsAnimeList $ViewerGraphqlDtoViewerMediaListOptionsAnimeListFromJson(
     Map<String, dynamic> json) {
   final ViewerGraphqlDtoViewerMediaListOptionsAnimeList viewerGraphqlDtoViewerMediaListOptionsAnimeList = ViewerGraphqlDtoViewerMediaListOptionsAnimeList();
-  final List<String>? customLists = (json['customLists'] as List<dynamic>?)?.map(
-          (e) => jsonConvert.convert<String>(e) as String).toList();
+  final List<String>? customLists = (json['customLists'] as List<dynamic>?)
+      ?.map(
+          (e) => jsonConvert.convert<String>(e) as String)
+      .toList();
   if (customLists != null) {
     viewerGraphqlDtoViewerMediaListOptionsAnimeList.customLists = customLists;
   }
@@ -175,8 +185,10 @@ extension ViewerGraphqlDtoViewerMediaListOptionsAnimeListExtension on ViewerGrap
 ViewerGraphqlDtoViewerMediaListOptionsMangaList $ViewerGraphqlDtoViewerMediaListOptionsMangaListFromJson(
     Map<String, dynamic> json) {
   final ViewerGraphqlDtoViewerMediaListOptionsMangaList viewerGraphqlDtoViewerMediaListOptionsMangaList = ViewerGraphqlDtoViewerMediaListOptionsMangaList();
-  final List<dynamic>? customLists = (json['customLists'] as List<dynamic>?)?.map(
-          (e) => e).toList();
+  final List<dynamic>? customLists = (json['customLists'] as List<dynamic>?)
+      ?.map(
+          (e) => e)
+      .toList();
   if (customLists != null) {
     viewerGraphqlDtoViewerMediaListOptionsMangaList.customLists = customLists;
   }

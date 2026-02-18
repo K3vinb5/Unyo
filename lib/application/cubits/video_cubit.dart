@@ -12,17 +12,22 @@ import 'dart:async';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/video_state.dart';
+import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/episode_info_notifier.dart';
 import 'package:unyo/core/notification/episodes_notifier.dart';
 import 'package:unyo/core/notification/extension_notifier.dart';
 import 'package:unyo/core/notification/media_list_entry_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/notification/video_info_notifier.dart';
 import 'package:unyo/core/services/api/dto/aniskip/aniskip_times_entity.dart';
 import 'package:unyo/core/services/api/http/api_response.dart';
+import 'package:unyo/core/services/api/http/http_exception.dart';
 import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/core/services/video/video_service.dart';
+import 'package:unyo/data/repositories/anime_repository_anilist.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/domain/entities/anime.dart';
 import 'package:unyo/domain/entities/episode_info.dart';
@@ -39,6 +44,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
 
   // Repositories
   final ExtensionRepositoryAniyomi _extensionRepositoryAniyomi;
+  final AnimeRepositoryAnilist _animeRepositoryAnilist;
 
   // Notifiers / Subscriptions
   final UserNotifier _loggedUserNotifier;
@@ -48,6 +54,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
   final MediaListEntryNotifier _mediaListEntryNotifier;
   final ExtensionNotifier _selectedExtensionNotifier;
   final EpisodesNotifier _selectedEpisodesNotifier;
+  final ReloadNotifier _reloadNotifier;
   late StreamSubscription<User> _loggedUserSubscription;
   late StreamSubscription<VideoInfo> _videoInfoSubscription;
   late StreamSubscription<Anime> _selectedAnimeSubscription;
@@ -63,6 +70,8 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
 
   // Others
   bool _videoServiceInitialized = false;
+  Timer? _videoReadyTimer;
+  Timer? _updateMediaEntryTimer;
 
   VideoCubit(
     this._loggedUserNotifier,
@@ -73,6 +82,8 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     this._selectedExtensionNotifier,
     this._selectedEpisodesNotifier,
     this._extensionRepositoryAniyomi,
+    this._animeRepositoryAnilist,
+    this._reloadNotifier,
   ) : super(
         VideoState(
           loggedUser: UserModel.empty(),
@@ -113,6 +124,8 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     _mediaListEntrySubscription.cancel();
     _selectedExtensionSubscription.cancel();
     _selectedEpisodesSubscription.cancel();
+    _videoReadyTimer?.cancel();
+    _updateMediaEntryTimer?.cancel();
     _logger.d("VideoCubit closed and subscriptions cancelled.");
     return super.close();
   }
@@ -124,7 +137,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     _videoInfoSubscription = _videoInfoNotifier.videoInfoStream.listen((videoInfo) {
       _initializeVideoService(videoInfo);
       _videoInfoSubscription.cancel();
-      Future.delayed(const Duration(seconds: 1), () => _getAniskipSkipTimes(state.selectedAnime, videoInfo));
+      _initVideoMetadata(videoInfo);
     });
     _selectedAnimeSubscription = _selectedAnimeNotifier.animeStream.listen((selectedAnime) {
       emit(state.copyWith(selectedAnime: selectedAnime));
@@ -144,6 +157,11 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       emit(state.copyWith(extensionEpisodeResults: extensionEpisodeResults));
     });
     _getAvailableCastDevices();
+  }
+
+  void _initVideoMetadata(VideoInfo videoInfo) {
+    Future.delayed(const Duration(seconds: 1), () => _getAniskipSkipTimes(state.selectedAnime, videoInfo));
+    _triggerUserMediaEntryUpdate();
   }
 
   void _initializeVideoService(VideoInfo videoInfo) {
@@ -173,6 +191,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       episodeIndex: videoInfo.playlistIndex,
     );
     emit(state.copyWith(videoInfo: videoInfo));
+    _initVideoMetadata(videoInfo);
     _logger.i("VideoService updated for new episode.");
   }
 
@@ -433,5 +452,72 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       handleError("Error fetching Videos Info from selected extension: $e", stackTrace: stackTrace);
       return [];
     }
+  }
+
+  void _triggerUserMediaEntryUpdate() {
+    _videoReadyTimer?.cancel();
+    _updateMediaEntryTimer?.cancel();
+
+    const timeout = Duration(minutes: 1);
+    const pollInterval = Duration(milliseconds: 100);
+    final startTime = DateTime.now();
+
+    _videoReadyTimer = Timer.periodic(pollInterval, (timer){
+      if (_videoService.isVideoReady) {
+        _logger.d("Video is ready, triggering media entry update timer.");
+        timer.cancel();
+        // TODO add a setting for this percentage value
+        final updateMediaEntryTriggerDuration = Duration(seconds: (_videoService.duration.inSeconds * 0.8).toInt());
+        _updateMediaEntryTimer = Timer.periodic(const Duration(seconds: 30), (updateTimer) async {
+          if (_videoService.position >= updateMediaEntryTriggerDuration) {
+            _markEpisodeAsWatched();
+            updateTimer.cancel();
+          }
+        });
+        return;
+      }
+      if (DateTime.now().difference(startTime) > timeout) {
+        timer.cancel();
+        _logger.w("Video ready timeout after 1 minute");
+      }
+    });
+  }
+
+  Future<void> _markEpisodeAsWatched() async {
+    if (state.mediaListEntry.progress >= state.videoInfo.playlistIndex + 1) {
+      _logger.d("Episode ${state.videoInfo.playlistIndex + 1} is already marked as watched. No update needed.");
+      return;
+    }
+    _logger.i("Marking episode ${state.videoInfo.playlistIndex + 1} as watched in media list.");
+    try {
+      MediaListEntry desiredMediaListEntry = (state.mediaListEntry as MediaListEntryModel).copyWith(
+        progress: state.videoInfo.playlistIndex + 1,
+        status: "Current",
+      );
+      switch (state.loggedUser.settings.service) {
+        case Service.anilist:
+          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Anilist");
+          MediaListEntry savedMediaListEntry = await _animeRepositoryAnilist.updateMediaListEntry(
+            desiredMediaListEntry,
+            state.selectedAnime,
+            state.loggedUser,
+          );
+          emit(state.copyWith(mediaListEntry: savedMediaListEntry));
+          _reloadNotifier.emitReload(ReloadType.videoMediaListEntryUpdated);
+        case Service.mal:
+          _logger.i("Updating Media List Entry to $desiredMediaListEntry on MyAnimeList");
+        case Service.shikimori:
+          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Shikimori");
+        case Service.kitsu:
+          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Kitsu");
+        case Service.simkl:
+          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Simkl");
+      }
+    } on HttpServerException catch (e, stackTrace) {
+      handleError("Error updating Anime Entry:", responseBody: e.message, stackTrace: stackTrace);
+    } catch (e, stackTrace) {
+      handleError("Error updating Anime Entry: $e", stackTrace: stackTrace);
+    }
+    showSnackBarEffect("Episode marked as complete!", message: "This episode has been marked as completed", contentType: ContentType.success);
   }
 }

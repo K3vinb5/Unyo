@@ -26,7 +26,6 @@ class MediaDetailsGraphqlMedia {
 	late MediaDetailsGraphqlMediaTitle title;
 	late MediaDetailsGraphqlMediaRecommendations recommendations = MediaDetailsGraphqlMediaRecommendations();
 	late MediaDetailsGraphqlMediaCharacters characters;
-	MediaDetailsGraphqlMediaMediaListEntry? mediaListEntry;
 
 	MediaDetailsGraphqlMedia();
 
@@ -278,65 +277,6 @@ class MediaDetailsGraphqlMediaCharactersNodesDateOfBirth {
 	factory MediaDetailsGraphqlMediaCharactersNodesDateOfBirth.fromJson(Map<String, dynamic> json) => $MediaDetailsGraphqlMediaCharactersNodesDateOfBirthFromJson(json);
 
 	Map<String, dynamic> toJson() => $MediaDetailsGraphqlMediaCharactersNodesDateOfBirthToJson(this);
-
-	@override
-	String toString() {
-		return jsonEncode(this);
-	}
-}
-
-@JsonSerializable()
-class MediaDetailsGraphqlMediaMediaListEntry {
-	int progress = 0;
-	int progressVolumes = 0;
-	double score = 0;
-	int repeat = 0;
-	String status = '';
-	late MediaDetailsGraphqlMediaMediaListEntryStartedAt startedAt;
-	late MediaDetailsGraphqlMediaMediaListEntryCompletedAt completedAt;
-	List<MediaDetailsGraphqlMediaMediaListEntryCustomLists> customLists = [];
-
-	MediaDetailsGraphqlMediaMediaListEntry();
-
-	factory MediaDetailsGraphqlMediaMediaListEntry.fromJson(Map<String, dynamic> json) => $MediaDetailsGraphqlMediaMediaListEntryFromJson(json);
-
-	Map<String, dynamic> toJson() => $MediaDetailsGraphqlMediaMediaListEntryToJson(this);
-
-	@override
-	String toString() {
-		return jsonEncode(this);
-	}
-}
-
-@JsonSerializable()
-class MediaDetailsGraphqlMediaMediaListEntryStartedAt {
-	int day = 0;
-	int month = 0;
-	int year= 0;
-
-	MediaDetailsGraphqlMediaMediaListEntryStartedAt();
-
-	factory MediaDetailsGraphqlMediaMediaListEntryStartedAt.fromJson(Map<String, dynamic> json) => $MediaDetailsGraphqlMediaMediaListEntryStartedAtFromJson(json);
-
-	Map<String, dynamic> toJson() => $MediaDetailsGraphqlMediaMediaListEntryStartedAtToJson(this);
-
-	@override
-	String toString() {
-		return jsonEncode(this);
-	}
-}
-
-@JsonSerializable()
-class MediaDetailsGraphqlMediaMediaListEntryCompletedAt {
-	int day = 0;
-	int month = 0;
-	int year = 0;
-
-	MediaDetailsGraphqlMediaMediaListEntryCompletedAt();
-
-	factory MediaDetailsGraphqlMediaMediaListEntryCompletedAt.fromJson(Map<String, dynamic> json) => $MediaDetailsGraphqlMediaMediaListEntryCompletedAtFromJson(json);
-
-	Map<String, dynamic> toJson() => $MediaDetailsGraphqlMediaMediaListEntryCompletedAtToJson(this);
 
 	@override
 	String toString() {

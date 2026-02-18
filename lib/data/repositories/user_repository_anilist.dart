@@ -85,7 +85,7 @@ class UserRepositoryAnilist with RepositoryMixin implements UserRepository {
   }
 
   @override
-  Future<List<Anime>> getUserWatchingList(User user) async {
+  Future<List<Anime>> getUserWatchingList(User user, {bool ignoreCache = false}) async {
     Map<String, String> graphQlHeaders = {
       "Authorization": "Bearer ${(user as AnilistUserModel).accessToken}",
     };
@@ -95,6 +95,7 @@ class UserRepositoryAnilist with RepositoryMixin implements UserRepository {
           fromJson: MediaCollectionGraphqlDtoData.fromJson,
           variables: {"userName": user.name, "userId": user.id, "type": "ANIME"},
           headers: graphQlHeaders,
+          ignoreCache: ignoreCache
         );
     throwIfGraphQlError(mediaCollection);
     List<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia> mediaEntries =
@@ -108,7 +109,7 @@ class UserRepositoryAnilist with RepositoryMixin implements UserRepository {
   }
 
   @override
-  Future<List<Manga>> getUserReadingList(User user) async {
+  Future<List<Manga>> getUserReadingList(User user, {bool ignoreCache = false}) async {
     Map<String, String> graphQlHeaders = {
       "Authorization": "Bearer ${(user as AnilistUserModel).accessToken}",
     };
@@ -118,6 +119,7 @@ class UserRepositoryAnilist with RepositoryMixin implements UserRepository {
           fromJson: MediaCollectionGraphqlDtoData.fromJson,
           variables: {"userName": user.name, "userId": user.id, "type": "MANGA"},
           headers: graphQlHeaders,
+          ignoreCache: ignoreCache
         );
     throwIfGraphQlError(mediaCollection);
     List<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia> mediaEntries =

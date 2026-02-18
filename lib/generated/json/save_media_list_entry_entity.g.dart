@@ -1,17 +1,20 @@
 import 'package:unyo/generated/json/base/json_convert_content.dart';
 import 'package:unyo/core/services/api/dto/anilist/save_media_list_entry_entity.dart';
 
-SaveMediaListEntryEntity $SaveMediaListEntryEntityFromJson(Map<String, dynamic> json) {
+SaveMediaListEntryEntity $SaveMediaListEntryEntityFromJson(
+    Map<String, dynamic> json) {
   final SaveMediaListEntryEntity saveMediaListEntryEntity = SaveMediaListEntryEntity();
-  final SaveMediaListEntrySaveMediaListEntry? saveMediaListEntry = jsonConvert.convert<
-      SaveMediaListEntrySaveMediaListEntry>(json['SaveMediaListEntry']);
+  final SaveMediaListEntrySaveMediaListEntry? saveMediaListEntry = jsonConvert
+      .convert<SaveMediaListEntrySaveMediaListEntry>(
+      json['SaveMediaListEntry']);
   if (saveMediaListEntry != null) {
     saveMediaListEntryEntity.saveMediaListEntry = saveMediaListEntry;
   }
   return saveMediaListEntryEntity;
 }
 
-Map<String, dynamic> $SaveMediaListEntryEntityToJson(SaveMediaListEntryEntity entity) {
+Map<String, dynamic> $SaveMediaListEntryEntityToJson(
+    SaveMediaListEntryEntity entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['SaveMediaListEntry'] = entity.saveMediaListEntry.toJson();
   return data;
@@ -33,7 +36,8 @@ SaveMediaListEntrySaveMediaListEntry $SaveMediaListEntrySaveMediaListEntryFromJs
   if (progress != null) {
     saveMediaListEntrySaveMediaListEntry.progress = progress;
   }
-  final int? progressVolumes = jsonConvert.convert<int>(json['progressVolumes']);
+  final int? progressVolumes = jsonConvert.convert<int>(
+      json['progressVolumes']);
   if (progressVolumes != null) {
     saveMediaListEntrySaveMediaListEntry.progressVolumes = progressVolumes;
   }
@@ -49,13 +53,15 @@ SaveMediaListEntrySaveMediaListEntry $SaveMediaListEntrySaveMediaListEntryFromJs
   if (status != null) {
     saveMediaListEntrySaveMediaListEntry.status = status;
   }
-  final SaveMediaListEntrySaveMediaListEntryStartedAt? startedAt = jsonConvert.convert<
-      SaveMediaListEntrySaveMediaListEntryStartedAt>(json['startedAt']);
+  final SaveMediaListEntrySaveMediaListEntryStartedAt? startedAt = jsonConvert
+      .convert<SaveMediaListEntrySaveMediaListEntryStartedAt>(
+      json['startedAt']);
   if (startedAt != null) {
     saveMediaListEntrySaveMediaListEntry.startedAt = startedAt;
   }
-  final SaveMediaListEntrySaveMediaListEntryCompletedAt? completedAt = jsonConvert.convert<
-      SaveMediaListEntrySaveMediaListEntryCompletedAt>(json['completedAt']);
+  final SaveMediaListEntrySaveMediaListEntryCompletedAt? completedAt = jsonConvert
+      .convert<SaveMediaListEntrySaveMediaListEntryCompletedAt>(
+      json['completedAt']);
   if (completedAt != null) {
     saveMediaListEntrySaveMediaListEntry.completedAt = completedAt;
   }

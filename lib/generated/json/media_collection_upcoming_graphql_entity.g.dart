@@ -31,7 +31,9 @@ extension MediaCollectionUpcomingGraphqlEntityExtension on MediaCollectionUpcomi
 MediaCollectionUpcomingGraphqlDtoPage $MediaCollectionUpcomingGraphqlDtoPageFromJson(
     Map<String, dynamic> json) {
   final MediaCollectionUpcomingGraphqlDtoPage mediaCollectionUpcomingGraphqlDtoPage = MediaCollectionUpcomingGraphqlDtoPage();
-  final List<MediaCollectionUpcomingGraphqlDtoPageMedia>? media = (json['media'] as List<dynamic>?)?.map(
+  final List<
+      MediaCollectionUpcomingGraphqlDtoPageMedia>? media = (json['media'] as List<
+      dynamic>?)?.map(
           (e) =>
       jsonConvert.convert<MediaCollectionUpcomingGraphqlDtoPageMedia>(
           e) as MediaCollectionUpcomingGraphqlDtoPageMedia).toList();
@@ -60,10 +62,12 @@ extension MediaCollectionUpcomingGraphqlDtoPageExtension on MediaCollectionUpcom
 MediaCollectionUpcomingGraphqlDtoPageMedia $MediaCollectionUpcomingGraphqlDtoPageMediaFromJson(
     Map<String, dynamic> json) {
   final MediaCollectionUpcomingGraphqlDtoPageMedia mediaCollectionUpcomingGraphqlDtoPageMedia = MediaCollectionUpcomingGraphqlDtoPageMedia();
-  final MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode? nextAiringEpisode = jsonConvert.convert<
-      MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode>(json['nextAiringEpisode']);
+  final MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode? nextAiringEpisode = jsonConvert
+      .convert<MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode>(
+      json['nextAiringEpisode']);
   if (nextAiringEpisode != null) {
-    mediaCollectionUpcomingGraphqlDtoPageMedia.nextAiringEpisode = nextAiringEpisode;
+    mediaCollectionUpcomingGraphqlDtoPageMedia.nextAiringEpisode =
+        nextAiringEpisode;
   }
   final String? status = jsonConvert.convert<String>(json['status']);
   if (status != null) {
@@ -110,13 +114,15 @@ MediaCollectionUpcomingGraphqlDtoPageMedia $MediaCollectionUpcomingGraphqlDtoPag
   if (episodes != null) {
     mediaCollectionUpcomingGraphqlDtoPageMedia.episodes = episodes;
   }
-  final MediaCollectionUpcomingGraphqlDtoPageMediaEndDate? endDate = jsonConvert.convert<
-      MediaCollectionUpcomingGraphqlDtoPageMediaEndDate>(json['endDate']);
+  final MediaCollectionUpcomingGraphqlDtoPageMediaEndDate? endDate = jsonConvert
+      .convert<MediaCollectionUpcomingGraphqlDtoPageMediaEndDate>(
+      json['endDate']);
   if (endDate != null) {
     mediaCollectionUpcomingGraphqlDtoPageMedia.endDate = endDate;
   }
-  final MediaCollectionUpcomingGraphqlDtoPageMediaStartDate? startDate = jsonConvert.convert<
-      MediaCollectionUpcomingGraphqlDtoPageMediaStartDate>(json['startDate']);
+  final MediaCollectionUpcomingGraphqlDtoPageMediaStartDate? startDate = jsonConvert
+      .convert<MediaCollectionUpcomingGraphqlDtoPageMediaStartDate>(
+      json['startDate']);
   if (startDate != null) {
     mediaCollectionUpcomingGraphqlDtoPageMedia.startDate = startDate;
   }
@@ -128,14 +134,17 @@ MediaCollectionUpcomingGraphqlDtoPageMedia $MediaCollectionUpcomingGraphqlDtoPag
   if (description != null) {
     mediaCollectionUpcomingGraphqlDtoPageMedia.description = description;
   }
-  final MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage? coverImage = jsonConvert.convert<
-      MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage>(json['coverImage']);
+  final MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage? coverImage = jsonConvert
+      .convert<MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage>(
+      json['coverImage']);
   if (coverImage != null) {
     mediaCollectionUpcomingGraphqlDtoPageMedia.coverImage = coverImage;
   }
-  final String? countryOfOrigin = jsonConvert.convert<String>(json['countryOfOrigin']);
+  final String? countryOfOrigin = jsonConvert.convert<String>(
+      json['countryOfOrigin']);
   if (countryOfOrigin != null) {
-    mediaCollectionUpcomingGraphqlDtoPageMedia.countryOfOrigin = countryOfOrigin;
+    mediaCollectionUpcomingGraphqlDtoPageMedia.countryOfOrigin =
+        countryOfOrigin;
   }
   final int? chapters = jsonConvert.convert<int>(json['chapters']);
   if (chapters != null) {
@@ -149,8 +158,8 @@ MediaCollectionUpcomingGraphqlDtoPageMedia $MediaCollectionUpcomingGraphqlDtoPag
   if (averageScore != null) {
     mediaCollectionUpcomingGraphqlDtoPageMedia.averageScore = averageScore;
   }
-  final MediaCollectionUpcomingGraphqlDtoPageMediaTitle? title = jsonConvert.convert<
-      MediaCollectionUpcomingGraphqlDtoPageMediaTitle>(json['title']);
+  final MediaCollectionUpcomingGraphqlDtoPageMediaTitle? title = jsonConvert
+      .convert<MediaCollectionUpcomingGraphqlDtoPageMediaTitle>(json['title']);
   if (title != null) {
     mediaCollectionUpcomingGraphqlDtoPageMedia.title = title;
   }
@@ -241,16 +250,19 @@ MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode $MediaCollectionUpco
   final MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode mediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode = MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode();
   final int? episode = jsonConvert.convert<int>(json['episode']);
   if (episode != null) {
-    mediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode.episode = episode;
+    mediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode.episode =
+        episode;
   }
   final int? airingAt = jsonConvert.convert<int>(json['airingAt']);
   if (airingAt != null) {
-    mediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode.airingAt = airingAt;
+    mediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode.airingAt =
+        airingAt;
   }
   return mediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode;
 }
 
-Map<String, dynamic> $MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisodeToJson(
+Map<String,
+    dynamic> $MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisodeToJson(
     MediaCollectionUpcomingGraphqlDtoPageMediaNextAiringEpisode entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['episode'] = entity.episode;
@@ -359,7 +371,8 @@ MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage $MediaCollectionUpcomingGra
   return mediaCollectionUpcomingGraphqlDtoPageMediaCoverImage;
 }
 
-Map<String, dynamic> $MediaCollectionUpcomingGraphqlDtoPageMediaCoverImageToJson(
+Map<String,
+    dynamic> $MediaCollectionUpcomingGraphqlDtoPageMediaCoverImageToJson(
     MediaCollectionUpcomingGraphqlDtoPageMediaCoverImage entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['large'] = entity.large;
@@ -390,9 +403,11 @@ MediaCollectionUpcomingGraphqlDtoPageMediaTitle $MediaCollectionUpcomingGraphqlD
   if (romaji != null) {
     mediaCollectionUpcomingGraphqlDtoPageMediaTitle.romaji = romaji;
   }
-  final String? userPreferred = jsonConvert.convert<String>(json['userPreferred']);
+  final String? userPreferred = jsonConvert.convert<String>(
+      json['userPreferred']);
   if (userPreferred != null) {
-    mediaCollectionUpcomingGraphqlDtoPageMediaTitle.userPreferred = userPreferred;
+    mediaCollectionUpcomingGraphqlDtoPageMediaTitle.userPreferred =
+        userPreferred;
   }
   return mediaCollectionUpcomingGraphqlDtoPageMediaTitle;
 }

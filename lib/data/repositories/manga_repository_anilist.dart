@@ -11,6 +11,7 @@ import 'package:unyo/core/services/api/dto/anilist/media_collection_recently_com
 import 'package:unyo/core/services/api/dto/anilist/media_collection_trendingOrPopular_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_collection_upcoming_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.dart';
+import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/core/services/api/graphql/graphql_response.dart';
 import 'package:unyo/core/services/api/graphql/graphql_service.dart';
 import 'package:unyo/data/models/anilist_manga_details.dart';
@@ -32,7 +33,7 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
   final Logger _logger = sl<Logger>();
 
   @override
-  Future<(bool, List<Manga>)> getPopularMangas(int page, User loggedUser) async {
+  Future<(bool, List<Manga>)> getPopularMangas(int page, User loggedUser, {bool ignoreCache = false}) async {
     ApiGraphQLResponse<MediaCollectionTrendingOrPopularGraphqlEntity>
     popularMediaCollection = await _anilistGraphQLService.query(
       query: anilist_queries.mediaTrendingOrPopularQuery,
@@ -43,6 +44,7 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
         "perPage": 30,
         "type": "MANGA",
       },
+      ignoreCache: ignoreCache,
     );
     throwIfGraphQlError(popularMediaCollection);
     List<Manga> popularMangas =
@@ -56,7 +58,7 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
   }
 
   @override
-  Future<(bool, List<Manga>)> getRecentlyCompletedMangas(int page, User loggedUser) async {
+  Future<(bool, List<Manga>)> getRecentlyCompletedMangas(int page, User loggedUser, {bool ignoreCache = false}) async {
     DateTime now = DateTime.now();
     DateTime monthAgo = now.subtract(const Duration(days: 30));
     ApiGraphQLResponse<MediaCollectionRecentlyCompletedGraphqlEntity>
@@ -71,6 +73,7 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
         "endDateLesser": "${now.year.toString().padLeft(4, '0')}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}",
         "type" : "MANGA",
       },
+      ignoreCache: ignoreCache,
     );
     throwIfGraphQlError(recentlyCompleted);
     List<Manga> recentlyCompletedMangas =
@@ -81,7 +84,7 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
   }
 
   @override
-  Future<(bool, List<Manga>)> getTrendingMangas(int page, User loggedUser) async {
+  Future<(bool, List<Manga>)> getTrendingMangas(int page, User loggedUser, {bool ignoreCache = false}) async {
     ApiGraphQLResponse<MediaCollectionTrendingOrPopularGraphqlEntity>
     trendingMediaCollection = await _anilistGraphQLService.query(
       query: anilist_queries.mediaTrendingOrPopularQuery,
@@ -92,6 +95,7 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
         "perPage": 30,
         "type": "MANGA",
       },
+      ignoreCache: ignoreCache,
     );
     throwIfGraphQlError(trendingMediaCollection);
     List<Manga> trendingMangas =
@@ -105,7 +109,7 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
   }
 
   @override
-  Future<(bool, List<Manga>)> getUpcomingMangas(int page, User loggedUser) async {
+  Future<(bool, List<Manga>)> getUpcomingMangas(int page, User loggedUser, {bool ignoreCache = false}) async {
     DateTime now = DateTime.now();
     ApiGraphQLResponse<MediaCollectionUpcomingGraphqlEntity>
     upcoming = await _anilistGraphQLService.query(
@@ -118,6 +122,7 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
         "startDateGreater": "${now.year.toString().padLeft(4, '0')}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}",
         "type" : "MANGA",
       },
+      ignoreCache: ignoreCache,
     );
     throwIfGraphQlError(upcoming);
     List<Manga> upcomingMangas =
@@ -285,7 +290,20 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
       headers: graphQlHeaders,
     );
     throwIfGraphQlError(mangaDetailsData);
-    MangaDetails mangaDetails = AnilistMangaDetailsModel.fromMangaDetailsMediaList(mangaDetailsData.data.media);
+    ApiGraphQLResponse<MediaDetailsMediaListEntryEntity> mediaDetailsMediaListEntry =
+    await _anilistGraphQLService.query<MediaDetailsMediaListEntryEntity>(
+      query: anilist_queries.mediaListEntryQuery,
+      fromJson: MediaDetailsMediaListEntryEntity.fromJson,
+      variables: {
+        "mediaId": selectedManga.id,
+      },
+      headers: graphQlHeaders,
+    );
+    throwIfGraphQlError(mediaDetailsMediaListEntry);
+    MangaDetails mangaDetails = AnilistMangaDetailsModel.fromMangaDetailsMediaList(
+      mangaDetailsData.data.media,
+      mediaDetailsMediaListEntry.data,
+    );
     return (true, mangaDetails);
   }
 }

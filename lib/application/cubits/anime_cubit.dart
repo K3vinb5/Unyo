@@ -13,6 +13,7 @@ import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/core/notification/anime_genres_notifier.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/services/api/http/http_exception.dart';
 import 'package:unyo/data/repositories/anime_repository_anilist.dart';
@@ -20,16 +21,27 @@ import 'package:unyo/domain/entities/anime.dart';
 import 'package:unyo/domain/entities/media_list.dart';
 import 'package:unyo/domain/entities/user.dart';
 
+import '../../core/notification/reload/reload_notifier.dart';
+
 class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
   final AnimeRepositoryAnilist _animeRepositoryAnilist;
   final UserNotifier _loggedUserNotifier;
   final AnimeNotifier _selectedAnimeNotifier;
   final AnimeGenresNotifier _selectedAnimeAdvancedSearchGenresFilters;
   final MediaListNotifier _selectedMediaListNotifier;
+  final ReloadNotifier _reloadNotifier;
   late StreamSubscription<User> _loggedUserSubscription;
+  late StreamSubscription<ReloadType> _reloadSubscription;
   final Logger _logger = sl<Logger>();
 
-  AnimeCubit(this._animeRepositoryAnilist, this._loggedUserNotifier, this._selectedAnimeNotifier, this._selectedAnimeAdvancedSearchGenresFilters, this._selectedMediaListNotifier)
+  AnimeCubit(
+    this._animeRepositoryAnilist,
+    this._loggedUserNotifier,
+    this._selectedAnimeNotifier,
+    this._selectedAnimeAdvancedSearchGenresFilters,
+    this._selectedMediaListNotifier,
+    this._reloadNotifier,
+  )
     : super(
         AnimeState(
           recentlyReleased: (false, []),
@@ -58,6 +70,7 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
   @override
   Future<void> close() {
     _loggedUserSubscription.cancel();
+    _reloadSubscription.cancel();
     return super.close();
   }
 
@@ -74,6 +87,18 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
         await _fetchPopular(1, loggedUser);
         await _fetchUpcoming(1, loggedUser);
         emit(state.copyWith(userLoaded: true, isLoading: false));
+      }
+    });
+    _reloadSubscription = _reloadNotifier.reloadStream.listen((reloadType) async {
+      if (reloadType == ReloadType.newMetadataService) {
+        _logger.i("Reloading Anime Screen due to new metadata service");
+        if (!state.userLoaded) {
+          _fetchRecentlyReleased(1, state.loggedUser, ignoreCache: true);
+          _fetchTrending(1, state.loggedUser, ignoreCache: true);
+          _fetchRecentlyCompleted(1, state.loggedUser, ignoreCache: true);
+          _fetchPopular(1, state.loggedUser, ignoreCache: true);
+          _fetchUpcoming(1, state.loggedUser, ignoreCache: true);
+        }
       }
     });
   }
@@ -96,13 +121,13 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
     pushRouteEffect(path: "/animedetails");
   }
 
-  Future<void> _fetchRecentlyReleased(int page, User loggedUser) async {
+  Future<void> _fetchRecentlyReleased(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist recently released anime");
           (bool, List<Anime>) recentlyReleased = await _animeRepositoryAnilist
-              .getRecentlyReleasedAnimes(page, loggedUser);
+              .getRecentlyReleasedAnimes(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(recentlyReleased: recentlyReleased));
         case Service.mal:
         case Service.kitsu:
@@ -123,13 +148,13 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
     }
   }
 
-  Future<void> _fetchTrending(int page, User loggedUser) async {
+  Future<void> _fetchTrending(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist trending anime");
           (bool, List<Anime>) trending = await _animeRepositoryAnilist
-              .getTrendingAnimes(page, loggedUser);
+              .getTrendingAnimes(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(trending: trending));
           if (page == 1) {
             List<Anime> banners =
@@ -159,13 +184,13 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
     }
   }
 
-  Future<void> _fetchPopular(int page, User loggedUser) async {
+  Future<void> _fetchPopular(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist popular anime");
           (bool, List<Anime>) popular = await _animeRepositoryAnilist
-              .getPopularAnimes(page, loggedUser);
+              .getPopularAnimes(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(popular: popular));
         case Service.mal:
         case Service.kitsu:
@@ -183,13 +208,13 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
     }
   }
 
-  Future<void> _fetchRecentlyCompleted(int page, User loggedUser) async {
+  Future<void> _fetchRecentlyCompleted(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist recently completed anime");
           (bool, List<Anime>) recentlyCompleted = await _animeRepositoryAnilist
-              .getRecentlyCompletedAnimes(page, loggedUser);
+              .getRecentlyCompletedAnimes(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(recentlyCompleted: recentlyCompleted));
         case Service.mal:
         case Service.kitsu:
@@ -210,13 +235,13 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
     }
   }
 
-  Future<void> _fetchUpcoming(int page, User loggedUser) async {
+  Future<void> _fetchUpcoming(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist upcoming anime");
           (bool, List<Anime>) upcoming = await _animeRepositoryAnilist
-              .getUpcomingAnimes(page, loggedUser);
+              .getUpcomingAnimes(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(upcoming: upcoming));
         case Service.mal:
         case Service.kitsu:

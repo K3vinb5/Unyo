@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/save_media_list_entry_entity.dart';
 import 'package:unyo/data/adapters/adapters_names.dart' as names;
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
@@ -70,6 +71,26 @@ abstract class MediaListEntryModel with _$MediaListEntryModel implements MediaLi
       "${saveMediaListEntry.completedAt.day != 0 ? saveMediaListEntry.completedAt.day : "~"}",
       "${saveMediaListEntry.completedAt.month != 0 ? saveMediaListEntry.completedAt.month : "~"}",
       "${saveMediaListEntry.completedAt.year != 0 ? saveMediaListEntry.completedAt.year : "~"}",
+    ],
+  );
+
+  factory MediaListEntryModel.fromMediaDetailsMediaListEntryEntity(
+      MediaDetailsMediaListEntryEntity mediaDetailsMediaListEntry,
+      ) => MediaListEntryModel(
+    progress: mediaDetailsMediaListEntry.media.mediaListEntry.progress,
+    progressVolumes: mediaDetailsMediaListEntry.media.mediaListEntry.progressVolumes,
+    score: mediaDetailsMediaListEntry.media.mediaListEntry.score,
+    repeat: mediaDetailsMediaListEntry.media.mediaListEntry.repeat,
+    status: mediaDetailsMediaListEntry.media.mediaListEntry.status.toUpperCase().replaceAll("_", " "),
+    startedAt: [
+      "${mediaDetailsMediaListEntry.media.mediaListEntry.startedAt.day != 0 ? mediaDetailsMediaListEntry.media.mediaListEntry.startedAt.day : "~"}",
+      "${mediaDetailsMediaListEntry.media.mediaListEntry.startedAt.month != 0 ? mediaDetailsMediaListEntry.media.mediaListEntry.startedAt.month : "~"}",
+      "${mediaDetailsMediaListEntry.media.mediaListEntry.startedAt.year != 0 ? mediaDetailsMediaListEntry.media.mediaListEntry.startedAt.year : "~"}",
+    ],
+    completedAt: [
+      "${mediaDetailsMediaListEntry.media.mediaListEntry.completedAt.day != 0 ? mediaDetailsMediaListEntry.media.mediaListEntry.completedAt.day : "~"}",
+      "${mediaDetailsMediaListEntry.media.mediaListEntry.completedAt.month != 0 ? mediaDetailsMediaListEntry.media.mediaListEntry.completedAt.month : "~"}",
+      "${mediaDetailsMediaListEntry.media.mediaListEntry.completedAt.year != 0 ? mediaDetailsMediaListEntry.media.mediaListEntry.completedAt.year : "~"}",
     ],
   );
 

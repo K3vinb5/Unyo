@@ -4,8 +4,8 @@ import 'package:unyo/core/services/api/dto/anilist/media_collection_trendingOrPo
 MediaCollectionTrendingOrPopularGraphqlEntity $MediaCollectionTrendingOrPopularGraphqlEntityFromJson(
     Map<String, dynamic> json) {
   final MediaCollectionTrendingOrPopularGraphqlEntity mediaCollectionTrendingOrPopularGraphqlEntity = MediaCollectionTrendingOrPopularGraphqlEntity();
-  final MediaCollectionTrendingOrPopularGraphqlDtoPage? page = jsonConvert.convert<
-      MediaCollectionTrendingOrPopularGraphqlDtoPage>(json['Page']);
+  final MediaCollectionTrendingOrPopularGraphqlDtoPage? page = jsonConvert
+      .convert<MediaCollectionTrendingOrPopularGraphqlDtoPage>(json['Page']);
   if (page != null) {
     mediaCollectionTrendingOrPopularGraphqlEntity.page = page;
   }
@@ -31,12 +31,13 @@ extension MediaCollectionTrendingOrPopularGraphqlEntityExtension on MediaCollect
 MediaCollectionTrendingOrPopularGraphqlDtoPage $MediaCollectionTrendingOrPopularGraphqlDtoPageFromJson(
     Map<String, dynamic> json) {
   final MediaCollectionTrendingOrPopularGraphqlDtoPage mediaCollectionTrendingOrPopularGraphqlDtoPage = MediaCollectionTrendingOrPopularGraphqlDtoPage();
-  final List<MediaCollectionTrendingOrPopularGraphqlDtoPageMedia>? media = (json['media'] as List<dynamic>?)
-      ?.map(
+  final List<
+      MediaCollectionTrendingOrPopularGraphqlDtoPageMedia>? media = (json['media'] as List<
+      dynamic>?)?.map(
           (e) =>
-      jsonConvert.convert<MediaCollectionTrendingOrPopularGraphqlDtoPageMedia>(
-          e) as MediaCollectionTrendingOrPopularGraphqlDtoPageMedia)
-      .toList();
+      jsonConvert.convert<
+          MediaCollectionTrendingOrPopularGraphqlDtoPageMedia>(
+          e) as MediaCollectionTrendingOrPopularGraphqlDtoPageMedia).toList();
   if (media != null) {
     mediaCollectionTrendingOrPopularGraphqlDtoPage.media = media;
   }
@@ -64,7 +65,8 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMedia $MediaCollectionTrendingOrPo
   final MediaCollectionTrendingOrPopularGraphqlDtoPageMedia mediaCollectionTrendingOrPopularGraphqlDtoPageMedia = MediaCollectionTrendingOrPopularGraphqlDtoPageMedia();
   final dynamic nextAiringEpisode = json['nextAiringEpisode'];
   if (nextAiringEpisode != null) {
-    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.nextAiringEpisode = nextAiringEpisode;
+    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.nextAiringEpisode =
+        nextAiringEpisode;
   }
   final String? status = jsonConvert.convert<String>(json['status']);
   if (status != null) {
@@ -72,7 +74,8 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMedia $MediaCollectionTrendingOrPo
   }
   final bool? isFavourite = jsonConvert.convert<bool>(json['isFavourite']);
   if (isFavourite != null) {
-    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.isFavourite = isFavourite;
+    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.isFavourite =
+        isFavourite;
   }
   final String? season = jsonConvert.convert<String>(json['season']);
   if (season != null) {
@@ -111,13 +114,15 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMedia $MediaCollectionTrendingOrPo
   if (episodes != null) {
     mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.episodes = episodes;
   }
-  final MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate? endDate = jsonConvert.convert<
-      MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate>(json['endDate']);
+  final MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate? endDate = jsonConvert
+      .convert<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate>(
+      json['endDate']);
   if (endDate != null) {
     mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.endDate = endDate;
   }
-  final MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate? startDate = jsonConvert.convert<
-      MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate>(json['startDate']);
+  final MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate? startDate = jsonConvert
+      .convert<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate>(
+      json['startDate']);
   if (startDate != null) {
     mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.startDate = startDate;
   }
@@ -127,16 +132,20 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMedia $MediaCollectionTrendingOrPo
   }
   final String? description = jsonConvert.convert<String>(json['description']);
   if (description != null) {
-    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.description = description;
+    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.description =
+        description;
   }
-  final MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage? coverImage = jsonConvert.convert<
-      MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage>(json['coverImage']);
+  final MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage? coverImage = jsonConvert
+      .convert<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage>(
+      json['coverImage']);
   if (coverImage != null) {
     mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.coverImage = coverImage;
   }
-  final String? countryOfOrigin = jsonConvert.convert<String>(json['countryOfOrigin']);
+  final String? countryOfOrigin = jsonConvert.convert<String>(
+      json['countryOfOrigin']);
   if (countryOfOrigin != null) {
-    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.countryOfOrigin = countryOfOrigin;
+    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.countryOfOrigin =
+        countryOfOrigin;
   }
   final int? chapters = jsonConvert.convert<int>(json['chapters']);
   if (chapters != null) {
@@ -144,14 +153,17 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMedia $MediaCollectionTrendingOrPo
   }
   final String? bannerImage = jsonConvert.convert<String>(json['bannerImage']);
   if (bannerImage != null) {
-    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.bannerImage = bannerImage;
+    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.bannerImage =
+        bannerImage;
   }
   final int? averageScore = jsonConvert.convert<int>(json['averageScore']);
   if (averageScore != null) {
-    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.averageScore = averageScore;
+    mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.averageScore =
+        averageScore;
   }
-  final MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle? title = jsonConvert.convert<
-      MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle>(json['title']);
+  final MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle? title = jsonConvert
+      .convert<MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle>(
+      json['title']);
   if (title != null) {
     mediaCollectionTrendingOrPopularGraphqlDtoPageMedia.title = title;
   }
@@ -255,7 +267,8 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate $MediaCollectionTrend
   return mediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate;
 }
 
-Map<String, dynamic> $MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDateToJson(
+Map<String,
+    dynamic> $MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDateToJson(
     MediaCollectionTrendingOrPopularGraphqlDtoPageMediaEndDate entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -295,7 +308,8 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate $MediaCollectionTre
   return mediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate;
 }
 
-Map<String, dynamic> $MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDateToJson(
+Map<String,
+    dynamic> $MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDateToJson(
     MediaCollectionTrendingOrPopularGraphqlDtoPageMediaStartDate entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -327,7 +341,8 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage $MediaCollectionTr
   return mediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage;
 }
 
-Map<String, dynamic> $MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImageToJson(
+Map<String,
+    dynamic> $MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImageToJson(
     MediaCollectionTrendingOrPopularGraphqlDtoPageMediaCoverImage entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['large'] = entity.large;
@@ -358,14 +373,17 @@ MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle $MediaCollectionTrendin
   if (romaji != null) {
     mediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle.romaji = romaji;
   }
-  final String? userPreferred = jsonConvert.convert<String>(json['userPreferred']);
+  final String? userPreferred = jsonConvert.convert<String>(
+      json['userPreferred']);
   if (userPreferred != null) {
-    mediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle.userPreferred = userPreferred;
+    mediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle.userPreferred =
+        userPreferred;
   }
   return mediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle;
 }
 
-Map<String, dynamic> $MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitleToJson(
+Map<String,
+    dynamic> $MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitleToJson(
     MediaCollectionTrendingOrPopularGraphqlDtoPageMediaTitle entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['english'] = entity.english;

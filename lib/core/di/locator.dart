@@ -31,11 +31,13 @@ import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_entry_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/menu_bar_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/notification/video_info_notifier.dart';
 import 'package:unyo/core/services/api/graphql/graphql_service.dart';
 import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/core/services/effects/app_effect_handler.dart';
+import 'package:unyo/core/services/settings/settings_service.dart';
 import 'package:unyo/core/services/torrent/torrent_service.dart';
 import 'package:unyo/core/theme/color_image_service.dart';
 import 'package:unyo/core/theme/theme_service.dart';
@@ -67,6 +69,7 @@ void setupLocator() async{
   sl.registerLazySingleton<ColorImageService>(() => ColorImageService());
   sl.registerSingleton<AniyomiBridge>(AniyomiBridge());
   sl.registerSingleton<TorrentService>(TorrentService());
+  sl.registerSingleton<SettingsService>(SettingsService());
   // Notifiers
   sl.registerLazySingleton<UserNotifier>(() => UserNotifier(), instanceName: config.loggedUserNotifier);
   sl.registerLazySingleton<UserNotifier>(() => UserNotifier(), instanceName: config.newUserNotifier);
@@ -81,6 +84,7 @@ void setupLocator() async{
   sl.registerLazySingleton<MediaListEntryNotifier>(() => MediaListEntryNotifier());
   sl.registerLazySingleton<ExtensionNotifier>(() => ExtensionNotifier());
   sl.registerLazySingleton<EpisodesNotifier>(() => EpisodesNotifier());
+  sl.registerLazySingleton<ReloadNotifier>(() => ReloadNotifier());
   // Repositories
   sl.registerLazySingleton<UserRepositoryLocal>(() => UserRepositoryLocal());
   sl.registerLazySingleton<UserRepositoryAnilist>(
@@ -112,6 +116,7 @@ void setupLocator() async{
       sl<UserRepositoryAnilist>(),
       sl<AnimeRepositoryAnilist>(),
       sl<MenuBarNotifier>(),
+      sl<ReloadNotifier>(),
     ),
   );
   sl.registerFactory<TabsCubit>(
@@ -124,6 +129,7 @@ void setupLocator() async{
       sl<AnimeNotifier>(),
       sl<AnimeGenresNotifier>(),
       sl<MediaListNotifier>(),
+      sl<ReloadNotifier>(),
     ),
   );
   sl.registerFactory<MangaCubit>(
@@ -133,6 +139,7 @@ void setupLocator() async{
       sl<MangaNotifier>(),
       sl<MangaGenresNotifier>(),
       sl<MediaListNotifier>(),
+      sl<ReloadNotifier>(),
     ),
   );
   sl.registerFactory<ExtensionsCubit>(
@@ -172,7 +179,8 @@ void setupLocator() async{
       sl<EpisodesInfoNotifier>(),
       sl<MediaListEntryNotifier>(),
       sl<ExtensionNotifier>(),
-      sl<EpisodesNotifier>()
+      sl<EpisodesNotifier>(),
+      sl<ReloadNotifier>(),
     ),
   );
   sl.registerFactory<MangaDetailsCubit>(
@@ -191,6 +199,7 @@ void setupLocator() async{
       sl<UserRepositoryAnilist>(),
       sl<UserRepositoryLocal>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
+      sl<ReloadNotifier>()
     ),
   );
   sl.registerFactory<AnimeAdvancedSearchCubit>(
@@ -220,7 +229,9 @@ void setupLocator() async{
       sl<MediaListEntryNotifier>(),
       sl<ExtensionNotifier>(),
       sl<EpisodesNotifier>(),
-      sl<ExtensionRepositoryAniyomi>()
+      sl<ExtensionRepositoryAniyomi>(),
+      sl<AnimeRepositoryAnilist>(),
+      sl<ReloadNotifier>(),
     )
   );
 }

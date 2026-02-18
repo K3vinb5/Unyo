@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.dart';
+import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/data/adapters/adapters_names.dart' as names;
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
 import 'package:unyo/data/models/anilist_manga_model.dart';
@@ -43,25 +44,9 @@ abstract class AnilistMangaDetailsModel
       _$AnilistMangaDetailsModelToJson(this as _AnilistMangaDetailsModel);
 
   factory AnilistMangaDetailsModel.fromMangaDetailsMediaList(
-      MediaDetailsGraphqlMedia mangaDetailsMediaList,) {
+      MediaDetailsGraphqlMedia mangaDetailsMediaList, MediaDetailsMediaListEntryEntity mediaListEntry) {
     return AnilistMangaDetailsModel(
-        mediaListEntry: MediaListEntryModel(
-        progress: mangaDetailsMediaList.mediaListEntry?.progress ?? -1,
-        progressVolumes: mangaDetailsMediaList.mediaListEntry?.progressVolumes ?? -1,
-        score: mangaDetailsMediaList.mediaListEntry?.score ?? -1,
-        repeat: mangaDetailsMediaList.mediaListEntry?.repeat ?? -1,
-        status: mangaDetailsMediaList.mediaListEntry?.status ?? "ADD TO LIST",
-        startedAt: [
-          mangaDetailsMediaList.mediaListEntry?.startedAt.day.toString() ?? "~",
-          mangaDetailsMediaList.mediaListEntry?.startedAt.month.toString() ?? "~",
-          mangaDetailsMediaList.mediaListEntry?.startedAt.year.toString() ?? "~",
-        ],
-        completedAt: [
-          mangaDetailsMediaList.mediaListEntry?.completedAt.day.toString() ?? "~",
-          mangaDetailsMediaList.mediaListEntry?.completedAt.month.toString() ?? "~",
-          mangaDetailsMediaList.mediaListEntry?.completedAt.year.toString() ?? "~",
-        ],
-      ),
+        mediaListEntry: MediaListEntryModel.fromMediaDetailsMediaListEntryEntity(mediaListEntry),
         recommendedMangas: mangaDetailsMediaList.recommendations.nodes
               .map(
                 (recommendationNode) =>

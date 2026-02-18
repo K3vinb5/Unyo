@@ -17,6 +17,8 @@ import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/menu_bar_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/data/models/anilist_user_model.dart';
@@ -38,7 +40,9 @@ class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
   final AnimeNotifier _selectedAnimeNotifier;
   final MangaNotifier _selectedMangaNotifier;
   final MediaListNotifier _selectedMediaListNotifier;
+  final ReloadNotifier _reloadNotifier;
   late StreamSubscription<User> _newLoggedUserSubscription;
+  late StreamSubscription<ReloadType> _reloadSubscription;
   final Logger _logger = sl<Logger>();
 
   HomeCubit(
@@ -49,6 +53,7 @@ class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
     this._userRepositoryAnilist,
     this._animeRepositoryAnilist,
     this._menuBarNotifier,
+    this._reloadNotifier,
   ) : super(
         HomeState(
           loggedUser: UserModel.empty(),
@@ -74,6 +79,7 @@ class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
   @override
   Future<void> close() {
     _newLoggedUserSubscription.cancel();
+    _reloadSubscription.cancel();
     return super.close();
   }
 
@@ -89,6 +95,16 @@ class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
         await _getMediaCoverImages(loggedUser);
         _menuBarNotifier.showMenuBar(true);
         emit(state.copyWith(userLoaded: true, isLoading: false));
+      }
+    });
+    _reloadSubscription = _reloadNotifier.reloadStream.listen((reloadType) async {
+      if (reloadType == ReloadType.newMetadataService) {
+        _logger.i("Reloading Home Screen data due to new metadata service");
+        await _getMediaCoverImages(state.loggedUser, ignoreCache: true);
+      }
+      if (reloadType == ReloadType.homeMediaListEntryUpdated) {
+        _logger.i("Reloading Home Screen data due to media list entry update");
+        await _getUserInfo(state.loggedUser, ignoreCacheAnime: true);
       }
     });
   }
@@ -121,15 +137,15 @@ class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
     pushRouteEffect(path: "/userlist?type=manga");
   }
 
-  Future<void> _getUserInfo(User user) async {
+  Future<void> _getUserInfo(User user, {bool ignoreCacheAnime = false, bool ignoreCacheManga = false}) async {
     try {
       switch (user) {
         case AnilistUserModel anilistUserModel:
           _logger.i("Fetching Anilist User lists");
           List<Anime> watchingList = await _userRepositoryAnilist
-              .getUserWatchingList(anilistUserModel);
+              .getUserWatchingList(anilistUserModel, ignoreCache: ignoreCacheAnime);
           List<Manga> readingList = await _userRepositoryAnilist
-              .getUserReadingList(anilistUserModel);
+              .getUserReadingList(anilistUserModel, ignoreCache: ignoreCacheManga);
           emit(
             state.copyWith(
               continueWatching: watchingList,
@@ -144,12 +160,12 @@ class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
     }
   }
 
-  Future<void> _getMediaCoverImages(User loggedUser) async {
+  Future<void> _getMediaCoverImages(User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Media Cover Images from AniList");
-          List<String> mediaCoverImages = await _animeRepositoryAnilist.getMediaCoverImages(loggedUser);
+          List<String> mediaCoverImages = await _animeRepositoryAnilist.getMediaCoverImages(loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(mediaCoverImages: mediaCoverImages));
         case Service.mal:
           _logger.i("Fetching Media Cover Images from MyAnimeList");

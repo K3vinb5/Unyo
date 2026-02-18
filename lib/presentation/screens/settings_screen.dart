@@ -175,7 +175,7 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                                         service.name.substring(1),
                                   )
                                   .toList(),
-                          onPressed: context.read<SettingsCubit>().updateEpisodeMetadataService,
+                          onPressed: context.read<SettingsCubit>().updateMediaMetadataService,
                         ),
                         UnyoSettingsSelectionDropdown(
                           title: "Episode Metadata Service",

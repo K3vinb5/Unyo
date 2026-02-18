@@ -23,6 +23,8 @@ import 'package:unyo/core/notification/episodes_notifier.dart';
 import 'package:unyo/core/notification/extension_notifier.dart';
 import 'package:unyo/core/notification/media_list_entry_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/notification/video_info_notifier.dart';
 import 'package:unyo/core/services/api/http/http_exception.dart';
@@ -62,9 +64,11 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
   final MediaListEntryNotifier _mediaListEntryNotifier;
   final ExtensionNotifier _selectedExtensionNotifier;
   final EpisodesNotifier _selectedEpisodesNotifier;
+  final ReloadNotifier _reloadNotifier;
   late StreamSubscription<Anime> _selectedAnimeSubscription;
   late StreamSubscription<User> _loggedUserSubscription;
   late StreamSubscription<MediaList> _selectedMediaListSubscription;
+  late StreamSubscription<ReloadType> _reloadSubscription;
 
   // Logger
   final Logger _logger = sl<Logger>();
@@ -83,6 +87,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     this._mediaListEntryNotifier,
     this._selectedExtensionNotifier,
     this._selectedEpisodesNotifier,
+    this._reloadNotifier,
   ) : super(
         AnimeDetailsState(
           loggedUser: UserModel.empty(),
@@ -119,6 +124,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     _loggedUserSubscription.cancel();
     _selectedAnimeSubscription.cancel();
     _selectedMediaListSubscription.cancel();
+    _reloadSubscription.cancel();
     return super.close();
   }
 
@@ -140,6 +146,16 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     });
     _selectedMediaListSubscription = _selectedMediaListNotifier.mediaListStream.listen((mediaList) {
       emit(state.copyWith(selectedMediaList: mediaList));
+    });
+    _reloadSubscription = _reloadNotifier.reloadStream.listen((reloadType) {
+      if (reloadType == ReloadType.videoMediaListEntryUpdated) {
+        _logger.i("Reloading Anime Details due to video media list entry update");
+        _getUserMediaListEntry(state.loggedUser, state.selectedAnime, ignoreCache: true);
+      }
+      if (reloadType == ReloadType.animeMediaListEntryUpdated) {
+        _logger.i("Reloading Anime Details due to anime media list entry update");
+        _getUserMediaListEntry(state.loggedUser, state.selectedAnime, ignoreCache: true);
+      }
     });
     _loadInstalledExtensions();
   }
@@ -259,17 +275,20 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
 
   Future<void> updateMediaListEntry(BuildContext context) async {
     MediaListEntry desiredMediaListEntry = state.newMediaListEntry;
+    MediaListEntry beforeUpdateMediaListEntry = state.mediaListEntry;
     try {
       switch (state.loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Updating Media List Entry to $desiredMediaListEntry on Anilist");
-          MediaListEntry savedMediaListEntry = await _animeRepositoryAnilist.updateMediaListEntry(
+          await _animeRepositoryAnilist.updateMediaListEntry(
             desiredMediaListEntry,
             state.selectedAnime,
             state.loggedUser,
           );
-          emit(state.copyWith(mediaListEntry: savedMediaListEntry, newMediaListEntry: savedMediaListEntry));
-          _mediaListEntryNotifier.updateSelectedMediaListEntry(savedMediaListEntry);
+          _reloadNotifier.emitReload(ReloadType.animeMediaListEntryUpdated);
+          if (desiredMediaListEntry.status != beforeUpdateMediaListEntry.status) {
+            _reloadNotifier.emitReload(ReloadType.homeMediaListEntryUpdated);
+          }
         case Service.mal:
           _logger.i("Updating Media List Entry to $desiredMediaListEntry on MyAnimeList");
         case Service.shikimori:
@@ -375,6 +394,34 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
       emit(state.copyWith(newMediaListEntry: updatedMediaListEntry));
     } catch (e, stackTrace) {
       handleError("Error updating Anime Entry completed at: $e", stackTrace: stackTrace);
+    }
+  }
+
+  Future<void> _getUserMediaListEntry(User loggedUser, Anime selectedAnime, {bool ignoreCache = false}) async {
+   try {
+      switch (loggedUser.settings.service) {
+        case Service.anilist:
+          _logger.i("Fetching User Media List Entry from AniList for ${state.selectedAnime.title.userPreferred}");
+          MediaListEntry mediaListEntry = await _animeRepositoryAnilist.getMediaListEntry(
+            selectedAnime,
+            loggedUser,
+            ignoreCache: ignoreCache,
+          );
+          emit(state.copyWith(mediaListEntry: mediaListEntry, newMediaListEntry: mediaListEntry));
+          _mediaListEntryNotifier.updateSelectedMediaListEntry(mediaListEntry);
+        case Service.mal:
+          _logger.i("Fetching User Media List Entry from MyAnimeList for ${state.selectedAnime.title.userPreferred}");
+        case Service.shikimori:
+          _logger.i("Fetching User Media List Entry from Shikimori for ${state.selectedAnime.title.userPreferred}");
+        case Service.kitsu:
+          _logger.i("Fetching User Media List Entry from Kitsu for ${state.selectedAnime.title.userPreferred}");
+        case Service.simkl:
+          _logger.i("Fetching User Media List Entry from Simkl for ${state.selectedAnime.title.userPreferred}");
+      }
+    } on HttpServerException catch (e, stackTrace) {
+      handleError("Error fetching User Media List entry:", responseBody: e.message, stackTrace: stackTrace);
+    } catch (e, stackTrace) {
+      handleError("Error fetching User Media List Entry: $e", stackTrace: stackTrace);
     }
   }
 

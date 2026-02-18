@@ -21,14 +21,14 @@ class VideoService {
   ext.Video _video;
   List<ext.Video> _alternativeVideos;
   int _videoIndex;
-  // This will be used for getting the correct video out of a playlist from a magnet / torrent
-  int _episodeIndex;
+  int _episodeIndex; // This will be used for getting the correct video out of a playlist from a magnet / torrent
+  final void Function(String) _onErrorCallback;
+
   late final mdk.Player _player;
   final List<ext.Track> captionTracks = [];
   final List<ext.Track> audioTracks = [];
   ext.Track? _currentCaptionTrack;
   ext.Track? _currentAudioTrack;
-  final void Function(String) _onErrorCallback;
 
   final bool _lowLatency;
   late bool _initialFullscreen;
@@ -113,6 +113,8 @@ class VideoService {
   bool get isLoading => _isLoading;
 
   bool get isFullscreen => _isFullscreen;
+
+  bool get isVideoReady => _isVideoReady;
 
   double get aspectRatio {
     final streams = _player.mediaInfo.video;

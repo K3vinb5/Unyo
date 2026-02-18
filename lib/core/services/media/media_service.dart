@@ -16,8 +16,8 @@ class MediaServiceFactory {
     }
   }
 
-  static Service getEnumMediaService(String serviceName) {
-    switch (serviceName.toLowerCase()) {
+  static Service getEnumMediaService(String? serviceName) {
+    switch (serviceName?.toLowerCase()) {
       case 'anilist':
         return Service.anilist;
       case 'myanimelist':

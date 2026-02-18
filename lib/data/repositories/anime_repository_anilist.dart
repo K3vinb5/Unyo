@@ -13,6 +13,7 @@ import 'package:unyo/core/services/api/dto/anilist/media_collection_recently_com
 import 'package:unyo/core/services/api/dto/anilist/media_collection_trendingOrPopular_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_collection_upcoming_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.dart';
+import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/save_media_list_entry_entity.dart';
 import 'package:unyo/core/services/api/graphql/queries/anilist_queries.dart' as anilist_queries;
 import 'package:unyo/core/services/api/dto/anilist/media_collection_recently_released_graphql_entity.dart';
@@ -36,7 +37,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
   final Logger _logger = sl<Logger>();
 
   @override
-  Future<(bool, List<Anime>)> getPopularAnimes(int page, User loggedUser) async {
+  Future<(bool, List<Anime>)> getPopularAnimes(int page, User loggedUser, {bool ignoreCache = false}) async {
     ApiGraphQLResponse<MediaCollectionTrendingOrPopularGraphqlEntity> popularMediaCollection =
         await _anilistGraphQLService.query(
           query: anilist_queries.mediaTrendingOrPopularQuery,
@@ -47,6 +48,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
             "perPage": 30,
             "type": "ANIME",
           },
+          ignoreCache: ignoreCache,
         );
     throwIfGraphQlError(popularMediaCollection);
     List<Anime> popularAnimes =
@@ -57,7 +59,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
   }
 
   @override
-  Future<(bool, List<Anime>)> getRecentlyCompletedAnimes(int page, User loggedUser) async {
+  Future<(bool, List<Anime>)> getRecentlyCompletedAnimes(int page, User loggedUser, {bool ignoreCache = false}) async {
     DateTime now = DateTime.now();
     DateTime monthAgo = now.subtract(const Duration(days: 30));
     ApiGraphQLResponse<MediaCollectionRecentlyCompletedGraphqlEntity>
@@ -74,6 +76,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
             "${now.year.toString().padLeft(4, '0')}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}",
         "type": "ANIME",
       },
+      ignoreCache: ignoreCache,
     );
     throwIfGraphQlError(recentlyCompleted);
     List<Anime> recentlyCompletedAnimes =
@@ -84,12 +87,13 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
   }
 
   @override
-  Future<(bool, List<Anime>)> getRecentlyReleasedAnimes(int page, User loggedUser) async {
+  Future<(bool, List<Anime>)> getRecentlyReleasedAnimes(int page, User loggedUser, {bool ignoreCache = false}) async {
     ApiGraphQLResponse<MediaCollectionRecentlyReleasedGraphqlEntity> airingSchedules =
         await _anilistGraphQLService.query(
           query: anilist_queries.animeRecentlyReleasedQuery,
           fromJson: MediaCollectionRecentlyReleasedGraphqlEntity.fromJson,
           variables: {"sort": "TIME_DESC", "page": page, "perPage": 40, "notYetAired": false},
+          ignoreCache: ignoreCache,
         );
     throwIfGraphQlError(airingSchedules);
     List<Anime> recentlyReleasedAnimes =
@@ -106,7 +110,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
   }
 
   @override
-  Future<(bool, List<Anime>)> getTrendingAnimes(int page, User loggedUser) async {
+  Future<(bool, List<Anime>)> getTrendingAnimes(int page, User loggedUser, {bool ignoreCache = false}) async {
     ApiGraphQLResponse<MediaCollectionTrendingOrPopularGraphqlEntity> trendingMediaCollection =
         await _anilistGraphQLService.query(
           query: anilist_queries.mediaTrendingOrPopularQuery,
@@ -117,6 +121,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
             "perPage": 30,
             "type": "ANIME",
           },
+          ignoreCache: ignoreCache,
         );
     throwIfGraphQlError(trendingMediaCollection);
     List<Anime> trendingAnimes =
@@ -127,7 +132,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
   }
 
   @override
-  Future<(bool, List<Anime>)> getUpcomingAnimes(int page, User loggedUser) async {
+  Future<(bool, List<Anime>)> getUpcomingAnimes(int page, User loggedUser, {bool ignoreCache = false}) async {
     DateTime now = DateTime.now();
     ApiGraphQLResponse<MediaCollectionUpcomingGraphqlEntity> upcoming = await _anilistGraphQLService.query(
       query: anilist_queries.mediaUpcomingQuery,
@@ -140,6 +145,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
             "${now.year.toString().padLeft(4, '0')}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}",
         "type": "ANIME",
       },
+      ignoreCache: ignoreCache
     );
     throwIfGraphQlError(upcoming);
     List<Anime> upcomingAnimes =
@@ -204,8 +210,8 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
   }
 
   @override
-  Future<List<String>> getMediaCoverImages(User loggedUser) async {
-    (bool, List<Anime>) popularAnimes = await getPopularAnimes(1, loggedUser);
+  Future<List<String>> getMediaCoverImages(User loggedUser, {bool ignoreCache = false}) async {
+    (bool, List<Anime>) popularAnimes = await getPopularAnimes(1, loggedUser, ignoreCache: ignoreCache);
     return popularAnimes.$2
         .map((anime) => anime.coverImage)
         .where((coverImage) => coverImage != "")
@@ -230,8 +236,19 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
           headers: graphQlHeaders,
         );
     throwIfGraphQlError(animeDetailsData);
+    ApiGraphQLResponse<MediaDetailsMediaListEntryEntity> mediaDetailsMediaListEntry =
+    await _anilistGraphQLService.query<MediaDetailsMediaListEntryEntity>(
+      query: anilist_queries.mediaListEntryQuery,
+      fromJson: MediaDetailsMediaListEntryEntity.fromJson,
+      variables: {
+        "mediaId": selectedAnime.id,
+      },
+      headers: graphQlHeaders,
+    );
+    throwIfGraphQlError(mediaDetailsMediaListEntry);
     AnimeDetails animeDetails = AnilistAnimeDetailsModel.fromAnimeDetailsMediaList(
       animeDetailsData.data.media,
+      mediaDetailsMediaListEntry.data,
     );
     return (true, animeDetails);
   }
@@ -243,7 +260,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
       'genres': (
         true,
         TextUtils.upperCaseFirstCharacter(
-          AnlistGenreFilters.values
+          AnilistGenreFilters.values
               .map((enumElement) {
                 // Special handling for sci_fi to display as "Sci-fi"
                 if (enumElement.name == 'sci_fi') {
@@ -409,9 +426,27 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
       throwIfGraphQlError(saveMediaListEntry);
       return MediaListEntryModel.fromSaveMediaListEntryEntity(saveMediaListEntry.data.saveMediaListEntry);
     }
+
+  @override
+  Future<MediaListEntry> getMediaListEntry(Anime selectedAnime, User loggedUser, {bool ignoreCache = false}) async {
+    Map<String, String>? graphQlHeaders =
+    loggedUser is AnilistUserModel ? {"Authorization": "Bearer ${(loggedUser).accessToken}"} : null;
+    ApiGraphQLResponse<MediaDetailsMediaListEntryEntity> mediaDetailsMediaListEntry =
+    await _anilistGraphQLService.query<MediaDetailsMediaListEntryEntity>(
+        query: anilist_queries.mediaListEntryQuery,
+        fromJson: MediaDetailsMediaListEntryEntity.fromJson,
+        variables: {
+         "mediaId": selectedAnime.id,
+        },
+        headers: graphQlHeaders,
+        ignoreCache: ignoreCache,
+      );
+    throwIfGraphQlError(mediaDetailsMediaListEntry);
+    return MediaListEntryModel.fromMediaDetailsMediaListEntryEntity(mediaDetailsMediaListEntry.data);
+  }
 }
 
-enum AnlistGenreFilters {
+enum AnilistGenreFilters {
   action,
   adventure,
   comedy,

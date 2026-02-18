@@ -25,4 +25,5 @@ abstract class AnimeRepository {
   );
   Future<List<String>> getMediaCoverImages(User loggedUser);
   Future<MediaListEntry> updateMediaListEntry(MediaListEntry newMediaListEntry, Anime selectedAnime, User loggedUser);
+  Future<MediaListEntry> getMediaListEntry(Anime selectedAnime, User loggedUser);
 }

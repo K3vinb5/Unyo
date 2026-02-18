@@ -1,17 +1,19 @@
 import 'package:unyo/generated/json/base/json_convert_content.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_collection_graphql_entity.dart';
 
-MediaCollectionGraphqlEntity $MediaCollectionGraphqlEntityFromJson(Map<String, dynamic> json) {
+MediaCollectionGraphqlEntity $MediaCollectionGraphqlEntityFromJson(
+    Map<String, dynamic> json) {
   final MediaCollectionGraphqlEntity mediaCollectionGraphqlEntity = MediaCollectionGraphqlEntity();
-  final MediaCollectionGraphqlDtoData? data = jsonConvert.convert<MediaCollectionGraphqlDtoData>(
-      json['data']);
+  final MediaCollectionGraphqlDtoData? data = jsonConvert.convert<
+      MediaCollectionGraphqlDtoData>(json['data']);
   if (data != null) {
     mediaCollectionGraphqlEntity.data = data;
   }
   return mediaCollectionGraphqlEntity;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlEntityToJson(MediaCollectionGraphqlEntity entity) {
+Map<String, dynamic> $MediaCollectionGraphqlEntityToJson(
+    MediaCollectionGraphqlEntity entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['data'] = entity.data.toJson();
   return data;
@@ -26,17 +28,20 @@ extension MediaCollectionGraphqlEntityExtension on MediaCollectionGraphqlEntity 
   }
 }
 
-MediaCollectionGraphqlDtoData $MediaCollectionGraphqlDtoDataFromJson(Map<String, dynamic> json) {
+MediaCollectionGraphqlDtoData $MediaCollectionGraphqlDtoDataFromJson(
+    Map<String, dynamic> json) {
   final MediaCollectionGraphqlDtoData mediaCollectionGraphqlDtoData = MediaCollectionGraphqlDtoData();
-  final MediaCollectionGraphqlDtoDataMediaListCollection? mediaListCollection = jsonConvert.convert<
-      MediaCollectionGraphqlDtoDataMediaListCollection>(json['MediaListCollection']);
+  final MediaCollectionGraphqlDtoDataMediaListCollection? mediaListCollection = jsonConvert
+      .convert<MediaCollectionGraphqlDtoDataMediaListCollection>(
+      json['MediaListCollection']);
   if (mediaListCollection != null) {
     mediaCollectionGraphqlDtoData.mediaListCollection = mediaListCollection;
   }
   return mediaCollectionGraphqlDtoData;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlDtoDataToJson(MediaCollectionGraphqlDtoData entity) {
+Map<String, dynamic> $MediaCollectionGraphqlDtoDataToJson(
+    MediaCollectionGraphqlDtoData entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['MediaListCollection'] = entity.mediaListCollection.toJson();
   return data;
@@ -54,18 +59,20 @@ extension MediaCollectionGraphqlDtoDataExtension on MediaCollectionGraphqlDtoDat
 MediaCollectionGraphqlDtoDataMediaListCollection $MediaCollectionGraphqlDtoDataMediaListCollectionFromJson(
     Map<String, dynamic> json) {
   final MediaCollectionGraphqlDtoDataMediaListCollection mediaCollectionGraphqlDtoDataMediaListCollection = MediaCollectionGraphqlDtoDataMediaListCollection();
-  final List<MediaCollectionGraphqlDtoDataMediaListCollectionLists>? lists = (json['lists'] as List<dynamic>?)
-      ?.map(
+  final List<
+      MediaCollectionGraphqlDtoDataMediaListCollectionLists>? lists = (json['lists'] as List<
+      dynamic>?)?.map(
           (e) =>
-      jsonConvert.convert<MediaCollectionGraphqlDtoDataMediaListCollectionLists>(
-          e) as MediaCollectionGraphqlDtoDataMediaListCollectionLists)
-      .toList();
+      jsonConvert.convert<
+          MediaCollectionGraphqlDtoDataMediaListCollectionLists>(
+          e) as MediaCollectionGraphqlDtoDataMediaListCollectionLists).toList();
   if (lists != null) {
     mediaCollectionGraphqlDtoDataMediaListCollection.lists = lists;
   }
   final bool? hasNextChunk = jsonConvert.convert<bool>(json['hasNextChunk']);
   if (hasNextChunk != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollection.hasNextChunk = hasNextChunk;
+    mediaCollectionGraphqlDtoDataMediaListCollection.hasNextChunk =
+        hasNextChunk;
   }
   return mediaCollectionGraphqlDtoDataMediaListCollection;
 }
@@ -94,10 +101,13 @@ MediaCollectionGraphqlDtoDataMediaListCollectionLists $MediaCollectionGraphqlDto
   final MediaCollectionGraphqlDtoDataMediaListCollectionLists mediaCollectionGraphqlDtoDataMediaListCollectionLists = MediaCollectionGraphqlDtoDataMediaListCollectionLists();
   final List<
       MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries>? entries = (json['entries'] as List<
-      dynamic>?)?.map(
+      dynamic>?)
+      ?.map(
           (e) =>
-      jsonConvert.convert<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries>(
-          e) as MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries).toList();
+      jsonConvert.convert<
+          MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries>(
+          e) as MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries)
+      .toList();
   if (entries != null) {
     mediaCollectionGraphqlDtoDataMediaListCollectionLists.entries = entries;
   }
@@ -107,12 +117,14 @@ MediaCollectionGraphqlDtoDataMediaListCollectionLists $MediaCollectionGraphqlDto
   }
   final bool? isCustomList = jsonConvert.convert<bool>(json['isCustomList']);
   if (isCustomList != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionLists.isCustomList = isCustomList;
+    mediaCollectionGraphqlDtoDataMediaListCollectionLists.isCustomList =
+        isCustomList;
   }
   return mediaCollectionGraphqlDtoDataMediaListCollectionLists;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsToJson(
+Map<String,
+    dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsToJson(
     MediaCollectionGraphqlDtoDataMediaListCollectionLists entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['entries'] = entity.entries.map((v) => v.toJson()).toList();
@@ -137,15 +149,18 @@ extension MediaCollectionGraphqlDtoDataMediaListCollectionListsExtension on Medi
 MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesFromJson(
     Map<String, dynamic> json) {
   final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries mediaCollectionGraphqlDtoDataMediaListCollectionListsEntries = MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries();
-  final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia? media = jsonConvert.convert<
-      MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia>(json['media']);
+  final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia? media = jsonConvert
+      .convert<
+      MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia>(
+      json['media']);
   if (media != null) {
     mediaCollectionGraphqlDtoDataMediaListCollectionListsEntries.media = media;
   }
   return mediaCollectionGraphqlDtoDataMediaListCollectionListsEntries;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesToJson(
+Map<String,
+    dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesToJson(
     MediaCollectionGraphqlDtoDataMediaListCollectionListsEntries entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['media'] = entity.media.toJson();
@@ -170,98 +185,128 @@ MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia $MediaCollecti
   }
   final int? idMal = jsonConvert.convert<int>(json['idMal']);
   if (idMal != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.idMal = idMal;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.idMal =
+        idMal;
   }
-  final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle? title = jsonConvert.convert<
-      MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle>(json['title']);
+  final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle? title = jsonConvert
+      .convert<
+      MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle>(
+      json['title']);
   if (title != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.title = title;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.title =
+        title;
   }
   final int? averageScore = jsonConvert.convert<int>(json['averageScore']);
   if (averageScore != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.averageScore = averageScore;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .averageScore = averageScore;
   }
   final String? bannerImage = jsonConvert.convert<String>(json['bannerImage']);
   if (bannerImage != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.bannerImage = bannerImage;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .bannerImage = bannerImage;
   }
   final int? chapters = jsonConvert.convert<int>(json['chapters']);
   if (chapters != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.chapters = chapters;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.chapters =
+        chapters;
   }
-  final String? countryOfOrigin = jsonConvert.convert<String>(json['countryOfOrigin']);
+  final String? countryOfOrigin = jsonConvert.convert<String>(
+      json['countryOfOrigin']);
   if (countryOfOrigin != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.countryOfOrigin = countryOfOrigin;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .countryOfOrigin = countryOfOrigin;
   }
   final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage? coverImage = jsonConvert
-      .convert<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage>(
+      .convert<
+      MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage>(
       json['coverImage']);
   if (coverImage != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.coverImage = coverImage;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .coverImage = coverImage;
   }
   final String? description = jsonConvert.convert<String>(json['description']);
   if (description != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.description = description;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .description = description;
   }
   final int? duration = jsonConvert.convert<int>(json['duration']);
   if (duration != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.duration = duration;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.duration =
+        duration;
   }
   final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate? endDate = jsonConvert
-      .convert<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate>(json['endDate']);
+      .convert<
+      MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate>(
+      json['endDate']);
   if (endDate != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.endDate = endDate;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.endDate =
+        endDate;
   }
   final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate? startDate = jsonConvert
-      .convert<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate>(json['startDate']);
+      .convert<
+      MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate>(
+      json['startDate']);
   if (startDate != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.startDate = startDate;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .startDate = startDate;
   }
   final int? episodes = jsonConvert.convert<int>(json['episodes']);
   if (episodes != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.episodes = episodes;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.episodes =
+        episodes;
   }
   final List<String>? genres = (json['genres'] as List<dynamic>?)?.map(
           (e) => jsonConvert.convert<String>(e) as String).toList();
   if (genres != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.genres = genres;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.genres =
+        genres;
   }
   final String? format = jsonConvert.convert<String>(json['format']);
   if (format != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.format = format;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.format =
+        format;
   }
   final bool? isAdult = jsonConvert.convert<bool>(json['isAdult']);
   if (isAdult != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.isAdult = isAdult;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.isAdult =
+        isAdult;
   }
   final int? popularity = jsonConvert.convert<int>(json['popularity']);
   if (popularity != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.popularity = popularity;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .popularity = popularity;
   }
   final int? meanScore = jsonConvert.convert<int>(json['meanScore']);
   if (meanScore != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.meanScore = meanScore;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .meanScore = meanScore;
   }
   final String? season = jsonConvert.convert<String>(json['season']);
   if (season != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.season = season;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.season =
+        season;
   }
   final bool? isFavourite = jsonConvert.convert<bool>(json['isFavourite']);
   if (isFavourite != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.isFavourite = isFavourite;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .isFavourite = isFavourite;
   }
   final String? status = jsonConvert.convert<String>(json['status']);
   if (status != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.status = status;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.status =
+        status;
   }
   final dynamic nextAiringEpisode = json['nextAiringEpisode'];
   if (nextAiringEpisode != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia.nextAiringEpisode = nextAiringEpisode;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia
+        .nextAiringEpisode = nextAiringEpisode;
   }
   return mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaToJson(
+Map<String,
+    dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaToJson(
     MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['id'] = entity.id;
@@ -345,24 +390,30 @@ MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle $MediaCol
   final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle = MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle();
   final String? english = jsonConvert.convert<String>(json['english']);
   if (english != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle.english = english;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle
+        .english = english;
   }
-  final String? userPreferred = jsonConvert.convert<String>(json['userPreferred']);
+  final String? userPreferred = jsonConvert.convert<String>(
+      json['userPreferred']);
   if (userPreferred != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle.userPreferred = userPreferred;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle
+        .userPreferred = userPreferred;
   }
   final String? romaji = jsonConvert.convert<String>(json['romaji']);
   if (romaji != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle.romaji = romaji;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle
+        .romaji = romaji;
   }
   final String? native = jsonConvert.convert<String>(json['native']);
   if (native != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle.native = native;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle
+        .native = native;
   }
   return mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitleToJson(
+Map<String,
+    dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitleToJson(
     MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['english'] = entity.english;
@@ -373,12 +424,13 @@ Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntri
 }
 
 extension MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitleExtension on MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle {
-  MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle copyWith({
-    String? english,
-    String? userPreferred,
-    String? romaji,
-    String? native,
-  }) {
+  MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle copyWith(
+      {
+        String? english,
+        String? userPreferred,
+        String? romaji,
+        String? native,
+      }) {
     return MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaTitle()
       ..english = english ?? this.english
       ..userPreferred = userPreferred ?? this.userPreferred
@@ -392,12 +444,14 @@ MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage $Med
   final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage = MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage();
   final String? large = jsonConvert.convert<String>(json['large']);
   if (large != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage.large = large;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage
+        .large = large;
   }
   return mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImageToJson(
+Map<String,
+    dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImageToJson(
     MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['large'] = entity.large;
@@ -405,9 +459,10 @@ Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntri
 }
 
 extension MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImageExtension on MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage {
-  MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage copyWith({
-    String? large,
-  }) {
+  MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage copyWith(
+      {
+        String? large,
+      }) {
     return MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaCoverImage()
       ..large = large ?? this.large;
   }
@@ -418,20 +473,24 @@ MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate $MediaC
   final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate = MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate();
   final int? day = jsonConvert.convert<int>(json['day']);
   if (day != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate.day = day;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate
+        .day = day;
   }
   final int? month = jsonConvert.convert<int>(json['month']);
   if (month != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate.month = month;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate
+        .month = month;
   }
   final int? year = jsonConvert.convert<int>(json['year']);
   if (year != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate.year = year;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate
+        .year = year;
   }
   return mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDateToJson(
+Map<String,
+    dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDateToJson(
     MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -441,11 +500,12 @@ Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntri
 }
 
 extension MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDateExtension on MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate {
-  MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate copyWith({
-    int? day,
-    int? month,
-    int? year,
-  }) {
+  MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate copyWith(
+      {
+        int? day,
+        int? month,
+        int? year,
+      }) {
     return MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaEndDate()
       ..day = day ?? this.day
       ..month = month ?? this.month
@@ -458,20 +518,24 @@ MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate $Medi
   final MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate = MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate();
   final int? day = jsonConvert.convert<int>(json['day']);
   if (day != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate.day = day;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate
+        .day = day;
   }
   final int? month = jsonConvert.convert<int>(json['month']);
   if (month != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate.month = month;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate
+        .month = month;
   }
   final int? year = jsonConvert.convert<int>(json['year']);
   if (year != null) {
-    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate.year = year;
+    mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate
+        .year = year;
   }
   return mediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate;
 }
 
-Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDateToJson(
+Map<String,
+    dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDateToJson(
     MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -481,11 +545,12 @@ Map<String, dynamic> $MediaCollectionGraphqlDtoDataMediaListCollectionListsEntri
 }
 
 extension MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDateExtension on MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate {
-  MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate copyWith({
-    int? day,
-    int? month,
-    int? year,
-  }) {
+  MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate copyWith(
+      {
+        int? day,
+        int? month,
+        int? year,
+      }) {
     return MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMediaStartDate()
       ..day = day ?? this.day
       ..month = month ?? this.month

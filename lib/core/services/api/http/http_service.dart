@@ -28,18 +28,26 @@ class HttpService {
   Future<ApiResponse<T>> get<T>(
     String endpoint, {
     Map<String, String>? headers,
+    bool ignoreCache = false,
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
     _logger.d("GET request to $endpoint attempting to return instance of $T");
-    ApiResponse<T>? cachedApiResponse = _getCachedResponse<T>(
-      'GET',
-      endpoint,
-      headers: headers,
-      fromJson: fromJson,
-    );
-    if (cachedApiResponse != null) {
-      _logger.d("Returning cached response instance of $T for $endpoint ");
-      return cachedApiResponse;
+    if (!ignoreCache) {
+      ApiResponse<T>? cachedApiResponse = _getCachedResponse<T>(
+        'GET',
+        endpoint,
+        headers: headers,
+        fromJson: fromJson,
+      );
+      if (cachedApiResponse != null) {
+        _logger.d("Returning cached response instance of $T for $endpoint ");
+        return cachedApiResponse;
+      }
+    } else {
+      if (_isCacheable(endpoint)) {
+        final cacheKey = "${'GET'.hashCode}${endpoint.hashCode}${json.encode(_cacheEnabledHeaders(headers)).hashCode}${null.hashCode}${fromJson.runtimeType.hashCode}";
+        _deleteCacheEntry(cacheKey);
+      }
     }
     ApiResponse<T> apiResponse = await _request(
       'GET',
@@ -61,20 +69,28 @@ class HttpService {
     String endpoint, {
     Map<String, String>? headers,
     Object? body,
+    bool ignoreCache = false,
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
     _logger.d("POST request to $endpoint attempting to return instance of $T");
     final encodedBody = json.encode(body);
-    ApiResponse<T>? cachedApiResponse = _getCachedResponse<T>(
-      'POST',
-      endpoint,
-      headers: headers,
-      body: encodedBody,
-      fromJson: fromJson,
-    );
-    if (cachedApiResponse != null) {
-      _logger.d("Returning cached response instance of $T for $endpoint ");
-      return cachedApiResponse;
+    if (!ignoreCache) {
+      ApiResponse<T>? cachedApiResponse = _getCachedResponse<T>(
+        'POST',
+        endpoint,
+        headers: headers,
+        body: encodedBody,
+        fromJson: fromJson,
+      );
+      if (cachedApiResponse != null) {
+        _logger.d("Returning cached response instance of $T for $endpoint ");
+        return cachedApiResponse;
+      }
+    } else {
+      if (_isCacheable(endpoint)) {
+        final cacheKey = "${'POST'.hashCode}${endpoint.hashCode}${json.encode(_cacheEnabledHeaders(headers)).hashCode}${encodedBody.hashCode}${fromJson.runtimeType.hashCode}";
+        _deleteCacheEntry(cacheKey);
+      }
     }
     ApiResponse<T> apiResponse = await _request(
       'POST',
@@ -142,7 +158,7 @@ class HttpService {
       _logger.w("Not caching response for $endpoint due to client error with status code ${response.statusCode}");
       return;
     }
-    if (!_isCacheable(endpoint)) return null;
+    if (!_isCacheable(endpoint)) return;
     _logger.d("Caching response for $endpoint");
     final cacheKey = "${method.hashCode}${endpoint.hashCode}${json.encode(_cacheEnabledHeaders(headers)).hashCode}${body.hashCode}${fromJson.runtimeType.hashCode}";
     _apiResponseCache[cacheKey] =
@@ -272,5 +288,22 @@ class HttpService {
       'Accept': 'application/json',
       ...?override,
     };
+  }
+
+  void _deleteCacheEntry(String cacheKey) {
+    if (_apiResponseCache.containsKey(cacheKey)) {
+      (int, dynamic)? cacheEntry = _apiResponseCache.remove(cacheKey);
+      _logger.d("Deleted cache entry ${cacheEntry?.$2} with expiration ${cacheEntry?.$1}");
+      return;
+    }
+    _logger.w("No cache entry found for key $cacheKey to delete. Current cache: \n${_cacheToString()}");
+  }
+
+  String _cacheToString() {
+    return _apiResponseCache.entries.map((entry) {
+      final cacheKey = entry.key;
+      final (expiry, cachedResponse) = entry.value;
+      return "CacheKey: $cacheKey, Expiry: ${DateTime.fromMillisecondsSinceEpoch(expiry)}, CachedResponse: $cachedResponse";
+    }).join("\n");
   }
 }

@@ -10,6 +10,8 @@ import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/core/notification/manga_genres_notifier.dart';
 import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_notifier.dart';
+import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/data/repositories/manga_repository_anilist.dart';
 import 'package:unyo/domain/entities/manga.dart';
@@ -23,10 +25,19 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
   final MangaNotifier _selectedMangaNotifier;
   final MangaGenresNotifier _selectedMangaAdvancedSearchGenresFilters;
   final MediaListNotifier _selectedMediaListNotifier;
+  final ReloadNotifier _reloadNotifier;
   late StreamSubscription<User> _loggedUserSubscription;
+  late StreamSubscription<ReloadType> _reloadSubscription;
   final Logger _logger = sl<Logger>();
 
-  MangaCubit(this._mangaRepositoryAnilist, this._loggedUserNotifier, this._selectedMangaNotifier, this._selectedMangaAdvancedSearchGenresFilters, this._selectedMediaListNotifier)
+  MangaCubit(
+    this._mangaRepositoryAnilist,
+    this._loggedUserNotifier,
+    this._selectedMangaNotifier,
+    this._selectedMangaAdvancedSearchGenresFilters,
+    this._selectedMediaListNotifier,
+    this._reloadNotifier,
+  )
     : super(
         MangaState(
           trending: (false, []),
@@ -50,6 +61,7 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
   @override
   Future<void> close() {
     _loggedUserSubscription.cancel();
+    _reloadSubscription.cancel();
     return super.close();
   }
 
@@ -70,6 +82,15 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
         emit(state.copyWith(userLoaded: true, isLoading: false));
       }
     });
+    _reloadSubscription = _reloadNotifier.reloadStream.listen((reloadType) async {
+      if (reloadType == ReloadType.newMetadataService) {
+        _logger.i("Reloading manga data due to new metadata service");
+        _fetchTrending(1, state.loggedUser, ignoreCache: true);
+        _fetchRecentlyCompleted(1, state.loggedUser, ignoreCache: true);
+        _fetchPopular(1, state.loggedUser, ignoreCache: true);
+        _fetchUpcoming(1, state.loggedUser, ignoreCache: true);
+      }
+    });
   }
 
   void navigateToAdvancedSearch(BuildContext context) {
@@ -85,13 +106,13 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
     pushRouteEffect(path: "/mangadetails");
   }
 
-  Future<void> _fetchTrending(int page, User loggedUser) async {
+  Future<void> _fetchTrending(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (state.loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist trending manga");
           (bool, List<Manga>) trending = await _mangaRepositoryAnilist
-              .getTrendingMangas(page, loggedUser);
+              .getTrendingMangas(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(trending: trending));
           if (page == 1) {
             emit(
@@ -113,13 +134,13 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
     }
   }
 
-  Future<void> _fetchPopular(int page, User loggedUser) async {
+  Future<void> _fetchPopular(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (state.loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist popular manga");
           (bool, List<Manga>) popular = await _mangaRepositoryAnilist
-              .getPopularMangas(page, loggedUser);
+              .getPopularMangas(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(popular: popular));
         case Service.mal:
         case Service.kitsu:
@@ -131,13 +152,13 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
     }
   }
 
-  Future<void> _fetchRecentlyCompleted(int page, User loggedUser) async {
+  Future<void> _fetchRecentlyCompleted(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (state.loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist recently completed manga");
           (bool, List<Manga>) recentlyCompleted = await _mangaRepositoryAnilist
-              .getRecentlyCompletedMangas(page, loggedUser);
+              .getRecentlyCompletedMangas(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(recentlyCompleted: recentlyCompleted));
         case Service.mal:
         case Service.kitsu:
@@ -152,13 +173,13 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
     }
   }
 
-  Future<void> _fetchUpcoming(int page, User loggedUser) async {
+  Future<void> _fetchUpcoming(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
       switch (state.loggedUser.settings.service) {
         case Service.anilist:
           _logger.i("Fetching Anilist upcoming manga");
           (bool, List<Manga>) upcoming = await _mangaRepositoryAnilist
-              .getUpcomingMangas(page, loggedUser);
+              .getUpcomingMangas(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(upcoming: upcoming));
         case Service.mal:
         case Service.kitsu:

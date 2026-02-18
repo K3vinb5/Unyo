@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.dart';
+import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/data/adapters/adapters_names.dart' as names;
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
 import 'package:unyo/data/models/anilist_anime_model.dart';
@@ -38,25 +39,9 @@ abstract class AnilistAnimeDetailsModel with _$AnilistAnimeDetailsModel implemen
   @override
   Map<String, dynamic> toJson() => _$AnilistAnimeDetailsModelToJson(this as _AnilistAnimeDetailsModel);
 
-  factory AnilistAnimeDetailsModel.fromAnimeDetailsMediaList(MediaDetailsGraphqlMedia animeDetailsMediaList) {
+  factory AnilistAnimeDetailsModel.fromAnimeDetailsMediaList(MediaDetailsGraphqlMedia animeDetailsMediaList, MediaDetailsMediaListEntryEntity mediaListEntry) {
     return AnilistAnimeDetailsModel(
-      mediaListEntry: MediaListEntryModel(
-        progress: animeDetailsMediaList.mediaListEntry?.progress ?? -1,
-        progressVolumes: animeDetailsMediaList.mediaListEntry?.progressVolumes ?? -1,
-        score: animeDetailsMediaList.mediaListEntry?.score ?? -1,
-        repeat: animeDetailsMediaList.mediaListEntry?.repeat ?? -1,
-        status: animeDetailsMediaList.mediaListEntry?.status ?? "ADD TO LIST",
-        startedAt: [
-          animeDetailsMediaList.mediaListEntry?.startedAt.day.toString() ?? "~",
-          animeDetailsMediaList.mediaListEntry?.startedAt.month.toString() ?? "~",
-          animeDetailsMediaList.mediaListEntry?.startedAt.year.toString() ?? "~",
-        ],
-        completedAt: [
-          animeDetailsMediaList.mediaListEntry?.completedAt.day.toString() ?? "~",
-          animeDetailsMediaList.mediaListEntry?.completedAt.month.toString() ?? "~",
-          animeDetailsMediaList.mediaListEntry?.completedAt.year.toString() ?? "~",
-        ],
-      ),
+      mediaListEntry: MediaListEntryModel.fromMediaDetailsMediaListEntryEntity(mediaListEntry),
       recommendedAnimes:
           animeDetailsMediaList.recommendations.nodes
               .map(

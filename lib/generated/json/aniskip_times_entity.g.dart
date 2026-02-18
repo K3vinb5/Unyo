@@ -7,8 +7,11 @@ AniskipTimesEntity $AniskipTimesEntityFromJson(Map<String, dynamic> json) {
   if (found != null) {
     aniskipTimesEntity.found = found;
   }
-  final List<AniskipTimesResults>? results = (json['results'] as List<dynamic>?)?.map(
-          (e) => jsonConvert.convert<AniskipTimesResults>(e) as AniskipTimesResults).toList();
+  final List<AniskipTimesResults>? results = (json['results'] as List<dynamic>?)
+      ?.map(
+          (e) =>
+      jsonConvert.convert<AniskipTimesResults>(e) as AniskipTimesResults)
+      .toList();
   if (results != null) {
     aniskipTimesEntity.results = results;
   }
@@ -49,8 +52,8 @@ extension AniskipTimesEntityExtension on AniskipTimesEntity {
 
 AniskipTimesResults $AniskipTimesResultsFromJson(Map<String, dynamic> json) {
   final AniskipTimesResults aniskipTimesResults = AniskipTimesResults();
-  final AniskipTimesResultsInterval? interval = jsonConvert.convert<AniskipTimesResultsInterval>(
-      json['interval']);
+  final AniskipTimesResultsInterval? interval = jsonConvert.convert<
+      AniskipTimesResultsInterval>(json['interval']);
   if (interval != null) {
     aniskipTimesResults.interval = interval;
   }
@@ -62,7 +65,8 @@ AniskipTimesResults $AniskipTimesResultsFromJson(Map<String, dynamic> json) {
   if (skipId != null) {
     aniskipTimesResults.skipId = skipId;
   }
-  final double? episodeLength = jsonConvert.convert<double>(json['episodeLength']);
+  final double? episodeLength = jsonConvert.convert<double>(
+      json['episodeLength']);
   if (episodeLength != null) {
     aniskipTimesResults.episodeLength = episodeLength;
   }
@@ -93,7 +97,8 @@ extension AniskipTimesResultsExtension on AniskipTimesResults {
   }
 }
 
-AniskipTimesResultsInterval $AniskipTimesResultsIntervalFromJson(Map<String, dynamic> json) {
+AniskipTimesResultsInterval $AniskipTimesResultsIntervalFromJson(
+    Map<String, dynamic> json) {
   final AniskipTimesResultsInterval aniskipTimesResultsInterval = AniskipTimesResultsInterval();
   final double? startTime = jsonConvert.convert<double>(json['startTime']);
   if (startTime != null) {
@@ -106,7 +111,8 @@ AniskipTimesResultsInterval $AniskipTimesResultsIntervalFromJson(Map<String, dyn
   return aniskipTimesResultsInterval;
 }
 
-Map<String, dynamic> $AniskipTimesResultsIntervalToJson(AniskipTimesResultsInterval entity) {
+Map<String, dynamic> $AniskipTimesResultsIntervalToJson(
+    AniskipTimesResultsInterval entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['startTime'] = entity.startTime;
   data['endTime'] = entity.endTime;

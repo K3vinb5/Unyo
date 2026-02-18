@@ -1,4 +1,4 @@
-// User specific
+// { }
 const viewerQuery = '''
 query Viewer {
   Viewer {
@@ -461,6 +461,32 @@ const mediaDetailsQuery = '''query Page(\$type: MediaType, \$mediaId: Int, \$pag
 }
 ''';
 // {
+//  "mediaId": selectedAnime.id
+// }
+const mediaListEntryQuery = '''query Page(\$mediaId: Int) {
+  Media(id: \$mediaId) {
+    mediaListEntry {
+      progress
+      score
+      repeat
+      status
+      startedAt {
+        day
+        month
+        year
+      }
+      completedAt {
+        day
+        month
+        year
+      }
+      customLists(asArray: true)
+      progressVolumes
+    }
+  }
+}
+''';
+// {
 //   "page": 1,
 //   "perPage": 5,
 //   "type": "ANIME",
@@ -521,6 +547,16 @@ id
   }
 }
 ''';
+// {
+//   "mediaId": selectedAnime.id,
+//   "progress": 10,
+//   "progressVolumes": 0,
+//   "repeat": 0,
+//   "score": 8.5,
+//   "startedAt": {"day": 1, "month": 1, "year": 2023},
+//   "completedAt": {"day": 1, "month": 2, "year": 2023},
+//   "status": "COMPLETED"
+// }
 const updateMediaEntryQuery = '''
 mutation SaveMediaListEntry(\$mediaId: Int, \$progress: Int, \$progressVolumes: Int, \$repeat: Int, \$score: Float, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput, \$status: MediaListStatus) {
   SaveMediaListEntry(mediaId: \$mediaId, progress: \$progress, progressVolumes: \$progressVolumes, repeat: \$repeat, score: \$score, startedAt: \$startedAt, completedAt: \$completedAt, status: \$status) {
