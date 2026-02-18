@@ -188,6 +188,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
 
   Future<void> navigateToVideoPlayer(ext.Video selectedVideo, int episodeIndex, int videoIndex) async {
     _logger.i("Navigating to Video Player with selected video from ${state.selectedExtension?.name}");
+    _mediaListEntryNotifier.updateSelectedMediaListEntry(state.mediaListEntry);
     _videoInfoNotifier.updateVideoInfo(
         VideoInfoModel(
           currentVideo: selectedVideo,
