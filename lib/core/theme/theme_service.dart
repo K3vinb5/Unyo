@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:unyo/data/models/anilist_user_model.dart';
+import 'package:unyo/data/models/local_user_model.dart';
+import 'package:unyo/data/repositories/user_repository_anilist.dart';
+import 'package:unyo/data/repositories/user_repository_local.dart';
+import 'package:unyo/domain/entities/settings.dart';
+import 'package:unyo/domain/entities/user.dart';
 
 class ThemeService {
   final BehaviorSubject<ThemeData> _themeSubject;
 
-  /*= BehaviorSubject<ThemeData>.seeded(_defaultTheme);*/
-  ThemeService()
+  // Repositories
+  final UserRepositoryAnilist _userRepositoryAnilist;
+  final UserRepositoryLocal _userRepositoryLocal;
+
+  ThemeService(this._userRepositoryAnilist, this._userRepositoryLocal)
       : _themeSubject = BehaviorSubject<ThemeData>.seeded(_defaultTheme);
 
 
@@ -14,12 +23,12 @@ class ThemeService {
   ThemeData get current => _themeSubject.value;
 
   void updateThemeFromColors(
-      {required Color primary, Color? secondary, Color? tertiary}) {
+      {required User loggedUser, required Color primary, required bool useWallpaperAsThemeColor, Color? secondary, Color? tertiary}) {
     final newTheme = _defaultTheme.copyWith(
       colorScheme: ColorScheme.dark(
-        primary: primary,
-        secondary: secondary ?? ColorScheme.fromSeed(seedColor: primary).secondary,
-        tertiary: tertiary ?? ColorScheme.fromSeed(seedColor: primary).tertiary,
+        primary: Color.lerp(primary, Colors.black, 0.1) ?? primary,
+        secondary: secondary ?? (Color.lerp(primary, Colors.black, 0.7) ?? primary),
+        tertiary: tertiary ?? (Color.lerp(primary, Colors.white, 0.7) ?? primary),
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onTertiary: Colors.white,
@@ -27,14 +36,33 @@ class ThemeService {
       appBarTheme: AppBarTheme(backgroundColor: primary),
     );
     _themeSubject.add(newTheme);
+    _updateUserThemeSettings(loggedUser, primary, useWallpaperAsThemeColor, newTheme.colorScheme);
   }
 
   void updateThemeFromColorScheme(
-      {required ColorScheme newcolorScheme}) {
+      {required User logedUser, required bool useWallpaperAsThemeColor, required ColorScheme newcolorScheme}) {
     final newTheme = _defaultTheme.copyWith(
       colorScheme: newcolorScheme,
     );
     _themeSubject.add(newTheme);
+      _updateUserThemeSettings(logedUser, newcolorScheme.primary, useWallpaperAsThemeColor, newcolorScheme);
+  }
+
+  Future<void> _updateUserThemeSettings(User loggedUser, Color primary, bool useWallpaperAsThemeColor, ColorScheme colorScheme) async {
+    Settings updatedSettings = (loggedUser.settings as SettingsModel).copyWith(
+      themeColor: primary,
+      useWallpaperAsThemeColor: useWallpaperAsThemeColor
+    );
+    switch (loggedUser) {
+      case AnilistUserModel anilistUserModel:
+        AnilistUserModel updatedAnilistUserModel = anilistUserModel.copyWith(settings: updatedSettings);
+        await _userRepositoryAnilist.updateUserInfo(updatedAnilistUserModel);
+        break;
+      case LocalUserModel localUserModel:
+        LocalUserModel updatedLocalUserModel = localUserModel.copyWith(settings: updatedSettings);
+        await _userRepositoryLocal.updateUserInfo(updatedLocalUserModel);
+        break;
+    }
   }
 
   void setTheme(ThemeData theme) => _themeSubject.add(theme);
@@ -43,14 +71,6 @@ class ThemeService {
 final _defaultTheme = ThemeData(
   brightness: Brightness.dark,
   scaffoldBackgroundColor: const Color.fromARGB(255, 44, 44, 44),
-  // colorScheme: ColorScheme.dark(
-  //   primary: Colors.grey[200]!,
-  //   secondary: Colors.grey[300]!,
-  //   tertiary: Colors.grey[300]!,
-  //   onPrimary: Colors.white,
-  //   onSecondary: Colors.white,
-  //   onTertiary: Colors.white,
-  // ),
   textTheme: const TextTheme(
     // Display styles (largest) - white
     displayLarge: TextStyle(

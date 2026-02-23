@@ -361,6 +361,21 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
       context: context,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            datePickerTheme: DatePickerThemeData(
+              confirmButtonStyle: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              cancelButtonStyle: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (selectedDateTime == null) return;
     try {
@@ -382,6 +397,21 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
       context: context,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            datePickerTheme: DatePickerThemeData(
+              confirmButtonStyle: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              cancelButtonStyle: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (selectedDateTime == null) return;
     try {

@@ -12,6 +12,7 @@ class WarningDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: const Color.fromARGB(255, 30, 30, 30),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 24.0.h),
         child: SizedBox(

@@ -50,13 +50,17 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
           ? false
           : fields[15] as bool,
       enableNsfwContent: fields[16] == null ? false : fields[16] as bool,
+      themeColor: fields[17] == null
+          ? const Color(4280391411)
+          : fields[17] as Color,
+      useWallpaperAsThemeColor: fields[18] == null ? true : fields[18] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SettingsModel obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.language)
       ..writeByte(1)
@@ -90,7 +94,11 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
       ..writeByte(15)
       ..write(obj.enableOpenSubtitlesIntegration)
       ..writeByte(16)
-      ..write(obj.enableNsfwContent);
+      ..write(obj.enableNsfwContent)
+      ..writeByte(17)
+      ..write(obj.themeColor)
+      ..writeByte(18)
+      ..write(obj.useWallpaperAsThemeColor);
   }
 
   @override
@@ -157,6 +165,10 @@ _SettingsModel _$SettingsModelFromJson(
   enableOpenSubtitlesIntegration:
       json['enableOpenSubtitlesIntegration'] as bool? ?? false,
   enableNsfwContent: json['enableNsfwContent'] as bool? ?? false,
+  themeColor: json['themeColor'] == null
+      ? const Color(0xFF2196F3)
+      : const ColorConverter().fromJson((json['themeColor'] as num).toInt()),
+  useWallpaperAsThemeColor: json['useWallpaperAsThemeColor'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$SettingsModelToJson(
@@ -185,6 +197,8 @@ Map<String, dynamic> _$SettingsModelToJson(
   'autoPlayNextEpisode': instance.autoPlayNextEpisode,
   'enableOpenSubtitlesIntegration': instance.enableOpenSubtitlesIntegration,
   'enableNsfwContent': instance.enableNsfwContent,
+  'themeColor': const ColorConverter().toJson(instance.themeColor),
+  'useWallpaperAsThemeColor': instance.useWallpaperAsThemeColor,
 };
 
 const _$ServiceEnumMap = {

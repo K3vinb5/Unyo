@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:unyo/core/enums/episode_service.dart';
@@ -5,6 +6,7 @@ import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/data/adapters/adapters_names.dart' as names;
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
 import 'package:unyo/config/config.dart' as config;
+import 'package:unyo/data/adapters/type_adapters/color_adapter.dart';
 import 'package:unyo/domain/entities/extension.dart';
 
 part 'settings.freezed.dart';
@@ -27,6 +29,8 @@ abstract class Settings {
   final bool autoPlayNextEpisode;
   final bool enableOpenSubtitlesIntegration;
   final bool enableNsfwContent;
+  final Color themeColor;
+  final bool useWallpaperAsThemeColor;
   // Not configurable
   final List<Extension> installedAnimeExtensions;
   final List<Extension> installedMangaExtensions;
@@ -47,6 +51,8 @@ abstract class Settings {
     required this.autoPlayNextEpisode,
     required this.enableOpenSubtitlesIntegration,
     required this.enableNsfwContent,
+    required this.themeColor,
+    required this.useWallpaperAsThemeColor,
 
     required this.installedAnimeExtensions,
     required this.installedMangaExtensions,
@@ -75,6 +81,8 @@ abstract class SettingsModel with _$SettingsModel implements Settings {
     @HiveField(14) @Default(false) bool autoPlayNextEpisode,
     @HiveField(15) @Default(false) bool enableOpenSubtitlesIntegration,
     @HiveField(16) @Default(false) bool enableNsfwContent,
+    @HiveField(17) @ColorConverter() @Default(Color(0xFF2196F3)) Color themeColor,
+    @HiveField(18) @Default(true) bool useWallpaperAsThemeColor,
   }) = _SettingsModel;
 
   factory SettingsModel.empty() =>

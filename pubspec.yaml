@@ -41,6 +41,7 @@ dependencies:
   dynamic_color: ^1.8.1
   material_color_utilities: ^0.11.1
   palette_generator: ^0.3.3+7
+  flutter_colorpicker: ^1.1.0
   # Platform Integration
   window_manager: ^0.5.1
   url_launcher: ^6.3.2

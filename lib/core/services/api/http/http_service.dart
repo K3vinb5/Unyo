@@ -21,7 +21,7 @@ class HttpService {
   final Map<String, (int, dynamic)> _apiResponseCache = {};
 
   HttpService({
-    this.timeout = const Duration(seconds: 7),
+    this.timeout = const Duration(seconds: 10),
     this.retryOptions = const RetryOptions(maxAttempts: 2),
   });
 

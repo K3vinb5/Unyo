@@ -248,13 +248,27 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                         ),
                       ],
                     ),
-                    const UnyoSettingsCategory(
+                    UnyoSettingsCategory(
                       title: "Theme",
                       description: "Appearance settings",
                       icon: Icons.edit_rounded,
                       alignment: "",
                       childAlignment: "",
-                      settingsOptions: [],
+                      settingsOptions: [
+                        UnyoSettingsSelectionDialog(
+                            title: "Choose Color",
+                            description: "Choose Theme based on a color",
+                            icon: Icons.color_lens_rounded,
+                            openDialog: () => context.read<SettingsCubit>().openColorPickerDialog(context)
+                        ),
+                        UnyoSettingsSelectionToggle(
+                          title: "Use wallpaper as theme color",
+                          description: "Automatically set the theme color based on your wallpaper colors",
+                          icon: Icons.wallpaper_rounded,
+                          initiallySelected: state.loggedUser.settings.useWallpaperAsThemeColor,
+                          onPressed: context.read<SettingsCubit>().enableUseWallpaperAsThemeColor,
+                        ),
+                      ],
                     ),
                     UnyoSettingsCategory(
                       title: "Player",

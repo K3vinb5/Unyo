@@ -39,12 +39,12 @@ class LightUnyoButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: isEnabled ? onPressed : null,
-        highlightColor: Color.lerp(Colors.white, color, 1.0),
+        highlightColor: Color.lerp(Colors.white, color, 0.5),
         borderRadius: BorderRadius.circular(20.0),
         child: Container(
           width: width ?? 80.w.clamp(minWidth ?? 0, maxWidth ?? math.max(minWidth ?? 0, 80.w)),
           height: height ?? 45.h.clamp(minHeight ?? 0, maxHeight ?? math.max(minHeight ?? 0, 45.h)),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0), color: color.withValues(alpha: 0.9)),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0), color: (Color.lerp(Colors.white, color, 0.65) ?? color).withValues(alpha: 0.9)),
           child: Center(
             child: Text(text ?? "", style: TextStyle(color: textColor, fontWeight: FontWeight.w700)),
           ),

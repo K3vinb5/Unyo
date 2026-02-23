@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unyo/data/adapters/type_adapters/color_adapter.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:logger/logger.dart';
@@ -26,6 +27,7 @@ void main() async {
   await sl.isReady<Directory>(instanceName: config.applicationSupportDirectory);
   Hive
     ..init(sl<Directory>(instanceName: config.applicationSupportDirectory).path)
+    ..registerAdapter(ColorAdapter())
     ..registerAdapters();
   // Inject the remaining dependencies that rely on Hive and are not Lazy
   setupLocatorAfterHiveInit();

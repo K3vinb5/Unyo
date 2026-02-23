@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,23 +16,42 @@ import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/services/media/episode_service.dart';
 import 'package:unyo/core/services/media/media_service.dart';
+import 'package:unyo/core/theme/color_image_service.dart';
+import 'package:unyo/core/theme/theme_service.dart';
 import 'package:unyo/data/models/anilist_user_model.dart';
 import 'package:unyo/data/models/local_user_model.dart';
 import 'package:unyo/data/repositories/repositories.dart';
 import 'package:unyo/domain/entities/settings.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/presentation/dialogs/textfield_dialog.dart';
+import 'package:unyo/presentation/widgets/styled/dark_unyo_button.dart';
+import 'package:unyo/presentation/widgets/styled/light_unyo_button.dart';
 
 class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState> {
   final Logger _logger = sl<Logger>();
+  late Color _selectedColor;
+
+  // Repositories
   final UserRepositoryAnilist _userRepositoryAnilist;
   final UserRepositoryLocal _userRepositoryLocal;
+
+  // Notifiers
   final UserNotifier _loggedUserNotifier;
   final ReloadNotifier _reloadNotifier;
   late StreamSubscription<User> _loggedUserSubscription;
 
-  SettingsCubit(this._userRepositoryAnilist, this._userRepositoryLocal, this._loggedUserNotifier, this._reloadNotifier)
-    : super(SettingsState(loggedUser: UserModel.empty())) {
+  // Services
+  final ThemeService _themeService;
+  final ColorImageService _colorImageService;
+
+  SettingsCubit(
+    this._userRepositoryAnilist,
+    this._userRepositoryLocal,
+    this._loggedUserNotifier,
+    this._reloadNotifier,
+    this._themeService,
+    this._colorImageService,
+  ) : super(SettingsState(loggedUser: UserModel.empty())) {
     _init();
   }
 
@@ -52,6 +73,7 @@ class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState>
     _loggedUserSubscription = _loggedUserNotifier.userStream.listen((loggedUser) async {
       emit(state.copyWith(loggedUser: loggedUser));
     });
+    _selectedColor = state.loggedUser.settings.themeColor;
   }
 
   Future<void> updateMediaMetadataService(String? newService) async {
@@ -181,6 +203,32 @@ class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState>
     }
   }
 
+  Future<void> enableUseWallpaperAsThemeColor(bool enable) async {
+    if (!enable) return;
+    try {
+      List<Color> wallpaperColors = [];
+      switch (state.loggedUser) {
+        case AnilistUserModel anilistUserModel:
+          _logger.d("Getting anilist user's theme");
+          wallpaperColors = await _colorImageService.getColorsFromPalleteGenerator(
+            NetworkImage(anilistUserModel.bannerImage),
+          );
+        case LocalUserModel localUserModel:
+          _logger.d("Getting local user's theme");
+      }
+      _themeService.updateThemeFromColors(
+        loggedUser: state.loggedUser,
+        useWallpaperAsThemeColor: true,
+        primary: wallpaperColors[0],
+        secondary: wallpaperColors[1],
+        tertiary: wallpaperColors[2],
+      );
+    } catch (e, stackTrace) {
+      logger.e("Error enabling/disabling using the user wallpaper as a Theme $e", stackTrace: stackTrace);
+      handleError("Error enabling/disabling using the user wallpaper as a Theme", stackTrace: stackTrace);
+    }
+  }
+
   Future<void> manualSkipTimeUpdate(double newSkipTime) async {
     try {
       Settings updatedSettings = (state.loggedUser.settings as SettingsModel).copyWith(
@@ -239,6 +287,61 @@ class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState>
             handleError("Error updating Tachiyomi extensions URL", stackTrace: stackTrace);
           }
         },
+      ),
+    );
+  }
+
+  void openColorPickerDialog(BuildContext context) {
+    showWidgetDialogEffect(
+      dialog: AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 30, 30, 30),
+        titlePadding: EdgeInsetsDirectional.only(start: 24.0.w, top: 20.0.h),
+        title: const Text(
+          "Pick a color to get a theme based on that color",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),
+        ),
+        content: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.0.w, vertical: 12.0.h),
+          child: SingleChildScrollView(
+            child: Builder(
+              builder: (dialogContext) {
+                return Column(
+                  children: [
+                    ColorPicker(
+                      enableAlpha: false,
+                      pickerColor: state.loggedUser.settings.themeColor,
+                      pickerAreaBorderRadius: BorderRadius.circular(40.0),
+                      onColorChanged: (color) => _selectedColor = color,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        DarkUnyoButton(
+                          text: "Cancel",
+                          maxHeight: 50,
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                        ),
+                        SizedBox(width: 25.0.w),
+                        LightUnyoButton(
+                          text: "Confirm",
+                          maxHeight: 50,
+                          onPressed: () {
+                            _themeService.updateThemeFromColors(
+                              loggedUser: state.loggedUser,
+                              primary: _selectedColor,
+                              useWallpaperAsThemeColor: false,
+                            );
+                            Navigator.of(dialogContext).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              }
+            ),
+          ),
+        ),
       ),
     );
   }

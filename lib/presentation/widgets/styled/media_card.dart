@@ -91,10 +91,12 @@ class MediaCard extends StatelessWidget {
                                                 ColorScheme.of(context).primary
                                                             .computeLuminance() >
                                                         0.2
-                                                    ? Colors.black
-                                                    : Colors.white.withValues(alpha: 
-                                                      0.8,
-                                                    ),
+                                                    ? Colors.black.withValues(alpha:
+                                                0.8,
+                                                )
+                                                    : Colors.white.withValues(alpha:
+                                                0.8,
+                                                ),
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -104,10 +106,12 @@ class MediaCard extends StatelessWidget {
                                               ColorScheme.of(context).primary
                                                           .computeLuminance() >
                                                       0.2
-                                                  ? Colors.black
-                                                  : Colors.white.withValues(alpha: 
+                                                  ? Colors.black.withValues(alpha:
                                                     0.8,
-                                                  ),
+                                                    )
+                                                  : Colors.white.withValues(alpha:
+                                                    0.8,
+                                                    ),
                                           size: 15,
                                         ),
                                       ],

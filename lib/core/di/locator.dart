@@ -65,7 +65,6 @@ void setupLocator() async{
     instanceName: config.anilistGraphQlService,
   );
   sl.registerLazySingleton<AppEffectHandler>(() => AppEffectHandler());
-  sl.registerSingleton<ThemeService>(ThemeService());
   sl.registerLazySingleton<ColorImageService>(() => ColorImageService());
   sl.registerSingleton<AniyomiBridge>(AniyomiBridge());
   sl.registerSingleton<TorrentService>(TorrentService());
@@ -93,6 +92,10 @@ void setupLocator() async{
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
     ),
   );
+  sl.registerSingleton<ThemeService>(ThemeService(
+    sl<UserRepositoryAnilist>(),
+    sl<UserRepositoryLocal>(),
+  ));
   sl.registerLazySingleton<AnimeRepositoryAnilist>(() => AnimeRepositoryAnilist());
   sl.registerLazySingleton<MangaRepositoryAnilist>(() => MangaRepositoryAnilist());
   sl.registerLazySingleton<EpisodeRepositoryAnizip>(() => EpisodeRepositoryAnizip());
@@ -199,7 +202,9 @@ void setupLocator() async{
       sl<UserRepositoryAnilist>(),
       sl<UserRepositoryLocal>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
-      sl<ReloadNotifier>()
+      sl<ReloadNotifier>(),
+      sl<ThemeService>(),
+      sl<ColorImageService>()
     ),
   );
   sl.registerFactory<AnimeAdvancedSearchCubit>(
