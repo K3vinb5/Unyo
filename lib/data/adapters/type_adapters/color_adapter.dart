@@ -14,7 +14,7 @@ class ColorAdapter extends TypeAdapter<Color> {
 
   @override
   void write(BinaryWriter writer, Color obj) {
-    writer.writeInt(obj.value);
+    writer.writeInt(obj.toARGB32());
   }
 }
 
@@ -25,5 +25,5 @@ class ColorConverter implements JsonConverter<Color, int> {
   Color fromJson(int json) => Color(json);
 
   @override
-  int toJson(Color object) => object.value;
+  int toJson(Color object) => object.toARGB32();
 }

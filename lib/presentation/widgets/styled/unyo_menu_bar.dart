@@ -6,7 +6,8 @@ import 'package:unyo/presentation/widgets/styled/styled.dart';
 
 class UnyoMenuBar extends StatelessWidget {
   final List<UnyoMenuIcon> icons;
-  const UnyoMenuBar({super.key, required this.avatarImage, required this.icons});
+  final void Function() onIconTap;
+  const UnyoMenuBar({super.key, required this.avatarImage, required this.onIconTap, required this.icons});
 
   final String avatarImage;
 
@@ -39,11 +40,18 @@ class UnyoMenuBar extends StatelessWidget {
                 child: Column(
                  children: [
                    const SizedBox(height: 20,),
-                   CircleAvatar(
-                     radius: 27,
-                     backgroundColor: Colors.transparent,
-                     backgroundImage: NetworkImage(avatarImage),
-                   ),
+                     Material(
+                       color: Colors.transparent,
+                       child: InkWell(
+                         borderRadius: BorderRadius.circular(35),
+                         onTap: onIconTap,
+                         child: CircleAvatar(
+                           radius: 27,
+                           backgroundColor: Colors.transparent,
+                           backgroundImage: NetworkImage(avatarImage),
+                         ),
+                       ),
+                     ),
                    Divider(
                      height: 40.0,
                      thickness: 1.0,

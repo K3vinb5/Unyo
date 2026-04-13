@@ -8,6 +8,7 @@ import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/enums/selected_menu_option.dart';
 import 'package:unyo/core/router/app_router.gr.dart';
 import 'package:unyo/core/services/effects/app_effect_handler.dart';
+import 'package:unyo/presentation/drawers/user_options_drawer.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_menu_bar.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_menu_icon.dart';
 
@@ -69,6 +70,7 @@ class _TabsView extends StatelessWidget {
                 state.showMenuBar
                     ? UnyoMenuBar(
                       avatarImage: state.loggedUser.avatarImage,
+                      onIconTap: () => context.read<TabsCubit>().showDrawerDialogEffect(drawerDialog: const UserOptionsDrawer(), backgroundColor: Colors.black.withValues(alpha: 0.5), startPosition: AxisDirection.down),
                       icons: [
                         UnyoMenuIcon(
                           isSelected:
