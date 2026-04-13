@@ -123,7 +123,7 @@ void setupLocator() async{
     ),
   );
   sl.registerFactory<TabsCubit>(
-    () => TabsCubit(sl<UserNotifier>(instanceName: config.loggedUserNotifier), sl<MenuBarNotifier>()),
+    () => TabsCubit(sl<ThemeService>(), sl<UserNotifier>(instanceName: config.loggedUserNotifier), sl<MenuBarNotifier>()),
   );
   sl.registerFactory<AnimeCubit>(
     () => AnimeCubit(

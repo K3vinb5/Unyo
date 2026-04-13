@@ -10,18 +10,22 @@ import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/enums/selected_menu_option.dart';
 import 'package:unyo/core/notification/menu_bar_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
+import 'package:unyo/core/theme/theme_service.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/presentation/drawers/user_options_drawer.dart' show UserOptionsDrawer;
 
 class TabsCubit extends Cubit<TabsState>
     with EffectMixin<TabsState> {
+  final ThemeService _themeService;
   final UserNotifier _loggedUserNotifier;
   final MenuBarNotifier _menuBarNotifier;
   final Logger _logger = sl<Logger>();
   late StreamSubscription<User> _newLoggedUserSubscription;
   late StreamSubscription<bool> _showMenuBarSubscription;
 
-  TabsCubit(this._loggedUserNotifier,
+  TabsCubit(
+      this._themeService,
+      this._loggedUserNotifier,
       this._menuBarNotifier,) : super(
     TabsState(
       selectedMenuOption: SelectedMenuOption.home,
@@ -64,6 +68,13 @@ class TabsCubit extends Cubit<TabsState>
   void logoutUser() {
     _logger.i("Logging out user: ${state.loggedUser.name}");
     _menuBarNotifier.showMenuBar(false);
+    _themeService.updateThemeFromColors(
+      loggedUser: null,
+      useWallpaperAsThemeColor: null,
+      primary: _themeService.defaultPrimaryColor,
+      secondary: _themeService.defaultSecondaryColor,
+      tertiary: _themeService.defaultTertiaryColor,
+    );
     replaceRouteEffect(path: "/login");
   }
 

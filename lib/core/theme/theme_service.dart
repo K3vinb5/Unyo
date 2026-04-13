@@ -22,8 +22,12 @@ class ThemeService {
 
   ThemeData get current => _themeSubject.value;
 
+  Color get defaultPrimaryColor => _defaultPrimaryColor;
+  Color get defaultSecondaryColor => _defaultSecondaryColor;
+  Color get defaultTertiaryColor => _defaultTertiaryColor;
+
   void updateThemeFromColors(
-      {required User loggedUser, required Color primary, required bool useWallpaperAsThemeColor, Color? secondary, Color? tertiary}) {
+      {required User? loggedUser, required Color primary, required bool? useWallpaperAsThemeColor, Color? secondary, Color? tertiary}) {
     final newTheme = _defaultTheme.copyWith(
       colorScheme: ColorScheme.dark(
         primary: Color.lerp(primary, Colors.black, 0.1) ?? primary,
@@ -36,6 +40,9 @@ class ThemeService {
       appBarTheme: AppBarTheme(backgroundColor: primary),
     );
     _themeSubject.add(newTheme);
+    if (loggedUser == null || useWallpaperAsThemeColor == null) {
+      return;
+    }
     _updateUserThemeSettings(loggedUser, primary, useWallpaperAsThemeColor, newTheme.colorScheme);
   }
 
@@ -67,6 +74,10 @@ class ThemeService {
 
   void setTheme(ThemeData theme) => _themeSubject.add(theme);
 }
+
+final Color _defaultPrimaryColor = const Color.fromARGB(255, 146, 102, 168);
+final Color _defaultSecondaryColor = const Color.fromARGB(255, 64, 50, 82);
+final Color _defaultTertiaryColor = const Color.fromARGB(255, 213, 188, 234);
 
 final _defaultTheme = ThemeData(
   brightness: Brightness.dark,
@@ -144,5 +155,13 @@ final _defaultTheme = ThemeData(
       fontSize: 10,
       fontWeight: FontWeight.w500,
     ),
+  ),
+  colorScheme: ColorScheme.dark(
+    primary: _defaultPrimaryColor,
+    secondary: _defaultSecondaryColor,
+    tertiary: _defaultTertiaryColor,
+    onPrimary: Colors.white,
+    onSecondary: Colors.white,
+    onTertiary: Colors.white,
   ),
 );
