@@ -19,6 +19,7 @@ class UserAvatar extends StatelessWidget {
       child: Column(
         children: [
           HoverAnimatedContainer(
+            duration: const Duration(milliseconds: 140),
             width: 160.h,
             height: 160.h,
             hoverWidth: 165.h,
