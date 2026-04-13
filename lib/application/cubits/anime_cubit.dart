@@ -157,8 +157,7 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
               .getTrendingAnimes(page, loggedUser, ignoreCache: ignoreCache);
           emit(state.copyWith(trending: trending));
           if (page == 1) {
-            List<Anime> banners =
-                trending.$2.where((anime) => anime.bannerImage != "").toList();
+            List<Anime> banners = trending.$2.where((anime) => anime.bannerImage != "").toList();
             emit(
               state.copyWith(
                 banners: banners.sublist(

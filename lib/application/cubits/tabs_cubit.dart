@@ -11,6 +11,7 @@ import 'package:unyo/core/enums/selected_menu_option.dart';
 import 'package:unyo/core/notification/menu_bar_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/presentation/drawers/user_options_drawer.dart' show UserOptionsDrawer;
 
 class TabsCubit extends Cubit<TabsState>
     with EffectMixin<TabsState> {
@@ -20,25 +21,21 @@ class TabsCubit extends Cubit<TabsState>
   late StreamSubscription<User> _newLoggedUserSubscription;
   late StreamSubscription<bool> _showMenuBarSubscription;
 
-  TabsCubit(
-    this._loggedUserNotifier,
-    this._menuBarNotifier,
-  ) : super(
-        TabsState(
-          selectedMenuOption: SelectedMenuOption.home,
-          showMenuBar: false,
-          showTabView: false,
-          loggedUser: UserModel.empty(),
-        ),
-      ) {
+  TabsCubit(this._loggedUserNotifier,
+      this._menuBarNotifier,) : super(
+    TabsState(
+      selectedMenuOption: SelectedMenuOption.home,
+      showMenuBar: false,
+      showTabView: false,
+      loggedUser: UserModel.empty(),
+    ),
+  ) {
     _init();
   }
 
   @override
-  TabsState copyStateWithEffects(
-    TabsState state,
-    List<AppEffect> effects,
-  ) {
+  TabsState copyStateWithEffects(TabsState state,
+      List<AppEffect> effects,) {
     return state.copyWith(effects: effects);
   }
 
@@ -52,9 +49,7 @@ class TabsCubit extends Cubit<TabsState>
       }
       emit(state.copyWith(loggedUser: user));
     });
-    _showMenuBarSubscription = _menuBarNotifier.menuBarStream.listen((
-      showMenuBar,
-    ) {
+    _showMenuBarSubscription = _menuBarNotifier.menuBarStream.listen((showMenuBar,) {
       emit(state.copyWith(showMenuBar: showMenuBar));
     });
   }
@@ -64,6 +59,12 @@ class TabsCubit extends Cubit<TabsState>
     _newLoggedUserSubscription.cancel();
     _showMenuBarSubscription.cancel();
     return super.close();
+  }
+
+  void logoutUser() {
+    _logger.i("Logging out user: ${state.loggedUser.name}");
+    _menuBarNotifier.showMenuBar(false);
+    replaceRouteEffect(path: "/login");
   }
 
   void selectMenuOption(SelectedMenuOption option, BuildContext context) {
@@ -81,5 +82,16 @@ class TabsCubit extends Cubit<TabsState>
         changeRouteTabEffect(path: "/settings", context);
     }
     emit(state.copyWith(selectedMenuOption: option));
+  }
+
+  void showUserOptionsDrawer() {
+    showDrawerDialogEffect(
+        drawerDialog: UserOptionsDrawer(
+            cubit: this,
+            loggedUser: state.loggedUser
+        ),
+        backgroundColor: Colors.black.withValues(alpha: 0.5),
+        startPosition: AxisDirection.down
+    );
   }
 }

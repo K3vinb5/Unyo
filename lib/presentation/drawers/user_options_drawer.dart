@@ -2,19 +2,24 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unyo/application/cubits/tabs_cubit.dart';
 import 'package:unyo/config/config.dart' as config;
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
+import 'package:unyo/domain/entities/user.dart' show User;
+import 'package:unyo/presentation/widgets/styled/user_option_drawer_selection.dart';
 
 class UserOptionsDrawer extends StatefulWidget {
-  const UserOptionsDrawer({super.key});
+  const UserOptionsDrawer({super.key, required this.cubit, required this.loggedUser});
+
+  final User loggedUser;
+  final TabsCubit cubit;
 
   @override
   State<UserOptionsDrawer> createState() => _UserOptionsDrawerState();
 }
 
 class _UserOptionsDrawerState extends State<UserOptionsDrawer> {
-
   final UserNotifier _loggedInUserNotifier = sl<UserNotifier>(instanceName: config.loggedUserNotifier);
 
   @override
@@ -42,7 +47,59 @@ class _UserOptionsDrawerState extends State<UserOptionsDrawer> {
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0.w, vertical: 20.0.h),
-              child: const Column(children: []),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 27,
+                        backgroundColor: Colors.transparent,
+                        backgroundImage: NetworkImage(widget.loggedUser.avatarImage),
+                      ),
+                      SizedBox(width: 10.w),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              widget.loggedUser.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: Text(
+                              widget.loggedUser.settings.service.name.substring(0,1).toUpperCase() + widget.loggedUser.settings.service.name.substring(1),
+                              style: const TextStyle(color: Colors.grey, fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 35.h),
+                  UserOptionDrawerSelection(
+                      text: "View Profile",
+                      icon: Icons.person_rounded,
+                      onPressed: () {}
+                  ),
+                  SizedBox(height: 10.h),
+                  UserOptionDrawerSelection(
+                      text: "Logout",
+                      icon: Icons.logout_rounded,
+                      onPressed: () {
+                        widget.cubit.logoutUser();
+                        Navigator.of(context).pop();
+                      }
+                  )
+                ],
+              ),
             ),
           ),
         ),
