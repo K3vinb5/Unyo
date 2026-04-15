@@ -34,7 +34,7 @@ class LoginCubit extends Cubit<LoginState> with EffectMixin<LoginState> {
   final UserNotifier _newUserNotifier;
   late StreamSubscription<User> _newUserCreatedSubscription;
 
-  //Services
+  // Services
   final ColorImageService _colorImageService;
   final ThemeService _themeService;
 
