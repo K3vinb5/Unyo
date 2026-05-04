@@ -146,9 +146,9 @@ class ExtensionRepositoryAniyomi implements ExtensionRepository {
     _aniyomiExtensionsBox = await Hive.openBox<Extension>('aniyomiExtensions');
     await _aniyomiExtensionsBox.put('${extension.name}-${extension.version}', extension);
     if (extension.type == ExtensionType.ANIYOMI) {
-      _aniyomiBridge.loadAnimeExtension(extension.apk);
+      _aniyomiBridge.loadAnimeExtension(extension.apk, extension.pkg);
     } else if (extension.type == ExtensionType.TACHIYOMI) {
-      _aniyomiBridge.loadMangaExtension(extension.apk);
+      _aniyomiBridge.loadMangaExtension(extension.apk, extension.pkg);
     } else {
       _logger.w("Unknown extension type: ${extension.type}");
       throw Exception("Unknown extension type: ${extension.type}");
@@ -160,9 +160,9 @@ class ExtensionRepositoryAniyomi implements ExtensionRepository {
     _aniyomiExtensionsBox = await Hive.openBox<Extension>('aniyomiExtensions');
     await _aniyomiExtensionsBox.delete('${extension.name}-${extension.version}');
     if (extension.type == ExtensionType.ANIYOMI) {
-      _aniyomiBridge.unloadAnimeExtension(extension.pkg.substring(extension.pkg.lastIndexOf(".") + 1), "v${extension.version}");
+      _aniyomiBridge.unloadAnimeExtension(extension.pkg);
     } else if (extension.type == ExtensionType.TACHIYOMI) {
-      _aniyomiBridge.unloadMangaExtension(extension.pkg.substring(extension.pkg.lastIndexOf(".") + 1), "v${extension.version}");
+      _aniyomiBridge.unloadMangaExtension(extension.pkg);
     } else {
       _logger.w("Unknown extension type: ${extension.type}");
       throw Exception("Unknown extension type: ${extension.type}");
@@ -170,27 +170,27 @@ class ExtensionRepositoryAniyomi implements ExtensionRepository {
   }
 
   Future<List<JSAnime>> getAnimeSearchResults(String query, Extension extension) async {
-    return _aniyomiBridge.getAnimeSearchResults(query, 1, extension.pkg.substring(extension.pkg.lastIndexOf(".") + 1));
+    return _aniyomiBridge.getAnimeSearchResults(query, 1, extension.pkg);
   }
 
   Future<List<JSEpisode>> getAnimeEpisodeList(JSAnime anime, Extension extension) async {
-    return _aniyomiBridge.getEpisodeList(anime, extension.pkg.substring(extension.pkg.lastIndexOf(".") + 1));
+    return _aniyomiBridge.getEpisodeList(anime, extension.pkg);
   }
 
   Future<List<JVideo>> getAnimeVideoList(JSEpisode episode, Extension extension) async {
-    return _aniyomiBridge.getVideoList(episode, extension.pkg.substring(extension.pkg.lastIndexOf(".") + 1));
+    return _aniyomiBridge.getVideoList(episode, extension.pkg);
   }
 
   Future<List<JSManga>> getMangaSearchResults(String query, Extension extension) async {
-    return _aniyomiBridge.getMangaSearchResults(query, 1, extension.pkg.substring(extension.pkg.lastIndexOf(".") + 1));
+    return _aniyomiBridge.getMangaSearchResults(query, 1, extension.pkg);
   }
 
   Future<List<JSChapter>> getMangaChapterList(JSManga manga, Extension extension) async {
-    return _aniyomiBridge.getChapterList(manga, extension.pkg.substring(extension.pkg.lastIndexOf(".") + 1));
+    return _aniyomiBridge.getChapterList(manga, extension.pkg);
   }
 
   Future<List<JPage>> getMangaPageList(JSChapter chapter, Extension extension) async {
-    return _aniyomiBridge.getPageList(chapter, extension.pkg.substring(extension.pkg.lastIndexOf(".") + 1));
+    return _aniyomiBridge.getPageList(chapter, extension.pkg);
   }
 
   List<AniyomiRepoJsonEntity> _parseAniyomiRepoJsonList(Map<String, dynamic> json) {
@@ -214,7 +214,7 @@ class ExtensionRepositoryAniyomi implements ExtensionRepository {
       return;
     }
     for (Extension extension in installedExtensions) {
-      _aniyomiBridge.loadAnimeExtension(extension.apk);
+      _aniyomiBridge.loadAnimeExtension(extension.apk, extension.pkg);
     }
   }
 
@@ -227,7 +227,7 @@ class ExtensionRepositoryAniyomi implements ExtensionRepository {
       return;
     }
     for (Extension extension in installedExtensions) {
-      _aniyomiBridge.loadMangaExtension(extension.apk);
+      _aniyomiBridge.loadMangaExtension(extension.apk, extension.pkg);
     }
   }
 

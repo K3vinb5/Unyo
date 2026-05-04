@@ -73,72 +73,45 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
       return;
     }
     try {
-      if (extension.type == ExtensionType.ANIYOMI) {
-        emit(state.copyWith(
-            availableAnimeExtensions: List.from(state.availableAnimeExtensions)..remove(extension)
-        ));
-      } else {
-        emit(state.copyWith(
-            availableMangaExtensions: List.from(state.availableMangaExtensions)..remove(extension)
-        ));
-      }
       await _extensionRepositoryAniyomi.addExtension(extension);
       if (extension.type == ExtensionType.ANIYOMI) {
-        emit(state.copyWith(
-            installedAnimeExtensions: [extension, ...state.installedAnimeExtensions]
-        ));
-
+        _fetchInstaledAnimeExtensions(state.loggedUser);
+        _fetchAvailableAnimeExtensions(state.loggedUser);
       } else {
-        emit(state.copyWith(
-            installedMangaExtensions: [extension, ...state.installedMangaExtensions]
-        ));
+        _fetchInstaledMangaExtensions(state.loggedUser);
+        _fetchAvailableMangaExtensions(state.loggedUser);
       }
       showSnackBarEffect("${extension.name} Installed!", message: "${extension.name} was installed successfully", contentType: ContentType.success);
     } catch (e, stackTrace) {
       if (extension.type == ExtensionType.ANIYOMI) {
-        emit(state.copyWith(
-            availableAnimeExtensions: [extension, ...state.availableAnimeExtensions]
-        ));
+        _fetchAvailableAnimeExtensions(state.loggedUser);
       } else {
-        emit(state.copyWith(
-            availableMangaExtensions: [extension, ...state.availableMangaExtensions]
-        ));
+        _fetchAvailableMangaExtensions(state.loggedUser);
       }
       handleError("Failed to download extension ${extension.pkg}: $e", stackTrace: stackTrace);
     }
   }
 
   Future<void> removeExtension(Extension extension) async {
+    if (!state.installedAnimeExtensions.contains(extension) && !state.installedMangaExtensions.contains(extension)) {
+      handleError("This version of ${extension.name} is already uninstalled.");
+      return;
+    }
     try {
-      if (extension.type == ExtensionType.ANIYOMI) {
-        emit(state.copyWith(
-            installedAnimeExtensions: List.from(state.installedAnimeExtensions)..remove(extension)
-        ));
-      } else {
-        emit(state.copyWith(
-            installedMangaExtensions: List.from(state.installedMangaExtensions)..remove(extension)
-        ));
-      }
       await _extensionRepositoryAniyomi.removeExtension(extension);
       if (extension.type == ExtensionType.ANIYOMI) {
-        emit(state.copyWith(
-            availableAnimeExtensions: [extension, ...state.availableAnimeExtensions]
-        ));
+        _fetchInstaledAnimeExtensions(state.loggedUser);
+        _fetchAvailableAnimeExtensions(state.loggedUser);
       } else {
-        emit(state.copyWith(
-            availableMangaExtensions: [extension, ...state.availableMangaExtensions]
-        ));
+        _fetchInstaledMangaExtensions(state.loggedUser);
+        _fetchAvailableMangaExtensions(state.loggedUser);
       }
       showSnackBarEffect("${extension.name} Removed!", message: "${extension.name} was removed successfully", contentType: ContentType.success);
     } catch (e, stackTrace) {
       if (extension.type == ExtensionType.ANIYOMI) {
-        emit(state.copyWith(
-            installedAnimeExtensions: [extension, ...state.installedAnimeExtensions]
-        ));
+        _fetchInstaledAnimeExtensions(state.loggedUser);
       } else {
-        emit(state.copyWith(
-            installedMangaExtensions: [extension, ...state.installedMangaExtensions]
-        ));
+        _fetchInstaledMangaExtensions(state.loggedUser);
       }
       handleError("Failed to remove extension ${extension.pkg}: $e", stackTrace: stackTrace);
     }
