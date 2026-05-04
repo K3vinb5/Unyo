@@ -3,8 +3,8 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:cast/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jsepisode.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jvideo.dart';
+import 'package:unyo_lib/jmodels/jsepisode.dart';
+import 'package:unyo_lib/jmodels/jvideo.dart';
 import 'package:logger/logger.dart';
 import 'dart:async';
 

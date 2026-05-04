@@ -1,5 +1,5 @@
 // External dependencies
-import 'package:k3vinb5_aniyomi_bridge/aniyomi_bridge.dart';
+import 'package:unyo_lib/aniyomi_bridge.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
 import 'package:get_it/get_it.dart';

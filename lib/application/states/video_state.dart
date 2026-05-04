@@ -1,6 +1,6 @@
 import 'package:cast/cast.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jsepisode.dart';
+import 'package:unyo_lib/jmodels/jsepisode.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/core/services/api/dto/aniskip/aniskip_times_entity.dart';

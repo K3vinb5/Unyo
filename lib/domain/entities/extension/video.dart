@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jheaders.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jtrack.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jvideo.dart';
+import 'package:unyo_lib/jmodels/jheaders.dart';
+import 'package:unyo_lib/jmodels/jtrack.dart';
+import 'package:unyo_lib/jmodels/jvideo.dart';
 import 'package:unyo/domain/entities/extension/headers.dart';
 import 'package:unyo/domain/entities/extension/track.dart';
 

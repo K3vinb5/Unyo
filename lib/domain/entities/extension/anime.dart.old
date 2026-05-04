@@ -1,4 +1,4 @@
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jsanime.dart';
+import 'package:unyo_lib/jmodels/jsanime.dart';
 
 class Anime {
   final String url;

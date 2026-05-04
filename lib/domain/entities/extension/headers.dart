@@ -1,4 +1,4 @@
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jheaders.dart';
+import 'package:unyo_lib/jmodels/jheaders.dart';
 
 class Headers {
   final Map<String, String> headersMap;

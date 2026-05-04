@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:hive_ce/hive.dart';
-import 'package:k3vinb5_aniyomi_bridge/aniyomi_bridge.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jpage.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jsanime.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jschapter.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jsepisode.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jsmanga.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jvideo.dart';
+import 'package:unyo_lib/aniyomi_bridge.dart';
+import 'package:unyo_lib/jmodels/jpage.dart';
+import 'package:unyo_lib/jmodels/jsanime.dart';
+import 'package:unyo_lib/jmodels/jschapter.dart';
+import 'package:unyo_lib/jmodels/jsepisode.dart';
+import 'package:unyo_lib/jmodels/jsmanga.dart';
+import 'package:unyo_lib/jmodels/jvideo.dart';
 import 'package:logger/logger.dart';
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/enums/extension_type.dart';

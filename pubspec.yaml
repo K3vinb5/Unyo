@@ -69,8 +69,8 @@ dependencies:
   jni: ^0.14.2
   meta: ^1.17.0
   jwt_decoder: ^2.0.1
-  k3vinb5_aniyomi_bridge:
-    path: ../k3vinb5_aniyomi_bridge
+  unyo_lib:
+    path: ../unyo-lib
   wakelock_plus: ^1.4.0
 
 # Dev dependencies

@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:k3vinb5_aniyomi_bridge/aniyomi_bridge.dart';
+import 'package:unyo_lib/aniyomi_bridge.dart';
 import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:unyo/application/cubits/anime_advanced_search_cubit.dart';

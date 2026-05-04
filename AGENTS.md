@@ -31,7 +31,7 @@ flutter analyze
 
 ## Dependencies
 
-- `k3vinb5_aniyomi_bridge` is a local path dependency (`../k3vinb5_aniyomi_bridge`). Ensure it exists as a sibling directory.
+- `unyo_lib` is a local path dependency (`../unyo_lib`). Ensure it exists as a sibling directory.
 - Local extensions require **Java 17+** installed.
 
 ## Flutter Version

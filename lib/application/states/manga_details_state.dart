@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jpage.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jschapter.dart';
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jsmanga.dart';
+import 'package:unyo_lib/jmodels/jpage.dart';
+import 'package:unyo_lib/jmodels/jschapter.dart';
+import 'package:unyo_lib/jmodels/jsmanga.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/domain/entities/manga.dart';

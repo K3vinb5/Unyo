@@ -1,4 +1,4 @@
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jsepisode.dart';
+import 'package:unyo_lib/jmodels/jsepisode.dart';
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:unyo/core/di/locator.dart';

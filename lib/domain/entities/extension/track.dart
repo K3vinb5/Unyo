@@ -1,4 +1,4 @@
-import 'package:k3vinb5_aniyomi_bridge/jmodels/jtrack.dart';
+import 'package:unyo_lib/jmodels/jtrack.dart';
 
 class Track {
   final String url;
