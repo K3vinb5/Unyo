@@ -23,7 +23,7 @@ import 'package:unyo/data/models/local_user_model.dart';
 import 'package:unyo/data/repositories/repositories.dart';
 import 'package:unyo/domain/entities/settings.dart';
 import 'package:unyo/domain/entities/user.dart';
-import 'package:unyo/presentation/dialogs/textfield_dialog.dart';
+import 'package:unyo/presentation/dialogs/extensions_dialog.dart';
 import 'package:unyo/presentation/widgets/styled/dark_unyo_button.dart';
 import 'package:unyo/presentation/widgets/styled/light_unyo_button.dart';
 
@@ -243,18 +243,18 @@ class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState>
 
   void openAniyomiExtensionsDialog() {
     showWidgetDialogEffect(
-      dialog: TextFieldDialog(
-        width: 500.w,
-        height: 200.h,
+      dialog: ExtensionsDialog(
+        width: 600.w,
+        height: 400.h,
         title: "Aniyomi extensions repository URL",
-        hint: state.loggedUser.settings.aniyomiExtensionsRepositoryUrl,
-        onSubmitted: (newExtensionsUrl) {
-          if (newExtensionsUrl == null || newExtensionsUrl.isEmpty) {
+        currentRepositoriesUrls: state.loggedUser.settings.aniyomiExtensionsRepositories,
+        onSubmitted: (newExtensionsRepositories) {
+          if (newExtensionsRepositories.isEmpty) {
             return;
           }
           try {
             Settings updatedSettings = (state.loggedUser.settings as SettingsModel).copyWith(
-              aniyomiExtensionsRepositoryUrl: newExtensionsUrl,
+              aniyomiExtensionsRepositories: newExtensionsRepositories.where((url) => _isValidRepoUrl(url)).toList(),
             );
             _updateUserInfo(updatedSettings);
           } catch (e, stackTrace) {
@@ -268,18 +268,18 @@ class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState>
 
   void openTachiyomiExtensionsDialog() {
     showWidgetDialogEffect(
-      dialog: TextFieldDialog(
-        width: 500.w,
-        height: 200.h,
+      dialog: ExtensionsDialog(
+        width: 600.w,
+        height: 400.h,
         title: "Tachiyomi extensions repository URL",
-        hint: state.loggedUser.settings.tachiyomiExtensionsRepositoryUrl,
-        onSubmitted: (newExtensionsUrl) {
-          if (newExtensionsUrl == null || newExtensionsUrl.isEmpty) {
+        currentRepositoriesUrls: state.loggedUser.settings.tachiyomiExtensionsRepositories,
+        onSubmitted: (newExtensionsRepositories) {
+          if (newExtensionsRepositories.isEmpty) {
             return;
           }
           try {
             Settings updatedSettings = (state.loggedUser.settings as SettingsModel).copyWith(
-              tachiyomiExtensionsRepositoryUrl: newExtensionsUrl,
+              tachiyomiExtensionsRepositories: newExtensionsRepositories.where((url) => _isValidRepoUrl(url)).toList(),
             );
             _updateUserInfo(updatedSettings);
           } catch (e, stackTrace) {
@@ -362,5 +362,18 @@ class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState>
       logger.e("Error updating user info $e", stackTrace: stackTrace);
       handleError("Error updating user info", stackTrace: stackTrace);
     }
+  }
+
+  bool _isValidRepoUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+
+    // Structural rules
+    if (!uri.isAbsolute) return false;
+    if (uri.scheme != 'https') return false;
+    if (uri.host.isEmpty) return false;
+    if (!url.toLowerCase().endsWith('.json')) return false;
+
+    return true;
   }
 }

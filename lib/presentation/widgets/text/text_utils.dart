@@ -46,12 +46,38 @@ class TextUtils {
     }
   }
 
-  static List<String> upperCaseFirstCharacter(List<String> list) {
-    return list
-        .map(
-          (strElement) =>
-              strElement.isNotEmpty ? strElement[0].toUpperCase() + strElement.substring(1) : strElement,
-        )
-        .toList();
+  static List<String> capitalizeList(List<String> list) {
+    return list.map(capitalize).toList();
+  }
+
+  static String extractRepoName(String repoUrl) {
+    try {
+      final uri = Uri.parse(repoUrl);
+      final hostname = uri.host.toLowerCase();
+
+      final paths = uri.pathSegments.where((s) => s.isNotEmpty).toList();
+      if (hostname == 'raw.githubusercontent.com' || hostname == 'gist.githubusercontent.com') {
+        return paths.isNotEmpty ? capitalize(paths.first) : 'GitHub Repo';
+      }
+
+      if (hostname.contains('github.io') || hostname.contains('gitlab.io')) {
+        final username = hostname.split('.').first;
+        return capitalize(username.replaceAll('-', ' '));
+      }
+
+      final domainParts = hostname.replaceFirst('www.', '').split('.');
+      if (domainParts.length >= 2) {
+        final mainDomain = domainParts[domainParts.length - 2];
+        return capitalize(mainDomain);
+      }
+      return 'Custom Repo';
+    } catch (e) {
+      // Fallback if the URL is completely malformed or unparseable
+      return 'Unknown Repo';
+    }
+  }
+
+  static String capitalize(String str) {
+    return str.isNotEmpty ? '${str[0].toUpperCase()}${str.substring(1)}' : str;
   }
 }

@@ -19,6 +19,7 @@ import 'package:unyo/presentation/widgets/styled/unyo_settings_selection_slider.
 import 'package:unyo/presentation/widgets/styled/unyo_settings_selection_toggle.dart';
 import 'package:unyo/presentation/widgets/text/text_body_large.dart';
 import 'package:unyo/presentation/widgets/text/text_headline_medium.dart';
+import 'package:unyo/presentation/widgets/text/text_utils.dart';
 
 @RoutePage()
 class SettingsScreen extends StatelessWidget {
@@ -165,14 +166,11 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                           icon: Icons.image_search_rounded,
                           label: "Select a service",
                           defaultValue:
-                              state.loggedUser.settings.service.name.substring(0, 1).toUpperCase() +
-                              state.loggedUser.settings.service.name.substring(1),
+                              TextUtils.capitalize(state.loggedUser.settings.service.name),
                           children:
                               Service.values
                                   .map(
-                                    (service) =>
-                                        service.name.substring(0, 1).toUpperCase() +
-                                        service.name.substring(1),
+                                    (service) => TextUtils.capitalize(service.name),
                                   )
                                   .toList(),
                           onPressed: context.read<SettingsCubit>().updateMediaMetadataService,
@@ -183,14 +181,11 @@ class _SettingsViewState extends State<_SettingsView> with TickerProviderStateMi
                           icon: Icons.movie_filter_rounded,
                           label: "Select a service",
                           defaultValue:
-                              state.loggedUser.settings.episodeService.name.substring(0, 1).toUpperCase() +
-                              state.loggedUser.settings.episodeService.name.substring(1),
+                              TextUtils.capitalize(state.loggedUser.settings.episodeService.name),
                           children:
                               EpisodeService.values
                                   .map(
-                                    (service) =>
-                                        service.name.substring(0, 1).toUpperCase() +
-                                        service.name.substring(1),
+                                    (service) => TextUtils.capitalize(service.name),
                                   )
                                   .toList(),
                           onPressed: context.read<SettingsCubit>().updateEpisodeMetadataService,

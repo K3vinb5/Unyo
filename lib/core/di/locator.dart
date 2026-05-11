@@ -244,7 +244,6 @@ void setupLocator() async{
 void setupLocatorAfterHiveInit() {
   sl.registerSingleton<ExtensionRepositoryAniyomi>(
     ExtensionRepositoryAniyomi(
-      sl<UserRepositoryAnilist>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
     ),
   );

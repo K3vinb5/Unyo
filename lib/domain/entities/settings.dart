@@ -20,8 +20,8 @@ abstract class Settings {
   final String episodeTitleLanguage;
   final Service service;
   final EpisodeService episodeService;
-  final String aniyomiExtensionsRepositoryUrl;
-  final String tachiyomiExtensionsRepositoryUrl;
+  final List<String> aniyomiExtensionsRepositories;
+  final List<String> tachiyomiExtensionsRepositories;
   final bool enableDiscordRichPresence;
   final bool automaticallySkipOpening;
   final bool automaticallySkipEnding;
@@ -42,8 +42,8 @@ abstract class Settings {
     required this.language,
     required this.mediaTitleLanguage,
     required this.episodeTitleLanguage,
-    required this.aniyomiExtensionsRepositoryUrl,
-    required this.tachiyomiExtensionsRepositoryUrl,
+    required this.aniyomiExtensionsRepositories,
+    required this.tachiyomiExtensionsRepositories,
     required this.enableDiscordRichPresence,
     required this.automaticallySkipOpening,
     required this.automaticallySkipEnding,
@@ -69,8 +69,6 @@ abstract class SettingsModel with _$SettingsModel implements Settings {
     @HiveField(2) @Default(EpisodeService.anizip) EpisodeService episodeService,
     @HiveField(3) @ExtensionConverter() @Default([]) List<Extension> installedAnimeExtensions,
     @HiveField(4) @ExtensionConverter() @Default([]) List<Extension> installedMangaExtensions,
-    @HiveField(5) @Default(config.aniyomiExtensionsRepositoryUrl) String aniyomiExtensionsRepositoryUrl,
-    @HiveField(6) @Default(config.tachiyomiExtensionsRepositoryUrl) String tachiyomiExtensionsRepositoryUrl,
     @HiveField(7) @ExtensionConverter() @Default({}) Map<String, Extension> mediaExtensionConfigs,
     @HiveField(8) @Default('userPreferred') String mediaTitleLanguage,
     @HiveField(9) @Default('en') String episodeTitleLanguage,
@@ -83,6 +81,8 @@ abstract class SettingsModel with _$SettingsModel implements Settings {
     @HiveField(16) @Default(false) bool enableNsfwContent,
     @HiveField(17) @ColorConverter() @Default(Color(0xFF2196F3)) Color themeColor,
     @HiveField(18) @Default(true) bool useWallpaperAsThemeColor,
+    @HiveField(19) @Default([config.aniyomiExtensionsRepositoryUrl]) List<String> aniyomiExtensionsRepositories,
+    @HiveField(20) @Default([config.tachiyomiExtensionsRepositoryUrl]) List<String> tachiyomiExtensionsRepositories,
   }) = _SettingsModel;
 
   factory SettingsModel.empty() =>

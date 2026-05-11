@@ -8,6 +8,7 @@ import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/domain/entities/user.dart' show User;
 import 'package:unyo/presentation/widgets/styled/user_option_drawer_selection.dart';
+import 'package:unyo/presentation/widgets/text/text_utils.dart';
 
 class UserOptionsDrawer extends StatefulWidget {
   const UserOptionsDrawer({super.key, required this.cubit, required this.loggedUser});
@@ -75,7 +76,7 @@ class _UserOptionsDrawerState extends State<UserOptionsDrawer> {
                           Padding(
                             padding: const EdgeInsets.only(right: 12.0),
                             child: Text(
-                              widget.loggedUser.settings.service.name.substring(0,1).toUpperCase() + widget.loggedUser.settings.service.name.substring(1),
+                              TextUtils.capitalize(widget.loggedUser.settings.service.name),
                               style: const TextStyle(color: Colors.grey, fontSize: 14),
                             ),
                           ),

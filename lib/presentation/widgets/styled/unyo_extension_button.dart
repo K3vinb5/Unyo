@@ -1,8 +1,12 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unyo/presentation/widgets/styled/unyo_pill.dart';
+import 'package:unyo/presentation/widgets/text/text_utils.dart';
 
 class UnyoExtensionButton extends StatelessWidget {
   final void Function()? onDownloadPressed;
+  final void Function()? onUpdatePressed;
   final void Function()? onDeletePressed;
   final void Function()? onSettingsPressed;
   final String iconUrl;
@@ -10,15 +14,18 @@ class UnyoExtensionButton extends StatelessWidget {
   final String lang;
   final String version;
   final int nsfw;
+  final String repoUrl;
 
   const UnyoExtensionButton({
     super.key,
     this.onDownloadPressed,
+    this.onUpdatePressed,
     required this.iconUrl,
     required this.name,
     required this.lang,
     required this.version,
     required this.nsfw,
+    required this.repoUrl,
     this.onDeletePressed,
     this.onSettingsPressed,
   });
@@ -59,25 +66,13 @@ class UnyoExtensionButton extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         nsfw == 1
-                            ? Container(
+                            ? const UnyoPill(
+                              text: "NFSW",
+                              color: Colors.amber,
                               height: 14,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.amber.withValues(alpha: 0.3),
-                              ),
-                              child: const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 4.0),
-                                  child: Text(
-                                    "NFSW",
-                                    style: TextStyle(
-                                      fontSize: 8,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              fontSize: 8,
+                              fontWeight: FontWeight.w700,
+                              horizontalPadding: 4,
                             )
                             : const SizedBox.shrink(),
                       ],
@@ -85,46 +80,20 @@ class UnyoExtensionButton extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Container(
-                          height: 22,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: ColorScheme.of(context).primary.withValues(alpha: 0.3),
-                          ),
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                              child: Text(
-                                "${lang.substring(0, 1).toUpperCase()}${lang.substring(1)}",
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
+                        UnyoPill(
+                          text: TextUtils.capitalize(lang),
+                          color: ColorScheme.of(context).primary,
                         ),
                         const SizedBox(width: 4.0),
-                        Container(
-                          height: 22,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: ColorScheme.of(context).tertiary.withValues(alpha: 0.3),
-                          ),
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                              child: Text(
-                                version,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
+                        UnyoPill(
+                          text: version,
+                          color: ColorScheme.of(context).tertiary,
+                        ),
+                        const SizedBox(width: 4.0),
+                        UnyoPill(
+                          height: 16,
+                          text: TextUtils.extractRepoName(repoUrl),
+                          color: Colors.blue.harmonizeWith(ColorScheme.of(context).secondary),
                         ),
                       ],
                     ),
@@ -150,6 +119,27 @@ class UnyoExtensionButton extends StatelessWidget {
                               color: ColorScheme.of(context).primary.withValues(alpha: 0.2),
                             ),
                             child: Icon(Icons.download_rounded, color: ColorScheme.of(context).tertiary),
+                          ),
+                        ),
+                      ),
+                    )
+                    : const SizedBox(),
+                onUpdatePressed != null
+                    ? Padding(
+                      padding: EdgeInsets.only(left: 10.0.w),
+                      child: Tooltip(
+                        waitDuration: const Duration(milliseconds: 1000),
+                        message: "Update",
+                        child: InkWell(
+                          onTap: onUpdatePressed,
+                          child: Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.green.withValues(alpha: 0.2),
+                            ),
+                            child: Icon(Icons.sync_rounded, color: Colors.greenAccent.withValues(alpha: 0.8)),
                           ),
                         ),
                       ),

@@ -28,12 +28,6 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
       installedMangaExtensions: fields[4] == null
           ? []
           : (fields[4] as List).cast<Extension>(),
-      aniyomiExtensionsRepositoryUrl: fields[5] == null
-          ? 'https://gitea.k3vinb5.dev/Backups/kohi-den-extensions/raw/branch/main/index.min.json'
-          : fields[5] as String,
-      tachiyomiExtensionsRepositoryUrl: fields[6] == null
-          ? 'https://gitea.k3vinb5.dev/Backups/keiyoushi-extensions/raw/branch/repo/index.min.json'
-          : fields[6] as String,
       mediaExtensionConfigs: fields[7] == null
           ? {}
           : (fields[7] as Map).cast<String, Extension>(),
@@ -54,6 +48,16 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
           ? const Color(4280391411)
           : fields[17] as Color,
       useWallpaperAsThemeColor: fields[18] == null ? true : fields[18] as bool,
+      aniyomiExtensionsRepositories: fields[19] == null
+          ? [
+              'https://gitea.k3vinb5.dev/Backups/kohi-den-extensions/raw/branch/main/index.min.json',
+            ]
+          : (fields[19] as List).cast<String>(),
+      tachiyomiExtensionsRepositories: fields[20] == null
+          ? [
+              'https://gitea.k3vinb5.dev/Backups/keiyoushi-extensions/raw/branch/repo/index.min.json',
+            ]
+          : (fields[20] as List).cast<String>(),
     );
   }
 
@@ -71,10 +75,6 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
       ..write(obj.installedAnimeExtensions)
       ..writeByte(4)
       ..write(obj.installedMangaExtensions)
-      ..writeByte(5)
-      ..write(obj.aniyomiExtensionsRepositoryUrl)
-      ..writeByte(6)
-      ..write(obj.tachiyomiExtensionsRepositoryUrl)
       ..writeByte(7)
       ..write(obj.mediaExtensionConfigs)
       ..writeByte(8)
@@ -98,7 +98,11 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
       ..writeByte(17)
       ..write(obj.themeColor)
       ..writeByte(18)
-      ..write(obj.useWallpaperAsThemeColor);
+      ..write(obj.useWallpaperAsThemeColor)
+      ..writeByte(19)
+      ..write(obj.aniyomiExtensionsRepositories)
+      ..writeByte(20)
+      ..write(obj.tachiyomiExtensionsRepositories);
   }
 
   @override
@@ -141,12 +145,6 @@ _SettingsModel _$SettingsModelFromJson(
           )
           .toList() ??
       const [],
-  aniyomiExtensionsRepositoryUrl:
-      json['aniyomiExtensionsRepositoryUrl'] as String? ??
-      config.aniyomiExtensionsRepositoryUrl,
-  tachiyomiExtensionsRepositoryUrl:
-      json['tachiyomiExtensionsRepositoryUrl'] as String? ??
-      config.tachiyomiExtensionsRepositoryUrl,
   mediaExtensionConfigs:
       (json['mediaExtensionConfigs'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
@@ -169,6 +167,16 @@ _SettingsModel _$SettingsModelFromJson(
       ? const Color(0xFF2196F3)
       : const ColorConverter().fromJson((json['themeColor'] as num).toInt()),
   useWallpaperAsThemeColor: json['useWallpaperAsThemeColor'] as bool? ?? true,
+  aniyomiExtensionsRepositories:
+      (json['aniyomiExtensionsRepositories'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [config.aniyomiExtensionsRepositoryUrl],
+  tachiyomiExtensionsRepositories:
+      (json['tachiyomiExtensionsRepositories'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [config.tachiyomiExtensionsRepositoryUrl],
 );
 
 Map<String, dynamic> _$SettingsModelToJson(
@@ -183,8 +191,6 @@ Map<String, dynamic> _$SettingsModelToJson(
   'installedMangaExtensions': instance.installedMangaExtensions
       .map(const ExtensionConverter().toJson)
       .toList(),
-  'aniyomiExtensionsRepositoryUrl': instance.aniyomiExtensionsRepositoryUrl,
-  'tachiyomiExtensionsRepositoryUrl': instance.tachiyomiExtensionsRepositoryUrl,
   'mediaExtensionConfigs': instance.mediaExtensionConfigs.map(
     (k, e) => MapEntry(k, const ExtensionConverter().toJson(e)),
   ),
@@ -199,6 +205,8 @@ Map<String, dynamic> _$SettingsModelToJson(
   'enableNsfwContent': instance.enableNsfwContent,
   'themeColor': const ColorConverter().toJson(instance.themeColor),
   'useWallpaperAsThemeColor': instance.useWallpaperAsThemeColor,
+  'aniyomiExtensionsRepositories': instance.aniyomiExtensionsRepositories,
+  'tachiyomiExtensionsRepositories': instance.tachiyomiExtensionsRepositories,
 };
 
 const _$ServiceEnumMap = {

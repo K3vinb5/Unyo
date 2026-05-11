@@ -13,6 +13,7 @@ import 'package:unyo/core/services/api/http/http_exception.dart';
 import 'package:unyo/domain/entities/extension.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/domain/repositories/extension_repository.dart';
+import 'package:unyo/presentation/widgets/text/text_utils.dart';
 
 class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<ExtensionsState> {
   final Logger _logger = sl<Logger>();
@@ -54,21 +55,22 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
 
   void _init() {
     _loggedUserSubscription = _loggedUserNotifier.userStream.listen((loggedUser) {
-      emit(state.copyWith(
-          loggedUser: loggedUser
-      ));
+      emit(state.copyWith(loggedUser: loggedUser));
       if (!state.userLoaded) {
         _fetchAvailableAnimeExtensions(loggedUser);
         _fetchAvailableMangaExtensions(loggedUser);
         _fetchInstaledAnimeExtensions(loggedUser);
         _fetchInstaledMangaExtensions(loggedUser);
+        _fetchAnimeExtensionUpdates(loggedUser);
+        _fetchMangaExtensionUpdates(loggedUser);
         emit(state.copyWith(userLoaded: true));
       }
     });
   }
 
   Future<void> downloadExtension(Extension extension) async {
-    if (state.installedAnimeExtensions.contains(extension) || state.installedMangaExtensions.contains(extension)) {
+    if (state.installedAnimeExtensions.contains(extension) ||
+        state.installedMangaExtensions.contains(extension)) {
       handleError("This version of ${extension.name} is already installed.");
       return;
     }
@@ -77,11 +79,17 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
       if (extension.type == ExtensionType.ANIYOMI) {
         _fetchInstaledAnimeExtensions(state.loggedUser);
         _fetchAvailableAnimeExtensions(state.loggedUser);
+        _fetchAnimeExtensionUpdates(state.loggedUser);
       } else {
         _fetchInstaledMangaExtensions(state.loggedUser);
         _fetchAvailableMangaExtensions(state.loggedUser);
+        _fetchMangaExtensionUpdates(state.loggedUser);
       }
-      showSnackBarEffect("${extension.name} Installed!", message: "${extension.name} was installed successfully", contentType: ContentType.success);
+      showSnackBarEffect(
+        "${extension.name} Installed!",
+        message: "${extension.name} was installed successfully",
+        contentType: ContentType.success,
+      );
     } catch (e, stackTrace) {
       if (extension.type == ExtensionType.ANIYOMI) {
         _fetchAvailableAnimeExtensions(state.loggedUser);
@@ -93,7 +101,8 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
   }
 
   Future<void> removeExtension(Extension extension) async {
-    if (!state.installedAnimeExtensions.contains(extension) && !state.installedMangaExtensions.contains(extension)) {
+    if (!state.installedAnimeExtensions.contains(extension) &&
+        !state.installedMangaExtensions.contains(extension)) {
       handleError("This version of ${extension.name} is already uninstalled.");
       return;
     }
@@ -102,11 +111,17 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
       if (extension.type == ExtensionType.ANIYOMI) {
         _fetchInstaledAnimeExtensions(state.loggedUser);
         _fetchAvailableAnimeExtensions(state.loggedUser);
+        _fetchAnimeExtensionUpdates(state.loggedUser);
       } else {
         _fetchInstaledMangaExtensions(state.loggedUser);
         _fetchAvailableMangaExtensions(state.loggedUser);
+        _fetchMangaExtensionUpdates(state.loggedUser);
       }
-      showSnackBarEffect("${extension.name} Removed!", message: "${extension.name} was removed successfully", contentType: ContentType.success);
+      showSnackBarEffect(
+        "${extension.name} Removed!",
+        message: "${extension.name} was removed successfully",
+        contentType: ContentType.success,
+      );
     } catch (e, stackTrace) {
       if (extension.type == ExtensionType.ANIYOMI) {
         _fetchInstaledAnimeExtensions(state.loggedUser);
@@ -117,14 +132,54 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
     }
   }
 
+  Future<void> updateExtension(Extension installedExtension) async {
+    final Extension? newExtension = installedExtension.type == ExtensionType.ANIYOMI
+        ? state.animeExtensionUpdates[installedExtension.pkg]
+        : state.mangaExtensionUpdates[installedExtension.pkg];
+
+    if (newExtension == null) {
+      handleError("No update available for ${installedExtension.name}.");
+      return;
+    }
+
+    try {
+      await _extensionRepositoryAniyomi.updateExtension(installedExtension, newExtension);
+      if (installedExtension.type == ExtensionType.ANIYOMI) {
+        _fetchInstaledAnimeExtensions(state.loggedUser);
+        _fetchAvailableAnimeExtensions(state.loggedUser);
+        _fetchAnimeExtensionUpdates(state.loggedUser);
+      } else {
+        _fetchInstaledMangaExtensions(state.loggedUser);
+        _fetchAvailableMangaExtensions(state.loggedUser);
+        _fetchMangaExtensionUpdates(state.loggedUser);
+      }
+      showSnackBarEffect(
+        "${installedExtension.name} Updated!",
+        message: "Updated to version ${newExtension.version}",
+        contentType: ContentType.success,
+      );
+    } catch (e, stackTrace) {
+      handleError("Failed to update extension ${installedExtension.pkg}: $e", stackTrace: stackTrace);
+    }
+  }
+
+  Set<String> getAvailableRepositories() {
+    return state.loggedUser.settings.aniyomiExtensionsRepositories
+        .map((e) => TextUtils.extractRepoName(e))
+        .toSet()
+        .union(
+          state.loggedUser.settings.tachiyomiExtensionsRepositories
+              .map((e) => TextUtils.extractRepoName(e))
+              .toSet(),
+        );
+  }
+
   Future<void> _fetchAvailableAnimeExtensions(User loggedUser) async {
     try {
       _logger.i("Fetching available anime extensions for Aniyomi");
       Set<Extension> availableAniyomiExtensions = await _extensionRepositoryAniyomi
           .getAvailableAnimeExtensions(loggedUser);
-      emit(state.copyWith(
-          availableAnimeExtensions: availableAniyomiExtensions.toList()
-      ));
+      emit(state.copyWith(availableAnimeExtensions: availableAniyomiExtensions.toList()));
     } on HttpServerException catch (e, stackTrace) {
       handleError(
         "Failed to fetch available anime extensions:",
@@ -141,9 +196,7 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
       _logger.i("Fetching available manga extensions for Aniyomi");
       Set<Extension> availableTachiyomiExtensions = await _extensionRepositoryAniyomi
           .getAvailableMangaExtensions(loggedUser);
-      emit(state.copyWith(
-          availableMangaExtensions: availableTachiyomiExtensions.toList()
-      ));
+      emit(state.copyWith(availableMangaExtensions: availableTachiyomiExtensions.toList()));
     } on HttpServerException catch (e, stackTrace) {
       handleError(
         "Failed to fetch available manga extensions:",
@@ -160,9 +213,7 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
       _logger.i("Fetching installed anime extensions for Aniyomi");
       Set<Extension> installedAniyomiExtensions = await _extensionRepositoryAniyomi
           .getInstalledAnimeExtensions(loggedUser);
-      emit(state.copyWith(
-          installedAnimeExtensions: installedAniyomiExtensions.toList()
-      ));
+      emit(state.copyWith(installedAnimeExtensions: installedAniyomiExtensions.toList()));
     } catch (e, stackTrace) {
       handleError("Failed to fetch installed anime extensions $e", stackTrace: stackTrace);
     }
@@ -173,12 +224,29 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
       _logger.i("Fetching installed manga extensions for Aniyomi");
       Set<Extension> installedTachiyomiExtensions = await _extensionRepositoryAniyomi
           .getInstalledMangaExtensions(loggedUser);
-      emit(state.copyWith(
-          installedMangaExtensions: installedTachiyomiExtensions.toList()
-      ));
+      emit(state.copyWith(installedMangaExtensions: installedTachiyomiExtensions.toList()));
     } catch (e, stackTrace) {
       handleError("Failed to fetch installed manga extensions $e", stackTrace: stackTrace);
     }
   }
 
+  Future<void> _fetchAnimeExtensionUpdates(User loggedUser) async {
+    try {
+      _logger.i("Fetching anime extension updates");
+      final updates = await _extensionRepositoryAniyomi.getAnimeExtensionUpdates(loggedUser);
+      emit(state.copyWith(animeExtensionUpdates: updates));
+    } catch (e, stackTrace) {
+      _logger.w("Failed to fetch anime extension updates", stackTrace: stackTrace);
+    }
+  }
+
+  Future<void> _fetchMangaExtensionUpdates(User loggedUser) async {
+    try {
+      _logger.i("Fetching manga extension updates");
+      final updates = await _extensionRepositoryAniyomi.getMangaExtensionUpdates(loggedUser);
+      emit(state.copyWith(mangaExtensionUpdates: updates));
+    } catch (e, stackTrace) {
+      _logger.w("Failed to fetch manga extension updates", stackTrace: stackTrace);
+    }
+  }
 }

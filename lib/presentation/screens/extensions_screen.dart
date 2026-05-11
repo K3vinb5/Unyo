@@ -2,13 +2,18 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:unyo/application/cubits/extensions_cubit.dart';
 import 'package:unyo/application/states/extensions_state.dart';
 import 'package:unyo/core/di/locator.dart';
+import 'package:unyo/domain/entities/extension.dart';
 import 'package:unyo/core/services/effects/app_effect_handler.dart';
+import 'package:unyo/presentation/widgets/styled/unyo_dropdown.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_extension_button.dart';
+import 'package:unyo/presentation/widgets/styled/unyo_textfield.dart';
 import 'package:unyo/presentation/widgets/text/text_body_large.dart';
 import 'package:unyo/presentation/widgets/text/text_headline_medium.dart';
+import 'package:unyo/presentation/widgets/text/text_utils.dart';
 
 @RoutePage()
 class ExtensionsScreen extends StatelessWidget {
@@ -49,6 +54,24 @@ class _ExtensionsView extends StatefulWidget {
 
 class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderStateMixin {
   late TabController tabController;
+  String _searchQuery = '';
+  String? _selectedRepo;
+
+  List<Extension> _filter(List<Extension> extensions) {
+    var filtered = extensions;
+    if (_selectedRepo != null) {
+      filtered = filtered.where((e) => TextUtils.extractRepoName(e.repositoryUrl) == _selectedRepo).toList();
+    }
+    if (_searchQuery.isEmpty) return filtered;
+    final results = extractTop(
+      query: _searchQuery,
+      choices: filtered,
+      limit: filtered.length,
+      cutoff: 30,
+      getter: (e) => '${e.name} ${e.lang}',
+    );
+    return results.map((r) => r.choice).toList();
+  }
 
   @override
   void initState() {
@@ -143,8 +166,39 @@ class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderSta
                 ],
               ),
             ),
-            SizedBox(
-              height: 1.sh - 135,
+            Padding(
+              padding: EdgeInsets.only(left: 32.w, right: 32.w, top: 16.h),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: UnyoTextfield(
+                      label: "Search extensions...",
+                      debounceMilliseconds: 300,
+                      onChange: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                    Expanded(
+                    flex: 2,
+                    child: UnyoDropdown(
+                      label: "Repository...",
+                      selectedValue: _selectedRepo,
+                      reactOnCancel: true,
+                      children: context.read<ExtensionsCubit>().getAvailableRepositories().toList(),
+                      onPressed: (repo) => setState(() {
+                        _selectedRepo = repo;
+                      }),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
               child: Padding(
                 padding: EdgeInsets.only(left: 15.0.w, right: 15.0.w, top: 15.0.h),
                 child: TabBarView(
@@ -153,14 +207,16 @@ class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderSta
                     ListView(
                       scrollDirection: Axis.vertical,
                       children: [
-                        ...state.availableAnimeExtensions.map(
+                        ..._filter(state.availableAnimeExtensions).map(
                           (extension) => UnyoExtensionButton(
                             iconUrl: extension.icon,
                             name: extension.name,
                             lang: extension.lang,
                             version: extension.version,
                             nsfw: extension.nsfw,
-                            onDownloadPressed: () => context.read<ExtensionsCubit>().downloadExtension(extension),
+                            repoUrl: extension.repositoryUrl,
+                            onDownloadPressed: () =>
+                                context.read<ExtensionsCubit>().downloadExtension(extension),
                           ),
                         ),
                       ],
@@ -168,14 +224,16 @@ class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderSta
                     ListView(
                       scrollDirection: Axis.vertical,
                       children: [
-                        ...state.availableMangaExtensions.map(
+                        ..._filter(state.availableMangaExtensions).map(
                           (extension) => UnyoExtensionButton(
                             iconUrl: extension.icon,
                             name: extension.name,
                             lang: extension.lang,
                             version: extension.version,
                             nsfw: extension.nsfw,
-                            onDownloadPressed: () => context.read<ExtensionsCubit>().downloadExtension(extension),
+                            repoUrl: extension.repositoryUrl,
+                            onDownloadPressed: () =>
+                                context.read<ExtensionsCubit>().downloadExtension(extension),
                           ),
                         ),
                       ],
@@ -183,15 +241,19 @@ class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderSta
                     ListView(
                       scrollDirection: Axis.vertical,
                       children: [
-                        ...state.installedAnimeExtensions.map(
+                        ..._filter(state.installedAnimeExtensions).map(
                           (extension) => UnyoExtensionButton(
                             iconUrl: extension.icon,
                             name: extension.name,
                             lang: extension.lang,
                             version: extension.version,
                             nsfw: extension.nsfw,
+                            repoUrl: extension.repositoryUrl,
+                            onUpdatePressed: state.animeExtensionUpdates.containsKey(extension.pkg)
+                                ? () => context.read<ExtensionsCubit>().updateExtension(extension)
+                                : null,
                             onDeletePressed: () => context.read<ExtensionsCubit>().removeExtension(extension),
-                            onSettingsPressed: (){},
+                            onSettingsPressed: () {},
                           ),
                         ),
                       ],
@@ -199,13 +261,17 @@ class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderSta
                     ListView(
                       scrollDirection: Axis.vertical,
                       children: [
-                        ...state.installedMangaExtensions.map(
+                        ..._filter(state.installedMangaExtensions).map(
                           (extension) => UnyoExtensionButton(
                             iconUrl: extension.icon,
                             name: extension.name,
                             lang: extension.lang,
                             version: extension.version,
                             nsfw: extension.nsfw,
+                            repoUrl: extension.repositoryUrl,
+                            onUpdatePressed: state.mangaExtensionUpdates.containsKey(extension.pkg)
+                                ? () => context.read<ExtensionsCubit>().updateExtension(extension)
+                                : null,
                             onDeletePressed: () => context.read<ExtensionsCubit>().removeExtension(extension),
                             onSettingsPressed: () {},
                           ),

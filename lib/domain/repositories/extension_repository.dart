@@ -6,8 +6,11 @@ abstract class ExtensionRepository {
   Future<Set<Extension>> getAvailableMangaExtensions(User loggedUser);
   Future<Set<Extension>> getInstalledAnimeExtensions(User loggedUser);
   Future<Set<Extension>> getInstalledMangaExtensions(User loggedUser);
-  Future<void> updateAnimeRepositoryUrl(String newUrl, User user);
-  Future<void> updateMangaRepositoryUrl(String newUrl, User user);
+
+  Future<Map<String, Extension>> getAnimeExtensionUpdates(User loggedUser);
+  Future<Map<String, Extension>> getMangaExtensionUpdates(User loggedUser);
+
   Future<void> addExtension(Extension extension);
   Future<void> removeExtension(Extension extension);
+  Future<void> updateExtension(Extension oldExtension, Extension newExtension);
 }

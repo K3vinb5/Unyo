@@ -259,7 +259,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
     filters.addAll({
       'genres': (
         true,
-        TextUtils.upperCaseFirstCharacter(
+        TextUtils.capitalizeList(
           AnilistGenreFilters.values
               .map((enumElement) {
                 // Special handling for sci_fi to display as "Sci-fi"
@@ -275,7 +275,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
     filters.addAll({
       'seasons': (
         true,
-        TextUtils.upperCaseFirstCharacter(
+        TextUtils.capitalizeList(
           AnilistSeasonFilters.values.map((enumElement) => enumElement.name).toList(),
         ),
       ),
@@ -283,7 +283,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
     filters.addAll({
       'formats': (
         true,
-        TextUtils.upperCaseFirstCharacter(
+        TextUtils.capitalizeList(
           AnilistFormatFilters.values.map((enumElement) => enumElement.name.replaceAll('_', ' ')).toList(),
         ),
       ),
@@ -291,7 +291,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
     filters.addAll({
       'airingStatuses': (
         true,
-        TextUtils.upperCaseFirstCharacter(
+        TextUtils.capitalizeList(
           AnilistAiringStatusFilters.values
               .map((enumElement) => enumElement.name.replaceAll('_', ' '))
               .toList(),
@@ -310,7 +310,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
     filters.addAll({
       'sortOptions': (
         true,
-        TextUtils.upperCaseFirstCharacter(
+        TextUtils.capitalizeList(
           AnilistSortOptions.values.map((enumElement) => enumElement.name.replaceAll('_', ' ')).toList(),
         ),
       ),
@@ -318,7 +318,7 @@ class AnimeRepositoryAnilist with RepositoryMixin implements AnimeRepository {
     filters.addAll({
       'sortOrders': (
         true,
-        TextUtils.upperCaseFirstCharacter(
+        TextUtils.capitalizeList(
           AnilistSortOrder.values.map((enumElement) => enumElement.name.replaceAll('_', ' ')).toList(),
         ),
       ),

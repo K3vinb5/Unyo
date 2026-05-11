@@ -1,0 +1,19 @@
+UNYO - END USER LICENSE AGREEMENT (EULA)
+Copyright (c) 2026, Kevin Rodrigues Borges
+
+By downloading, installing, or using the Unyo application, you agree to the following terms:
+
+1. LICENSE GRANT
+Kevin Rodrigues Borges grants you a personal, non-exclusive, non-transferable license to use the compiled Unyo software for personal, non-commercial purposes.
+
+2. RESTRICTIONS ON PROPRIETARY COMPONENTS
+The user interface (unyo-app) is provided under the BSD-3-Clause license. However, the underlying core architecture, libraries, and custom JVM layers (unyo-core and unyo-lib) bundled within this application are proprietary and closed-source.
+You may not:
+- Decompile, reverse engineer, disassemble, or attempt to derive the source code of the proprietary backend components.
+- Extract or reuse the proprietary backend libraries (unyo-core, unyo-lib) for use in other applications or competing products.
+- Modify or create derivative works based on the proprietary components.
+
+3. DISCLAIMER OF WARRANTY
+This software is provided "AS IS", without warranty of any kind, express or implied.
+
+Contact: kevinborgborges555@gmail.com
