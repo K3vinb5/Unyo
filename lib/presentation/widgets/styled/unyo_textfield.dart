@@ -7,10 +7,11 @@ class UnyoTextfield extends StatefulWidget {
   final IconData? icon;
   final String? hint;
   final String? label;
+  final String? initialValue;
   final int debounceMilliseconds;
   final void Function(String)? onChange;
 
-  const UnyoTextfield({super.key, this.width, this.icon, this.hint, required this.label, required this.debounceMilliseconds, required this.onChange});
+  const UnyoTextfield({super.key, this.width, this.icon, this.hint, required this.label, this.initialValue, required this.debounceMilliseconds, required this.onChange});
 
   @override
   State<UnyoTextfield> createState() => _UnyoTextfieldState();
@@ -23,7 +24,8 @@ class _UnyoTextfieldState extends State<UnyoTextfield> {
 
   @override
   void initState() {
-    searchController = TextEditingController();
+    searchController = TextEditingController(text: widget.initialValue);
+    currentText = widget.initialValue ?? '';
     super.initState();
   }
 

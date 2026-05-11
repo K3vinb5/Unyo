@@ -253,7 +253,7 @@ class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderSta
                                 ? () => context.read<ExtensionsCubit>().updateExtension(extension)
                                 : null,
                             onDeletePressed: () => context.read<ExtensionsCubit>().removeExtension(extension),
-                            onSettingsPressed: () {},
+                            onSettingsPressed: () => context.read<ExtensionsCubit>().openExtensionPreferences(extension),
                           ),
                         ),
                       ],
@@ -273,7 +273,7 @@ class _ExtensionsViewState extends State<_ExtensionsView> with TickerProviderSta
                                 ? () => context.read<ExtensionsCubit>().updateExtension(extension)
                                 : null,
                             onDeletePressed: () => context.read<ExtensionsCubit>().removeExtension(extension),
-                            onSettingsPressed: () {},
+                            onSettingsPressed: () => context.read<ExtensionsCubit>().openExtensionPreferences(extension),
                           ),
                         ),
                       ],

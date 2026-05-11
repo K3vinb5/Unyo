@@ -6,14 +6,14 @@ import 'package:unyo/presentation/widgets/text/text_utils.dart';
 import 'package:unyo/presentation/widgets/styled/dark_unyo_button.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_textfield.dart';
 
-class ExtensionsDialog extends StatefulWidget {
+class ExtensionsSettingsDialog extends StatefulWidget {
   final double width;
   final double height;
   final String title;
   final List<String> currentRepositoriesUrls;
   final void Function(List<String>) onSubmitted;
 
-  const ExtensionsDialog({
+  const ExtensionsSettingsDialog({
     super.key,
     required this.width,
     required this.height,
@@ -23,10 +23,10 @@ class ExtensionsDialog extends StatefulWidget {
   });
 
   @override
-  State<ExtensionsDialog> createState() => _ExtensionsDialogState();
+  State<ExtensionsSettingsDialog> createState() => _ExtensionsSettingsDialogState();
 }
 
-class _ExtensionsDialogState extends State<ExtensionsDialog> {
+class _ExtensionsSettingsDialogState extends State<ExtensionsSettingsDialog> {
   late List<String> _currentRepositoriesUrls;
 
   @override
@@ -47,16 +47,16 @@ class _ExtensionsDialogState extends State<ExtensionsDialog> {
           child: Column(
             children: [
               Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0.w, vertical: 5.0.h),
-                  child: ListView(
-                    children: [
-                      SizedBox(height: 5.h),
-                      Text(widget.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 25.h),
-                      ..._currentRepositoriesUrls.mapIndexed(
-                            (index, repoUrl) =>
-                            Column(
+                child: ListView(
+                  children: [
+                    SizedBox(height: 5.h),
+                    Text(widget.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 25.h),
+                    ..._currentRepositoriesUrls.mapIndexed(
+                          (index, repoUrl) =>
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 0),
+                            child: Column(
                               children: [
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -100,16 +100,20 @@ class _ExtensionsDialogState extends State<ExtensionsDialog> {
                                 SizedBox(height: 20.h),
                               ],
                             ),
-                      ),
-                      LightUnyoButton(text: "Add Repository", onPressed: () {
+                          ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: LightUnyoButton(text: "Add Repository", onPressed: () {
                         setState(() {
                           _currentRepositoriesUrls.add("");
                         });
                       }),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+              SizedBox(height: 16.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unyo/presentation/widgets/styled/unyo_toggle.dart';
 
 class UnyoSettingsSelectionToggle extends StatefulWidget {
   final String title;
@@ -86,18 +87,11 @@ class _UnyoSettingsSelectionToggleState extends State<UnyoSettingsSelectionToggl
                 ),
               ],
             ),
-            Switch(
+            UnyoToggle(
               value: _isSelected,
-              trackOutlineWidth: const WidgetStatePropertyAll(0.5),
-              activeTrackColor: ColorScheme.of(context).primary,
-              inactiveTrackColor: Colors.black45,
-              trackOutlineColor: WidgetStatePropertyAll(Colors.white.withValues(alpha: 0.4)),
-              inactiveThumbColor: Colors.white.withValues(alpha: 0.7),
-              thumbColor: WidgetStateMapper({WidgetState.selected: ColorScheme.of(context).tertiary}),
-              hoverColor: ColorScheme.of(context).tertiary.withValues(alpha: 0.1),
               onChanged: (value) {
                 setState(() {
-                  _isSelected = !_isSelected;
+                  _isSelected = value;
                 });
                 widget.onPressed(value);
               },

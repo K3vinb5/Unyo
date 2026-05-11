@@ -18,8 +18,11 @@ import 'package:unyo/core/services/api/dto/extensions/tachiyomi_repo_json_entity
 import 'package:unyo/core/services/api/http/api_response.dart';
 import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/domain/entities/extension.dart';
+import 'package:unyo/domain/entities/preference_item.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/domain/repositories/extension_repository.dart';
+import 'package:unyo_lib/jmodels/jpreferenceitem.dart';
+import 'package:jni/jni.dart' as jni;
 
 class ExtensionRepositoryAniyomi implements ExtensionRepository {
   // Services
@@ -202,6 +205,71 @@ class ExtensionRepositoryAniyomi implements ExtensionRepository {
     _logger.i("Updating extension ${oldExtension.pkg} from ${oldExtension.version} to ${newExtension.version}");
     await removeExtension(oldExtension);
     await addExtension(newExtension);
+  }
+
+  @override
+  Future<List<PreferenceItem>> getExtensionPreferences(String pkg) async {
+    _logger.d("Fetching preferences for extension $pkg");
+    final List<JPreferenceItem> jPrefs = await _aniyomiBridge.getAnimePreferences(pkg);
+    return jPrefs.map((jp) {
+      final type = jp.type$1?.toDartString() ?? 'Preference';
+      final dartValue = _castPreferenceValue(type, jp.value, jp.key?.toDartString() ?? '');
+
+      return PreferenceItem(
+        key: jp.key?.toDartString() ?? '',
+        title: jp.title?.toDartString() ?? '',
+        type: type,
+        value: dartValue,
+        summary: jp.summary?.toDartString(),
+        entries: _toStringList(jp.entries),
+        entryValues: _toStringList(jp.entryValues),
+      );
+    }).toList();
+  }
+
+  @override
+  Future<void> setExtensionPreferences(String pkg, Map<String, dynamic> values) async {
+    _logger.d("Saving preferences for extension $pkg");
+    await _aniyomiBridge.setAnimePreferences(pkg, values);
+  }
+
+  dynamic _castPreferenceValue(String type, jni.JObject? jValue, String key) {
+    if (jValue == null) return null;
+    try {
+      switch (type) {
+        case 'SwitchPreferenceCompat':
+          final jBool = jValue.as<jni.JBoolean>(jni.JBoolean.type);
+          return jBool.booleanValue();
+        case 'ListPreference':
+        case 'EditTextPreference':
+          final jStr = jValue.as<jni.JString>(jni.JString.type);
+          return jStr.toDartString();
+        case 'MultiSelectListPreference':
+          final jSet = jValue.as<jni.JSet<jni.JString?>>(
+            jni.JSet.type(jni.JString.nullableType),
+          );
+          final iter = jSet.iterator;
+          final setValues = <String>{};
+          while (iter.moveNext()) {
+            final str = iter.current?.toDartString();
+            if (str != null) setValues.add(str);
+          }
+          return setValues;
+      }
+    } catch (e, stackTrace) {
+      _logger.w("Failed to cast preference value for $key: $e", stackTrace: stackTrace);
+    }
+    return null;
+  }
+
+  List<String>? _toStringList(List<jni.JString?>? jList) {
+    if (jList == null) return null;
+    final result = <String>[];
+    for (final e in jList) {
+      final str = e?.toDartString();
+      if (str != null) result.add(str);
+    }
+    return result.isEmpty ? null : result;
   }
 
   Future<List<JSAnime>> getAnimeSearchResults(String query, Extension extension) async {

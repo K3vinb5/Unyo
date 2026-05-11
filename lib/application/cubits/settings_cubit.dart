@@ -243,7 +243,7 @@ class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState>
 
   void openAniyomiExtensionsDialog() {
     showWidgetDialogEffect(
-      dialog: ExtensionsDialog(
+      dialog: ExtensionsSettingsDialog(
         width: 600.w,
         height: 400.h,
         title: "Aniyomi extensions repository URL",
@@ -268,7 +268,7 @@ class SettingsCubit extends Cubit<SettingsState> with EffectMixin<SettingsState>
 
   void openTachiyomiExtensionsDialog() {
     showWidgetDialogEffect(
-      dialog: ExtensionsDialog(
+      dialog: ExtensionsSettingsDialog(
         width: 600.w,
         height: 400.h,
         title: "Tachiyomi extensions repository URL",

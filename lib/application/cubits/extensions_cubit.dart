@@ -13,6 +13,7 @@ import 'package:unyo/core/services/api/http/http_exception.dart';
 import 'package:unyo/domain/entities/extension.dart';
 import 'package:unyo/domain/entities/user.dart';
 import 'package:unyo/domain/repositories/extension_repository.dart';
+import 'package:unyo/presentation/dialogs/extension_preferences_dialog.dart';
 import 'package:unyo/presentation/widgets/text/text_utils.dart';
 
 class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<ExtensionsState> {
@@ -160,6 +161,39 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
       );
     } catch (e, stackTrace) {
       handleError("Failed to update extension ${installedExtension.pkg}: $e", stackTrace: stackTrace);
+    }
+  }
+
+  Future<void> openExtensionPreferences(Extension extension) async {
+    try {
+      _logger.i("Fetching preferences for ${extension.name}");
+      final preferences = await _extensionRepositoryAniyomi.getExtensionPreferences(extension.pkg);
+      _logger.d("Received ${preferences.length} preferences:");
+      for (final p in preferences) {
+        _logger.d("  - ${p.key} | ${p.title} | ${p.type}");
+      }
+      showWidgetDialogEffect(
+        dialog: ExtensionPreferencesDialog(
+          pkg: extension.pkg,
+          preferences: preferences,
+          onSave: (values) => _saveExtensionPreferences(extension.pkg, values),
+        ),
+      );
+    } catch (e, stackTrace) {
+      handleError("Failed to load preferences for ${extension.name}: $e", stackTrace: stackTrace);
+    }
+  }
+
+  Future<void> _saveExtensionPreferences(String pkg, Map<String, dynamic> values) async {
+    try {
+      await _extensionRepositoryAniyomi.setExtensionPreferences(pkg, values);
+      showSnackBarEffect(
+        "Preferences Saved",
+        message: "Extension preferences updated",
+        contentType: ContentType.success,
+      );
+    } catch (e, stackTrace) {
+      handleError("Failed to save extension preferences: $e", stackTrace: stackTrace);
     }
   }
 

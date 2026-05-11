@@ -1,4 +1,5 @@
 import 'package:unyo/domain/entities/extension.dart';
+import 'package:unyo/domain/entities/preference_item.dart';
 import 'package:unyo/domain/entities/user.dart';
 
 abstract class ExtensionRepository {
@@ -13,4 +14,7 @@ abstract class ExtensionRepository {
   Future<void> addExtension(Extension extension);
   Future<void> removeExtension(Extension extension);
   Future<void> updateExtension(Extension oldExtension, Extension newExtension);
+
+  Future<List<PreferenceItem>> getExtensionPreferences(String pkg);
+  Future<void> setExtensionPreferences(String pkg, Map<String, dynamic> values);
 }
