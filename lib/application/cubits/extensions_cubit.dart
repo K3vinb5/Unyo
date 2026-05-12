@@ -168,10 +168,6 @@ class ExtensionsCubit extends Cubit<ExtensionsState> with EffectMixin<Extensions
     try {
       _logger.i("Fetching preferences for ${extension.name}");
       final preferences = await _extensionRepositoryAniyomi.getExtensionPreferences(extension.pkg);
-      _logger.d("Received ${preferences.length} preferences:");
-      for (final p in preferences) {
-        _logger.d("  - ${p.key} | ${p.title} | ${p.type}");
-      }
       showWidgetDialogEffect(
         dialog: ExtensionPreferencesDialog(
           pkg: extension.pkg,
