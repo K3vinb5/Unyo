@@ -98,13 +98,14 @@ class UserRepositoryAnilist with RepositoryMixin implements UserRepository {
           ignoreCache: ignoreCache
         );
     throwIfGraphQlError(mediaCollection);
-    List<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia> mediaEntries =
+    MediaCollectionGraphqlDtoDataMediaListCollectionLists? watchingList =
         mediaCollection.data.mediaListCollection.lists
-            .where(((collection) => collection.name == "Watching"))
-            .first
-            .entries
+            .where((collection) => collection.name == "Watching")
+            .firstOrNull;
+    List<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia> mediaEntries =
+        watchingList?.entries
             .map((entry) => entry.media)
-            .toList();
+            .toList() ?? [];
     return mediaEntries.map((mediaEntry) => AnilistAnimeModel.fromUserMediaEntry(mediaEntry)).toList();
   }
 
@@ -122,13 +123,14 @@ class UserRepositoryAnilist with RepositoryMixin implements UserRepository {
           ignoreCache: ignoreCache
         );
     throwIfGraphQlError(mediaCollection);
-    List<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia> mediaEntries =
+    MediaCollectionGraphqlDtoDataMediaListCollectionLists? readingList =
         mediaCollection.data.mediaListCollection.lists
-            .where(((collection) => collection.name == "Reading"))
-            .first
-            .entries
+            .where((collection) => collection.name == "Reading")
+            .firstOrNull;
+    List<MediaCollectionGraphqlDtoDataMediaListCollectionListsEntriesMedia> mediaEntries =
+        readingList?.entries
             .map((entry) => entry.media)
-            .toList();
+            .toList() ?? [];
     return mediaEntries.map((mediaEntry) => AnilistMangaModel.fromUserMediaEntry(mediaEntry)).toList();
   }
 
