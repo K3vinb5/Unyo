@@ -106,6 +106,11 @@ class Video {
       'resolution': resolution,
     };
   }
+
+  @override
+  String toString() {
+    return 'Video{url: $url, title: $title, quality: $quality, videoUrl: $videoUrl, headers: $headers, initialized: $initialized, audioTracks: $audioTracks, subtitleTracks: $subtitleTracks, bitrate: $bitrate, resolution: $resolution}';
+  }
 }
 
 class VideoConverter implements JsonConverter<Video, Map<String, dynamic>> {

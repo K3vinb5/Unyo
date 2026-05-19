@@ -30,7 +30,7 @@ class UnyoServerButton extends StatelessWidget {
                   children: [
                       Text(
                         videoServer.quality,
-                        maxLines: 4,
+                        maxLines: 12,
                         overflow: TextOverflow.fade,
                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                       ),

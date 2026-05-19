@@ -182,9 +182,9 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     emit(state.copyWith(videoInfo: videoInfo, isLoading: false));
   }
 
-  void _selectNewEpisode(VideoInfo videoInfo) {
+  Future<void> _selectNewEpisode(VideoInfo videoInfo) async {
     _logger.i("Selecting new episode: Index ${videoInfo.playlistIndex}");
-    _videoService.changeVideo(
+    await _videoService.changeVideo(
       video: videoInfo.currentVideo,
       alternativeVideos: videoInfo.alternativeVideos,
       videoIndex: videoInfo.videoIndex,
@@ -401,7 +401,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
         videoIndex: currentVideoInfo.videoIndex,
         playlistIndex: episodeIndex,
       );
-      _selectNewEpisode(videoInfo);
+      await _selectNewEpisode(videoInfo);
     } catch (e, stackTrace) {
       logger.e("Error navigating to episode $e", stackTrace: stackTrace);
       handleError("Error navigating to episode", stackTrace: stackTrace);

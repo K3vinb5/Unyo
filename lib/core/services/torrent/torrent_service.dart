@@ -10,6 +10,7 @@ import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/services/api/http/api_response.dart';
 import 'package:unyo/core/services/api/http/empty_api_response.dart';
 import 'package:unyo/core/services/api/http/http_service.dart';
+import 'package:unyo/domain/entities/torrent/torrent_status.dart';
 
 class TorrentService {
   static const String _servicesDir = "services";
@@ -28,6 +29,7 @@ class TorrentService {
     Directory supportDirectory = sl<Directory>(instanceName: config.applicationSupportDirectory);
     String torrServerPath = await _loadTorrServerIfNeeded(supportDirectory);
     _startServer(torrServerPath);
+    await _wipeAllTorrents();
   }
 
   Future<String> _loadTorrServerIfNeeded(Directory supportDirectory) async {
@@ -106,5 +108,91 @@ class TorrentService {
     } catch (_) {
     }
     torrentProcess?.kill();
+  }
+
+  Future<void> _wipeAllTorrents() async {
+    await Future.delayed(const Duration(milliseconds: 250));
+    try {
+      await _httpService.post<EmptyApiResponse>(
+        "${config.torrentServiceEndpoint}/torrents",
+        body: {"action": "wipe"},
+        fromJson: EmptyApiResponse.fromJson,
+        ignoreCache: true,
+      );
+      _logger.i("All torrents wiped from torrserver");
+    } catch (e) {
+      _logger.w("Failed to wipe torrents: $e");
+    }
+  }
+
+  Future<TorrentStatus> addTorrent(
+    String link, {
+    String? title,
+    String? poster,
+    String? category,
+    bool saveToDb = true,
+  }) async {
+    _logger.i("Adding torrent to torrserver: $link");
+    final body = {
+      "action": "add",
+      "link": link,
+      if (title != null) "title": title,
+      if (poster != null) "poster": poster,
+      if (category != null) "category": category,
+      "save_to_db": saveToDb,
+    };
+    final response = await _httpService.post<TorrentStatus>(
+      "${config.torrentServiceEndpoint}/torrents",
+      body: body,
+      fromJson: TorrentStatusModel.fromJson,
+      ignoreCache: true,
+    );
+    if (response.statusCode >= 300) {
+      throw Exception("Failed to add torrent: ${response.statusCode}");
+    }
+    return response.data;
+  }
+
+  Future<TorrentStatus?> getTorrent(String hash) async {
+    final body = {
+      "action": "get",
+      "hash": hash,
+    };
+    try {
+      final response = await _httpService.post<TorrentStatus>(
+        "${config.torrentServiceEndpoint}/torrents",
+        body: body,
+        fromJson: TorrentStatusModel.fromJson,
+        ignoreCache: true,
+      );
+      if (response.statusCode >= 300) {
+        return null;
+      }
+      return response.data;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> removeTorrent(String hash) async {
+    _logger.i("Removing torrent from torrserver: $hash");
+    final body = {
+      "action": "rem",
+      "hash": hash,
+    };
+    try {
+      await _httpService.post<EmptyApiResponse>(
+        "${config.torrentServiceEndpoint}/torrents",
+        body: body,
+        fromJson: EmptyApiResponse.fromJson,
+        ignoreCache: true,
+      );
+    } catch (e) {
+      _logger.w("Failed to remove torrent $hash: $e");
+    }
+  }
+
+  String getStreamUrl(String hash, int fileIndex) {
+    return "${config.torrentServiceEndpoint}/play/$hash/$fileIndex";
   }
 }

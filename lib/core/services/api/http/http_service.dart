@@ -173,6 +173,10 @@ class HttpService {
       _logger.w("Endpoint $endpoint is disabled for caching");
       return false;
     }
+    if (config.cacheDisabledHosts.contains(Uri.parse(endpoint).host)) {
+      _logger.w("Host ${Uri.parse(endpoint).host} is disabled for caching");
+      return false;
+    }
     return true;
   }
 

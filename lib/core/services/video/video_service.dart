@@ -1,8 +1,10 @@
 // External dependencies
 import 'dart:async';
 import 'dart:io';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:fvp/mdk.dart' as mdk;
 import 'package:logger/logger.dart';
 
@@ -11,12 +13,16 @@ import 'package:unyo/domain/entities/extension/headers.dart' as ext;
 import 'package:unyo/domain/entities/extension/track.dart' as ext;
 import 'package:unyo/domain/entities/extension/video.dart' as ext;
 import 'package:unyo/core/di/locator.dart';
+import 'package:unyo/core/services/torrent/torrent_service.dart';
+import 'package:unyo/domain/entities/torrent/torrent_file_stat.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 class VideoService {
   // Services
   final Logger _logger = sl<Logger>();
+  final TorrentService _torrentService = sl<TorrentService>();
+  final Set<String> _torrentHashes = {};
 
   ext.Video _video;
   List<ext.Video> _alternativeVideos;
@@ -54,43 +60,49 @@ class VideoService {
        _alternativeVideos = alternativeVideos,
        _onErrorCallback = onErrorCallback,
        _lowLatency = lowLatency {
-    _initAsync();
     _player = mdk.Player();
-    // Set player ffmpeg properties
     _configureDecoder();
     _configurePlayer();
-    // Set player HTTP headers
     _setPlayerHttpHeaders(_video.headers);
-    // Set player logs handler
-    // _setPlayerLogsHandler();
-    // Waits for video to be ready and initializes embedded tracks
-    // TODO handle magnets
-    // Set player media properties
-    _player.setMedia(_video.videoUrl, mdk.MediaType.video);
-    _player.setMedia(_video.videoUrl, mdk.MediaType.audio);
-    _player.loop = 0; // No loop
+    _initAsync();
+  }
+
+  /// Inits asynchronous properties and sets player media
+  Future<void> _initAsync() async {
+    _initialFullscreen = await windowManager.isFullScreen();
+    _isFullscreen = _initialFullscreen;
+    try {
+      final resolvedUrl = await _resolveVideoUrl(_video.videoUrl);
+      _player.setMedia(resolvedUrl, mdk.MediaType.video);
+      _player.setMedia(resolvedUrl, mdk.MediaType.audio);
+    } catch (e, st) {
+      _logger.e("Failed to resolve video URL in _initAsync", error: e, stackTrace: st);
+      _onErrorCallback(e.toString());
+    }
+    _player.loop = 0;
     _player.state = mdk.PlaybackState.paused;
     _player.onMediaStatus(_onMediaStatusInit);
   }
 
-  /// Inits asynchronous properties
-  Future<void> _initAsync() async {
-    _initialFullscreen = await windowManager.isFullScreen();
-    _isFullscreen = _initialFullscreen;
-  }
-
-  void changeVideo({
+  Future<void> changeVideo({
     required ext.Video video,
     required List<ext.Video> alternativeVideos,
     required int videoIndex,
-    required int episodeIndex})
-  {
+    required int episodeIndex,
+  }) async {
+    _attemptDisposeTorrent();
     _video = video;
     _alternativeVideos = alternativeVideos;
     _videoIndex = videoIndex;
     _episodeIndex = episodeIndex;
-    _player.setMedia(_video.videoUrl, mdk.MediaType.video);
-    _player.setMedia(_video.videoUrl, mdk.MediaType.audio);
+    try {
+      final resolvedUrl = await _resolveVideoUrl(_video.videoUrl);
+      _player.setMedia(resolvedUrl, mdk.MediaType.video);
+      _player.setMedia(resolvedUrl, mdk.MediaType.audio);
+    } catch (e, st) {
+      _logger.e("Failed to resolve video URL on change", error: e, stackTrace: st);
+      _onErrorCallback(e.toString());
+    }
   }
 
   // Getters
@@ -210,15 +222,22 @@ class VideoService {
     _video = video;
     final position = this.position;
     await _player.seek(position: 0, flags: _seekFlags);
-    _player.setMedia(video.videoUrl, mdk.MediaType.video);
-    _player.setMedia(video.videoUrl, mdk.MediaType.audio);
-    await _initCaptionsAndAudiotracks();
+    try {
+      final resolvedUrl = await _resolveVideoUrl(video.videoUrl);
+      _player.setMedia(resolvedUrl, mdk.MediaType.video);
+      _player.setMedia(resolvedUrl, mdk.MediaType.audio);
+    } catch (e, st) {
+      _logger.e("Failed to resolve video URL on swap", error: e, stackTrace: st);
+      _onErrorCallback(e.toString());
+      return;
+    }
+    _initCaptionsAndAudiotracks();
     await Future.delayed(const Duration(milliseconds: 500));
     await _player.seek(position: position.inMilliseconds, flags: _seekFlags);
     play();
   }
 
-  Future<bool> setCaption(int captionIndex) async {
+  bool setCaption(int captionIndex) {
     if (captionIndex < 0 || captionIndex >= captionTracks.length) {
       _currentCaptionTrack = null;
       return false;
@@ -267,6 +286,98 @@ class VideoService {
     _player.onMediaStatus(null);
     setFullscreen(_initialFullscreen);
     _player.dispose();
+    _attemptDisposeTorrent();
+  }
+
+  // Magnet / Torrent resolution
+  Future<String> _resolveVideoUrl(String url) async {
+    if (!url.toLowerCase().startsWith("magnet:")) {
+      return url;
+    }
+    final cleanMagnet = _cleanMagnetUrl(url);
+    final hash = _extractHashFromMagnet(cleanMagnet);
+    final status = await _torrentService.addTorrent(cleanMagnet);
+    _torrentHashes.add(status.hash);
+    if (status.stat >= 2 && status.fileStats.isNotEmpty) {
+      final fileIndex = _selectFileIndex(status.fileStats, _episodeIndex);
+      return _torrentService.getStreamUrl(hash, fileIndex);
+    }
+    _logger.w("No metadata available, streaming with fallback index $_episodeIndex");
+    return _torrentService.getStreamUrl(hash, _episodeIndex);
+  }
+
+  int _selectFileIndex(List<TorrentFileStat> files, int episodeIndex) {
+    if (files.isEmpty) return 0;
+    if (files.length == 1) return files.first.id;
+
+    // Strategy 1: Fuzzy match filename against episode patterns
+    final patterns = [
+      "episode $episodeIndex",
+      "e$episodeIndex",
+      "ep$episodeIndex",
+      episodeIndex.toString().padLeft(2, '0'),
+    ];
+    final List<(int, TorrentFileStat)> allScores = [];
+    for (final pattern in patterns) {
+      for (final file in files) {
+        final fileName = file.path.toLowerCase();
+        final score = tokenSortRatio(pattern, fileName);
+        allScores.add((score, file));
+      }
+    }
+    allScores.sort((a, b) => b.$1.compareTo(a.$1));
+    if (allScores.isNotEmpty && allScores.first.$1 > 60) {
+      return allScores.first.$2.id;
+    }
+
+    // Strategy 2: Direct id match with episode index
+    final directMatch = files.firstWhereOrNull((f) => f.id == episodeIndex);
+    if (directMatch != null) return directMatch.id;
+
+    // Strategy 3: Fallback to first file
+    return files.first.id;
+  }
+
+  /// Removes non-standard query parameters (like `index`) that extensions append
+  /// to magnet URIs, since torrserver may not handle them gracefully.
+  String _cleanMagnetUrl(String magnet) {
+    try {
+      final uri = Uri.parse(magnet);
+      final standardParams = ['xt', 'dn', 'tr', 'ws', 'xs', 'as', 'mt', 'kt'];
+      final cleanedQuery = Map<String, List<String>>.fromEntries(
+        uri.queryParametersAll.entries.where((e) => standardParams.contains(e.key.toLowerCase())),
+      );
+      final cleanedUri = uri.replace(queryParameters: cleanedQuery.isEmpty ? null : cleanedQuery);
+      return cleanedUri.toString();
+    } catch (e) {
+      return magnet;
+    }
+  }
+
+  String _extractHashFromMagnet(String magnet) {
+    try {
+      final uri = Uri.parse(magnet);
+      final xt = uri.queryParameters['xt'];
+      if (xt != null && xt.startsWith("urn:btih:")) {
+        return xt.substring("urn:btih:".length).toLowerCase();
+      }
+    } catch (e) {
+      _logger.w("Failed to parse magnet URI: $e");
+    }
+    // Fallback: try to extract 40-char hex hash from the string
+    final hexHashMatch = RegExp(r'([0-9a-fA-F]{40})').firstMatch(magnet);
+    if (hexHashMatch != null) {
+      return hexHashMatch.group(1)!.toLowerCase();
+    }
+    _logger.e("Could not extract infohash from magnet URI");
+    throw Exception("Could not extract infohash from magnet URI");
+  }
+
+  void _attemptDisposeTorrent() {
+    for (final hash in _torrentHashes) {
+      _torrentService.removeTorrent(hash);
+    }
+    _torrentHashes.clear();
   }
 
   // Utilities
@@ -378,7 +489,7 @@ class VideoService {
     return true;
   }
 
-  Future<void> _initCaptionsAndAudiotracks() async {
+  void _initCaptionsAndAudiotracks() {
     captionTracks.clear();
     audioTracks.clear();
     if (_player.mediaInfo.subtitle != null && _player.mediaInfo.subtitle!.isNotEmpty) {
@@ -389,6 +500,7 @@ class VideoService {
             lang:
                 "${subtitleStreamInfo.metadata["title"] ?? ""} (${subtitleStreamInfo.metadata["language"]} - Embedded)",
             embedded: true,
+            embeddedIndex: subtitleStreamInfo.index,
           ),
         );
       }

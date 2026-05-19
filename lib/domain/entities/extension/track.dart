@@ -4,20 +4,21 @@ class Track {
   final String url;
   final String lang;
   final bool embedded;
-  final int? embeddedIndex;
+  final int embeddedIndex;
 
   const Track({
     required this.url,
     required this.lang,
     required this.embedded,
-    this.embeddedIndex,
+    required this.embeddedIndex,
   });
 
   factory Track.fromJTrack(JTrack jTrack) {
     return Track(
         url: jTrack.getUrl().toDartString(),
         lang: jTrack.getLang().toDartString(),
-        embedded: false
+        embedded: false,
+        embeddedIndex: -1
     );
   }
 
@@ -26,7 +27,7 @@ class Track {
       url: json['url'] as String,
       lang: json['lang'] as String,
       embedded: json['embedded'] as bool,
-      embeddedIndex: json['embeddedIndex'] as int?,
+      embeddedIndex: json['embeddedIndex'] as int,
     );
   }
 
