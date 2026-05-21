@@ -17,9 +17,9 @@ import 'package:unyo/core/services/api/dto/extensions/aniyomi_repo_json_entity.d
 import 'package:unyo/core/services/api/dto/extensions/tachiyomi_repo_json_entity.dart';
 import 'package:unyo/core/services/api/http/api_response.dart';
 import 'package:unyo/core/services/api/http/http_service.dart';
-import 'package:unyo/domain/entities/extension.dart';
-import 'package:unyo/domain/entities/preference_item.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
+import 'package:unyo/domain/entities/extension/preference_item.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 import 'package:unyo/domain/repositories/extension_repository.dart';
 import 'package:unyo_lib/jmodels/jpreferenceitem.dart';
 import 'package:jni/jni.dart' as jni;

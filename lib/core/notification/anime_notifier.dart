@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/domain/entities/anime.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
 
 class AnimeNotifier {
   final BehaviorSubject<Anime> _animeSubject;

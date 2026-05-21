@@ -1,6 +1,6 @@
 import 'package:unyo/core/services/api/dto/anizip/anizip_episode_info_entity.dart';
-import 'package:unyo/domain/entities/episode_info.dart';
-import 'package:unyo/domain/entities/title.dart';
+import 'package:unyo/domain/entities/media/episode_info.dart';
+import 'package:unyo/domain/entities/media/title.dart';
 
 class AnizipMappings {
   final Title title;

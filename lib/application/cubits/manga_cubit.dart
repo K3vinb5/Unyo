@@ -14,9 +14,9 @@ import 'package:unyo/core/notification/reload/reload_notifier.dart';
 import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/data/repositories/manga_repository_anilist.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/media_list.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 import 'effect_mixin.dart';
 
 class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {

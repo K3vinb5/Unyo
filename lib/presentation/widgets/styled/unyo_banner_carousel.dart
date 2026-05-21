@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unyo/core/enums/media_type.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/media_list.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
 import 'package:unyo/presentation/widgets/text/text_utils.dart';
 import 'package:unyo/presentation/widgets/text/texts.dart';
 

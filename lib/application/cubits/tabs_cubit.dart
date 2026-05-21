@@ -11,7 +11,7 @@ import 'package:unyo/core/enums/selected_menu_option.dart';
 import 'package:unyo/core/notification/menu_bar_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/theme/theme_service.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 import 'package:unyo/presentation/drawers/user_options_drawer.dart' show UserOptionsDrawer;
 
 class TabsCubit extends Cubit<TabsState>

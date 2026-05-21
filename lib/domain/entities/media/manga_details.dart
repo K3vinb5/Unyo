@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/media_character.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/media/media_character.dart';
 
-import 'media_list_entry.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
 
 part 'manga_details.freezed.dart';
 part 'manga_details.g.dart';

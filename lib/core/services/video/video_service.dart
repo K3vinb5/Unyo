@@ -244,7 +244,7 @@ class VideoService {
     }
     _currentCaptionTrack = captionTracks[captionIndex];
     if (_currentCaptionTrack!.embedded) {
-      _player.activeSubtitleTracks = [_currentCaptionTrack?.embeddedIndex ?? 0];
+      _player.setActiveTracks(mdk.MediaType.subtitle, [_currentCaptionTrack?.embeddedIndex ?? 0]);
     } else {
       _player.setMedia(_currentCaptionTrack!.url, mdk.MediaType.subtitle);
     }
@@ -258,7 +258,7 @@ class VideoService {
     }
     _currentAudioTrack = audioTracks[audioTrackIndex];
     if (_currentAudioTrack!.embedded) {
-      _player.activeAudioTracks = [_currentAudioTrack?.embeddedIndex ?? 0];
+      _player.setActiveTracks(mdk.MediaType.audio, [_currentAudioTrack?.embeddedIndex ?? 0]);
     } else {
       _player.setMedia(_currentAudioTrack!.url, mdk.MediaType.audio);
     }

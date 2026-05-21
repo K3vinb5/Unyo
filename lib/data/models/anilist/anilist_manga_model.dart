@@ -5,8 +5,8 @@ import 'package:unyo/core/services/api/dto/anilist/media_collection_recently_com
 import 'package:unyo/core/services/api/dto/anilist/media_collection_trendingOrPopular_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_collection_upcoming_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/title.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/media/title.dart';
 
 part 'anilist_manga_model.freezed.dart';
 

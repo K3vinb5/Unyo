@@ -1,6 +1,6 @@
-import 'package:unyo/domain/entities/extension.dart';
-import 'package:unyo/domain/entities/preference_item.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
+import 'package:unyo/domain/entities/extension/preference_item.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 abstract class ExtensionRepository {
   Future<Set<Extension>> getAvailableAnimeExtensions(User loggedUser);

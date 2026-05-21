@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:unyo/domain/entities/preference_item.dart';
+import 'package:unyo/domain/entities/extension/preference_item.dart';
 import 'package:unyo/presentation/widgets/styled/dark_unyo_button.dart';
 import 'package:unyo/presentation/widgets/styled/light_unyo_button.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_dropdown.dart';

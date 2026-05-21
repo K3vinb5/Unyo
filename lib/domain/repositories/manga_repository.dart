@@ -1,6 +1,6 @@
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/manga_details.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/media/manga_details.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 abstract class MangaRepository {
   Future<(bool, List<Manga>)> getTrendingMangas(int page, User loggedUser);

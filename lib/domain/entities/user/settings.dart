@@ -7,7 +7,7 @@ import 'package:unyo/data/adapters/adapters_names.dart' as names;
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
 import 'package:unyo/config/config.dart' as config;
 import 'package:unyo/data/adapters/type_adapters/color_adapter.dart';
-import 'package:unyo/domain/entities/extension.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
 
 part 'settings.freezed.dart';
 

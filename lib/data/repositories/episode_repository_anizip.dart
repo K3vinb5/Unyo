@@ -4,7 +4,7 @@ import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/services/api/dto/anizip/anizip_mappings.dart';
 import 'package:unyo/core/services/api/http/api_response.dart';
 import 'package:unyo/core/services/api/http/http_service.dart';
-import 'package:unyo/domain/entities/episode_info.dart';
+import 'package:unyo/domain/entities/media/episode_info.dart';
 import 'package:unyo/domain/repositories/episode_repository.dart';
 
 class EpisodeRepositoryAnizip implements EpisodeRepository {

@@ -19,14 +19,14 @@ import 'package:unyo/core/services/api/graphql/queries/anilist_queries.dart' as 
 import 'package:unyo/core/services/api/dto/anilist/media_collection_recently_released_graphql_entity.dart';
 import 'package:unyo/core/services/api/graphql/graphql_response.dart';
 import 'package:unyo/core/services/api/graphql/graphql_service.dart';
-import 'package:unyo/data/models/anilist_anime_details.dart';
-import 'package:unyo/data/models/anilist_anime_model.dart';
-import 'package:unyo/data/models/anilist_user_model.dart';
+import 'package:unyo/data/models/anilist/anilist_anime_details.dart';
+import 'package:unyo/data/models/anilist/anilist_anime_model.dart';
+import 'package:unyo/data/models/anilist/anilist_user_model.dart';
 import 'package:unyo/data/repositories/repository_mixin.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/anime_details.dart';
-import 'package:unyo/domain/entities/media_list_entry.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/anime_details.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 import 'package:unyo/domain/repositories/anime_repository.dart';
 import 'package:unyo/presentation/widgets/text/text_utils.dart';
 

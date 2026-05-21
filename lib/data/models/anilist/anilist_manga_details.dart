@@ -4,12 +4,12 @@ import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.
 import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/data/adapters/adapters_names.dart' as names;
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
-import 'package:unyo/data/models/anilist_manga_model.dart';
-import 'package:unyo/data/models/anilist_media_character.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/manga_details.dart';
-import 'package:unyo/domain/entities/media_character.dart';
-import 'package:unyo/domain/entities/media_list_entry.dart';
+import 'package:unyo/data/models/anilist/anilist_manga_model.dart';
+import 'package:unyo/data/models/anilist/anilist_media_character.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/media/manga_details.dart';
+import 'package:unyo/domain/entities/media/media_character.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
 
 part 'anilist_manga_details.freezed.dart';
 

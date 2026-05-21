@@ -4,12 +4,12 @@ import 'package:unyo_lib/jmodels/jschapter.dart';
 import 'package:unyo_lib/jmodels/jsmanga.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/extension.dart';
-import 'package:unyo/domain/entities/media_character.dart';
-import 'package:unyo/domain/entities/media_list.dart';
-import 'package:unyo/domain/entities/media_list_entry.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
+import 'package:unyo/domain/entities/media/media_character.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 part 'manga_details_state.freezed.dart';
 

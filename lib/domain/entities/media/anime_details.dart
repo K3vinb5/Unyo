@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/media_character.dart';
-import 'package:unyo/domain/entities/media_list_entry.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/media_character.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
 
 part 'anime_details.freezed.dart';
 part 'anime_details.g.dart';

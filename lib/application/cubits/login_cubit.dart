@@ -20,7 +20,7 @@ import 'package:unyo/core/theme/theme_service.dart';
 import 'package:unyo/data/models/models.dart';
 import 'package:unyo/data/repositories/repositories.dart';
 import 'package:unyo/application/effects/app_effects.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 import 'package:unyo/presentation/dialogs/account_creation_dialog.dart';
 
 class LoginCubit extends Cubit<LoginState> with EffectMixin<LoginState> {

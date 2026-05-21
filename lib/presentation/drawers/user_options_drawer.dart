@@ -6,7 +6,7 @@ import 'package:unyo/application/cubits/tabs_cubit.dart';
 import 'package:unyo/config/config.dart' as config;
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
-import 'package:unyo/domain/entities/user.dart' show User;
+import 'package:unyo/domain/entities/user/user.dart' show User;
 import 'package:unyo/presentation/widgets/styled/user_option_drawer_selection.dart';
 import 'package:unyo/presentation/widgets/text/text_utils.dart';
 

@@ -5,9 +5,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/core/enums/selected_menu_option.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 part 'home_state.freezed.dart';
 

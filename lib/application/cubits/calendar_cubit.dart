@@ -15,9 +15,9 @@ import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/data/repositories/anime_repository_anilist.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/media_list.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 class CalendarCubit extends Cubit<CalendarState> with EffectMixin<CalendarState> {
   final Logger _logger = sl<Logger>();

@@ -7,9 +7,9 @@ import 'package:unyo/application/states/media_list_state.dart';
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/enums/media_type.dart';
 import 'package:unyo/core/services/effects/app_effect_handler.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/media_list.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
 import 'package:unyo/presentation/widgets/styled/media_card.dart';
 import 'package:unyo/presentation/widgets/text/texts.dart';
 

@@ -1,7 +1,7 @@
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/anime_details.dart';
-import 'package:unyo/domain/entities/media_list_entry.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/anime_details.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 abstract class AnimeRepository {
   Future<(bool, List<Anime>)> getRecentlyReleasedAnimes(int page, User loggedUser);

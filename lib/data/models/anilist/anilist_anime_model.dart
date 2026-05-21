@@ -8,9 +8,9 @@ import 'package:unyo/core/services/api/dto/anilist/media_collection_recently_rel
 import 'package:unyo/core/services/api/dto/anilist/media_collection_trendingOrPopular_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_collection_upcoming_graphql_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.dart';
-import 'package:unyo/domain/entities/airing_episode.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/title.dart';
+import 'package:unyo/domain/entities/media/airing_episode.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/title.dart';
 
 part 'anilist_anime_model.freezed.dart';
 part 'anilist_anime_model.g.dart';

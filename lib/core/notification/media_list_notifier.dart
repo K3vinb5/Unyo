@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/domain/entities/media_list.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
 
 class MediaListNotifier {
   final BehaviorSubject<MediaList> _mediaListSubject;

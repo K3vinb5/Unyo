@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:unyo/domain/entities/title.dart';
+import 'package:unyo/domain/entities/media/title.dart';
 
 part 'episode_info.freezed.dart';
 part 'episode_info.g.dart';

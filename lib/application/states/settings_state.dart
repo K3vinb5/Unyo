@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 part 'settings_state.freezed.dart';
 

@@ -3,14 +3,14 @@ import 'package:unyo_lib/jmodels/jsanime.dart';
 import 'package:unyo_lib/jmodels/jsepisode.dart';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/episode_info.dart';
-import 'package:unyo/domain/entities/extension.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/episode_info.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
 import 'package:unyo/domain/entities/extension/video.dart' as ext;
-import 'package:unyo/domain/entities/media_character.dart';
-import 'package:unyo/domain/entities/media_list.dart';
-import 'package:unyo/domain/entities/media_list_entry.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/media_character.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 part 'anime_details_state.freezed.dart';
 

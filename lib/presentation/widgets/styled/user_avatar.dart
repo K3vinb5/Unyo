@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 // Internal dependencies
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 import 'package:unyo/presentation/widgets/styled/hover_animated_container.dart';
 import 'package:unyo/presentation/widgets/text/text_headline_large.dart';
 

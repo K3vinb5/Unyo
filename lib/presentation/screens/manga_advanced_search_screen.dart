@@ -7,7 +7,7 @@ import 'package:unyo/application/states/manga_advanced_search_state.dart';
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/enums/media_type.dart';
 import 'package:unyo/core/services/effects/app_effect_handler.dart';
-import 'package:unyo/domain/entities/media_list.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
 import 'package:unyo/presentation/widgets/styled/media_card.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_dropdown.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_multi_select_dropdown.dart';

@@ -3,10 +3,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
 //Internal dependencies
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
 import 'package:unyo/data/adapters/adapters_names.dart' as names;
-import 'package:unyo/domain/entities/settings.dart';
+import 'package:unyo/domain/entities/user/settings.dart';
 
 part 'anilist_user_model.freezed.dart';
 part 'anilist_user_model.g.dart'; // For JSON serialization

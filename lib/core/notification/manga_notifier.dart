@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/domain/entities/manga.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
 
 class MangaNotifier {
   final BehaviorSubject<Manga> _mangaSubject;

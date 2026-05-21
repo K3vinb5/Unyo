@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/domain/entities/extension.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
 
 class ExtensionNotifier {
   final BehaviorSubject<Extension> _extensionSubject;

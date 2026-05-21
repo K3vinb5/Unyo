@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/domain/entities/episode_info.dart';
+import 'package:unyo/domain/entities/media/episode_info.dart';
 
 class EpisodesInfoNotifier {
   final BehaviorSubject<List<EpisodeInfo>> _episodeInfoSubject;

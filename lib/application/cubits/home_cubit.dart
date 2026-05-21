@@ -21,14 +21,14 @@ import 'package:unyo/core/notification/reload/reload_notifier.dart';
 import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/application/effects/app_effects.dart';
-import 'package:unyo/data/models/anilist_user_model.dart';
-import 'package:unyo/data/models/local_user_model.dart';
+import 'package:unyo/data/models/anilist/anilist_user_model.dart';
+import 'package:unyo/data/models/local/local_user_model.dart';
 import 'package:unyo/data/repositories/anime_repository_anilist.dart';
 import 'package:unyo/data/repositories/repositories.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/media_list.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
   // Repositories

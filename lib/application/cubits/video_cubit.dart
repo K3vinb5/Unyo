@@ -29,15 +29,15 @@ import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/core/services/video/video_service.dart';
 import 'package:unyo/data/repositories/anime_repository_anilist.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
-import 'package:unyo/domain/entities/anime.dart';
-import 'package:unyo/domain/entities/episode_info.dart';
-import 'package:unyo/domain/entities/extension.dart';
+import 'package:unyo/domain/entities/media/anime.dart';
+import 'package:unyo/domain/entities/media/episode_info.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
 import 'package:unyo/domain/entities/extension/video.dart' as ext;
 import 'package:unyo/config/config.dart' as config;
-import 'package:unyo/domain/entities/media_list_entry.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/domain/entities/video_info.dart';
+import 'package:unyo/domain/entities/media/video_info.dart';
 import 'package:unyo/presentation/dialogs/warning_dialog.dart';
 
 class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {

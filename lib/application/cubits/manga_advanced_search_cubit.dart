@@ -14,9 +14,9 @@ import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/data/repositories/manga_repository_anilist.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/media_list.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 class MangaAdvancedSearchCubit extends Cubit<MangaAdvancedSearchState>
     with EffectMixin<MangaAdvancedSearchState> {

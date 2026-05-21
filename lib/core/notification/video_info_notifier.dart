@@ -2,7 +2,7 @@
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/domain/entities/video_info.dart';
+import 'package:unyo/domain/entities/media/video_info.dart';
 
 class VideoInfoNotifier {
   final BehaviorSubject<VideoInfo> _videoInfoSubject;

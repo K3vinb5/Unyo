@@ -5,7 +5,7 @@ import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/core/enums/login_card_type.dart';
 
 //Internal dependencies
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 part 'login_state.freezed.dart';
 

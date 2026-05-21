@@ -6,7 +6,7 @@ import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:unyo/application/cubits/extensions_cubit.dart';
 import 'package:unyo/application/states/extensions_state.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/domain/entities/extension.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
 import 'package:unyo/core/services/effects/app_effect_handler.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_dropdown.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_extension_button.dart';

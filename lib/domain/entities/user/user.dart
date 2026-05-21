@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:unyo/domain/entities/settings.dart';
+import 'package:unyo/domain/entities/user/settings.dart';
 
 part 'user.freezed.dart';
 

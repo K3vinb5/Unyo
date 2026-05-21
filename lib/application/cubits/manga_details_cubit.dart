@@ -17,18 +17,18 @@ import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/services/api/http/http_exception.dart';
-import 'package:unyo/data/models/anilist_user_model.dart';
-import 'package:unyo/data/models/local_user_model.dart';
+import 'package:unyo/data/models/anilist/anilist_user_model.dart';
+import 'package:unyo/data/models/local/local_user_model.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/data/repositories/manga_repository_anilist.dart';
 import 'package:unyo/data/repositories/repositories.dart';
-import 'package:unyo/domain/entities/extension.dart';
-import 'package:unyo/domain/entities/manga.dart';
-import 'package:unyo/domain/entities/manga_details.dart';
-import 'package:unyo/domain/entities/media_list.dart';
-import 'package:unyo/domain/entities/media_list_entry.dart';
-import 'package:unyo/domain/entities/settings.dart';
-import 'package:unyo/domain/entities/user.dart';
+import 'package:unyo/domain/entities/extension/extension.dart';
+import 'package:unyo/domain/entities/media/manga.dart';
+import 'package:unyo/domain/entities/media/manga_details.dart';
+import 'package:unyo/domain/entities/list/media_list.dart';
+import 'package:unyo/domain/entities/list/media_list_entry.dart';
+import 'package:unyo/domain/entities/user/settings.dart';
+import 'package:unyo/domain/entities/user/user.dart';
 
 class MangaDetailsCubit extends Cubit<MangaDetailsState> with EffectMixin<MangaDetailsState> {
   // Repositories

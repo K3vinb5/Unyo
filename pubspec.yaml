@@ -100,6 +100,7 @@ flutter:
   assets:
     - assets/i18n/
     - assets/logo.png
+    - assets/logo_1.png
     - assets/images/myanimelist.svg
     - assets/images/anilist.svg
     - assets/images/local_account.svg

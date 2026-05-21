@@ -1,5 +1,5 @@
 import 'package:unyo/core/enums/service.dart';
-import 'package:unyo/domain/entities/user.dart' show User;
+import 'package:unyo/domain/entities/user/user.dart' show User;
 
 class TextUtils {
   static String parseHtmlToPlainText(String html) {
