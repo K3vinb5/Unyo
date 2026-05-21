@@ -39,4 +39,9 @@ class Track {
       'embeddedIndex': embeddedIndex,
     };
   }
+
+  @override
+  String toString() {
+    return 'Track(url: $url, lang: $lang, embedded: $embedded, embeddedIndex: $embeddedIndex)';
+  }
 }

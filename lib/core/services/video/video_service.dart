@@ -31,9 +31,9 @@ class VideoService {
   final void Function(String) _onErrorCallback;
 
   late final mdk.Player _player;
-  final List<ext.Track> captionTracks = [];
+  final List<ext.Track> subtitleTracks = [];
   final List<ext.Track> audioTracks = [];
-  ext.Track? _currentCaptionTrack;
+  ext.Track? _currentSubtitleTrack;
   ext.Track? _currentAudioTrack;
 
   final bool _lowLatency;
@@ -137,7 +137,7 @@ class VideoService {
     return -1;
   }
 
-  List<ext.Track> get captions => captionTracks;
+  List<ext.Track> get subtitles => subtitleTracks;
 
   List<ext.Track> get audios => audioTracks;
 
@@ -199,7 +199,7 @@ class VideoService {
     return seekTo(Duration(milliseconds: position.inMilliseconds + forwardDuration.inMilliseconds));
   }
 
-  bool setCaptionOffset(Duration duration) {
+  bool setSubtitleOffset(Duration duration) {
     return false;
   }
 
@@ -231,22 +231,23 @@ class VideoService {
       _onErrorCallback(e.toString());
       return;
     }
-    _initCaptionsAndAudiotracks();
+    _initSubtitlesAndAudiotracks();
     await Future.delayed(const Duration(milliseconds: 500));
     await _player.seek(position: position.inMilliseconds, flags: _seekFlags);
     play();
   }
 
-  bool setCaption(int captionIndex) {
-    if (captionIndex < 0 || captionIndex >= captionTracks.length) {
-      _currentCaptionTrack = null;
+  bool setSubtitle(int subtitleIndex) {
+    if (subtitleIndex < 0 || subtitleIndex >= subtitleTracks.length) {
+      _currentSubtitleTrack = null;
       return false;
     }
-    _currentCaptionTrack = captionTracks[captionIndex];
-    if (_currentCaptionTrack!.embedded) {
-      _player.setActiveTracks(mdk.MediaType.subtitle, [_currentCaptionTrack?.embeddedIndex ?? 0]);
+    _currentSubtitleTrack = subtitleTracks[subtitleIndex];
+    if (_currentSubtitleTrack != null && _currentSubtitleTrack!.embedded) {
+      _player.activeSubtitleTracks = [_currentSubtitleTrack!.embeddedIndex - 1];
+      print(_currentSubtitleTrack);
     } else {
-      _player.setMedia(_currentCaptionTrack!.url, mdk.MediaType.subtitle);
+      _player.setMedia(_currentSubtitleTrack!.url, mdk.MediaType.subtitle);
     }
     return true;
   }
@@ -257,8 +258,9 @@ class VideoService {
       return false;
     }
     _currentAudioTrack = audioTracks[audioTrackIndex];
-    if (_currentAudioTrack!.embedded) {
-      _player.setActiveTracks(mdk.MediaType.audio, [_currentAudioTrack?.embeddedIndex ?? 0]);
+    if (_currentAudioTrack != null && _currentAudioTrack!.embedded) {
+      _player.activeAudioTracks = [_currentAudioTrack!.embeddedIndex - 1];
+      print(_currentAudioTrack);
     } else {
       _player.setMedia(_currentAudioTrack!.url, mdk.MediaType.audio);
     }
@@ -338,8 +340,7 @@ class VideoService {
     return files.first.id;
   }
 
-  /// Removes non-standard query parameters (like `index`) that extensions append
-  /// to magnet URIs, since torrserver may not handle them gracefully.
+  /// Removes non-standard query parameters
   String _cleanMagnetUrl(String magnet) {
     try {
       final uri = Uri.parse(magnet);
@@ -463,7 +464,7 @@ class VideoService {
     if (_isDisposed) return false;
 
     if (newStatus.test(mdk.MediaStatus.loaded) && !_isVideoReady) {
-      _initCaptionsAndAudiotracks();
+      _initSubtitlesAndAudiotracks();
       _player.state = mdk.PlaybackState.playing;
       setVolume(1.0);
       _isVideoReady = true;
@@ -489,12 +490,12 @@ class VideoService {
     return true;
   }
 
-  void _initCaptionsAndAudiotracks() {
-    captionTracks.clear();
+  void _initSubtitlesAndAudiotracks() {
+    subtitleTracks.clear();
     audioTracks.clear();
     if (_player.mediaInfo.subtitle != null && _player.mediaInfo.subtitle!.isNotEmpty) {
       for (mdk.SubtitleStreamInfo subtitleStreamInfo in _player.mediaInfo.subtitle!) {
-        captionTracks.add(
+        subtitleTracks.add(
           ext.Track(
             url: "",
             lang:
@@ -505,8 +506,8 @@ class VideoService {
         );
       }
     }
-    captionTracks.addAll(_video.subtitleTracks);
-    setCaption(0);
+    subtitleTracks.addAll(_video.subtitleTracks);
+    setSubtitle(0);
     if (_player.mediaInfo.audio != null && _player.mediaInfo.audio!.length > 1) {
       for (mdk.AudioStreamInfo audioStreamInfo in _player.mediaInfo.audio!) {
         audioTracks.add(

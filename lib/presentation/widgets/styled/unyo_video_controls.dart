@@ -344,17 +344,17 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                               .toList(),
                                         ),
                                         PopupMenuButton<int>(
-                                          tooltip: "Select Caption Track",
+                                          tooltip: "Select Subtitle Track",
                                           icon: const Icon(Icons.subtitles_rounded, size: 27),
                                           onSelected: (int index) {
-                                            _videoService.setCaption(index);
+                                            _videoService.setSubtitle(index);
                                             setState(() {});
                                           },
-                                          itemBuilder: (BuildContext context) => _videoService.captions
+                                          itemBuilder: (BuildContext context) => _videoService.subtitles
                                               .mapIndexed(
-                                                (index, caption) => PopupMenuItem<int>(
+                                                (index, subtitle) => PopupMenuItem<int>(
                                               value: index,
-                                              child: Text('${caption.lang}${caption.embedded ? ' - Embedded' : ''}'),
+                                              child: Text('${subtitle.lang}${subtitle.embedded ? ' - Embedded' : ''}'),
                                             ),
                                           )
                                               .toList(),
