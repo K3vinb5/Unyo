@@ -73,14 +73,13 @@ class VideoService {
     _isFullscreen = _initialFullscreen;
     try {
       final resolvedUrl = await _resolveVideoUrl(_video.videoUrl);
-      _player.setMedia(resolvedUrl, mdk.MediaType.video);
-      _player.setMedia(resolvedUrl, mdk.MediaType.audio);
+      _player.media = resolvedUrl;
+      await _player.prepare();
     } catch (e, st) {
       _logger.e("Failed to resolve video URL in _initAsync", error: e, stackTrace: st);
       _onErrorCallback(e.toString());
     }
     _player.loop = 0;
-    _player.state = mdk.PlaybackState.paused;
     _player.onMediaStatus(_onMediaStatusInit);
   }
 
@@ -95,10 +94,12 @@ class VideoService {
     _alternativeVideos = alternativeVideos;
     _videoIndex = videoIndex;
     _episodeIndex = episodeIndex;
+    _isVideoReady = false;
+    _isBuffering = true;
     try {
       final resolvedUrl = await _resolveVideoUrl(_video.videoUrl);
-      _player.setMedia(resolvedUrl, mdk.MediaType.video);
-      _player.setMedia(resolvedUrl, mdk.MediaType.audio);
+      _player.media = resolvedUrl;
+      await _player.prepare();
     } catch (e, st) {
       _logger.e("Failed to resolve video URL on change", error: e, stackTrace: st);
       _onErrorCallback(e.toString());
@@ -221,18 +222,18 @@ class VideoService {
     _videoIndex = index;
     _video = video;
     final position = this.position;
-    await _player.seek(position: 0, flags: _seekFlags);
+    _isVideoReady = false;
+    _isBuffering = true;
     try {
       final resolvedUrl = await _resolveVideoUrl(video.videoUrl);
-      _player.setMedia(resolvedUrl, mdk.MediaType.video);
-      _player.setMedia(resolvedUrl, mdk.MediaType.audio);
+      _player.media = resolvedUrl;
+      await _player.prepare();
     } catch (e, st) {
       _logger.e("Failed to resolve video URL on swap", error: e, stackTrace: st);
       _onErrorCallback(e.toString());
       return;
     }
     _initSubtitlesAndAudiotracks();
-    await Future.delayed(const Duration(milliseconds: 500));
     await _player.seek(position: position.inMilliseconds, flags: _seekFlags);
     play();
   }
@@ -244,8 +245,7 @@ class VideoService {
     }
     _currentSubtitleTrack = subtitleTracks[subtitleIndex];
     if (_currentSubtitleTrack != null && _currentSubtitleTrack!.embedded) {
-      _player.activeSubtitleTracks = [_currentSubtitleTrack!.embeddedIndex - 1];
-      print(_currentSubtitleTrack);
+      _player.activeSubtitleTracks = [_currentSubtitleTrack!.embeddedIndex];
     } else {
       _player.setMedia(_currentSubtitleTrack!.url, mdk.MediaType.subtitle);
     }
@@ -259,8 +259,7 @@ class VideoService {
     }
     _currentAudioTrack = audioTracks[audioTrackIndex];
     if (_currentAudioTrack != null && _currentAudioTrack!.embedded) {
-      _player.activeAudioTracks = [_currentAudioTrack!.embeddedIndex - 1];
-      print(_currentAudioTrack);
+      _player.activeAudioTracks = [_currentAudioTrack!.embeddedIndex];
     } else {
       _player.setMedia(_currentAudioTrack!.url, mdk.MediaType.audio);
     }
@@ -381,7 +380,6 @@ class VideoService {
     _torrentHashes.clear();
   }
 
-  // Utilities
   void _configureDecoder() {
     final vd = {
       'windows': ['MFT:d3d=11', "D3D11", "DXVA", 'CUDA', 'hap', 'FFmpeg', 'dav1d'],
@@ -396,8 +394,9 @@ class VideoService {
       'avio.protocol_whitelist',
       'file,ftp,rtmp,http,https,tls,rtp,tcp,udp,crypto,httpproxy,data,concatf,concat,subfile',
     );
-    // Not sure about this flag
-    _player.setProperty('video.decoder', 'shader_resource=0');
+    // Not sure about this flags, if I ever detect an issue I'll consider enabling them
+    // _player.setProperty('video.decoder', 'shader_resource=0');
+    // _player.setProperty('sub.ass.font_fallback', '1');
     _player.setProperty('avformat.strict', 'experimental');
     _player.setProperty('avformat.safe', '0');
     _player.setProperty('avio.reconnect', '1');
@@ -405,14 +404,7 @@ class VideoService {
     _player.setProperty('avformat.rtsp_transport', 'tcp');
     _player.setProperty('avformat.extension_picky', '0');
     _player.setProperty('avformat.allowed_segment_extensions', 'ALL');
-    if (_lowLatency) {
-      _player.setProperty('avformat.fflags', '+nobuffer');
-      _player.setProperty('avformat.fpsprobesize', '0');
-      _player.setProperty('avformat.analyzeduration', '100000');
-      _player.setBufferRange(min: 0, max: 1000, drop: true);
-    } else {
-      _player.setBufferRange(min: 0, max: 5000, drop: false);
-    }
+    _player.setBufferRange(min: 3500, max: 15000, drop: false);
   }
 
   void _setPlayerHttpHeaders(ext.Headers? headers) {
@@ -425,7 +417,6 @@ class VideoService {
       _player.setProperty('user_agent', userAgent);
     }
     final formattedHeaders = headers.headersMap.entries
-        // .where((e) => e.key.toLowerCase() != 'user-agent') // Filter out UA
         .map((e) {
           // Fix cookie separator logic (HTTP spec requires '; ' not ',')
           final value = e.key.toLowerCase() == 'cookie' ? e.value.replaceAll(',', '; ') : e.value;
@@ -493,6 +484,7 @@ class VideoService {
   void _initSubtitlesAndAudiotracks() {
     subtitleTracks.clear();
     audioTracks.clear();
+    int index = 0;
     if (_player.mediaInfo.subtitle != null && _player.mediaInfo.subtitle!.isNotEmpty) {
       for (mdk.SubtitleStreamInfo subtitleStreamInfo in _player.mediaInfo.subtitle!) {
         subtitleTracks.add(
@@ -501,13 +493,16 @@ class VideoService {
             lang:
                 "${subtitleStreamInfo.metadata["title"] ?? ""} (${subtitleStreamInfo.metadata["language"]} - Embedded)",
             embedded: true,
-            embeddedIndex: subtitleStreamInfo.index,
+            embeddedIndex: index++,
           ),
         );
       }
     }
     subtitleTracks.addAll(_video.subtitleTracks);
-    setSubtitle(0);
+    if (subtitleTracks.isNotEmpty) {
+      setSubtitle(0);
+    }
+    index = 0;
     if (_player.mediaInfo.audio != null && _player.mediaInfo.audio!.length > 1) {
       for (mdk.AudioStreamInfo audioStreamInfo in _player.mediaInfo.audio!) {
         audioTracks.add(
@@ -516,7 +511,7 @@ class VideoService {
             lang:
                 "${audioStreamInfo.metadata["title"] ?? ""} (${audioStreamInfo.metadata["language"]} - Embedded)",
             embedded: true,
-            embeddedIndex: audioStreamInfo.index,
+            embeddedIndex: index++,
           ),
         );
       }
@@ -528,15 +523,12 @@ class VideoService {
   }
 
   String _formatMilliseconds(int milliseconds) {
-    // Calculate total seconds
     int totalSeconds = milliseconds ~/ 1000;
 
-    // Calculate hours, minutes, and seconds
     int hours = totalSeconds ~/ 3600;
     int minutes = (totalSeconds % 3600) ~/ 60;
     int seconds = totalSeconds % 60;
 
-    // Return the formatted string
     return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
   }
 }
