@@ -12,7 +12,7 @@ import 'dart:async';
 import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/video_state.dart';
-import 'package:unyo/core/enums/service.dart';
+
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/episode_info_notifier.dart';
 import 'package:unyo/core/notification/episodes_notifier.dart';
@@ -27,7 +27,7 @@ import 'package:unyo/core/services/api/http/api_response.dart';
 import 'package:unyo/core/services/api/http/http_exception.dart';
 import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/core/services/video/video_service.dart';
-import 'package:unyo/data/repositories/anime_repository_anilist.dart';
+import 'package:unyo/domain/repositories/anime_repository.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/domain/entities/media/anime.dart';
 import 'package:unyo/domain/entities/media/episode_info.dart';
@@ -44,7 +44,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
 
   // Repositories
   final ExtensionRepositoryAniyomi _extensionRepositoryAniyomi;
-  final AnimeRepositoryAnilist _animeRepositoryAnilist;
+  final AnimeRepository _animeRepository;
 
   // Notifiers / Subscriptions
   final UserNotifier _loggedUserNotifier;
@@ -82,7 +82,7 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
     this._selectedExtensionNotifier,
     this._selectedEpisodesNotifier,
     this._extensionRepositoryAniyomi,
-    this._animeRepositoryAnilist,
+    this._animeRepository,
     this._reloadNotifier,
   ) : super(
         VideoState(
@@ -494,25 +494,14 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
         progress: state.videoInfo.playlistIndex + 1,
         status: "Current",
       );
-      switch (state.loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Anilist");
-          MediaListEntry savedMediaListEntry = await _animeRepositoryAnilist.updateMediaListEntry(
-            desiredMediaListEntry,
-            state.selectedAnime,
-            state.loggedUser,
-          );
-          emit(state.copyWith(mediaListEntry: savedMediaListEntry));
-          _reloadNotifier.emitReload(ReloadType.videoMediaListEntryUpdated);
-        case Service.mal:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on MyAnimeList");
-        case Service.shikimori:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Shikimori");
-        case Service.kitsu:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Kitsu");
-        case Service.simkl:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Simkl");
-      }
+      _logger.i("Updating Media List Entry to $desiredMediaListEntry");
+      MediaListEntry savedMediaListEntry = await _animeRepository.updateMediaListEntry(
+        desiredMediaListEntry,
+        state.selectedAnime,
+        state.loggedUser,
+      );
+      emit(state.copyWith(mediaListEntry: savedMediaListEntry));
+      _reloadNotifier.emitReload(ReloadType.videoMediaListEntryUpdated);
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error updating Anime Entry:", responseBody: e.message, stackTrace: stackTrace);
     } catch (e, stackTrace) {

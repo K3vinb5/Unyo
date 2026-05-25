@@ -30,7 +30,7 @@ import 'package:unyo/core/notification/video_info_notifier.dart';
 import 'package:unyo/core/services/api/http/http_exception.dart';
 import 'package:unyo/data/models/anilist/anilist_user_model.dart';
 import 'package:unyo/data/models/local/local_user_model.dart';
-import 'package:unyo/data/repositories/anime_repository_anilist.dart';
+import 'package:unyo/domain/repositories/anime_repository.dart';
 import 'package:unyo/data/repositories/episode_repository_anizip.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/data/repositories/repositories.dart';
@@ -49,7 +49,7 @@ import 'package:unyo/presentation/drawers/anime_server_selection_drawer.dart';
 
 class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeDetailsState> {
   // Repositories
-  final AnimeRepositoryAnilist _animeRepositoryAnilist;
+  final AnimeRepository _animeRepository;
   final EpisodeRepositoryAnizip _episodeRepositoryAnizip;
   final ExtensionRepositoryAniyomi _extensionRepositoryAniyomi;
   final UserRepositoryAnilist _userRepositoryAnilist;
@@ -74,7 +74,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
   final Logger _logger = sl<Logger>();
 
   AnimeDetailsCubit(
-    this._animeRepositoryAnilist,
+    this._animeRepository,
     this._episodeRepositoryAnizip,
     this._loggedUserNotifier,
     this._selectedAnimeNotifier,
@@ -278,26 +278,15 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
     MediaListEntry desiredMediaListEntry = state.newMediaListEntry;
     MediaListEntry beforeUpdateMediaListEntry = state.mediaListEntry;
     try {
-      switch (state.loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Anilist");
-          await _animeRepositoryAnilist.updateMediaListEntry(
-            desiredMediaListEntry,
-            state.selectedAnime,
-            state.loggedUser,
-          );
-          _reloadNotifier.emitReload(ReloadType.animeMediaListEntryUpdated);
-          if (desiredMediaListEntry.status != beforeUpdateMediaListEntry.status) {
-            _reloadNotifier.emitReload(ReloadType.homeMediaListEntryUpdated);
-          }
-        case Service.mal:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on MyAnimeList");
-        case Service.shikimori:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Shikimori");
-        case Service.kitsu:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Kitsu");
-        case Service.simkl:
-          _logger.i("Updating Media List Entry to $desiredMediaListEntry on Simkl");
+      _logger.i("Updating Media List Entry to $desiredMediaListEntry");
+      await _animeRepository.updateMediaListEntry(
+        desiredMediaListEntry,
+        state.selectedAnime,
+        state.loggedUser,
+      );
+      _reloadNotifier.emitReload(ReloadType.animeMediaListEntryUpdated);
+      if (desiredMediaListEntry.status != beforeUpdateMediaListEntry.status) {
+        _reloadNotifier.emitReload(ReloadType.homeMediaListEntryUpdated);
       }
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error updating Anime Entry:", responseBody: e.message, stackTrace: stackTrace);
@@ -430,25 +419,14 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
 
   Future<void> _getUserMediaListEntry(User loggedUser, Anime selectedAnime, {bool ignoreCache = false}) async {
    try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching User Media List Entry from AniList for ${state.selectedAnime.title.userPreferred}");
-          MediaListEntry mediaListEntry = await _animeRepositoryAnilist.getMediaListEntry(
-            selectedAnime,
-            loggedUser,
-            ignoreCache: ignoreCache,
-          );
-          emit(state.copyWith(mediaListEntry: mediaListEntry, newMediaListEntry: mediaListEntry));
-          _mediaListEntryNotifier.updateSelectedMediaListEntry(mediaListEntry);
-        case Service.mal:
-          _logger.i("Fetching User Media List Entry from MyAnimeList for ${state.selectedAnime.title.userPreferred}");
-        case Service.shikimori:
-          _logger.i("Fetching User Media List Entry from Shikimori for ${state.selectedAnime.title.userPreferred}");
-        case Service.kitsu:
-          _logger.i("Fetching User Media List Entry from Kitsu for ${state.selectedAnime.title.userPreferred}");
-        case Service.simkl:
-          _logger.i("Fetching User Media List Entry from Simkl for ${state.selectedAnime.title.userPreferred}");
-      }
+      _logger.i("Fetching User Media List Entry for ${state.selectedAnime.title.userPreferred}");
+      MediaListEntry mediaListEntry = await _animeRepository.getMediaListEntry(
+        selectedAnime,
+        loggedUser,
+        ignoreCache: ignoreCache,
+      );
+      emit(state.copyWith(mediaListEntry: mediaListEntry, newMediaListEntry: mediaListEntry));
+      _mediaListEntryNotifier.updateSelectedMediaListEntry(mediaListEntry);
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error fetching User Media List entry:", responseBody: e.message, stackTrace: stackTrace);
     } catch (e, stackTrace) {
@@ -458,41 +436,30 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
 
   Future<void> _getAnimeDetails(User loggedUser, Anime selectedAnime) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anime Details from AniList for ${state.selectedAnime.title.userPreferred}");
-          (bool, AnimeDetails) animeDetails = await _animeRepositoryAnilist.getAnimeDetails(
-            selectedAnime,
-            loggedUser,
-          );
-          emit(
-            state.copyWith(
-              characters: (animeDetails.$2.characters.isNotEmpty, animeDetails.$2.characters),
-              mediaListEntry: animeDetails.$2.mediaListEntry,
-              newMediaListEntry: animeDetails.$2.mediaListEntry,
-              recommendations: (
-                animeDetails.$2.recommendedAnimes.isNotEmpty,
-                animeDetails.$2.recommendedAnimes,
-              ),
-            ),
-          );
-          if (animeDetails.$2.recommendedAnimes.isEmpty) {
-            (bool, List<Anime>) trendingAnimes = await _animeRepositoryAnilist.getTrendingAnimes(
-              1,
-              loggedUser,
-            );
-            emit(state.copyWith(recommendations: (trendingAnimes.$1, trendingAnimes.$2.shuffled(Random()))));
-          }
-          _getAlternativeImage(loggedUser, selectedAnime);
-        case Service.mal:
-          _logger.i("Fetching Anime Details from MyAnimeList for ${state.selectedAnime.title.userPreferred}");
-        case Service.shikimori:
-          _logger.i("Fetching Anime Details from Shikimori for ${state.selectedAnime.title.userPreferred}");
-        case Service.kitsu:
-          _logger.i("Fetching Anime Details from Kitsu for ${state.selectedAnime.title.userPreferred}");
-        case Service.simkl:
-          _logger.i("Fetching Anime Details from Simkl for ${state.selectedAnime.title.userPreferred}");
+      _logger.i("Fetching Anime Details for ${state.selectedAnime.title.userPreferred}");
+      (bool, AnimeDetails) animeDetails = await _animeRepository.getAnimeDetails(
+        selectedAnime,
+        loggedUser,
+      );
+      emit(
+        state.copyWith(
+          characters: (animeDetails.$2.characters.isNotEmpty, animeDetails.$2.characters),
+          mediaListEntry: animeDetails.$2.mediaListEntry,
+          newMediaListEntry: animeDetails.$2.mediaListEntry,
+          recommendations: (
+            animeDetails.$2.recommendedAnimes.isNotEmpty,
+            animeDetails.$2.recommendedAnimes,
+          ),
+        ),
+      );
+      if (animeDetails.$2.recommendedAnimes.isEmpty) {
+        (bool, List<Anime>) trendingAnimes = await _animeRepository.getTrendingAnimes(
+          1,
+          loggedUser,
+        );
+        emit(state.copyWith(recommendations: (trendingAnimes.$1, trendingAnimes.$2.shuffled(Random()))));
       }
+      _getAlternativeImage(loggedUser, selectedAnime);
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error fetching Anime details:", responseBody: e.message, stackTrace: stackTrace);
     } catch (e, stackTrace) {
@@ -750,20 +717,9 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
 
   Future<void> _getAnimeBanners(User loggedUser) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anime Banners from AniList for ${state.selectedAnime.title.userPreferred}");
-          List<String> banners = await _animeRepositoryAnilist.getMediaCoverImages(loggedUser);
-          emit(state.copyWith(banners: banners));
-        case Service.mal:
-          _logger.i("Fetching Anime Banners from MyAnimeList for ${state.selectedAnime.title.userPreferred}");
-        case Service.shikimori:
-          _logger.i("Fetching Anime Banners from Shikimori for ${state.selectedAnime.title.userPreferred}");
-        case Service.kitsu:
-          _logger.i("Fetching Anime Banners from Kitsu for ${state.selectedAnime.title.userPreferred}");
-        case Service.simkl:
-          _logger.i("Fetching Anime Banners from Simkl for ${state.selectedAnime.title.userPreferred}");
-      }
+      _logger.i("Fetching Anime Banners for ${state.selectedAnime.title.userPreferred}");
+      List<String> banners = await _animeRepository.getMediaCoverImages(loggedUser);
+      emit(state.copyWith(banners: banners));
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error fetching Anime banners:", responseBody: e.message, stackTrace: stackTrace);
     } catch (e, stackTrace) {

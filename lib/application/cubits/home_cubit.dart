@@ -12,7 +12,7 @@ import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/states/home_state.dart';
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/enums/selected_menu_option.dart';
-import 'package:unyo/core/enums/service.dart';
+
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
@@ -23,7 +23,7 @@ import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/data/models/anilist/anilist_user_model.dart';
 import 'package:unyo/data/models/local/local_user_model.dart';
-import 'package:unyo/data/repositories/anime_repository_anilist.dart';
+import 'package:unyo/domain/repositories/anime_repository.dart';
 import 'package:unyo/data/repositories/repositories.dart';
 import 'package:unyo/domain/entities/media/anime.dart';
 import 'package:unyo/domain/entities/media/manga.dart';
@@ -33,7 +33,7 @@ import 'package:unyo/domain/entities/user/user.dart';
 class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
   // Repositories
   final UserRepositoryAnilist _userRepositoryAnilist;
-  final AnimeRepositoryAnilist _animeRepositoryAnilist;
+  final AnimeRepository _animeRepository;
   // Notifiers / Subscriptions
   final UserNotifier _loggedUserNotifier;
   final MenuBarNotifier _menuBarNotifier;
@@ -51,7 +51,7 @@ class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
     this._selectedMangaNotifier,
     this._selectedMediaListNotifier,
     this._userRepositoryAnilist,
-    this._animeRepositoryAnilist,
+    this._animeRepository,
     this._menuBarNotifier,
     this._reloadNotifier,
   ) : super(
@@ -162,20 +162,9 @@ class HomeCubit extends Cubit<HomeState> with EffectMixin<HomeState> {
 
   Future<void> _getMediaCoverImages(User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Media Cover Images from AniList");
-          List<String> mediaCoverImages = await _animeRepositoryAnilist.getMediaCoverImages(loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(mediaCoverImages: mediaCoverImages));
-        case Service.mal:
-          _logger.i("Fetching Media Cover Images from MyAnimeList");
-        case Service.shikimori:
-          _logger.i("Fetching Media Cover Images from Shikimori");
-        case Service.kitsu:
-          _logger.i("Fetching Media Cover Images from Kitsu");
-        case Service.simkl:
-          _logger.i("Fetching Media Cover Images from Simkl");
-      }
+      _logger.i("Fetching Media Cover Images");
+      List<String> mediaCoverImages = await _animeRepository.getMediaCoverImages(loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(mediaCoverImages: mediaCoverImages));
     } catch (e, stackTrace) {
       handleError("Error fetching media cover images: $e", stackTrace: stackTrace);
     }

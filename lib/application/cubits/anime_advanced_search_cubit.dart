@@ -8,12 +8,12 @@ import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/anime_advanced_search_state.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/core/enums/service.dart';
+
 import 'package:unyo/core/notification/anime_genres_notifier.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
-import 'package:unyo/data/repositories/anime_repository_anilist.dart';
+import 'package:unyo/domain/repositories/anime_repository.dart';
 import 'package:unyo/domain/entities/media/anime.dart';
 import 'package:unyo/domain/entities/list/media_list.dart';
 import 'package:unyo/domain/entities/user/user.dart';
@@ -31,14 +31,14 @@ class AnimeAdvancedSearchCubit extends Cubit<AnimeAdvancedSearchState>
   late final StreamSubscription<String> _selectedAnimeAdvancedSearchGenresFiltersSubscription;
 
   // Repositories
-  final AnimeRepositoryAnilist _animeRepositoryAnilist;
+  final AnimeRepository _animeRepository;
 
   AnimeAdvancedSearchCubit(
     this._loggedUserNotifier,
     this._selectedMediaListNotifier,
     this._selectedAnimeNotifier,
     this._selectedAnimeAdvancedSearchGenresFilters,
-    this._animeRepositoryAnilist,
+    this._animeRepository,
   ) : super(AnimeAdvancedSearchState(loggedUser: UserModel.empty())) {
     _init();
   }
@@ -173,29 +173,21 @@ class AnimeAdvancedSearchCubit extends Cubit<AnimeAdvancedSearchState>
 
   Future<void> _getLoggedUserServiceFilters(User loggedUser) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          final filters = await _animeRepositoryAnilist.getUserAnimeAdvancedSearchFilters();
-          emit(
-            state.copyWith(
-              genresFilters: (filters['genres']?.$1 ?? false, filters['genres']?.$2 ?? []),
-              seasonFilters: (filters['seasons']?.$1 ?? false, filters['seasons']?.$2 ?? []),
-              formatFilters: (filters['formats']?.$1 ?? false, filters['formats']?.$2 ?? []),
-              airingStatusFilters: (
-                filters['airingStatuses']?.$1 ?? false,
-                filters['airingStatuses']?.$2 ?? [],
-              ),
-              yearFilters: (filters['years']?.$1 ?? false, filters['years']?.$2 ?? []),
-              searchSortOptions: (filters['sortOptions']?.$1 ?? false, filters['sortOptions']?.$2 ?? []),
-              searchSortOrder: (filters['sortOrders']?.$1 ?? false, filters['sortOrders']?.$2 ?? []),
-            ),
-          );
-          break;
-        case Service.mal:
-        case Service.shikimori:
-        case Service.simkl:
-        case Service.kitsu:
-      }
+      final filters = await _animeRepository.getUserAnimeAdvancedSearchFilters();
+      emit(
+        state.copyWith(
+          genresFilters: (filters['genres']?.$1 ?? false, filters['genres']?.$2 ?? []),
+          seasonFilters: (filters['seasons']?.$1 ?? false, filters['seasons']?.$2 ?? []),
+          formatFilters: (filters['formats']?.$1 ?? false, filters['formats']?.$2 ?? []),
+          airingStatusFilters: (
+            filters['airingStatuses']?.$1 ?? false,
+            filters['airingStatuses']?.$2 ?? [],
+          ),
+          yearFilters: (filters['years']?.$1 ?? false, filters['years']?.$2 ?? []),
+          searchSortOptions: (filters['sortOptions']?.$1 ?? false, filters['sortOptions']?.$2 ?? []),
+          searchSortOrder: (filters['sortOrders']?.$1 ?? false, filters['sortOrders']?.$2 ?? []),
+        ),
+      );
     } catch (e, stackTrace) {
       _logger.e("Error getting logged user service filters $e", stackTrace: stackTrace);
       handleError("Error getting logged user service filters", stackTrace: stackTrace);
@@ -203,24 +195,17 @@ class AnimeAdvancedSearchCubit extends Cubit<AnimeAdvancedSearchState>
   }
 
   Future<void> _performAnimeAdvancedSearch() async {
-    switch (state.loggedUser.settings.service) {
-      case Service.anilist:
-        List<Anime> searchResults = await _animeRepositoryAnilist.performAnimeAdvancedSearch(
-          state.searchQuery,
-          state.selectedGenres,
-          state.selectedSeason,
-          state.selectedFormat,
-          int.tryParse(state.selectedYear ?? ''),
-          state.selectedAiringStatus,
-          "${state.selectedSearchSortOption.toUpperCase().replaceAll(" ", "_")}_${state.selectedSearchOrder.toUpperCase()}",
-          1,
-          state.loggedUser
-        );
-        emit(state.copyWith(searchResults: searchResults));
-      case Service.mal:
-      case Service.shikimori:
-      case Service.simkl:
-      case Service.kitsu:
-    }
+    List<Anime> searchResults = await _animeRepository.performAnimeAdvancedSearch(
+      state.searchQuery,
+      state.selectedGenres,
+      state.selectedSeason,
+      state.selectedFormat,
+      int.tryParse(state.selectedYear ?? ''),
+      state.selectedAiringStatus,
+      "${state.selectedSearchSortOption.toUpperCase().replaceAll(" ", "_")}_${state.selectedSearchOrder.toUpperCase()}",
+      1,
+      state.loggedUser
+    );
+    emit(state.copyWith(searchResults: searchResults));
   }
 }

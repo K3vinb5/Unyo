@@ -8,12 +8,12 @@ import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/manga_advanced_search_state.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/core/enums/service.dart';
+
 import 'package:unyo/core/notification/manga_genres_notifier.dart';
 import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
-import 'package:unyo/data/repositories/manga_repository_anilist.dart';
+import 'package:unyo/domain/repositories/manga_repository.dart';
 import 'package:unyo/domain/entities/media/manga.dart';
 import 'package:unyo/domain/entities/list/media_list.dart';
 import 'package:unyo/domain/entities/user/user.dart';
@@ -31,14 +31,14 @@ class MangaAdvancedSearchCubit extends Cubit<MangaAdvancedSearchState>
   late final StreamSubscription<String> _selectedMangaAdvancedSearchGenresFiltersSubscription;
 
   // Repositories
-  final MangaRepositoryAnilist _mangaRepositoryAnilist;
+  final MangaRepository _mangaRepository;
 
   MangaAdvancedSearchCubit(
     this._loggedUserNotifier,
     this._selectedMediaListNotifier,
     this._selectedMangaNotifier,
     this._selectedMangaAdvancedSearchGenresFilters,
-    this._mangaRepositoryAnilist,
+    this._mangaRepository,
   ) : super(MangaAdvancedSearchState(loggedUser: UserModel.empty())) {
     _init();
   }
@@ -162,28 +162,20 @@ class MangaAdvancedSearchCubit extends Cubit<MangaAdvancedSearchState>
 
   Future<void> _getLoggedUserServiceFilters(User loggedUser) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          final filters = await _mangaRepositoryAnilist.getUserMangaAdvancedSearchFilters();
-          emit(
-            state.copyWith(
-              genresFilters: (filters['genres']?.$1 ?? false, filters['genres']?.$2 ?? []),
-              formatFilters: (filters['formats']?.$1 ?? false, filters['formats']?.$2 ?? []),
-              countryFilters: (filters['countries']?.$1 ?? false, filters['countries']?.$2 ?? []),
-              airingStatusFilters: (
-                filters['airingStatuses']?.$1 ?? false,
-                filters['airingStatuses']?.$2 ?? [],
-              ),
-              searchSortOptions: (filters['sortOptions']?.$1 ?? false, filters['sortOptions']?.$2 ?? []),
-              searchSortOrder: (filters['sortOrders']?.$1 ?? false, filters['sortOrders']?.$2 ?? []),
-            ),
-          );
-          break;
-        case Service.mal:
-        case Service.shikimori:
-        case Service.simkl:
-        case Service.kitsu:
-      }
+      final filters = await _mangaRepository.getUserMangaAdvancedSearchFilters();
+      emit(
+        state.copyWith(
+          genresFilters: (filters['genres']?.$1 ?? false, filters['genres']?.$2 ?? []),
+          formatFilters: (filters['formats']?.$1 ?? false, filters['formats']?.$2 ?? []),
+          countryFilters: (filters['countries']?.$1 ?? false, filters['countries']?.$2 ?? []),
+          airingStatusFilters: (
+            filters['airingStatuses']?.$1 ?? false,
+            filters['airingStatuses']?.$2 ?? [],
+          ),
+          searchSortOptions: (filters['sortOptions']?.$1 ?? false, filters['sortOptions']?.$2 ?? []),
+          searchSortOrder: (filters['sortOrders']?.$1 ?? false, filters['sortOrders']?.$2 ?? []),
+        ),
+      );
     } catch (e, stackTrace) {
       _logger.e("Error getting logged user service filters $e", stackTrace: stackTrace);
       handleError("Error getting logged user service filters", stackTrace: stackTrace);
@@ -191,23 +183,16 @@ class MangaAdvancedSearchCubit extends Cubit<MangaAdvancedSearchState>
   }
 
   Future<void> _performMangaAdvancedSearch() async {
-    switch (state.loggedUser.settings.service) {
-      case Service.anilist:
-        List<Manga> searchResults = await _mangaRepositoryAnilist.performMangaAdvancedSearch(
-          state.searchQuery,
-          state.selectedGenres,
-          state.selectedFormat,
-          state.selectedCountry,
-          state.selectedAiringStatus,
-          "${state.selectedSearchSortOption.toUpperCase().replaceAll(" ", "_")}_${state.selectedSearchOrder.toUpperCase()}",
-          1,
-          state.loggedUser
-        );
-        emit(state.copyWith(searchResults: searchResults));
-      case Service.mal:
-      case Service.shikimori:
-      case Service.simkl:
-      case Service.kitsu:
-    }
+    List<Manga> searchResults = await _mangaRepository.performMangaAdvancedSearch(
+      state.searchQuery,
+      state.selectedGenres,
+      state.selectedFormat,
+      state.selectedCountry,
+      state.selectedAiringStatus,
+      "${state.selectedSearchSortOption.toUpperCase().replaceAll(" ", "_")}_${state.selectedSearchOrder.toUpperCase()}",
+      1,
+      state.loggedUser
+    );
+    emit(state.copyWith(searchResults: searchResults));
   }
 }

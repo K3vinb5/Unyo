@@ -9,14 +9,14 @@ import 'package:unyo/application/cubits/effect_mixin.dart';
 import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/anime_state.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/core/enums/service.dart';
+
 import 'package:unyo/core/notification/anime_genres_notifier.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
 import 'package:unyo/core/services/api/http/http_exception.dart';
-import 'package:unyo/data/repositories/anime_repository_anilist.dart';
+import 'package:unyo/domain/repositories/anime_repository.dart';
 import 'package:unyo/domain/entities/media/anime.dart';
 import 'package:unyo/domain/entities/list/media_list.dart';
 import 'package:unyo/domain/entities/user/user.dart';
@@ -24,7 +24,7 @@ import 'package:unyo/domain/entities/user/user.dart';
 import '../../core/notification/reload/reload_notifier.dart';
 
 class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
-  final AnimeRepositoryAnilist _animeRepositoryAnilist;
+  final AnimeRepository _animeRepository;
   final UserNotifier _loggedUserNotifier;
   final AnimeNotifier _selectedAnimeNotifier;
   final AnimeGenresNotifier _selectedAnimeAdvancedSearchGenresFilters;
@@ -35,7 +35,7 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
   final Logger _logger = sl<Logger>();
 
   AnimeCubit(
-    this._animeRepositoryAnilist,
+    this._animeRepository,
     this._loggedUserNotifier,
     this._selectedAnimeNotifier,
     this._selectedAnimeAdvancedSearchGenresFilters,
@@ -123,17 +123,10 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
 
   Future<void> _fetchRecentlyReleased(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist recently released anime");
-          (bool, List<Anime>) recentlyReleased = await _animeRepositoryAnilist
-              .getRecentlyReleasedAnimes(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(recentlyReleased: recentlyReleased));
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
-      }
+      _logger.i("Fetching recently released anime");
+      (bool, List<Anime>) recentlyReleased = await _animeRepository
+          .getRecentlyReleasedAnimes(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(recentlyReleased: recentlyReleased));
     } on HttpServerException catch (e, stackTrace) {
       handleError(
         "Failed to fetch recently released anime:",
@@ -150,27 +143,20 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
 
   Future<void> _fetchTrending(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist trending anime");
-          (bool, List<Anime>) trending = await _animeRepositoryAnilist
-              .getTrendingAnimes(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(trending: trending));
-          if (page == 1) {
-            List<Anime> banners = trending.$2.where((anime) => anime.bannerImage != "").toList();
-            emit(
-              state.copyWith(
-                banners: banners.sublist(
-                  0,
-                  banners.length > 20 ? 20 : banners.length,
-                ),
-              ),
-            );
-          }
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
+      _logger.i("Fetching trending anime");
+      (bool, List<Anime>) trending = await _animeRepository
+          .getTrendingAnimes(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(trending: trending));
+      if (page == 1) {
+        List<Anime> banners = trending.$2.where((anime) => anime.bannerImage != "").toList();
+        emit(
+          state.copyWith(
+            banners: banners.sublist(
+              0,
+              banners.length > 20 ? 20 : banners.length,
+            ),
+          ),
+        );
       }
     } on HttpServerException catch (e, stackTrace) {
       handleError(
@@ -185,17 +171,10 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
 
   Future<void> _fetchPopular(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist popular anime");
-          (bool, List<Anime>) popular = await _animeRepositoryAnilist
-              .getPopularAnimes(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(popular: popular));
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
-      }
+      _logger.i("Fetching popular anime");
+      (bool, List<Anime>) popular = await _animeRepository
+          .getPopularAnimes(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(popular: popular));
     } on HttpServerException catch (e, stackTrace) {
       handleError(
         "Failed to fetch popular anime:",
@@ -209,17 +188,10 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
 
   Future<void> _fetchRecentlyCompleted(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist recently completed anime");
-          (bool, List<Anime>) recentlyCompleted = await _animeRepositoryAnilist
-              .getRecentlyCompletedAnimes(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(recentlyCompleted: recentlyCompleted));
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
-      }
+      _logger.i("Fetching recently completed anime");
+      (bool, List<Anime>) recentlyCompleted = await _animeRepository
+          .getRecentlyCompletedAnimes(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(recentlyCompleted: recentlyCompleted));
     } on HttpServerException catch (e, stackTrace) {
       handleError(
         "Failed to fetch recently completed anime:",
@@ -236,17 +208,10 @@ class AnimeCubit extends Cubit<AnimeState> with EffectMixin<AnimeState> {
 
   Future<void> _fetchUpcoming(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist upcoming anime");
-          (bool, List<Anime>) upcoming = await _animeRepositoryAnilist
-              .getUpcomingAnimes(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(upcoming: upcoming));
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
-      }
+      _logger.i("Fetching upcoming anime");
+      (bool, List<Anime>) upcoming = await _animeRepository
+          .getUpcomingAnimes(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(upcoming: upcoming));
     } on HttpServerException catch (e, stackTrace) {
       handleError(
         "Failed to fetch upcoming anime:",

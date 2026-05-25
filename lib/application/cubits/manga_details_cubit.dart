@@ -11,7 +11,7 @@ import 'package:unyo/application/effects/app_effects.dart';
 import 'package:bloc/bloc.dart';
 import 'package:unyo/application/states/manga_details_state.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/core/enums/service.dart';
+
 import 'package:unyo/core/notification/manga_genres_notifier.dart';
 import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
@@ -20,7 +20,7 @@ import 'package:unyo/core/services/api/http/http_exception.dart';
 import 'package:unyo/data/models/anilist/anilist_user_model.dart';
 import 'package:unyo/data/models/local/local_user_model.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
-import 'package:unyo/data/repositories/manga_repository_anilist.dart';
+import 'package:unyo/domain/repositories/manga_repository.dart';
 import 'package:unyo/data/repositories/repositories.dart';
 import 'package:unyo/domain/entities/extension/extension.dart';
 import 'package:unyo/domain/entities/media/manga.dart';
@@ -32,7 +32,7 @@ import 'package:unyo/domain/entities/user/user.dart';
 
 class MangaDetailsCubit extends Cubit<MangaDetailsState> with EffectMixin<MangaDetailsState> {
   // Repositories
-  final MangaRepositoryAnilist _mangaRepositoryAnilist;
+  final MangaRepository _mangaRepository;
   final ExtensionRepositoryAniyomi _extensionRepositoryAniyomi;
   final UserRepositoryAnilist _userRepositoryAnilist;
 
@@ -49,7 +49,7 @@ class MangaDetailsCubit extends Cubit<MangaDetailsState> with EffectMixin<MangaD
   final Logger _logger = sl<Logger>();
 
   MangaDetailsCubit(
-    this._mangaRepositoryAnilist,
+    this._mangaRepository,
     this._loggedUserNotifier,
     this._selectedMangaNotifier,
     this._selectedMangaAdvancedSearchGenresFilters,
@@ -168,35 +168,24 @@ class MangaDetailsCubit extends Cubit<MangaDetailsState> with EffectMixin<MangaD
 
   Future<void> _getMangaDetails(User loggedUser, Manga selectedManga) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Manga Details from AniList for ${state.selectedManga.title.userPreferred}");
-          (bool, MangaDetails) mangaDetails = await _mangaRepositoryAnilist.getMangaDetails(
-            selectedManga,
-            loggedUser,
-          );
-          emit(
-            state.copyWith(
-              mediaListEntry: mangaDetails.$2.mediaListEntry,
-              characters: (mangaDetails.$2.characters.isNotEmpty, mangaDetails.$2.characters),
-              recommendations: (
-                mangaDetails.$2.recommendedMangas.isNotEmpty,
-                mangaDetails.$2.recommendedMangas,
-              ),
-            ),
-          );
-          if (mangaDetails.$2.recommendedMangas.isEmpty) {
-            (bool, List<Manga>) trendingMangas = await _mangaRepositoryAnilist.getTrendingMangas(1, loggedUser);
-            emit(state.copyWith(recommendations: (trendingMangas.$1, trendingMangas.$2.shuffled(Random()))));
-          }
-        case Service.mal:
-          _logger.i("Fetching Manga Details from MyMangaList for ${state.selectedManga.title.userPreferred}");
-        case Service.shikimori:
-          _logger.i("Fetching Manga Details from Shikimori for ${state.selectedManga.title.userPreferred}");
-        case Service.kitsu:
-          _logger.i("Fetching Manga Details from Kitsu for ${state.selectedManga.title.userPreferred}");
-        case Service.simkl:
-          _logger.i("Fetching Manga Details from Simkl for ${state.selectedManga.title.userPreferred}");
+      _logger.i("Fetching Manga Details for ${state.selectedManga.title.userPreferred}");
+      (bool, MangaDetails) mangaDetails = await _mangaRepository.getMangaDetails(
+        selectedManga,
+        loggedUser,
+      );
+      emit(
+        state.copyWith(
+          mediaListEntry: mangaDetails.$2.mediaListEntry,
+          characters: (mangaDetails.$2.characters.isNotEmpty, mangaDetails.$2.characters),
+          recommendations: (
+            mangaDetails.$2.recommendedMangas.isNotEmpty,
+            mangaDetails.$2.recommendedMangas,
+          ),
+        ),
+      );
+      if (mangaDetails.$2.recommendedMangas.isEmpty) {
+        (bool, List<Manga>) trendingMangas = await _mangaRepository.getTrendingMangas(1, loggedUser);
+        emit(state.copyWith(recommendations: (trendingMangas.$1, trendingMangas.$2.shuffled(Random()))));
       }
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error fetching Manga details:", responseBody: e.message, stackTrace: stackTrace);
@@ -266,20 +255,9 @@ class MangaDetailsCubit extends Cubit<MangaDetailsState> with EffectMixin<MangaD
 
   Future<void> _getMangaBanners(User loggedUser) async {
     try {
-      switch (loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Manga Banners from AniList for ${state.selectedManga.title.userPreferred}");
-          List<String> banners = await _mangaRepositoryAnilist.getMediaCoverImages(loggedUser);
-          emit(state.copyWith(banners: banners));
-        case Service.mal:
-          _logger.i("Fetching Manga Banners from MyMangaList for ${state.selectedManga.title.userPreferred}");
-        case Service.shikimori:
-          _logger.i("Fetching Manga Banners from Shikimori for ${state.selectedManga.title.userPreferred}");
-        case Service.kitsu:
-          _logger.i("Fetching Manga Banners from Kitsu for ${state.selectedManga.title.userPreferred}");
-        case Service.simkl:
-          _logger.i("Fetching Manga Banners from Simkl for ${state.selectedManga.title.userPreferred}");
-      }
+      _logger.i("Fetching Manga Banners for ${state.selectedManga.title.userPreferred}");
+      List<String> banners = await _mangaRepository.getMediaCoverImages(loggedUser);
+      emit(state.copyWith(banners: banners));
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error fetching Manga banners:", responseBody: e.message, stackTrace: stackTrace);
     } catch (e, stackTrace) {

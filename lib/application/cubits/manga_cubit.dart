@@ -6,21 +6,21 @@ import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/manga_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/core/enums/service.dart';
+
 import 'package:unyo/core/notification/manga_genres_notifier.dart';
 import 'package:unyo/core/notification/manga_notifier.dart';
 import 'package:unyo/core/notification/media_list_notifier.dart';
 import 'package:unyo/core/notification/reload/reload_notifier.dart';
 import 'package:unyo/core/notification/reload/reload_type.dart';
 import 'package:unyo/core/notification/user_notifier.dart';
-import 'package:unyo/data/repositories/manga_repository_anilist.dart';
+import 'package:unyo/domain/repositories/manga_repository.dart';
 import 'package:unyo/domain/entities/media/manga.dart';
 import 'package:unyo/domain/entities/list/media_list.dart';
 import 'package:unyo/domain/entities/user/user.dart';
 import 'effect_mixin.dart';
 
 class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
-  final MangaRepositoryAnilist _mangaRepositoryAnilist;
+  final MangaRepository _mangaRepository;
   final UserNotifier _loggedUserNotifier;
   final MangaNotifier _selectedMangaNotifier;
   final MangaGenresNotifier _selectedMangaAdvancedSearchGenresFilters;
@@ -31,7 +31,7 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
   final Logger _logger = sl<Logger>();
 
   MangaCubit(
-    this._mangaRepositoryAnilist,
+    this._mangaRepository,
     this._loggedUserNotifier,
     this._selectedMangaNotifier,
     this._selectedMangaAdvancedSearchGenresFilters,
@@ -108,26 +108,19 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
 
   Future<void> _fetchTrending(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (state.loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist trending manga");
-          (bool, List<Manga>) trending = await _mangaRepositoryAnilist
-              .getTrendingMangas(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(trending: trending));
-          if (page == 1) {
-            emit(
-              state.copyWith(
-                banners:
-                    trending.$2
-                        .where((manga) => manga.bannerImage != "")
-                        .toList(),
-              ),
-            );
-          }
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
+      _logger.i("Fetching trending manga");
+      (bool, List<Manga>) trending = await _mangaRepository
+          .getTrendingMangas(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(trending: trending));
+      if (page == 1) {
+        emit(
+          state.copyWith(
+            banners:
+                trending.$2
+                    .where((manga) => manga.bannerImage != "")
+                    .toList(),
+          ),
+        );
       }
     } catch (e, stackTrace) {
       handleError("Failed to fetch trending manga $e", stackTrace: stackTrace);
@@ -136,17 +129,10 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
 
   Future<void> _fetchPopular(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (state.loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist popular manga");
-          (bool, List<Manga>) popular = await _mangaRepositoryAnilist
-              .getPopularMangas(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(popular: popular));
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
-      }
+      _logger.i("Fetching popular manga");
+      (bool, List<Manga>) popular = await _mangaRepository
+          .getPopularMangas(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(popular: popular));
     } catch (e, stackTrace) {
       handleError("Failed to fetch popular manga $e", stackTrace: stackTrace);
     }
@@ -154,17 +140,10 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
 
   Future<void> _fetchRecentlyCompleted(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (state.loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist recently completed manga");
-          (bool, List<Manga>) recentlyCompleted = await _mangaRepositoryAnilist
-              .getRecentlyCompletedMangas(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(recentlyCompleted: recentlyCompleted));
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
-      }
+      _logger.i("Fetching recently completed manga");
+      (bool, List<Manga>) recentlyCompleted = await _mangaRepository
+          .getRecentlyCompletedMangas(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(recentlyCompleted: recentlyCompleted));
     } catch (e, stackTrace) {
       handleError(
         "Failed to fetch recently completed manga $e",
@@ -175,17 +154,10 @@ class MangaCubit extends Cubit<MangaState> with EffectMixin<MangaState> {
 
   Future<void> _fetchUpcoming(int page, User loggedUser, {bool ignoreCache = false}) async {
     try {
-      switch (state.loggedUser.settings.service) {
-        case Service.anilist:
-          _logger.i("Fetching Anilist upcoming manga");
-          (bool, List<Manga>) upcoming = await _mangaRepositoryAnilist
-              .getUpcomingMangas(page, loggedUser, ignoreCache: ignoreCache);
-          emit(state.copyWith(upcoming: upcoming));
-        case Service.mal:
-        case Service.kitsu:
-        case Service.shikimori:
-        case Service.simkl:
-      }
+      _logger.i("Fetching upcoming manga");
+      (bool, List<Manga>) upcoming = await _mangaRepository
+          .getUpcomingMangas(page, loggedUser, ignoreCache: ignoreCache);
+      emit(state.copyWith(upcoming: upcoming));
     } catch (e, stackTrace) {
       handleError("Failed to fetch upcoming manga $e", stackTrace: stackTrace);
     }

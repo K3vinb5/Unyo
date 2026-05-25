@@ -267,8 +267,8 @@ class MangaRepositoryAnilist with RepositoryMixin implements MangaRepository {
   }
 
   @override
-  Future<List<String>> getMediaCoverImages(User loggedUser) async {
-    (bool, List<Manga>) popularMangas = await getPopularMangas(1, loggedUser);
+  Future<List<String>> getMediaCoverImages(User loggedUser, {bool ignoreCache = false}) async {
+    (bool, List<Manga>) popularMangas = await getPopularMangas(1, loggedUser, ignoreCache: ignoreCache);
     return popularMangas.$2.map((manga) => manga.coverImage).where((coverImage) => coverImage != "").shuffled(Random()).toList();
   }
 

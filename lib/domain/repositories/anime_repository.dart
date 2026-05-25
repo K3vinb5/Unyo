@@ -4,11 +4,11 @@ import 'package:unyo/domain/entities/list/media_list_entry.dart';
 import 'package:unyo/domain/entities/user/user.dart';
 
 abstract class AnimeRepository {
-  Future<(bool, List<Anime>)> getRecentlyReleasedAnimes(int page, User loggedUser);
-  Future<(bool, List<Anime>)> getTrendingAnimes(int page, User loggedUser);
-  Future<(bool, List<Anime>)> getPopularAnimes(int page, User loggedUser);
-  Future<(bool, List<Anime>)> getRecentlyCompletedAnimes(int page, User loggedUser);
-  Future<(bool, List<Anime>)> getUpcomingAnimes(int page, User loggedUser);
+  Future<(bool, List<Anime>)> getRecentlyReleasedAnimes(int page, User loggedUser, {bool ignoreCache = false});
+  Future<(bool, List<Anime>)> getTrendingAnimes(int page, User loggedUser, {bool ignoreCache = false});
+  Future<(bool, List<Anime>)> getPopularAnimes(int page, User loggedUser, {bool ignoreCache = false});
+  Future<(bool, List<Anime>)> getRecentlyCompletedAnimes(int page, User loggedUser, {bool ignoreCache = false});
+  Future<(bool, List<Anime>)> getUpcomingAnimes(int page, User loggedUser, {bool ignoreCache = false});
   Future<Map<String, List<Anime>>> getCalendarReleases(int page, User loggedUser);
   Future<(bool, AnimeDetails)> getAnimeDetails(Anime selectedAnime, User loggedUser);
   Future<Map<String, (bool, List<String>)>> getUserAnimeAdvancedSearchFilters();
@@ -23,7 +23,7 @@ abstract class AnimeRepository {
     int page,
     User loggedUser
   );
-  Future<List<String>> getMediaCoverImages(User loggedUser);
+  Future<List<String>> getMediaCoverImages(User loggedUser, {bool ignoreCache = false});
   Future<MediaListEntry> updateMediaListEntry(MediaListEntry newMediaListEntry, Anime selectedAnime, User loggedUser);
-  Future<MediaListEntry> getMediaListEntry(Anime selectedAnime, User loggedUser);
+  Future<MediaListEntry> getMediaListEntry(Anime selectedAnime, User loggedUser, {bool ignoreCache = false});
 }

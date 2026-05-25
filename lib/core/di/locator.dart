@@ -39,6 +39,8 @@ import 'package:unyo/core/services/api/http/http_service.dart';
 import 'package:unyo/core/services/effects/app_effect_handler.dart';
 import 'package:unyo/core/services/settings/settings_service.dart';
 import 'package:unyo/core/services/torrent/torrent_service.dart';
+import 'package:unyo/core/factories/anime_repository_factory.dart';
+import 'package:unyo/core/factories/manga_repository_factory.dart';
 import 'package:unyo/core/theme/color_image_service.dart';
 import 'package:unyo/core/theme/theme_service.dart';
 import 'package:unyo/data/repositories/anime_repository_anilist.dart';
@@ -46,6 +48,8 @@ import 'package:unyo/data/repositories/episode_repository_anizip.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/data/repositories/manga_repository_anilist.dart';
 import 'package:unyo/data/repositories/repositories.dart';
+import 'package:unyo/domain/repositories/anime_repository.dart';
+import 'package:unyo/domain/repositories/manga_repository.dart';
 import 'package:unyo/application/cubits/home_cubit.dart';
 
 final sl = GetIt.instance;
@@ -98,6 +102,8 @@ void setupLocator() async{
   ));
   sl.registerLazySingleton<AnimeRepositoryAnilist>(() => AnimeRepositoryAnilist());
   sl.registerLazySingleton<MangaRepositoryAnilist>(() => MangaRepositoryAnilist());
+  sl.registerLazySingleton<AnimeRepository>(() => AnimeRepositoryFactory());
+  sl.registerLazySingleton<MangaRepository>(() => MangaRepositoryFactory());
   sl.registerLazySingleton<EpisodeRepositoryAnizip>(() => EpisodeRepositoryAnizip());
   // Cubits / Blocs
   sl.registerFactory<LoginCubit>(
@@ -117,7 +123,7 @@ void setupLocator() async{
       sl<MangaNotifier>(),
       sl<MediaListNotifier>(),
       sl<UserRepositoryAnilist>(),
-      sl<AnimeRepositoryAnilist>(),
+      sl<AnimeRepository>(),
       sl<MenuBarNotifier>(),
       sl<ReloadNotifier>(),
     ),
@@ -127,7 +133,7 @@ void setupLocator() async{
   );
   sl.registerFactory<AnimeCubit>(
     () => AnimeCubit(
-      sl<AnimeRepositoryAnilist>(),
+      sl<AnimeRepository>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
       sl<AnimeNotifier>(),
       sl<AnimeGenresNotifier>(),
@@ -137,7 +143,7 @@ void setupLocator() async{
   );
   sl.registerFactory<MangaCubit>(
     () => MangaCubit(
-      sl<MangaRepositoryAnilist>(),
+      sl<MangaRepository>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
       sl<MangaNotifier>(),
       sl<MangaGenresNotifier>(),
@@ -162,7 +168,7 @@ void setupLocator() async{
   );
   sl.registerFactory<CalendarCubit>(
     () => CalendarCubit(
-      sl<AnimeRepositoryAnilist>(),
+      sl<AnimeRepository>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
       sl<AnimeNotifier>(),
       sl<MediaListNotifier>(),
@@ -170,7 +176,7 @@ void setupLocator() async{
   );
   sl.registerFactory<AnimeDetailsCubit>(
     () => AnimeDetailsCubit(
-      sl<AnimeRepositoryAnilist>(),
+      sl<AnimeRepository>(),
       sl<EpisodeRepositoryAnizip>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
       sl<AnimeNotifier>(),
@@ -188,7 +194,7 @@ void setupLocator() async{
   );
   sl.registerFactory<MangaDetailsCubit>(
     () => MangaDetailsCubit(
-      sl<MangaRepositoryAnilist>(),
+      sl<MangaRepository>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
       sl<MangaNotifier>(),
       sl<MangaGenresNotifier>(),
@@ -213,7 +219,7 @@ void setupLocator() async{
       sl<MediaListNotifier>(),
       sl<AnimeNotifier>(),
       sl<AnimeGenresNotifier>(),
-      sl<AnimeRepositoryAnilist>(),
+      sl<AnimeRepository>(),
     ),
   );
   sl.registerFactory<MangaAdvancedSearchCubit>(
@@ -222,7 +228,7 @@ void setupLocator() async{
       sl<MediaListNotifier>(),
       sl<MangaNotifier>(),
       sl<MangaGenresNotifier>(),
-      sl<MangaRepositoryAnilist>(),
+      sl<MangaRepository>(),
     ),
   );
   sl.registerFactory<VideoCubit>(
@@ -235,7 +241,7 @@ void setupLocator() async{
       sl<ExtensionNotifier>(),
       sl<EpisodesNotifier>(),
       sl<ExtensionRepositoryAniyomi>(),
-      sl<AnimeRepositoryAnilist>(),
+      sl<AnimeRepository>(),
       sl<ReloadNotifier>(),
     )
   );
