@@ -15,6 +15,7 @@ import 'package:unyo/domain/entities/extension/video.dart' as ext;
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/services/torrent/torrent_service.dart';
 import 'package:unyo/domain/entities/torrent/torrent_file_stat.dart';
+import 'package:unyo/presentation/widgets/text/text_utils.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -106,7 +107,7 @@ class VideoService {
   // Getters
   Duration get position => Duration(milliseconds: _player.position);
 
-  String get formattedPosition => _formatMilliseconds(position.inMilliseconds);
+  String get formattedPosition => TextUtils.formatMilliseconds(position.inMilliseconds);
 
   ValueNotifier<int?> get textureId => _player.textureId;
 
@@ -516,15 +517,5 @@ class VideoService {
     if (audioTracks.isNotEmpty) {
       setAudioTrack(0);
     }
-  }
-
-  String _formatMilliseconds(int milliseconds) {
-    int totalSeconds = milliseconds ~/ 1000;
-
-    int hours = totalSeconds ~/ 3600;
-    int minutes = (totalSeconds % 3600) ~/ 60;
-    int seconds = totalSeconds % 60;
-
-    return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
   }
 }

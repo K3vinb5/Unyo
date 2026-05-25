@@ -46,6 +46,14 @@ class TextUtils {
     }
   }
 
+  static String formatMilliseconds(int milliseconds) {
+    final totalSeconds = milliseconds ~/ 1000;
+    final hours = totalSeconds ~/ 3600;
+    final minutes = (totalSeconds % 3600) ~/ 60;
+    final seconds = totalSeconds % 60;
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
   static List<String> capitalizeList(List<String> list) {
     return list.map(capitalize).toList();
   }

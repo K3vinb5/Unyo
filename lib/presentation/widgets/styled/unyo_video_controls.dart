@@ -17,6 +17,7 @@ import 'package:unyo/presentation/widgets/styled/unyo_fade_overlay.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_video_header_controls.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_video_list_button.dart';
 import 'package:unyo/presentation/widgets/styled/unyo_volume_button.dart';
+import 'package:unyo/presentation/widgets/text/text_utils.dart';
 
 class UnyoVideoControls extends StatefulWidget {
   final VideoCubit videoCubit;
@@ -281,7 +282,7 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                               ? _dragValue
                                               : _videoService.position.inMilliseconds.toDouble(),
                                           label: _isDragging
-                                              ? _formatMs(_dragValue.toInt())
+                                              ? TextUtils.formatMilliseconds(_dragValue.toInt())
                                               : _videoService.formattedPosition,
                                           divisions: _videoService.duration.inMilliseconds.toDouble() > 0
                                               ? _videoService.duration.inMilliseconds
@@ -485,14 +486,5 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
         },
       ),
     );
-  }
-
-  /// Formats milliseconds into HH:MM:SS for the slider tooltip during drag.
-  static String _formatMs(int milliseconds) {
-    final totalSeconds = milliseconds ~/ 1000;
-    final hours = totalSeconds ~/ 3600;
-    final minutes = (totalSeconds % 3600) ~/ 60;
-    final seconds = totalSeconds % 60;
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 }
