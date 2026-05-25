@@ -33,12 +33,14 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
   late Timer _refreshTimer;
   late VideoService _videoService;
   late Timer _hideControlsTimer;
-  late bool _controlsVisible;
+
+  bool _controlsVisible = true;
+  bool _isDragging = false;
+  double _dragValue = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _controlsVisible = true;
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400), // Adjust the duration as needed
@@ -258,7 +260,9 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                     SizedBox(
                                       width: 75,
                                       child: Text(
-                                        _videoService.position.toString().substring(0, 7),
+                                        _isDragging
+                                            ? Duration(milliseconds: _dragValue.toInt()).toString().substring(0, 7)
+                                            : _videoService.position.toString().substring(0, 7),
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           color: Colors.white,
@@ -273,14 +277,32 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
                                         child: Slider(
                                           min: 0,
                                           max: _videoService.duration.inMilliseconds.toDouble(),
-                                          value: _videoService.position.inMilliseconds.toDouble(),
-                                          label: _videoService.formattedPosition,
+                                          value: _isDragging
+                                              ? _dragValue
+                                              : _videoService.position.inMilliseconds.toDouble(),
+                                          label: _isDragging
+                                              ? _formatMs(_dragValue.toInt())
+                                              : _videoService.formattedPosition,
                                           divisions: _videoService.duration.inMilliseconds.toDouble() > 0
                                               ? _videoService.duration.inMilliseconds
                                               : null,
                                           onChanged: (value) {
+                                            _isDragging = true;
+                                            _dragValue = value;
+                                            _hideControlsTimer.cancel();
+                                            _controlsVisible = true;
                                             setState(() {});
+                                          },
+                                          onChangeEnd: (value) {
+                                            _isDragging = false;
                                             _videoService.seekTo(Duration(milliseconds: value.toInt()));
+                                            _hideControlsTimer = Timer(const Duration(seconds: 4), () {
+                                              if (mounted && _videoService.isPlaying) {
+                                                _controlsVisible = false;
+                                                setState(() {});
+                                              }
+                                            });
+                                            setState(() {});
                                           },
                                         ),
                                       ),
@@ -463,5 +485,14 @@ class _UnyoVideoControlsState extends State<UnyoVideoControls> with TickerProvid
         },
       ),
     );
+  }
+
+  /// Formats milliseconds into HH:MM:SS for the slider tooltip during drag.
+  static String _formatMs(int milliseconds) {
+    final totalSeconds = milliseconds ~/ 1000;
+    final hours = totalSeconds ~/ 3600;
+    final minutes = (totalSeconds % 3600) ~/ 60;
+    final seconds = totalSeconds % 60;
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 }
