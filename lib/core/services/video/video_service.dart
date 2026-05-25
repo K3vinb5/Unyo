@@ -36,7 +36,6 @@ class VideoService {
   ext.Track? _currentSubtitleTrack;
   ext.Track? _currentAudioTrack;
 
-  final bool _lowLatency;
   late bool _initialFullscreen;
   late bool _isFullscreen;
   bool _isVideoReady = false;
@@ -53,13 +52,11 @@ class VideoService {
     required int videoIndex,
     required int episodeIndex,
     required void Function(String) onErrorCallback,
-    bool lowLatency = false,
   }) : _episodeIndex = episodeIndex,
        _videoIndex = videoIndex,
        _video = video,
        _alternativeVideos = alternativeVideos,
-       _onErrorCallback = onErrorCallback,
-       _lowLatency = lowLatency {
+       _onErrorCallback = onErrorCallback {
     _player = mdk.Player();
     _configureDecoder();
     _configurePlayer();
@@ -71,6 +68,7 @@ class VideoService {
   Future<void> _initAsync() async {
     _initialFullscreen = await windowManager.isFullScreen();
     _isFullscreen = _initialFullscreen;
+    _player.onMediaStatus(_onMediaStatusInit);
     try {
       final resolvedUrl = await _resolveVideoUrl(_video.videoUrl);
       _player.media = resolvedUrl;
@@ -80,7 +78,6 @@ class VideoService {
       _onErrorCallback(e.toString());
     }
     _player.loop = 0;
-    _player.onMediaStatus(_onMediaStatusInit);
   }
 
   Future<void> changeVideo({
@@ -233,7 +230,6 @@ class VideoService {
       _onErrorCallback(e.toString());
       return;
     }
-    _initSubtitlesAndAudiotracks();
     await _player.seek(position: position.inMilliseconds, flags: _seekFlags);
     play();
   }

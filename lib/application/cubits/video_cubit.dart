@@ -175,7 +175,6 @@ class VideoCubit extends Cubit<VideoState> with EffectMixin<VideoState> {
       videoIndex: videoInfo.videoIndex,
       episodeIndex: videoInfo.playlistIndex,
       onErrorCallback: _handleVideoError,
-      lowLatency: false,
     );
     _videoService.setPreventSleep(true);
     _videoServiceInitialized = true;
