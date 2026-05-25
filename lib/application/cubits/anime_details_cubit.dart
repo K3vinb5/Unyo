@@ -14,7 +14,6 @@ import 'package:unyo/application/effects/app_effects.dart';
 import 'package:unyo/application/states/anime_details_state.dart';
 import 'package:bloc/bloc.dart';
 import 'package:unyo/core/di/locator.dart';
-import 'package:unyo/core/enums/episode_service.dart';
 import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/core/notification/anime_genres_notifier.dart';
 import 'package:unyo/core/notification/anime_notifier.dart';
@@ -31,7 +30,7 @@ import 'package:unyo/core/services/api/http/http_exception.dart';
 import 'package:unyo/data/models/anilist/anilist_user_model.dart';
 import 'package:unyo/data/models/local/local_user_model.dart';
 import 'package:unyo/domain/repositories/anime_repository.dart';
-import 'package:unyo/data/repositories/episode_repository_anizip.dart';
+import 'package:unyo/domain/repositories/episode_repository.dart';
 import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/data/repositories/repositories.dart';
 import 'package:unyo/domain/entities/media/anime.dart';
@@ -50,7 +49,7 @@ import 'package:unyo/presentation/drawers/anime_server_selection_drawer.dart';
 class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeDetailsState> {
   // Repositories
   final AnimeRepository _animeRepository;
-  final EpisodeRepositoryAnizip _episodeRepositoryAnizip;
+  final EpisodeRepository _episodeRepository;
   final ExtensionRepositoryAniyomi _extensionRepositoryAniyomi;
   final UserRepositoryAnilist _userRepositoryAnilist;
 
@@ -75,7 +74,7 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
 
   AnimeDetailsCubit(
     this._animeRepository,
-    this._episodeRepositoryAnizip,
+    this._episodeRepository,
     this._loggedUserNotifier,
     this._selectedAnimeNotifier,
     this._selectedAnimeAdvancedSearchGenresFilters,
@@ -660,25 +659,20 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
 
   Future<void> _getAlternativeImage(User loggedUser, Anime selectedAnime) async {
     try {
-      switch (loggedUser.settings.episodeService) {
-        case EpisodeService.anizip:
-          _logger.i("Fetching Alternative Image from Anizip for ${state.selectedAnime.title.userPreferred}");
-          late String alternateImage;
-          if (loggedUser.settings.service == Service.anilist) {
-            alternateImage = await _episodeRepositoryAnizip.getAlternativeImage(
-              malId: -1,
-              anilistId: selectedAnime.id,
-            );
-          } else {
-            alternateImage = await _episodeRepositoryAnizip.getAlternativeImage(
-              malId: selectedAnime.idMal,
-              anilistId: -1,
-            );
-          }
-          emit(state.copyWith(alternateImage: alternateImage));
-        case EpisodeService.kitsu:
-          _logger.i("Fetching Alternative Image from Kitsu for ${state.selectedAnime.title.userPreferred}");
+      _logger.i("Fetching Alternative Image for ${state.selectedAnime.title.userPreferred}");
+      late String alternateImage;
+      if (loggedUser.settings.service == Service.anilist) {
+        alternateImage = await _episodeRepository.getAlternativeImage(
+          malId: -1,
+          anilistId: selectedAnime.id,
+        );
+      } else {
+        alternateImage = await _episodeRepository.getAlternativeImage(
+          malId: selectedAnime.idMal,
+          anilistId: -1,
+        );
       }
+      emit(state.copyWith(alternateImage: alternateImage));
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error fetching Alternative Image:", responseBody: e.message, stackTrace: stackTrace);
     } catch (e, stackTrace) {
@@ -688,26 +682,21 @@ class AnimeDetailsCubit extends Cubit<AnimeDetailsState> with EffectMixin<AnimeD
 
   Future<void> _getEpisodesDetails(User loggedUser, Anime selectedAnime) async {
     try {
-      switch (loggedUser.settings.episodeService) {
-        case EpisodeService.anizip:
-          _logger.i("Fetching Episodes Details from Anizip for ${state.selectedAnime.title.userPreferred}");
-          late List<EpisodeInfo> episodesInfo;
-          if (loggedUser.settings.service == Service.anilist) {
-            episodesInfo = await _episodeRepositoryAnizip.getEpisodeInfo(
-              malId: -1,
-              anilistId: selectedAnime.id,
-            );
-          } else {
-            episodesInfo = await _episodeRepositoryAnizip.getEpisodeInfo(
-              malId: selectedAnime.idMal,
-              anilistId: -1,
-            );
-          }
-          emit(state.copyWith(episodesInfo: episodesInfo));
-          _episodesInfoNotifier.updateSelectedEpisodeInfo(episodesInfo);
-        case EpisodeService.kitsu:
-          _logger.i("Fetching Episodes Details from Kitsu for ${state.selectedAnime.title.userPreferred}");
+      _logger.i("Fetching Episodes Details for ${state.selectedAnime.title.userPreferred}");
+      late List<EpisodeInfo> episodesInfo;
+      if (loggedUser.settings.service == Service.anilist) {
+        episodesInfo = await _episodeRepository.getEpisodeInfo(
+          malId: -1,
+          anilistId: selectedAnime.id,
+        );
+      } else {
+        episodesInfo = await _episodeRepository.getEpisodeInfo(
+          malId: selectedAnime.idMal,
+          anilistId: -1,
+        );
       }
+      emit(state.copyWith(episodesInfo: episodesInfo));
+      _episodesInfoNotifier.updateSelectedEpisodeInfo(episodesInfo);
     } on HttpServerException catch (e, stackTrace) {
       handleError("Error fetching Episodes details:", responseBody: e.message, stackTrace: stackTrace);
     } catch (e, stackTrace) {

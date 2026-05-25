@@ -40,6 +40,7 @@ import 'package:unyo/core/services/effects/app_effect_handler.dart';
 import 'package:unyo/core/services/settings/settings_service.dart';
 import 'package:unyo/core/services/torrent/torrent_service.dart';
 import 'package:unyo/core/factories/anime_repository_factory.dart';
+import 'package:unyo/core/factories/episode_repository_factory.dart';
 import 'package:unyo/core/factories/manga_repository_factory.dart';
 import 'package:unyo/core/theme/color_image_service.dart';
 import 'package:unyo/core/theme/theme_service.dart';
@@ -49,6 +50,7 @@ import 'package:unyo/data/repositories/extension_repository_aniyomi.dart';
 import 'package:unyo/data/repositories/manga_repository_anilist.dart';
 import 'package:unyo/data/repositories/repositories.dart';
 import 'package:unyo/domain/repositories/anime_repository.dart';
+import 'package:unyo/domain/repositories/episode_repository.dart';
 import 'package:unyo/domain/repositories/manga_repository.dart';
 import 'package:unyo/application/cubits/home_cubit.dart';
 
@@ -105,6 +107,7 @@ void setupLocator() async{
   sl.registerLazySingleton<AnimeRepository>(() => AnimeRepositoryFactory());
   sl.registerLazySingleton<MangaRepository>(() => MangaRepositoryFactory());
   sl.registerLazySingleton<EpisodeRepositoryAnizip>(() => EpisodeRepositoryAnizip());
+  sl.registerLazySingleton<EpisodeRepository>(() => EpisodeRepositoryFactory());
   // Cubits / Blocs
   sl.registerFactory<LoginCubit>(
     () => LoginCubit(
@@ -177,7 +180,7 @@ void setupLocator() async{
   sl.registerFactory<AnimeDetailsCubit>(
     () => AnimeDetailsCubit(
       sl<AnimeRepository>(),
-      sl<EpisodeRepositoryAnizip>(),
+      sl<EpisodeRepository>(),
       sl<UserNotifier>(instanceName: config.loggedUserNotifier),
       sl<AnimeNotifier>(),
       sl<AnimeGenresNotifier>(),
