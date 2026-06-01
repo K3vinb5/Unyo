@@ -5,10 +5,10 @@
 import 'package:hive_ce/hive.dart';
 import 'package:unyo/core/enums/episode_service.dart';
 import 'package:unyo/core/enums/service.dart';
-import 'package:unyo/data/models/anilist/anilist_anime_details.dart';
-import 'package:unyo/data/models/anilist/anilist_manga_details.dart';
-import 'package:unyo/data/models/anilist/anilist_user_model.dart';
-import 'package:unyo/data/models/local/local_user_model.dart';
+import 'package:unyo/data/models/anilist/media/anilist_anime_details.dart';
+import 'package:unyo/data/models/anilist/media/anilist_manga_details.dart';
+import 'package:unyo/data/models/anilist/user/anilist_user_model.dart';
+import 'package:unyo/data/models/local/user/local_user_model.dart';
 import 'package:unyo/domain/entities/extension/extension.dart';
 import 'package:unyo/domain/entities/list/media_list.dart';
 import 'package:unyo/domain/entities/list/media_list_entry.dart';

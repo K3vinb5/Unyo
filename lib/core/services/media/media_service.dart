@@ -73,7 +73,7 @@ class ShikimoriMediaService extends MediaService {
   Service get service => Service.shikimori;
 
   @override
-  List<String> get titleLanguages => [];
+  List<String> get titleLanguages => ['Romaji', 'English', 'Native', 'Russian'];
 }
 
 class SimklMediaService extends MediaService {

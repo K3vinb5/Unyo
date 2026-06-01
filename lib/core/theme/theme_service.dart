@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:unyo/data/models/anilist/anilist_user_model.dart';
-import 'package:unyo/data/models/local/local_user_model.dart';
+import 'package:unyo/data/models/anilist/user/anilist_user_model.dart';
+import 'package:unyo/data/models/local/user/local_user_model.dart';
 import 'package:unyo/data/repositories/user_repository_anilist.dart';
 import 'package:unyo/data/repositories/user_repository_local.dart';
 import 'package:unyo/domain/entities/user/settings.dart';

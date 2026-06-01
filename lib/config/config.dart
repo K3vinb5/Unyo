@@ -1,7 +1,7 @@
 // Application configuration
 const String version = 'v1.0.0';
+// Locator configuration
 const String applicationSupportDirectory = "applicationSupportDirectory";
-const String anilistGraphQlService = 'anilistGraphQlService';
 const String loggedUserNotifier = 'loggedUserNotifier';
 const String newUserNotifier = 'newUserNotifier';
 // Anilist API configuration
@@ -11,15 +11,19 @@ const String anilistAuthUrl =
 const String anilistRedirectUri = 'http://localhost:9999/auth';
 const String anilistClientId = '17550';
 const String anilistClientSecret = 'xI8KTZlKm2F3kHXLko1ArQ21bKap4MojgDTk6Ukx';
+const String anilistGraphQlService = 'anilistGraphQlService';
 const String anilistGraphQLEndpoint = 'https://graphql.anilist.co';
+// Shikimori API configuration
+const String shikimoriGraphQlService = 'shikimoriGraphQlService';
+const String shikimoriGraphQLEndpoint = 'https://shikimori.io/api/graphql';
 // Anizip API configuration
 const String anizipBaseEndpoint = 'https://api.ani.zip';
 // Aniski API configuration
 const String aniskiBaseEndpoint = 'https://api.aniskip.com';
 // Torrent API configuration
 const String torrentServiceEndpoint = 'http://127.0.0.1:8090';
-const String localhost = '127.0.0.1';
 // Cache configuration
+const String localhost = '127.0.0.1';
 const Set<String> cacheDisabledEndpoints = <String>{
   anilistOAuthEndpoint,
 };
@@ -30,7 +34,7 @@ const Set<String> cacheIgnoredHeaders = <String>{
   'Authorization'
 };
 // Extensions condiguration
-const String aniyomiExtensionsRepositoryUrl = 'https://gitea.k3vinb5.dev/Backups/kohi-den-extensions/raw/branch/main/index.min.json';
-const String tachiyomiExtensionsRepositoryUrl = 'https://gitea.k3vinb5.dev/Backups/keiyoushi-extensions/raw/branch/repo/index.min.json';
+const String aniyomiExtensionsDefaultRepositoryUrl = 'https://gitea.k3vinb5.dev/Backups/kohi-den-extensions/raw/branch/main/index.min.json';
+const String tachiyomiExtensionsDefaultRepositoryUrl = 'https://gitea.k3vinb5.dev/Backups/keiyoushi-extensions/raw/branch/repo/index.min.json';
 // TODO move to an asset
 const plusImageUrl = "https://i.ibb.co/Kj8CQZH/cross.png";

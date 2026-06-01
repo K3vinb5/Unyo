@@ -40,7 +40,7 @@ class TextUtils {
       case Service.kitsu:
         throw UnimplementedError();
       case Service.shikimori:
-        throw UnimplementedError();
+        return startDate.split("/").length > 1 ? startDate.split("/")[2] : "";
       case Service.simkl:
         throw UnimplementedError();
     }

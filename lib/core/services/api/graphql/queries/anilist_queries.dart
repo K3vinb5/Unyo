@@ -1,5 +1,6 @@
 // { }
-const viewerQuery = '''
+const viewerQuery =
+'''
 query Viewer {
   Viewer {
     id
@@ -25,7 +26,8 @@ query Viewer {
 //   "userId": 0,
 //   "type" : "ANIME" or "MANGA"
 // }
-const mediaListCollectionQuery = '''
+const mediaListCollectionQuery =
+'''
 query MediaListCollection(\$userName: String, \$userId: Int, \$type: MediaType) {
   MediaListCollection(userName: \$userName, userId: \$userId, type: \$type) {
     lists {
@@ -145,7 +147,8 @@ query Page(\$sort: [AiringSort], \$page: Int, \$perPage: Int, \$notYetAired: Boo
 //   "sort": "POPULARITY_DESC" or "TRENDING_DESC",
 //   "type": "ANIME" or "MANGA"
 // }
-const mediaTrendingOrPopularQuery = '''
+const mediaTrendingOrPopularQuery =
+'''
 query Page(\$page: Int, \$perPage: Int, \$sort: [MediaSort], \$type: MediaType) {
   Page(page: \$page, perPage: \$perPage) {
     media(sort: \$sort, type: \$type) {
@@ -192,7 +195,6 @@ query Page(\$page: Int, \$perPage: Int, \$sort: [MediaSort], \$type: MediaType) 
     }
   }
 }
-
 ''';
 // {
 // "page" : 1,
@@ -202,7 +204,8 @@ query Page(\$page: Int, \$perPage: Int, \$sort: [MediaSort], \$type: MediaType) 
 // "endDateGreater": 20250612,
 // "endDateLesser": 20250712
 // }
-const mediaRecentlyCompletedQuery = '''
+const mediaRecentlyCompletedQuery =
+'''
 query Page(\$page: Int, \$perPage: Int, \$sort: [MediaSort], \$type: MediaType, \$endDateGreater: FuzzyDateInt, \$endDateLesser: FuzzyDateInt) {
   Page(page: \$page, perPage: \$perPage) {
     media(sort: \$sort, type: \$type, endDate_greater: \$endDateGreater, endDate_lesser: \$endDateLesser) {
@@ -257,7 +260,8 @@ query Page(\$page: Int, \$perPage: Int, \$sort: [MediaSort], \$type: MediaType, 
 //   "sort": "POPULARITY_DESC" or "TRENDING_DESC",
 //   "startDateGreater": 20250724
 // }
-const mediaUpcomingQuery = '''
+const mediaUpcomingQuery =
+'''
 query Page(\$page: Int, \$perPage: Int, \$sort: [MediaSort], \$type: MediaType, \$startDateGreater: FuzzyDateInt) {
   Page(page: \$page, perPage: \$perPage) {
     media(sort: \$sort, type: \$type, startDate_greater: \$startDateGreater) {
@@ -312,7 +316,8 @@ query Page(\$page: Int, \$perPage: Int, \$sort: [MediaSort], \$type: MediaType, 
 //   "airingAtGreater": 1700000000, milliseconds since epoch
 //   "airingAtLesser": 1800000000, milliseconds since epoch
 // }
-const calendarQuery = '''
+const calendarQuery =
+'''
 query Page(\$sort: [AiringSort], \$page: Int, \$perPage: Int, \$airingAtGreater: Int, \$airingAtLesser: Int) {
   Page(page: \$page, perPage: \$perPage) {
     airingSchedules(sort: \$sort, airingAt_greater: \$airingAtGreater, airingAt_lesser: \$airingAtLesser) {
@@ -368,7 +373,9 @@ query Page(\$sort: [AiringSort], \$page: Int, \$perPage: Int, \$airingAtGreater:
 // "page" : 1,
 // "perPage": 20,
 // }
-const mediaDetailsQuery = '''query Page(\$type: MediaType, \$mediaId: Int, \$page: Int, \$perPage: Int) {
+const mediaDetailsQuery =
+'''
+query Page(\$type: MediaType, \$mediaId: Int, \$page: Int, \$perPage: Int) {
   Media(id: \$mediaId, type: \$type) {
     id
     title {
@@ -463,7 +470,9 @@ const mediaDetailsQuery = '''query Page(\$type: MediaType, \$mediaId: Int, \$pag
 // {
 //  "mediaId": selectedAnime.id
 // }
-const mediaListEntryQuery = '''query Page(\$mediaId: Int) {
+const mediaListEntryQuery =
+'''
+query Page(\$mediaId: Int) {
   Media(id: \$mediaId) {
     mediaListEntry {
       progress
@@ -495,7 +504,8 @@ const mediaListEntryQuery = '''query Page(\$mediaId: Int) {
 //   "genres": ["Action", "Fantasy"],
 //   "sort": "POPULARITY_DESC"
 // }
-const mediaAdvancedSearchQuery = '''
+const mediaAdvancedSearchQuery =
+'''
 query (
   \$page: Int, \$perPage: Int, \$type: MediaType, \$season: MediaSeason, \$seasonYear: Int, \$format: MediaFormat, \$status: MediaStatus, \$genres: [String], \$sort: [MediaSort], \$search: String, \$countryOfOrigin: CountryCode
 ) {
@@ -503,7 +513,7 @@ query (
     media(
       type: \$type, season: \$season, seasonYear: \$seasonYear, format: \$format, status: \$status, genre_in: \$genres, sort: \$sort, search: \$search, countryOfOrigin: \$countryOfOrigin
     ) {
-id
+          id
           idMal
           title {
             english
@@ -557,7 +567,8 @@ id
 //   "completedAt": {"day": 1, "month": 2, "year": 2023},
 //   "status": "COMPLETED"
 // }
-const updateMediaEntryQuery = '''
+const updateMediaEntryQuery =
+'''
 mutation SaveMediaListEntry(\$mediaId: Int, \$progress: Int, \$progressVolumes: Int, \$repeat: Int, \$score: Float, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput, \$status: MediaListStatus) {
   SaveMediaListEntry(mediaId: \$mediaId, progress: \$progress, progressVolumes: \$progressVolumes, repeat: \$repeat, score: \$score, startedAt: \$startedAt, completedAt: \$completedAt, status: \$status) {
     progress

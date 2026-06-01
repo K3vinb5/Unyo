@@ -171,12 +171,12 @@ _SettingsModel _$SettingsModelFromJson(
       (json['aniyomiExtensionsRepositories'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList() ??
-      const [config.aniyomiExtensionsRepositoryUrl],
+      const [config.aniyomiExtensionsDefaultRepositoryUrl],
   tachiyomiExtensionsRepositories:
       (json['tachiyomiExtensionsRepositories'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList() ??
-      const [config.tachiyomiExtensionsRepositoryUrl],
+      const [config.tachiyomiExtensionsDefaultRepositoryUrl],
 );
 
 Map<String, dynamic> _$SettingsModelToJson(

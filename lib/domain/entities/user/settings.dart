@@ -81,8 +81,8 @@ abstract class SettingsModel with _$SettingsModel implements Settings {
     @HiveField(16) @Default(false) bool enableNsfwContent,
     @HiveField(17) @ColorConverter() @Default(Color(0xFF2196F3)) Color themeColor,
     @HiveField(18) @Default(true) bool useWallpaperAsThemeColor,
-    @HiveField(19) @Default([config.aniyomiExtensionsRepositoryUrl]) List<String> aniyomiExtensionsRepositories,
-    @HiveField(20) @Default([config.tachiyomiExtensionsRepositoryUrl]) List<String> tachiyomiExtensionsRepositories,
+    @HiveField(19) @Default([config.aniyomiExtensionsDefaultRepositoryUrl]) List<String> aniyomiExtensionsRepositories,
+    @HiveField(20) @Default([config.tachiyomiExtensionsDefaultRepositoryUrl]) List<String> tachiyomiExtensionsRepositories,
   }) = _SettingsModel;
 
   factory SettingsModel.empty() =>

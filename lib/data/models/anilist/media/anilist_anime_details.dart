@@ -4,8 +4,8 @@ import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.
 import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/data/adapters/adapters_names.dart' as names;
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
-import 'package:unyo/data/models/anilist/anilist_anime_model.dart';
-import 'package:unyo/data/models/anilist/anilist_media_character.dart';
+import 'package:unyo/data/models/anilist/media/anilist_anime_model.dart';
+import 'package:unyo/data/models/anilist/media/anilist_media_character.dart';
 import 'package:unyo/domain/entities/media/anime.dart';
 import 'package:unyo/domain/entities/media/anime_details.dart';
 import 'package:unyo/domain/entities/media/media_character.dart';

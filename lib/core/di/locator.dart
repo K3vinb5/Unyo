@@ -70,6 +70,10 @@ void setupLocator() async{
     () => GraphQLService(httpService: sl<HttpService>(), endpoint: config.anilistGraphQLEndpoint),
     instanceName: config.anilistGraphQlService,
   );
+  sl.registerLazySingleton<GraphQLService>(
+    () => GraphQLService(httpService: sl<HttpService>(), endpoint: config.shikimoriGraphQLEndpoint),
+    instanceName: config.shikimoriGraphQlService,
+  );
   sl.registerLazySingleton<AppEffectHandler>(() => AppEffectHandler());
   sl.registerLazySingleton<ColorImageService>(() => ColorImageService());
   sl.registerSingleton<AniyomiBridge>(AniyomiBridge());
@@ -104,6 +108,8 @@ void setupLocator() async{
   ));
   sl.registerLazySingleton<AnimeRepositoryAnilist>(() => AnimeRepositoryAnilist());
   sl.registerLazySingleton<MangaRepositoryAnilist>(() => MangaRepositoryAnilist());
+  sl.registerLazySingleton<AnimeRepositoryShikimori>(() => AnimeRepositoryShikimori());
+  sl.registerLazySingleton<MangaRepositoryShikimori>(() => MangaRepositoryShikimori());
   sl.registerLazySingleton<AnimeRepository>(() => AnimeRepositoryFactory());
   sl.registerLazySingleton<MangaRepository>(() => MangaRepositoryFactory());
   sl.registerLazySingleton<EpisodeRepositoryAnizip>(() => EpisodeRepositoryAnizip());

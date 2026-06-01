@@ -14,9 +14,9 @@ import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.
 import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/core/services/api/graphql/graphql_response.dart';
 import 'package:unyo/core/services/api/graphql/graphql_service.dart';
-import 'package:unyo/data/models/anilist/anilist_manga_details.dart';
-import 'package:unyo/data/models/anilist/anilist_manga_model.dart';
-import 'package:unyo/data/models/anilist/anilist_user_model.dart';
+import 'package:unyo/data/models/anilist/media/anilist_manga_details.dart';
+import 'package:unyo/data/models/anilist/media/anilist_manga_model.dart';
+import 'package:unyo/data/models/anilist/user/anilist_user_model.dart';
 import 'package:unyo/data/repositories/repository_mixin.dart';
 import 'package:unyo/domain/entities/media/manga.dart';
 import 'package:unyo/domain/entities/media/manga_details.dart';
