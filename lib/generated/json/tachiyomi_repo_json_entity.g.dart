@@ -1,8 +1,7 @@
 import 'package:unyo/generated/json/base/json_convert_content.dart';
 import 'package:unyo/core/services/api/dto/extensions/tachiyomi_repo_json_entity.dart';
 
-TachiyomiRepoJsonEntity $TachiyomiRepoJsonEntityFromJson(
-    Map<String, dynamic> json) {
+TachiyomiRepoJsonEntity $TachiyomiRepoJsonEntityFromJson(Map<String, dynamic> json) {
   final TachiyomiRepoJsonEntity tachiyomiRepoJsonEntity = TachiyomiRepoJsonEntity();
   final String? name = jsonConvert.convert<String>(json['name']);
   if (name != null) {
@@ -32,19 +31,15 @@ TachiyomiRepoJsonEntity $TachiyomiRepoJsonEntityFromJson(
   if (nsfw != null) {
     tachiyomiRepoJsonEntity.nsfw = nsfw;
   }
-  final List<TachiyomiRepoJsonSources>? sources = (json['sources'] as List<
-      dynamic>?)?.map(
-          (e) =>
-      jsonConvert.convert<TachiyomiRepoJsonSources>(
-          e) as TachiyomiRepoJsonSources).toList();
+  final List<TachiyomiRepoJsonSources>? sources = (json['sources'] as List<dynamic>?)?.map(
+          (e) => jsonConvert.convert<TachiyomiRepoJsonSources>(e) as TachiyomiRepoJsonSources).toList();
   if (sources != null) {
     tachiyomiRepoJsonEntity.sources = sources;
   }
   return tachiyomiRepoJsonEntity;
 }
 
-Map<String, dynamic> $TachiyomiRepoJsonEntityToJson(
-    TachiyomiRepoJsonEntity entity) {
+Map<String, dynamic> $TachiyomiRepoJsonEntityToJson(TachiyomiRepoJsonEntity entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['name'] = entity.name;
   data['pkg'] = entity.pkg;
@@ -80,8 +75,7 @@ extension TachiyomiRepoJsonEntityExtension on TachiyomiRepoJsonEntity {
   }
 }
 
-TachiyomiRepoJsonSources $TachiyomiRepoJsonSourcesFromJson(
-    Map<String, dynamic> json) {
+TachiyomiRepoJsonSources $TachiyomiRepoJsonSourcesFromJson(Map<String, dynamic> json) {
   final TachiyomiRepoJsonSources tachiyomiRepoJsonSources = TachiyomiRepoJsonSources();
   final String? name = jsonConvert.convert<String>(json['name']);
   if (name != null) {
@@ -102,8 +96,7 @@ TachiyomiRepoJsonSources $TachiyomiRepoJsonSourcesFromJson(
   return tachiyomiRepoJsonSources;
 }
 
-Map<String, dynamic> $TachiyomiRepoJsonSourcesToJson(
-    TachiyomiRepoJsonSources entity) {
+Map<String, dynamic> $TachiyomiRepoJsonSourcesToJson(TachiyomiRepoJsonSources entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['name'] = entity.name;
   data['lang'] = entity.lang;

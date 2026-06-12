@@ -2,11 +2,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 import 'package:unyo/core/services/api/dto/anilist/save_media_list_entry_entity.dart';
+import 'package:unyo/core/services/api/dto/shikimori/anime_details_query_entity.dart';
 import 'package:unyo/data/adapters/adapters_names.dart' as names;
 import 'package:unyo/data/adapters/adapters_types.dart' as types;
+import 'package:unyo/presentation/widgets/text/text_utils.dart';
 
 part 'media_list_entry.freezed.dart';
-
 part 'media_list_entry.g.dart';
 
 abstract class MediaListEntry {
@@ -98,6 +99,18 @@ abstract class MediaListEntryModel with _$MediaListEntryModel implements MediaLi
 
   @override
   Map<String, dynamic> toJson() => _$MediaListEntryModelToJson(this as _MediaListEntryModel);
+
+  factory MediaListEntryModel.fromAnimeDetailsQueryAnimesUserRate(AnimeDetailsQueryAnimesUserRate userRate) {
+    return MediaListEntryModel(
+      progress: userRate.episodes,
+      progressVolumes: 0,
+      score: userRate.score.toDouble(),
+      repeat: userRate.rewatches,
+      status: userRate.status.toUpperCase().replaceAll("_", " "),
+      startedAt: TextUtils.formatISO8601DateTime(userRate.createdAt),
+      completedAt: TextUtils.formatISO8601DateTime(userRate.updatedAt),
+    );
+  }
 }
 
 class MediaListEntryConverter implements JsonConverter<MediaListEntry, Map<String, dynamic>> {

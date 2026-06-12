@@ -14,6 +14,10 @@ const String anilistClientSecret = 'xI8KTZlKm2F3kHXLko1ArQ21bKap4MojgDTk6Ukx';
 const String anilistGraphQlService = 'anilistGraphQlService';
 const String anilistGraphQLEndpoint = 'https://graphql.anilist.co';
 // Shikimori API configuration
+const String shikimoriOAuthUrl ='https://shikimori.io/oauth/authorize?client_id=$shikimoriClientId&redirect_uri=$shikimoriRedirectUri&response_type=code&scope=user_rates';
+const String shikimoriRedirectUri = 'http://localhost:9999/auth';
+const String shikimoriClientId = 'sIjHVKp4D3gusN53hob4tDnmvFYgySDiLpWJNTsfVcA';
+const String shikimoriClientSecret = '6y39AFgZ8Ww6cESH_BzyZqYjZRSCrTy9meoY1nm2Cj0';
 const String shikimoriGraphQlService = 'shikimoriGraphQlService';
 const String shikimoriGraphQLEndpoint = 'https://shikimori.io/api/graphql';
 // Anizip API configuration

@@ -46,6 +46,18 @@ class TextUtils {
     }
   }
 
+  static List<String> formatISO8601DateTime(String isoDateTime) {
+    if (isoDateTime.isEmpty) {
+      return ["~", "~", "~"];
+    }
+    final dateTime = DateTime.parse(isoDateTime);
+    return [
+      "${dateTime.day != 0 ? dateTime.day : "~"}",
+      "${dateTime.month != 0 ? dateTime.month : "~"}",
+      "${dateTime.year != 0 ? dateTime.year : "~"}",
+    ];
+  }
+
   static String formatMilliseconds(int milliseconds) {
     final totalSeconds = milliseconds ~/ 1000;
     final hours = totalSeconds ~/ 3600;

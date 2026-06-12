@@ -1,8 +1,7 @@
 import 'package:unyo/generated/json/base/json_convert_content.dart';
 import 'package:unyo/core/services/api/dto/anizip/anizip_episode_info_entity.dart';
 
-AnizipEpisodeInfoEntity $AnizipEpisodeInfoEntityFromJson(
-    Map<String, dynamic> json) {
+AnizipEpisodeInfoEntity $AnizipEpisodeInfoEntityFromJson(Map<String, dynamic> json) {
   final AnizipEpisodeInfoEntity anizipEpisodeInfoEntity = AnizipEpisodeInfoEntity();
   final int? tvdbShowId = jsonConvert.convert<int>(json['tvdbShowId']);
   if (tvdbShowId != null) {
@@ -20,13 +19,11 @@ AnizipEpisodeInfoEntity $AnizipEpisodeInfoEntityFromJson(
   if (episodeNumber != null) {
     anizipEpisodeInfoEntity.episodeNumber = episodeNumber;
   }
-  final int? absoluteEpisodeNumber = jsonConvert.convert<int>(
-      json['absoluteEpisodeNumber']);
+  final int? absoluteEpisodeNumber = jsonConvert.convert<int>(json['absoluteEpisodeNumber']);
   if (absoluteEpisodeNumber != null) {
     anizipEpisodeInfoEntity.absoluteEpisodeNumber = absoluteEpisodeNumber;
   }
-  final AnizipEpisodeInfoTitle? title = jsonConvert.convert<
-      AnizipEpisodeInfoTitle>(json['title']);
+  final AnizipEpisodeInfoTitle? title = jsonConvert.convert<AnizipEpisodeInfoTitle>(json['title']);
   if (title != null) {
     anizipEpisodeInfoEntity.title = title;
   }
@@ -77,8 +74,7 @@ AnizipEpisodeInfoEntity $AnizipEpisodeInfoEntityFromJson(
   return anizipEpisodeInfoEntity;
 }
 
-Map<String, dynamic> $AnizipEpisodeInfoEntityToJson(
-    AnizipEpisodeInfoEntity entity) {
+Map<String, dynamic> $AnizipEpisodeInfoEntityToJson(AnizipEpisodeInfoEntity entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['tvdbShowId'] = entity.tvdbShowId;
   data['tvdbId'] = entity.tvdbId;
@@ -125,8 +121,7 @@ extension AnizipEpisodeInfoEntityExtension on AnizipEpisodeInfoEntity {
       ..tvdbId = tvdbId ?? this.tvdbId
       ..seasonNumber = seasonNumber ?? this.seasonNumber
       ..episodeNumber = episodeNumber ?? this.episodeNumber
-      ..absoluteEpisodeNumber = absoluteEpisodeNumber ??
-          this.absoluteEpisodeNumber
+      ..absoluteEpisodeNumber = absoluteEpisodeNumber ?? this.absoluteEpisodeNumber
       ..title = title ?? this.title
       ..airDate = airDate ?? this.airDate
       ..airDateUtc = airDateUtc ?? this.airDateUtc
@@ -142,8 +137,7 @@ extension AnizipEpisodeInfoEntityExtension on AnizipEpisodeInfoEntity {
   }
 }
 
-AnizipEpisodeInfoTitle $AnizipEpisodeInfoTitleFromJson(
-    Map<String, dynamic> json) {
+AnizipEpisodeInfoTitle $AnizipEpisodeInfoTitleFromJson(Map<String, dynamic> json) {
   final AnizipEpisodeInfoTitle anizipEpisodeInfoTitle = AnizipEpisodeInfoTitle();
   final String? ja = jsonConvert.convert<String>(json['ja']);
   if (ja != null) {
@@ -164,8 +158,7 @@ AnizipEpisodeInfoTitle $AnizipEpisodeInfoTitleFromJson(
   return anizipEpisodeInfoTitle;
 }
 
-Map<String, dynamic> $AnizipEpisodeInfoTitleToJson(
-    AnizipEpisodeInfoTitle entity) {
+Map<String, dynamic> $AnizipEpisodeInfoTitleToJson(AnizipEpisodeInfoTitle entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['ja'] = entity.ja;
   data['en'] = entity.en;

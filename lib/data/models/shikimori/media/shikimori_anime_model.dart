@@ -1,5 +1,9 @@
 // External dependencies
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:unyo/core/services/api/dto/shikimori/anime_details_query_entity.dart';
+import 'package:unyo/core/services/api/dto/shikimori/anime_popular_query_entity.dart';
+import 'package:unyo/core/services/api/dto/shikimori/anime_recently_released_query_entity.dart';
+import 'package:unyo/core/services/api/dto/shikimori/anime_trending_query_entity.dart';
 
 // Internal dependencies
 import 'package:unyo/domain/entities/media/airing_episode.dart';
@@ -40,123 +44,132 @@ abstract class ShikimoriAnimeModel with _$ShikimoriAnimeModel implements Anime {
   factory ShikimoriAnimeModel.fromJson(Map<String, dynamic> json) =>
       _$ShikimoriAnimeModelFromJson(json);
 
-  // factory ShikimoriAnimeModel.fromListEntry(
-  //     ShikimoriAnimeListGraphqlAnimes entry,) {
-  //   return ShikimoriAnimeModel(
-  //     id: int.parse(entry.id),
-  //     idMal: int.tryParse(entry.malId) ?? -1,
-  //     title: TitleModel(
-  //       romaji: entry.name,
-  //       english: entry.english,
-  //       userPreferred: entry.name,
-  //       nativeTitle: entry.japanese,
-  //     ),
-  //     averageScore: (entry.score * 10).round(),
-  //     bannerImage: entry.poster.originalUrl,
-  //     countryOfOrigin: 'JP',
-  //     coverImage: entry.poster.mainUrl,
-  //     description: '',
-  //     duration: entry.duration,
-  //     endDate: _formatIncompleteDate(entry.releasedOn),
-  //     startDate: _formatIncompleteDate(entry.airedOn),
-  //     episodes: entry.episodes,
-  //     genres: entry.genres.map((g) => g.name).toList(),
-  //     format: _mapKindToFormat(entry.kind),
-  //     isAdult: entry.rating == 'rx' || !entry.isCensored,
-  //     popularity: 0,
-  //     meanScore: (entry.score * 10).round(),
-  //     season: entry.season,
-  //     status: _mapStatusToAnilist(entry.status),
-  //     isFavourite: false,
-  //     nextAiringEpisode: AiringEpisodeModel(
-  //       episode: entry.episodesAired,
-  //       airingAt: entry.nextEpisodeAt is String ? entry.nextEpisodeAt as String : '',
-  //     ),
-  //   );
-  // }
+  factory ShikimoriAnimeModel.fromRelatedEntry(AnimeDetailsQueryAnimesRelatedAnime anime) {
+    return ShikimoriAnimeModel(
+        id: _formatId(anime.id),
+        idMal: anime.malId != "0" ? _formatId(anime.malId) : _formatId(anime.id),
+        title: TitleModel(
+          romaji: anime.russian,
+          english: anime.english,
+          userPreferred: anime.english,
+          nativeTitle: anime.japanese,
+        ),
+        averageScore: anime.score.toInt() * 10,
+        bannerImage: anime.poster.mainAlt2xUrl,
+        countryOfOrigin: 'JP',
+        coverImage: anime.poster.originalUrl,
+        description: anime.description,
+        duration: anime.duration,
+        endDate: "${anime.releasedOn.day}/${anime.releasedOn.month}/${anime.releasedOn.year}",
+        startDate: "${anime.airedOn.day}/${anime.airedOn.month}/${anime.airedOn.year}",
+        episodes: anime.episodes,
+        genres: anime.genres.map((animeGenre) => animeGenre.name).toList(),
+        format: _formatKind(anime.kind),
+        isAdult: anime.isCensored,
+        popularity: 0,
+        meanScore: anime.score.toInt() * 10,
+        season: _formatSeason(anime.season),
+        status: _formatStatus(anime.status),
+        isFavourite: false,
+        nextAiringEpisode: AiringEpisodeModel.empty()
+    );
+  }
 
-  // factory ShikimoriAnimeModel.fromDetailsEntry(
-  //     ShikimoriAnimeDetailsGraphqlAnime entry,) {
-  //   return ShikimoriAnimeModel(
-  //     id: int.parse(entry.id),
-  //     idMal: int.tryParse(entry.malId) ?? -1,
-  //     title: TitleModel(
-  //       romaji: entry.name,
-  //       english: entry.english,
-  //       userPreferred: entry.name,
-  //       nativeTitle: entry.japanese,
-  //     ),
-  //     averageScore: (entry.score * 10).round(),
-  //     bannerImage: entry.poster.originalUrl,
-  //     countryOfOrigin: 'JP',
-  //     coverImage: entry.poster.mainUrl,
-  //     description: entry.description,
-  //     duration: entry.duration,
-  //     endDate: _formatIncompleteDate(entry.releasedOn),
-  //     startDate: _formatIncompleteDate(entry.airedOn),
-  //     episodes: entry.episodes,
-  //     genres: entry.genres.map((g) => g.name).toList(),
-  //     format: _mapKindToFormat(entry.kind),
-  //     isAdult: entry.rating == 'rx' || !entry.isCensored,
-  //     popularity: entry.scoresStats.fold(0, (sum, s) => sum + s.count),
-  //     meanScore: (entry.score * 10).round(),
-  //     season: entry.season,
-  //     status: _mapStatusToAnilist(entry.status),
-  //     isFavourite: false,
-  //     nextAiringEpisode: AiringEpisodeModel(
-  //       episode: entry.episodesAired,
-  //       airingAt: entry.nextEpisodeAt is String ? entry.nextEpisodeAt as String : '',
-  //     ),
-  //   );
-  // }
+  factory ShikimoriAnimeModel.fromAnimesPopularQuery(AnimePopularQueryAnimes anime) {
+    return ShikimoriAnimeModel(
+        id: _formatId(anime.id),
+        idMal: anime.malId != "0" ? _formatId(anime.malId) : _formatId(anime.id),
+        title: TitleModel(
+          romaji: anime.russian,
+          english: anime.english,
+          userPreferred: anime.english,
+          nativeTitle: anime.japanese,
+        ),
+        averageScore: anime.score.toInt() * 10,
+        bannerImage: anime.poster.mainAlt2xUrl,
+        countryOfOrigin: 'JP',
+        coverImage: anime.poster.originalUrl,
+        description: anime.description,
+        duration: anime.duration,
+        endDate: "${anime.releasedOn.day}/${anime.releasedOn.month}/${anime.releasedOn.year}",
+        startDate: "${anime.airedOn.day}/${anime.airedOn.month}/${anime.airedOn.year}",
+        episodes: anime.episodes,
+        genres: anime.genres.map((animeGenre) => animeGenre.name).toList(),
+        format: _formatKind(anime.kind),
+        isAdult: anime.isCensored,
+        popularity: 0,
+        meanScore: anime.score.toInt() * 10,
+        season: _formatSeason(anime.season),
+        status: _formatStatus(anime.status),
+        isFavourite: false,
+        nextAiringEpisode: AiringEpisodeModel.empty()
+    );
+  }
 
-  // factory ShikimoriAnimeModel.fromRelatedEntry(
-  //     ShikimoriAnimeDetailsGraphqlAnimeRelatedAnime entry,) {
-  //   return ShikimoriAnimeModel(
-  //     id: int.parse(entry.id),
-  //     idMal: -1,
-  //     title: TitleModel(
-  //       romaji: entry.name,
-  //       english: '',
-  //       userPreferred: entry.name,
-  //       nativeTitle: '',
-  //     ),
-  //     averageScore: 0,
-  //     bannerImage: entry.poster.mainUrl,
-  //     countryOfOrigin: 'JP',
-  //     coverImage: entry.poster.mainUrl,
-  //     description: '',
-  //     duration: 0,
-  //     endDate: '',
-  //     startDate: '',
-  //     episodes: entry.episodes,
-  //     genres: [],
-  //     format: _mapKindToFormat(entry.kind),
-  //     isAdult: false,
-  //     popularity: 0,
-  //     meanScore: 0,
-  //     season: '',
-  //     status: 'FINISHED',
-  //     isFavourite: false,
-  //     nextAiringEpisode: AiringEpisodeModel.empty(),
-  //   );
-  // }
+  factory ShikimoriAnimeModel.fromAnimesTrendingQuery(AnimeTrendingQueryAnimes anime) {
+    return ShikimoriAnimeModel(
+        id: _formatId(anime.id),
+        idMal: anime.malId != "0" ? _formatId(anime.malId) : _formatId(anime.id),
+        title: TitleModel(
+          romaji: anime.russian,
+          english: anime.english,
+          userPreferred: anime.english,
+          nativeTitle: anime.japanese,
+        ),
+        averageScore: anime.score.toInt() * 10,
+        bannerImage: anime.poster.mainAlt2xUrl,
+        countryOfOrigin: 'JP',
+        coverImage: anime.poster.originalUrl,
+        description: anime.description,
+        duration: anime.duration,
+        endDate: "${anime.releasedOn.day}/${anime.releasedOn.month}/${anime.releasedOn.year}",
+        startDate: "${anime.airedOn.day}/${anime.airedOn.month}/${anime.airedOn.year}",
+        episodes: anime.episodes,
+        genres: anime.genres.map((animeGenre) => animeGenre.name).toList(),
+        format: _formatKind(anime.kind),
+        isAdult: anime.isCensored,
+        popularity: 0,
+        meanScore: anime.score.toInt() * 10,
+        season: _formatSeason(anime.season),
+        status: _formatStatus(anime.status),
+        isFavourite: false,
+        nextAiringEpisode: AiringEpisodeModel.empty()
+    );
+  }
+
+  factory ShikimoriAnimeModel.fromAnimesRecentlyReleasedQuery(AnimeRecentlyReleasedQueryAnimes anime) {
+    return ShikimoriAnimeModel(
+        id: _formatId(anime.id),
+        idMal: anime.malId != "0" ? _formatId(anime.malId) : _formatId(anime.id),
+        title: TitleModel(
+          romaji: anime.russian,
+          english: anime.english,
+          userPreferred: anime.english,
+          nativeTitle: anime.japanese,
+        ),
+        averageScore: anime.score.toInt() * 10,
+        bannerImage: anime.poster.mainAlt2xUrl,
+        countryOfOrigin: 'JP',
+        coverImage: anime.poster.originalUrl,
+        description: anime.description,
+        duration: anime.duration,
+        endDate: "${anime.releasedOn.day}/${anime.releasedOn.month}/${anime.releasedOn.year}",
+        startDate: "${anime.airedOn.day}/${anime.airedOn.month}/${anime.airedOn.year}",
+        episodes: anime.episodes,
+        genres: anime.genres.map((animeGenre) => animeGenre.name).toList(),
+        format: _formatKind(anime.kind),
+        isAdult: anime.isCensored,
+        popularity: 0,
+        meanScore: anime.score.toInt() * 10,
+        season: _formatSeason(anime.season),
+        status: _formatStatus(anime.status),
+        isFavourite: false,
+        nextAiringEpisode: AiringEpisodeModel.empty()
+    );
+  }
 }
 
-String _formatIncompleteDate(dynamic dateObj) {
-  if (dateObj == null) return '';
-  final year = dateObj.year;
-  final month = dateObj.month;
-  final day = dateObj.day;
-  if (year == 0 && month == 0 && day == 0) return '';
-  final parts = <String>[];
-  if (day > 0) parts.add(day.toString().padLeft(2, '0'));
-  if (month > 0) parts.add(month.toString().padLeft(2, '0'));
-  if (year > 0) parts.add(year.toString());
-  return parts.join('/');
-}
-
-String _mapKindToFormat(String kind) {
+String _formatKind(String kind) {
   switch (kind) {
     case 'tv':
       return 'TV';
@@ -181,7 +194,7 @@ String _mapKindToFormat(String kind) {
   }
 }
 
-String _mapStatusToAnilist(String status) {
+String _formatStatus(String status) {
   switch (status) {
     case 'anons':
       return 'NOT_YET_RELEASED';
@@ -192,4 +205,15 @@ String _mapStatusToAnilist(String status) {
     default:
       return status.toUpperCase();
   }
+}
+
+String _formatSeason(String season) {
+  return season
+      .split("-")
+      .firstOrNull ?? season;
+}
+
+int _formatId(String id) {
+  // r'\D' is a raw string representing the regex for non-digits
+  return int.tryParse(id.replaceAll(RegExp(r'\D'), '')) ?? 0;
 }

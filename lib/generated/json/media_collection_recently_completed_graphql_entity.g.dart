@@ -4,8 +4,8 @@ import 'package:unyo/core/services/api/dto/anilist/media_collection_recently_com
 MediaCollectionRecentlyCompletedGraphqlEntity $MediaCollectionRecentlyCompletedGraphqlEntityFromJson(
     Map<String, dynamic> json) {
   final MediaCollectionRecentlyCompletedGraphqlEntity mediaCollectionRecentlyCompletedGraphqlEntity = MediaCollectionRecentlyCompletedGraphqlEntity();
-  final MediaCollectionRecentlyCompletedGraphqlDtoPage? page = jsonConvert
-      .convert<MediaCollectionRecentlyCompletedGraphqlDtoPage>(json['Page']);
+  final MediaCollectionRecentlyCompletedGraphqlDtoPage? page = jsonConvert.convert<
+      MediaCollectionRecentlyCompletedGraphqlDtoPage>(json['Page']);
   if (page != null) {
     mediaCollectionRecentlyCompletedGraphqlEntity.page = page;
   }
@@ -31,13 +31,12 @@ extension MediaCollectionRecentlyCompletedGraphqlEntityExtension on MediaCollect
 MediaCollectionRecentlyCompletedGraphqlDtoPage $MediaCollectionRecentlyCompletedGraphqlDtoPageFromJson(
     Map<String, dynamic> json) {
   final MediaCollectionRecentlyCompletedGraphqlDtoPage mediaCollectionRecentlyCompletedGraphqlDtoPage = MediaCollectionRecentlyCompletedGraphqlDtoPage();
-  final List<
-      MediaCollectionRecentlyCompletedGraphqlDtoPageMedia>? media = (json['media'] as List<
-      dynamic>?)?.map(
+  final List<MediaCollectionRecentlyCompletedGraphqlDtoPageMedia>? media = (json['media'] as List<dynamic>?)
+      ?.map(
           (e) =>
-      jsonConvert.convert<
-          MediaCollectionRecentlyCompletedGraphqlDtoPageMedia>(
-          e) as MediaCollectionRecentlyCompletedGraphqlDtoPageMedia).toList();
+      jsonConvert.convert<MediaCollectionRecentlyCompletedGraphqlDtoPageMedia>(
+          e) as MediaCollectionRecentlyCompletedGraphqlDtoPageMedia)
+      .toList();
   if (media != null) {
     mediaCollectionRecentlyCompletedGraphqlDtoPage.media = media;
   }
@@ -65,8 +64,7 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMedia $MediaCollectionRecentlyComp
   final MediaCollectionRecentlyCompletedGraphqlDtoPageMedia mediaCollectionRecentlyCompletedGraphqlDtoPageMedia = MediaCollectionRecentlyCompletedGraphqlDtoPageMedia();
   final dynamic nextAiringEpisode = json['nextAiringEpisode'];
   if (nextAiringEpisode != null) {
-    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.nextAiringEpisode =
-        nextAiringEpisode;
+    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.nextAiringEpisode = nextAiringEpisode;
   }
   final String? status = jsonConvert.convert<String>(json['status']);
   if (status != null) {
@@ -74,8 +72,7 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMedia $MediaCollectionRecentlyComp
   }
   final bool? isFavourite = jsonConvert.convert<bool>(json['isFavourite']);
   if (isFavourite != null) {
-    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.isFavourite =
-        isFavourite;
+    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.isFavourite = isFavourite;
   }
   final String? season = jsonConvert.convert<String>(json['season']);
   if (season != null) {
@@ -114,15 +111,13 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMedia $MediaCollectionRecentlyComp
   if (episodes != null) {
     mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.episodes = episodes;
   }
-  final MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate? endDate = jsonConvert
-      .convert<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate>(
-      json['endDate']);
+  final MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate? endDate = jsonConvert.convert<
+      MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate>(json['endDate']);
   if (endDate != null) {
     mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.endDate = endDate;
   }
-  final MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate? startDate = jsonConvert
-      .convert<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate>(
-      json['startDate']);
+  final MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate? startDate = jsonConvert.convert<
+      MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate>(json['startDate']);
   if (startDate != null) {
     mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.startDate = startDate;
   }
@@ -132,20 +127,16 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMedia $MediaCollectionRecentlyComp
   }
   final String? description = jsonConvert.convert<String>(json['description']);
   if (description != null) {
-    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.description =
-        description;
+    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.description = description;
   }
-  final MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage? coverImage = jsonConvert
-      .convert<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage>(
-      json['coverImage']);
+  final MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage? coverImage = jsonConvert.convert<
+      MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage>(json['coverImage']);
   if (coverImage != null) {
     mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.coverImage = coverImage;
   }
-  final String? countryOfOrigin = jsonConvert.convert<String>(
-      json['countryOfOrigin']);
+  final String? countryOfOrigin = jsonConvert.convert<String>(json['countryOfOrigin']);
   if (countryOfOrigin != null) {
-    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.countryOfOrigin =
-        countryOfOrigin;
+    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.countryOfOrigin = countryOfOrigin;
   }
   final int? chapters = jsonConvert.convert<int>(json['chapters']);
   if (chapters != null) {
@@ -153,17 +144,14 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMedia $MediaCollectionRecentlyComp
   }
   final String? bannerImage = jsonConvert.convert<String>(json['bannerImage']);
   if (bannerImage != null) {
-    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.bannerImage =
-        bannerImage;
+    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.bannerImage = bannerImage;
   }
   final int? averageScore = jsonConvert.convert<int>(json['averageScore']);
   if (averageScore != null) {
-    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.averageScore =
-        averageScore;
+    mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.averageScore = averageScore;
   }
-  final MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle? title = jsonConvert
-      .convert<MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle>(
-      json['title']);
+  final MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle? title = jsonConvert.convert<
+      MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle>(json['title']);
   if (title != null) {
     mediaCollectionRecentlyCompletedGraphqlDtoPageMedia.title = title;
   }
@@ -267,8 +255,7 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate $MediaCollectionRecen
   return mediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate;
 }
 
-Map<String,
-    dynamic> $MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDateToJson(
+Map<String, dynamic> $MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDateToJson(
     MediaCollectionRecentlyCompletedGraphqlDtoPageMediaEndDate entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -308,8 +295,7 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate $MediaCollectionRec
   return mediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate;
 }
 
-Map<String,
-    dynamic> $MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDateToJson(
+Map<String, dynamic> $MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDateToJson(
     MediaCollectionRecentlyCompletedGraphqlDtoPageMediaStartDate entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -341,8 +327,7 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage $MediaCollectionRe
   return mediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage;
 }
 
-Map<String,
-    dynamic> $MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImageToJson(
+Map<String, dynamic> $MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImageToJson(
     MediaCollectionRecentlyCompletedGraphqlDtoPageMediaCoverImage entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['large'] = entity.large;
@@ -373,17 +358,14 @@ MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle $MediaCollectionRecentl
   if (romaji != null) {
     mediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle.romaji = romaji;
   }
-  final String? userPreferred = jsonConvert.convert<String>(
-      json['userPreferred']);
+  final String? userPreferred = jsonConvert.convert<String>(json['userPreferred']);
   if (userPreferred != null) {
-    mediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle.userPreferred =
-        userPreferred;
+    mediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle.userPreferred = userPreferred;
   }
   return mediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle;
 }
 
-Map<String,
-    dynamic> $MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitleToJson(
+Map<String, dynamic> $MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitleToJson(
     MediaCollectionRecentlyCompletedGraphqlDtoPageMediaTitle entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['english'] = entity.english;

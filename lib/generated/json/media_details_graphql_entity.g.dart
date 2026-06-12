@@ -1,19 +1,16 @@
 import 'package:unyo/generated/json/base/json_convert_content.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_graphql_entity.dart';
 
-MediaDetailsGraphqlEntity $MediaDetailsGraphqlEntityFromJson(
-    Map<String, dynamic> json) {
+MediaDetailsGraphqlEntity $MediaDetailsGraphqlEntityFromJson(Map<String, dynamic> json) {
   final MediaDetailsGraphqlEntity mediaDetailsGraphqlEntity = MediaDetailsGraphqlEntity();
-  final MediaDetailsGraphqlMedia? media = jsonConvert.convert<
-      MediaDetailsGraphqlMedia>(json['Media']);
+  final MediaDetailsGraphqlMedia? media = jsonConvert.convert<MediaDetailsGraphqlMedia>(json['Media']);
   if (media != null) {
     mediaDetailsGraphqlEntity.media = media;
   }
   return mediaDetailsGraphqlEntity;
 }
 
-Map<String, dynamic> $MediaDetailsGraphqlEntityToJson(
-    MediaDetailsGraphqlEntity entity) {
+Map<String, dynamic> $MediaDetailsGraphqlEntityToJson(MediaDetailsGraphqlEntity entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['Media'] = entity.media.toJson();
   return data;
@@ -28,21 +25,19 @@ extension MediaDetailsGraphqlEntityExtension on MediaDetailsGraphqlEntity {
   }
 }
 
-MediaDetailsGraphqlMedia $MediaDetailsGraphqlMediaFromJson(
-    Map<String, dynamic> json) {
+MediaDetailsGraphqlMedia $MediaDetailsGraphqlMediaFromJson(Map<String, dynamic> json) {
   final MediaDetailsGraphqlMedia mediaDetailsGraphqlMedia = MediaDetailsGraphqlMedia();
   final int? id = jsonConvert.convert<int>(json['id']);
   if (id != null) {
     mediaDetailsGraphqlMedia.id = id;
   }
-  final MediaDetailsGraphqlMediaTitle? title = jsonConvert.convert<
-      MediaDetailsGraphqlMediaTitle>(json['title']);
+  final MediaDetailsGraphqlMediaTitle? title = jsonConvert.convert<MediaDetailsGraphqlMediaTitle>(
+      json['title']);
   if (title != null) {
     mediaDetailsGraphqlMedia.title = title;
   }
-  final MediaDetailsGraphqlMediaRecommendations? recommendations = jsonConvert
-      .convert<MediaDetailsGraphqlMediaRecommendations>(
-      json['recommendations']);
+  final MediaDetailsGraphqlMediaRecommendations? recommendations = jsonConvert.convert<
+      MediaDetailsGraphqlMediaRecommendations>(json['recommendations']);
   if (recommendations != null) {
     mediaDetailsGraphqlMedia.recommendations = recommendations;
   }
@@ -54,8 +49,7 @@ MediaDetailsGraphqlMedia $MediaDetailsGraphqlMediaFromJson(
   return mediaDetailsGraphqlMedia;
 }
 
-Map<String, dynamic> $MediaDetailsGraphqlMediaToJson(
-    MediaDetailsGraphqlMedia entity) {
+Map<String, dynamic> $MediaDetailsGraphqlMediaToJson(MediaDetailsGraphqlMedia entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['id'] = entity.id;
   data['title'] = entity.title.toJson();
@@ -79,8 +73,7 @@ extension MediaDetailsGraphqlMediaExtension on MediaDetailsGraphqlMedia {
   }
 }
 
-MediaDetailsGraphqlMediaTitle $MediaDetailsGraphqlMediaTitleFromJson(
-    Map<String, dynamic> json) {
+MediaDetailsGraphqlMediaTitle $MediaDetailsGraphqlMediaTitleFromJson(Map<String, dynamic> json) {
   final MediaDetailsGraphqlMediaTitle mediaDetailsGraphqlMediaTitle = MediaDetailsGraphqlMediaTitle();
   final String? english = jsonConvert.convert<String>(json['english']);
   if (english != null) {
@@ -94,16 +87,14 @@ MediaDetailsGraphqlMediaTitle $MediaDetailsGraphqlMediaTitleFromJson(
   if (native != null) {
     mediaDetailsGraphqlMediaTitle.native = native;
   }
-  final String? userPreferred = jsonConvert.convert<String>(
-      json['userPreferred']);
+  final String? userPreferred = jsonConvert.convert<String>(json['userPreferred']);
   if (userPreferred != null) {
     mediaDetailsGraphqlMediaTitle.userPreferred = userPreferred;
   }
   return mediaDetailsGraphqlMediaTitle;
 }
 
-Map<String, dynamic> $MediaDetailsGraphqlMediaTitleToJson(
-    MediaDetailsGraphqlMediaTitle entity) {
+Map<String, dynamic> $MediaDetailsGraphqlMediaTitleToJson(MediaDetailsGraphqlMediaTitle entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['english'] = entity.english;
   data['romaji'] = entity.romaji;
@@ -130,12 +121,9 @@ extension MediaDetailsGraphqlMediaTitleExtension on MediaDetailsGraphqlMediaTitl
 MediaDetailsGraphqlMediaRecommendations $MediaDetailsGraphqlMediaRecommendationsFromJson(
     Map<String, dynamic> json) {
   final MediaDetailsGraphqlMediaRecommendations mediaDetailsGraphqlMediaRecommendations = MediaDetailsGraphqlMediaRecommendations();
-  final List<
-      MediaDetailsGraphqlMediaRecommendationsNodes>? nodes = (json['nodes'] as List<
-      dynamic>?)?.map(
+  final List<MediaDetailsGraphqlMediaRecommendationsNodes>? nodes = (json['nodes'] as List<dynamic>?)?.map(
           (e) =>
-      jsonConvert.convert<
-          MediaDetailsGraphqlMediaRecommendationsNodes>(
+      jsonConvert.convert<MediaDetailsGraphqlMediaRecommendationsNodes>(
           e) as MediaDetailsGraphqlMediaRecommendationsNodes).toList();
   if (nodes != null) {
     mediaDetailsGraphqlMediaRecommendations.nodes = nodes;
@@ -163,11 +151,9 @@ MediaDetailsGraphqlMediaRecommendationsNodes $MediaDetailsGraphqlMediaRecommenda
     Map<String, dynamic> json) {
   final MediaDetailsGraphqlMediaRecommendationsNodes mediaDetailsGraphqlMediaRecommendationsNodes = MediaDetailsGraphqlMediaRecommendationsNodes();
   final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation? mediaRecommendation = jsonConvert
-      .convert<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation>(
-      json['mediaRecommendation']);
+      .convert<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation>(json['mediaRecommendation']);
   if (mediaRecommendation != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodes.mediaRecommendation =
-        mediaRecommendation;
+    mediaDetailsGraphqlMediaRecommendationsNodes.mediaRecommendation = mediaRecommendation;
   }
   return mediaDetailsGraphqlMediaRecommendationsNodes;
 }
@@ -197,117 +183,89 @@ MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation $MediaDetailsGra
   }
   final int? idMal = jsonConvert.convert<int>(json['idMal']);
   if (idMal != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.idMal =
-        idMal;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.idMal = idMal;
   }
   final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate? startDate = jsonConvert
-      .convert<
-      MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate>(
-      json['startDate']);
+      .convert<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate>(json['startDate']);
   if (startDate != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.startDate =
-        startDate;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.startDate = startDate;
   }
-  final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate? endDate = jsonConvert
-      .convert<
-      MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate>(
-      json['endDate']);
+  final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate? endDate = jsonConvert.convert<
+      MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate>(json['endDate']);
   if (endDate != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.endDate =
-        endDate;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.endDate = endDate;
   }
   final String? season = jsonConvert.convert<String>(json['season']);
   if (season != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.season =
-        season;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.season = season;
   }
   final String? status = jsonConvert.convert<String>(json['status']);
   if (status != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.status =
-        status;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.status = status;
   }
   final bool? isFavourite = jsonConvert.convert<bool>(json['isFavourite']);
   if (isFavourite != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation
-        .isFavourite = isFavourite;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.isFavourite = isFavourite;
   }
   final bool? isAdult = jsonConvert.convert<bool>(json['isAdult']);
   if (isAdult != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.isAdult =
-        isAdult;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.isAdult = isAdult;
   }
   final int? episodes = jsonConvert.convert<int>(json['episodes']);
   if (episodes != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.episodes =
-        episodes;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.episodes = episodes;
   }
   final int? chapters = jsonConvert.convert<int>(json['chapters']);
   if (chapters != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.chapters =
-        chapters;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.chapters = chapters;
   }
-  final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle? title = jsonConvert
-      .convert<
-      MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle>(
-      json['title']);
+  final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle? title = jsonConvert.convert<
+      MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle>(json['title']);
   if (title != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.title =
-        title;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.title = title;
   }
   final String? bannerImage = jsonConvert.convert<String>(json['bannerImage']);
   if (bannerImage != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation
-        .bannerImage = bannerImage;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.bannerImage = bannerImage;
   }
   final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage? coverImage = jsonConvert
-      .convert<
-      MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage>(
-      json['coverImage']);
+      .convert<MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage>(json['coverImage']);
   if (coverImage != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.coverImage =
-        coverImage;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.coverImage = coverImage;
   }
   final int? averageScore = jsonConvert.convert<int>(json['averageScore']);
   if (averageScore != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation
-        .averageScore = averageScore;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.averageScore = averageScore;
   }
   final int? duration = jsonConvert.convert<int>(json['duration']);
   if (duration != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.duration =
-        duration;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.duration = duration;
   }
   final String? format = jsonConvert.convert<String>(json['format']);
   if (format != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.format =
-        format;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.format = format;
   }
   final List<String>? genres = (json['genres'] as List<dynamic>?)?.map(
           (e) => jsonConvert.convert<String>(e) as String).toList();
   if (genres != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.genres =
-        genres;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.genres = genres;
   }
   final String? description = jsonConvert.convert<String>(json['description']);
   if (description != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation
-        .description = description;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.description = description;
   }
   final int? meanScore = jsonConvert.convert<int>(json['meanScore']);
   if (meanScore != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.meanScore =
-        meanScore;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.meanScore = meanScore;
   }
   final dynamic nextAiringEpisode = json['nextAiringEpisode'];
   if (nextAiringEpisode != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation
-        .nextAiringEpisode = nextAiringEpisode;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation.nextAiringEpisode = nextAiringEpisode;
   }
   return mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation;
 }
 
-Map<String,
-    dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationToJson(
+Map<String, dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationToJson(
     MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendation entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['id'] = entity.id;
@@ -385,24 +343,20 @@ MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate $MediaD
   final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate = MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate();
   final int? day = jsonConvert.convert<int>(json['day']);
   if (day != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate
-        .day = day;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate.day = day;
   }
   final int? month = jsonConvert.convert<int>(json['month']);
   if (month != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate
-        .month = month;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate.month = month;
   }
   final int? year = jsonConvert.convert<int>(json['year']);
   if (year != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate
-        .year = year;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate.year = year;
   }
   return mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate;
 }
 
-Map<String,
-    dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDateToJson(
+Map<String, dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDateToJson(
     MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -412,12 +366,11 @@ Map<String,
 }
 
 extension MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDateExtension on MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate {
-  MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate copyWith(
-      {
-        int? day,
-        int? month,
-        int? year,
-      }) {
+  MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate copyWith({
+    int? day,
+    int? month,
+    int? year,
+  }) {
     return MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationStartDate()
       ..day = day ?? this.day
       ..month = month ?? this.month
@@ -430,24 +383,20 @@ MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate $MediaDet
   final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate = MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate();
   final int? day = jsonConvert.convert<int>(json['day']);
   if (day != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate.day =
-        day;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate.day = day;
   }
   final int? month = jsonConvert.convert<int>(json['month']);
   if (month != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate
-        .month = month;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate.month = month;
   }
   final int? year = jsonConvert.convert<int>(json['year']);
   if (year != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate
-        .year = year;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate.year = year;
   }
   return mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate;
 }
 
-Map<String,
-    dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDateToJson(
+Map<String, dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDateToJson(
     MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -457,12 +406,11 @@ Map<String,
 }
 
 extension MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDateExtension on MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate {
-  MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate copyWith(
-      {
-        int? day,
-        int? month,
-        int? year,
-      }) {
+  MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate copyWith({
+    int? day,
+    int? month,
+    int? year,
+  }) {
     return MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationEndDate()
       ..day = day ?? this.day
       ..month = month ?? this.month
@@ -475,30 +423,24 @@ MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle $MediaDetai
   final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle = MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle();
   final String? english = jsonConvert.convert<String>(json['english']);
   if (english != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle
-        .english = english;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle.english = english;
   }
   final String? native = jsonConvert.convert<String>(json['native']);
   if (native != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle
-        .native = native;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle.native = native;
   }
   final String? romaji = jsonConvert.convert<String>(json['romaji']);
   if (romaji != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle
-        .romaji = romaji;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle.romaji = romaji;
   }
-  final String? userPreferred = jsonConvert.convert<String>(
-      json['userPreferred']);
+  final String? userPreferred = jsonConvert.convert<String>(json['userPreferred']);
   if (userPreferred != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle
-        .userPreferred = userPreferred;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle.userPreferred = userPreferred;
   }
   return mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle;
 }
 
-Map<String,
-    dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitleToJson(
+Map<String, dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitleToJson(
     MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['english'] = entity.english;
@@ -509,13 +451,12 @@ Map<String,
 }
 
 extension MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitleExtension on MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle {
-  MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle copyWith(
-      {
-        String? english,
-        String? native,
-        String? romaji,
-        String? userPreferred,
-      }) {
+  MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle copyWith({
+    String? english,
+    String? native,
+    String? romaji,
+    String? userPreferred,
+  }) {
     return MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationTitle()
       ..english = english ?? this.english
       ..native = native ?? this.native
@@ -529,14 +470,12 @@ MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage $Media
   final MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage = MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage();
   final String? large = jsonConvert.convert<String>(json['large']);
   if (large != null) {
-    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage
-        .large = large;
+    mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage.large = large;
   }
   return mediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage;
 }
 
-Map<String,
-    dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImageToJson(
+Map<String, dynamic> $MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImageToJson(
     MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['large'] = entity.large;
@@ -544,21 +483,17 @@ Map<String,
 }
 
 extension MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImageExtension on MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage {
-  MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage copyWith(
-      {
-        String? large,
-      }) {
+  MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage copyWith({
+    String? large,
+  }) {
     return MediaDetailsGraphqlMediaRecommendationsNodesMediaRecommendationCoverImage()
       ..large = large ?? this.large;
   }
 }
 
-MediaDetailsGraphqlMediaCharacters $MediaDetailsGraphqlMediaCharactersFromJson(
-    Map<String, dynamic> json) {
+MediaDetailsGraphqlMediaCharacters $MediaDetailsGraphqlMediaCharactersFromJson(Map<String, dynamic> json) {
   final MediaDetailsGraphqlMediaCharacters mediaDetailsGraphqlMediaCharacters = MediaDetailsGraphqlMediaCharacters();
-  final List<
-      MediaDetailsGraphqlMediaCharactersNodes>? nodes = (json['nodes'] as List<
-      dynamic>?)?.map(
+  final List<MediaDetailsGraphqlMediaCharactersNodes>? nodes = (json['nodes'] as List<dynamic>?)?.map(
           (e) =>
       jsonConvert.convert<MediaDetailsGraphqlMediaCharactersNodes>(
           e) as MediaDetailsGraphqlMediaCharactersNodes).toList();
@@ -568,8 +503,7 @@ MediaDetailsGraphqlMediaCharacters $MediaDetailsGraphqlMediaCharactersFromJson(
   return mediaDetailsGraphqlMediaCharacters;
 }
 
-Map<String, dynamic> $MediaDetailsGraphqlMediaCharactersToJson(
-    MediaDetailsGraphqlMediaCharacters entity) {
+Map<String, dynamic> $MediaDetailsGraphqlMediaCharactersToJson(MediaDetailsGraphqlMediaCharacters entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['nodes'] = entity.nodes.map((v) => v.toJson()).toList();
   return data;
@@ -591,8 +525,8 @@ MediaDetailsGraphqlMediaCharactersNodes $MediaDetailsGraphqlMediaCharactersNodes
   if (id != null) {
     mediaDetailsGraphqlMediaCharactersNodes.id = id;
   }
-  final MediaDetailsGraphqlMediaCharactersNodesImage? image = jsonConvert
-      .convert<MediaDetailsGraphqlMediaCharactersNodesImage>(json['image']);
+  final MediaDetailsGraphqlMediaCharactersNodesImage? image = jsonConvert.convert<
+      MediaDetailsGraphqlMediaCharactersNodesImage>(json['image']);
   if (image != null) {
     mediaDetailsGraphqlMediaCharactersNodes.image = image;
   }
@@ -609,9 +543,8 @@ MediaDetailsGraphqlMediaCharactersNodes $MediaDetailsGraphqlMediaCharactersNodes
   if (description != null) {
     mediaDetailsGraphqlMediaCharactersNodes.description = description;
   }
-  final MediaDetailsGraphqlMediaCharactersNodesDateOfBirth? dateOfBirth = jsonConvert
-      .convert<MediaDetailsGraphqlMediaCharactersNodesDateOfBirth>(
-      json['dateOfBirth']);
+  final MediaDetailsGraphqlMediaCharactersNodesDateOfBirth? dateOfBirth = jsonConvert.convert<
+      MediaDetailsGraphqlMediaCharactersNodesDateOfBirth>(json['dateOfBirth']);
   if (dateOfBirth != null) {
     mediaDetailsGraphqlMediaCharactersNodes.dateOfBirth = dateOfBirth;
   }
@@ -685,8 +618,7 @@ extension MediaDetailsGraphqlMediaCharactersNodesImageExtension on MediaDetailsG
 MediaDetailsGraphqlMediaCharactersNodesName $MediaDetailsGraphqlMediaCharactersNodesNameFromJson(
     Map<String, dynamic> json) {
   final MediaDetailsGraphqlMediaCharactersNodesName mediaDetailsGraphqlMediaCharactersNodesName = MediaDetailsGraphqlMediaCharactersNodesName();
-  final String? userPreferred = jsonConvert.convert<String>(
-      json['userPreferred']);
+  final String? userPreferred = jsonConvert.convert<String>(json['userPreferred']);
   if (userPreferred != null) {
     mediaDetailsGraphqlMediaCharactersNodesName.userPreferred = userPreferred;
   }

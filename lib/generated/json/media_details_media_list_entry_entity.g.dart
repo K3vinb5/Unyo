@@ -1,19 +1,17 @@
 import 'package:unyo/generated/json/base/json_convert_content.dart';
 import 'package:unyo/core/services/api/dto/anilist/media_details_media_list_entry_entity.dart';
 
-MediaDetailsMediaListEntryEntity $MediaDetailsMediaListEntryEntityFromJson(
-    Map<String, dynamic> json) {
+MediaDetailsMediaListEntryEntity $MediaDetailsMediaListEntryEntityFromJson(Map<String, dynamic> json) {
   final MediaDetailsMediaListEntryEntity mediaDetailsMediaListEntryEntity = MediaDetailsMediaListEntryEntity();
-  final MediaDetailsMediaListEntryMedia? media = jsonConvert.convert<
-      MediaDetailsMediaListEntryMedia>(json['Media']);
+  final MediaDetailsMediaListEntryMedia? media = jsonConvert.convert<MediaDetailsMediaListEntryMedia>(
+      json['Media']);
   if (media != null) {
     mediaDetailsMediaListEntryEntity.media = media;
   }
   return mediaDetailsMediaListEntryEntity;
 }
 
-Map<String, dynamic> $MediaDetailsMediaListEntryEntityToJson(
-    MediaDetailsMediaListEntryEntity entity) {
+Map<String, dynamic> $MediaDetailsMediaListEntryEntityToJson(MediaDetailsMediaListEntryEntity entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['Media'] = entity.media.toJson();
   return data;
@@ -28,20 +26,17 @@ extension MediaDetailsMediaListEntryEntityExtension on MediaDetailsMediaListEntr
   }
 }
 
-MediaDetailsMediaListEntryMedia $MediaDetailsMediaListEntryMediaFromJson(
-    Map<String, dynamic> json) {
+MediaDetailsMediaListEntryMedia $MediaDetailsMediaListEntryMediaFromJson(Map<String, dynamic> json) {
   final MediaDetailsMediaListEntryMedia mediaDetailsMediaListEntryMedia = MediaDetailsMediaListEntryMedia();
-  final MediaDetailsMediaListEntryMediaMediaListEntry? mediaListEntry = jsonConvert
-      .convert<MediaDetailsMediaListEntryMediaMediaListEntry>(
-      json['mediaListEntry']);
+  final MediaDetailsMediaListEntryMediaMediaListEntry? mediaListEntry = jsonConvert.convert<
+      MediaDetailsMediaListEntryMediaMediaListEntry>(json['mediaListEntry']);
   if (mediaListEntry != null) {
     mediaDetailsMediaListEntryMedia.mediaListEntry = mediaListEntry;
   }
   return mediaDetailsMediaListEntryMedia;
 }
 
-Map<String, dynamic> $MediaDetailsMediaListEntryMediaToJson(
-    MediaDetailsMediaListEntryMedia entity) {
+Map<String, dynamic> $MediaDetailsMediaListEntryMediaToJson(MediaDetailsMediaListEntryMedia entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['mediaListEntry'] = entity.mediaListEntry.toJson();
   return data;
@@ -75,34 +70,28 @@ MediaDetailsMediaListEntryMediaMediaListEntry $MediaDetailsMediaListEntryMediaMe
   if (status != null) {
     mediaDetailsMediaListEntryMediaMediaListEntry.status = status;
   }
-  final MediaDetailsMediaListEntryMediaMediaListEntryStartedAt? startedAt = jsonConvert
-      .convert<MediaDetailsMediaListEntryMediaMediaListEntryStartedAt>(
-      json['startedAt']);
+  final MediaDetailsMediaListEntryMediaMediaListEntryStartedAt? startedAt = jsonConvert.convert<
+      MediaDetailsMediaListEntryMediaMediaListEntryStartedAt>(json['startedAt']);
   if (startedAt != null) {
     mediaDetailsMediaListEntryMediaMediaListEntry.startedAt = startedAt;
   }
-  final MediaDetailsMediaListEntryMediaMediaListEntryCompletedAt? completedAt = jsonConvert
-      .convert<MediaDetailsMediaListEntryMediaMediaListEntryCompletedAt>(
-      json['completedAt']);
+  final MediaDetailsMediaListEntryMediaMediaListEntryCompletedAt? completedAt = jsonConvert.convert<
+      MediaDetailsMediaListEntryMediaMediaListEntryCompletedAt>(json['completedAt']);
   if (completedAt != null) {
     mediaDetailsMediaListEntryMediaMediaListEntry.completedAt = completedAt;
   }
   final List<
       MediaDetailsMediaListEntryMediaMediaListEntryCustomLists>? customLists = (json['customLists'] as List<
-      dynamic>?)
-      ?.map(
+      dynamic>?)?.map(
           (e) =>
-      jsonConvert.convert<
-          MediaDetailsMediaListEntryMediaMediaListEntryCustomLists>(
-          e) as MediaDetailsMediaListEntryMediaMediaListEntryCustomLists)
-      .toList();
+      jsonConvert.convert<MediaDetailsMediaListEntryMediaMediaListEntryCustomLists>(
+          e) as MediaDetailsMediaListEntryMediaMediaListEntryCustomLists).toList();
   if (customLists != null) {
     mediaDetailsMediaListEntryMediaMediaListEntry.customLists = customLists;
   }
-  final int? progressVolumes = json['progressVolumes'];
+  final int? progressVolumes = jsonConvert.convert<int>(json['progressVolumes']);
   if (progressVolumes != null) {
-    mediaDetailsMediaListEntryMediaMediaListEntry.progressVolumes =
-        progressVolumes;
+    mediaDetailsMediaListEntryMediaMediaListEntry.progressVolumes = progressVolumes;
   }
   return mediaDetailsMediaListEntryMediaMediaListEntry;
 }
@@ -162,8 +151,7 @@ MediaDetailsMediaListEntryMediaMediaListEntryStartedAt $MediaDetailsMediaListEnt
   return mediaDetailsMediaListEntryMediaMediaListEntryStartedAt;
 }
 
-Map<String,
-    dynamic> $MediaDetailsMediaListEntryMediaMediaListEntryStartedAtToJson(
+Map<String, dynamic> $MediaDetailsMediaListEntryMediaMediaListEntryStartedAtToJson(
     MediaDetailsMediaListEntryMediaMediaListEntryStartedAt entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -203,8 +191,7 @@ MediaDetailsMediaListEntryMediaMediaListEntryCompletedAt $MediaDetailsMediaListE
   return mediaDetailsMediaListEntryMediaMediaListEntryCompletedAt;
 }
 
-Map<String,
-    dynamic> $MediaDetailsMediaListEntryMediaMediaListEntryCompletedAtToJson(
+Map<String, dynamic> $MediaDetailsMediaListEntryMediaMediaListEntryCompletedAtToJson(
     MediaDetailsMediaListEntryMediaMediaListEntryCompletedAt entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['day'] = entity.day;
@@ -240,8 +227,7 @@ MediaDetailsMediaListEntryMediaMediaListEntryCustomLists $MediaDetailsMediaListE
   return mediaDetailsMediaListEntryMediaMediaListEntryCustomLists;
 }
 
-Map<String,
-    dynamic> $MediaDetailsMediaListEntryMediaMediaListEntryCustomListsToJson(
+Map<String, dynamic> $MediaDetailsMediaListEntryMediaMediaListEntryCustomListsToJson(
     MediaDetailsMediaListEntryMediaMediaListEntryCustomLists entity) {
   final Map<String, dynamic> data = <String, dynamic>{};
   data['name'] = entity.name;

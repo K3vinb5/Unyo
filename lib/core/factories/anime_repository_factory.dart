@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:unyo/core/di/locator.dart';
 import 'package:unyo/core/enums/service.dart';
 import 'package:unyo/data/repositories/anime_repository_anilist.dart';
+import 'package:unyo/data/repositories/anime_repository_shikimori.dart';
 import 'package:unyo/domain/entities/media/anime.dart';
 import 'package:unyo/domain/entities/media/anime_details.dart';
 import 'package:unyo/domain/entities/list/media_list_entry.dart';
@@ -16,9 +17,11 @@ import 'package:unyo/domain/repositories/anime_repository.dart';
 ///
 /// Currently supports:
 /// - [Service.anilist] → delegates to [AnimeRepositoryAnilist]
+/// - [Service.shikimori] → delegates to [AnimeRepositoryShikimori]
 /// - All other services → returns safe empty defaults
 class AnimeRepositoryFactory implements AnimeRepository {
   final AnimeRepositoryAnilist _animeRepositoryAnilist = sl<AnimeRepositoryAnilist>();
+  final AnimeRepositoryShikimori _animeRepositoryShikimori = sl<AnimeRepositoryShikimori>();
   final Logger _logger = sl<Logger>();
 
   @override
@@ -38,6 +41,12 @@ class AnimeRepositoryFactory implements AnimeRepository {
       case Service.mal:
       case Service.kitsu:
       case Service.shikimori:
+        _logger.i("Fetching Shikimori recently released anime");
+        return _animeRepositoryShikimori.getRecentlyReleasedAnimes(
+          page,
+          loggedUser,
+          ignoreCache: ignoreCache,
+        );
       case Service.simkl:
         return (false, <Anime>[]);
     }
@@ -60,6 +69,12 @@ class AnimeRepositoryFactory implements AnimeRepository {
       case Service.mal:
       case Service.kitsu:
       case Service.shikimori:
+        _logger.i("Fetching Shikimori trending anime");
+        return _animeRepositoryShikimori.getTrendingAnimes(
+          page,
+          loggedUser,
+          ignoreCache: ignoreCache,
+        );
       case Service.simkl:
         return (false, <Anime>[]);
     }
@@ -82,6 +97,12 @@ class AnimeRepositoryFactory implements AnimeRepository {
       case Service.mal:
       case Service.kitsu:
       case Service.shikimori:
+        _logger.i("Fetching Shikimori popular anime");
+        return _animeRepositoryShikimori.getPopularAnimes(
+          page,
+          loggedUser,
+          ignoreCache: ignoreCache,
+        );
       case Service.simkl:
         return (false, <Anime>[]);
     }
@@ -104,6 +125,12 @@ class AnimeRepositoryFactory implements AnimeRepository {
       case Service.mal:
       case Service.kitsu:
       case Service.shikimori:
+        _logger.i("Fetching Shikimori recently completed anime");
+        return _animeRepositoryShikimori.getRecentlyCompletedAnimes(
+          page,
+          loggedUser,
+          ignoreCache: ignoreCache,
+        );
       case Service.simkl:
         return (false, <Anime>[]);
     }
@@ -126,6 +153,12 @@ class AnimeRepositoryFactory implements AnimeRepository {
       case Service.mal:
       case Service.kitsu:
       case Service.shikimori:
+        _logger.i("Fetching Shikimori upcoming anime");
+        return _animeRepositoryShikimori.getUpcomingAnimes(
+          page,
+          loggedUser,
+          ignoreCache: ignoreCache,
+        );
       case Service.simkl:
         return (false, <Anime>[]);
     }
@@ -156,7 +189,7 @@ class AnimeRepositoryFactory implements AnimeRepository {
         return (false, AnimeDetailsModel.empty());
       case Service.shikimori:
         _logger.i("Fetching Anime Details from Shikimori for ${selectedAnime.title.userPreferred}");
-        return (false, AnimeDetailsModel.empty());
+        return _animeRepositoryShikimori.getAnimeDetails(selectedAnime, loggedUser);
       case Service.kitsu:
         _logger.i("Fetching Anime Details from Kitsu for ${selectedAnime.title.userPreferred}");
         return (false, AnimeDetailsModel.empty());
@@ -218,7 +251,10 @@ class AnimeRepositoryFactory implements AnimeRepository {
         return [];
       case Service.shikimori:
         _logger.i("Fetching Media Cover Images from Shikimori");
-        return [];
+        return _animeRepositoryShikimori.getMediaCoverImages(
+          loggedUser,
+          ignoreCache: ignoreCache,
+        );
       case Service.kitsu:
         _logger.i("Fetching Media Cover Images from Kitsu");
         return [];
