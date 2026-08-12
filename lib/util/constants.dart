@@ -6,9 +6,9 @@ import 'package:logger/logger.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:unyo/models/models.dart';
 import 'package:unyo/router/custom_page_route.dart';
-import 'package:unyo/util/torrent_server.dart';
 import 'package:unyo/util/utils.dart';
 import 'package:unyo/screens/screens.dart';
+import 'package:unyo/util/processes/process_manager.dart';
 
 String? accessToken;
 String? avatarImageUrl;
@@ -32,7 +32,6 @@ String localEndPoint = "http://localhost:8084";
 const String anilistEndpoint = "https://graphql.anilist.co";
 Future<List<CastDevice>> devices = CastDiscoveryService().search();
 final DiscordRPC discord = DiscordRPC();
-MTorrentServer torrentServer = MTorrentServer();
 var logger = Logger(
   printer: PrettyPrinter(),
   filter: ProductionFilter(),

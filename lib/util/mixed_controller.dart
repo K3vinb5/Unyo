@@ -71,7 +71,8 @@ class MixedController {
   void initControllers() async {
     String videoUrl = streamData.streams[source];
     if (videoUrl.contains("magnet")) {
-      videoUrl = await getMagnetUrls(videoUrl);
+      showErrorDialog(context, exception: "Torrent functionality has been removed. Please use a direct video URL.");
+      return;
     }
     loadCaptions(streamData.captions[source][0].file);
     if (streamData.getHeaders(source) != null) {
@@ -160,15 +161,6 @@ class MixedController {
       }
     }
     canDispose = true; // Set canDispose to true when done
-  }
-
-  Future<String> getMagnetUrls(String magnet) async {
-    List<String?> urls = await torrentServer.getTorrentPlaylist(magnet, null);
-    if (urls.length > 1) {
-      return urls[episode - 1] ?? "";
-    } else {
-      return urls[0] ?? "";
-    }
   }
 
   Future<ClosedCaptionFile> loadCaptions(String url) async {

@@ -100,11 +100,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void startExtensions() {
+    // Load external sources from JSON repository (Aniyomi/Tachiyomi style)
+    ExternalSourcesManager().loadExternalSources();
+    
+    // Only start embedded Java process if using remote endpoint
     if (prefs.getBool("remote_endpoint") ?? false) {
       processManager.startProcess();
+      addEmbeddedAniyomiExtensions();
+      addEmbeddedTachiyomiExtensions();
     }
-    addEmbeddedAniyomiExtensions();
-    addEmbeddedTachiyomiExtensions();
   }
 
   void setUserInfo(int userModelType) async {
