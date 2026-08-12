@@ -113,7 +113,11 @@ class PreferencesModel {
   }
 
   bool? getBool(String key) {
-    return box.get(key) as bool?;
+    final value = box.get(key);
+    if (key == "remote_endpoint" && value == null) {
+      return true;
+    }
+    return value as bool?;
   }
 
   void setBool(String key, bool value) {

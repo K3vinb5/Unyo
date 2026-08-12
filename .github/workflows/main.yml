@@ -14,7 +14,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.5'
+          flutter-version: '3.29.3'
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23.1'
@@ -74,13 +74,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: /home/runner/work/Unyo/Unyo/Unyo-${{github.ref_name}}-linux.AppImage
+          files: Unyo-${{github.ref_name}}-linux.AppImage
       - name: Activate flutter_to_debian
         run: dart pub global activate flutter_to_debian
-      - name: Add Path
-        run: export PATH="$PATH":"$HOME/.pub-cache/bin"
       - name: Build deb package
-        run: flutter_to_debian
+        run: |
+          export PATH="$PATH":"$HOME/.pub-cache/bin"
+          flutter_to_debian
       - name: Rename deb file
         run: cp build/linux/x64/release/debian/unyo_0.0.0_amd64.deb build/linux/x64/release/debian/unyo-${{github.ref_name}}-linux.deb
       - name: Linux Debain package Release
@@ -100,7 +100,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.5'
+          flutter-version: '3.29.3'
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23.1'
@@ -151,7 +151,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.5'
+          flutter-version: '3.29.3'
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23.1'
@@ -193,5 +193,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: /Users/runner/work/Unyo/Unyo/Unyo-${{github.ref_name}}-macos.dmg
+          files: Unyo-${{github.ref_name}}-macos.dmg
 
