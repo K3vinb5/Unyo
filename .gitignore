@@ -1,56 +1,78 @@
-# Miscellaneous
-*.class
-*.log
+```
+# Compiled and build artifacts
 *.pyc
-*.swp
+__pycache__/
+*.o
+*.obj
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+.env
+.env.local
+.env.*
+
+# Build directories
+dist/
+build/
+target/
+.gradle/
+
+# Python specific
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+.Python
+*.egg-info/
+.eggs/
+.mypy_cache/
+.pytest_cache/
+.coverage
+coverage/
+
+# Go specific
+*.o
+*.a
+*.so
+*.test
+*.prof
 .DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+*.swp
+*.swo
+*.tmp
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# Dart/Flutter specific
+*.dart.js
+*.part.js
+*.output.map
+.packages
 .dart_tool/
+.build/
 .flutter-plugins
 .flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
+.local-history/
 
-# Symbolication related
-app.*.symbols
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
 
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-linux/bundle/lib/libmtorrentserver.h
-linux/bundle/lib/libmtorrentserver.so
-libmtorrentserver.so
-
-# FVM Version Cache
-.fvm/
-/.fvmrc
-/pubspec.lock
-
-# VsCode related
+# Editors
 .vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+```
