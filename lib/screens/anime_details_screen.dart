@@ -64,7 +64,16 @@ class _AnimeDetailsScreenState extends State<AnimeDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    animeSources = globalAnimesSources;
+    // Combine embedded and external sources
+    animeSources = Map<int, AnimeSource>.from(globalAnimesSources ?? {});
+    final externalSources = ExternalSourcesManager().getExternalAnimeSources();
+    if (externalSources != null && externalSources.isNotEmpty) {
+      int offset = animeSources.length;
+      animeSources!.addAll({
+        for (var entry in externalSources.entries) 
+          entry.key + offset: entry.value
+      });
+    }
 
     mediaContentModel = MediaContentModel(anilistId: widget.currentAnime.id);
     mediaContentModel.init();

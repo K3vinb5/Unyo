@@ -1,78 +1,25 @@
 ```
-# Compiled and build artifacts
-*.pyc
-__pycache__/
-*.o
-*.obj
-*.class
-*.exe
-*.dll
-*.so
-*.a
-*.out
-
-# Dependencies
-node_modules/
-venv/
-.venv/
-.env
-.env.local
-.env.*
-
-# Build directories
-dist/
-build/
-target/
-.gradle/
-
-# Python specific
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
-.Python
-*.so
-.Python
-*.egg-info/
-.eggs/
-.mypy_cache/
-.pytest_cache/
-.coverage
-coverage/
-
-# Go specific
-*.o
-*.a
-*.so
-*.test
-*.prof
-.DS_Store
-*.swp
-*.swo
-*.tmp
-
-# Dart/Flutter specific
-*.dart.js
-*.part.js
-*.output.map
-.packages
+# Flutter/Dart specific
 .dart_tool/
 .build/
-.flutter-plugins
-.flutter-plugins-dependencies
-.local-history/
+*.g.dart
+*.freezed.dart
 
-# Logs and temp files
+# Dependencies
+.pub/
+.dart_server/
+packages/
+
+# Logs
 *.log
-*.tmp
-*.swp
-*.swo
+**/logs
 
-# Editors
-.vscode/
-.idea/
+# Environment variables
+.env
+.env.*
+!.env.example
 
-# System files
+# OS generated files
 .DS_Store
 Thumbs.db
 ```

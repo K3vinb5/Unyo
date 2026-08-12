@@ -68,7 +68,16 @@ class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    mangaSources = globalMangasSources;
+    // Combine embedded and external sources
+    mangaSources = Map<int, MangaSource>.from(globalMangasSources ?? {});
+    final externalSources = ExternalSourcesManager().getExternalMangaSources();
+    if (externalSources != null && externalSources.isNotEmpty) {
+      int offset = mangaSources.length;
+      mangaSources!.addAll({
+        for (var entry in externalSources.entries) 
+          entry.key + offset: entry.value
+      });
+    }
 
     Future.delayed(Duration.zero, () async {
       if (!mounted) return;

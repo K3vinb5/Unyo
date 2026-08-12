@@ -94,7 +94,7 @@ flutter:
   assets:
     - assets/logo.png
     - assets/languages/
-    - assets/extensions.jar
+    # - assets/extensions.jar (removed - using external JSON sources instead)
     # - assets/embedded-api-linux
   #   - images/a_dot_ham.jpeg
 
